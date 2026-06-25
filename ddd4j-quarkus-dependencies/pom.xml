@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.ddd4j.quarkus</groupId>
+        <artifactId>ddd4j-quarkus</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ddd4j-quarkus-dependencies</artifactId>
+    <packaging>pom</packaging>
+    <description>ddd4j-dependencies + quarkus-bom + Quarkus track overrides</description>
+
+    <properties>
+        <ddd4j.version>2.0.x20260625-SNAPSHOT</ddd4j.version>
+        <fuin-ddd4j.version>0.7.0</fuin-ddd4j.version>
+        <fuin-cqrs4j.version>0.6.0</fuin-cqrs4j.version>
+        <fuin-esc.version>0.9.0</fuin-esc.version>
+        <archunit.version>1.4.2</archunit.version>
+        <easyexcel.version>4.0.3</easyexcel.version>
+        <jboss-logging.version>3.6.3.Final</jboss-logging.version>
+        <maven-docker-plugin.version>0.48.0</maven-docker-plugin.version>
+        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
+        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- 1. ddd4j 底座先 import -->
+            <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-dependencies</artifactId>
+                <version>${ddd4j.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- 2. Quarkus BOM 后 import，框架版本优先 -->
+            <dependency>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- 3. ddd4j 模块坐标 -->
+            <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-core</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+            <!-- 4. 轨道内显式 override -->
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging</artifactId>
+                <version>${jboss-logging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>easyexcel</artifactId>
+                <version>${easyexcel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.persistence</groupId>
+                <artifactId>jakarta.persistence-api</artifactId>
+                <version>3.2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fuin.ddd4j</groupId>
+                <artifactId>ddd-4-java-core</artifactId>
+                <version>${fuin-ddd4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fuin.ddd4j</groupId>
+                <artifactId>ddd-4-java-jackson</artifactId>
+                <version>${fuin-ddd4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fuin.ddd4j</groupId>
+                <artifactId>ddd-4-java-esc</artifactId>
+                <version>${fuin-ddd4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fuin.cqrs4j</groupId>
+                <artifactId>cqrs-4-java-core</artifactId>
+                <version>${fuin-cqrs4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fuin.cqrs4j</groupId>
+                <artifactId>cqrs-4-java-jackson</artifactId>
+                <version>${fuin-cqrs4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fuin.esc</groupId>
+                <artifactId>esc-mem</artifactId>
+                <version>${fuin-esc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tngtech.archunit</groupId>
+                <artifactId>archunit-junit5</artifactId>
+                <version>${archunit.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>
