@@ -10,8 +10,13 @@
         <relativePath>../ddd4j-quarkus-parent/pom.xml</relativePath>
     </parent>
     <artifactId>ddd4j-quarkus-annotation</artifactId>
-    <description>CDI 构造型注解，替代 ddd4j-boot-annotation</description>
+    <description>Quarkus 轨注解模块，依赖 ddd4j-annotation 并预留 CDI 扩展</description>
     <dependencies>
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-annotation</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
         <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
