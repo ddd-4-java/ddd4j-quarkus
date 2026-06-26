@@ -12,15 +12,44 @@
 
     <artifactId>ddd4j-quarkus-bom</artifactId>
     <packaging>pom</packaging>
-    <description>ddd4j-quarkus module version BOM</description>
+    <description>ddd4j-quarkus + ddd4j 整合模块的版本 BOM（业务项目 import 此 BOM 即可获得 ddd4j-quarkus 与 ddd4j 平台全部模块坐标）</description>
 
     <dependencyManagement>
         <dependencies>
+            <!--
+                ddd4j 平台核心模块（业务项目可按需选择）：
+                ddd4j-* 坐标由 io.ddd4j:ddd4j-dependencies BOM 统一管理版本，
+                此处仅显式声明 ddd4j-mq 系列（本轨道深度整合的模块），便于业务项目在 import 此 BOM 后直接引用。
+            -->
+
+            <!-- ddd4j-mq 系列（深度整合模块，版本由 ddd4j 仓库定义） -->
             <dependency>
                 <groupId>io.ddd4j</groupId>
-                <artifactId>ddd4j-core</artifactId>
-                <version>${revision}</version>
+                <artifactId>ddd4j-mq</artifactId>
+                <version>${ddd4j.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-mq-disruptor</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-mq-sqs</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-mq-nats</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-mq-ons</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+
+            <!-- ddd4j-quarkus 自身模块 -->
             <dependency>
                 <groupId>io.ddd4j.quarkus</groupId>
                 <artifactId>ddd4j-quarkus-annotation</artifactId>
