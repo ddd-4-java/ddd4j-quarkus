@@ -18,6 +18,12 @@
     </properties>
 
     <dependencies>
+        <!-- 业务演示：演示 ddd4j-quarkus-core 的 RequestContext + ddd4j-core 的 R 统一响应 -->
+        <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-core</artifactId>
+        </dependency>
+        <!-- REST 实现：Quarkus 3 默认使用 quarkus-rest（与 resteasy 互斥） -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest</artifactId>
@@ -26,26 +32,14 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest-jackson</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-arc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-health</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.ddd4j.quarkus</groupId>
-            <artifactId>ddd4j-quarkus-core</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <!-- 激活 parent pluginManagement 中声明的 build/generate-code/generate-code-tests goals -->
             <plugin>
                 <groupId>io.quarkus.platform</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
-                <version>${quarkus-bom.version}</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
