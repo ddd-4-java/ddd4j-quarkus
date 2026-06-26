@@ -29,10 +29,15 @@
         <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+
+        <!--
+            Quarkus 轨道专用：ddd4j 仓库未管理这些版本。
+            其余 Maven 插件版本（compiler / enforcer / surefire / failsafe / source / jar / resources /
+            install / deploy / exec / git-commit-id / flatten / docker 等）由 ddd4j 根 pom 统一管理，
+            本仓库不重复声明，避免版本漂移。
+        -->
         <quarkus-bom.version>3.36.3</quarkus-bom.version>
         <maven-quarkus-plugin.version>3.36.3</maven-quarkus-plugin.version>
-        <maven-flatten-plugin.version>1.7.3</maven-flatten-plugin.version>
-        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
     </properties>
 
     <modules>
@@ -99,7 +104,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>${maven-flatten-plugin.version}</version>
                 <configuration>
                     <flattenMode>resolveCiFriendliesOnly</flattenMode>
                     <updatePomFile>true</updatePomFile>

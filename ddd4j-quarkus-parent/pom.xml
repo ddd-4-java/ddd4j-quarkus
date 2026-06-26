@@ -19,15 +19,11 @@
         <docker.skip>true</docker.skip>
         <docker.push.skip>true</docker.push.skip>
 
-        <!-- 通用 Maven 插件版本（与 cloud-das 实战一致） -->
-        <maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
-        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
-        <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
-        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-        <maven-install-plugin.version>3.1.2</maven-install-plugin.version>
-        <maven-deploy-plugin.version>3.1.2</maven-deploy-plugin.version>
-        <maven-exec-plugin.version>3.5.0</maven-exec-plugin.version>
-        <maven-git-commit-id-plugin.version>4.9.10</maven-git-commit-id-plugin.version>
+        <!--
+            Maven 插件版本由 ddd4j 仓库根 pom 统一管理（maven-compiler / enforcer / surefire /
+            failsafe / source / jar / resources / install / deploy / exec / git-commit-id /
+            flatten / docker 等），本 parent 不重复声明，避免版本漂移。
+        -->
     </properties>
 
     <dependencyManagement>
@@ -169,6 +165,14 @@
     <build>
         <pluginManagement>
             <plugins>
+                <!--
+                    ddd4j-quarkus-parent 的 pluginManagement 仅声明 Quarkus 轨道独有的 plugin。
+                    其余核心插件（maven-compiler / enforcer / surefire / failsafe / source / jar /
+                    resources / install / deploy / flatten / git-commit-id / docker 等）的版本与基础
+                    配置已由 ddd4j-parent 的 pluginManagement 统一管理，Quarkus 业务项目继承本 parent
+                    时自动获得，无需在此重复声明。
+                -->
+
                 <!-- Quarkus 构建：生成代码 + 打包 + 测试代码生成 -->
                 <plugin>
                     <groupId>io.quarkus.platform</groupId>
@@ -186,11 +190,10 @@
                     </executions>
                 </plugin>
 
-                <!-- 编译：release + -parameters（保留方法参数名） -->
+                <!-- 编译：release + -parameters（覆盖 ddd4j-parent 的 source/target，使用 release） -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven-compiler-plugin.version}</version>
                     <configuration>
                         <release>${java.version}</release>
                         <compilerArgs>
@@ -199,56 +202,10 @@
                     </configuration>
                 </plugin>
 
-                <!-- 资源：UTF-8 -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>${maven-resources-plugin.version}</version>
-                    <configuration>
-                        <encoding>${project.build.sourceEncoding}</encoding>
-                    </configuration>
-                </plugin>
-
-                <!-- JAR：标准打包 -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>${maven-jar-plugin.version}</version>
-                </plugin>
-
-                <!-- 源码：verify 阶段自动 attach-sources -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>${maven-source-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>jar-no-fork</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <!-- Install / Deploy：标准生命周期绑定 -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>${maven-install-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>${maven-deploy-plugin.version}</version>
-                </plugin>
-
                 <!-- Unit Test：JVM LogManager 切到 JBoss，避免与 Quarkus 日志桥接冲突 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven-surefire-plugin.version}</version>
                     <configuration>
                         <systemPropertyVariables>
                             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
@@ -261,7 +218,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>${maven-failsafe-plugin.version}</version>
                     <configuration>
                         <classesDirectory>${project.build.outputDirectory}</classesDirectory>
                         <systemPropertyVariables>
@@ -271,85 +227,10 @@
                     </configuration>
                 </plugin>
 
-                <!-- CI Friendly Versions：${revision} 占位符解析 -->
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>flatten-maven-plugin</artifactId>
-                    <version>${maven-flatten-plugin.version}</version>
-                    <configuration>
-                        <updatePomFile>true</updatePomFile>
-                        <flattenMode>resolveCiFriendliesOnly</flattenMode>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>flatten</id>
-                            <phase>process-resources</phase>
-                            <goals>
-                                <goal>flatten</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>flatten.clean</id>
-                            <phase>clean</phase>
-                            <goals>
-                                <goal>clean</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <!-- 环境监察：Maven ≥ 3.6.3, JDK ≥ 17 -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>${maven-enforcer-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>enforce-build-env</id>
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>enforce</goal>
-                            </goals>
-                            <configuration>
-                                <rules>
-                                    <requireMavenVersion>
-                                        <message>This application requires at least Maven 3.6.3.</message>
-                                        <version>[3.6.3,)</version>
-                                    </requireMavenVersion>
-                                    <requireJavaVersion>
-                                        <message>This application requires at least JDK 17.</message>
-                                        <version>[17,)</version>
-                                    </requireJavaVersion>
-                                </rules>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <!-- Git 信息：生成 git.properties（业务项目显式激活） -->
-                <plugin>
-                    <groupId>pl.project13.maven</groupId>
-                    <artifactId>git-commit-id-plugin</artifactId>
-                    <version>${maven-git-commit-id-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>get-the-git-infos</id>
-                            <goals>
-                                <goal>revision</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                        <failOnNoGitDirectory>false</failOnNoGitDirectory>
-                    </configuration>
-                </plugin>
-
                 <!-- Docker 镜像构建：仅保留 skip 默认值；registry / buildx / 平台由业务项目配置 -->
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>${maven-docker-plugin.version}</version>
                     <configuration>
                         <skip>${docker.skip}</skip>
                         <skipPush>${docker.push.skip}</skipPush>

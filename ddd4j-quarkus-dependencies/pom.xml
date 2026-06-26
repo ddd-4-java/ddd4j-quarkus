@@ -19,23 +19,20 @@
         <ddd4j.version>2.0.x20260625-SNAPSHOT</ddd4j.version>
 
         <!--
-            Quarkus 轨道专用 override：ddd4j 没显式定义这些版本，由 Quarkus 生态强约束。
-            1) jboss-logging：Quarkus 日志桥强制版本
-            2) asm 9.x：Quarkus 构建期字节码操作要求
-            3) jakarta.ws.rs-api 3.x：Quarkus 3 + Jakarta EE 9+ 命名空间（jakarta.ws.rs.*）；
-               ddd4j 链解析可能落到 2.1.6（javax.ws.rs.*），与 quarkus-rest 不兼容
+            Quarkus 轨道专用 override：仅保留 ddd4j 仓库**未管理**且 Quarkus 生态强约束的版本。
+            1) jboss-logging：Quarkus 日志桥强制版本（ddd4j 走 Spring 链解析到 3.4.x/3.5.x，
+               与 quarkus-core 字节码签名不兼容）
+            2) asm 9.x：Quarkus 构建期字节码操作要求（ddd4j 链解析可能落到 5.x 老版本）
+
+            jakarta.* API（jakarta.ws.rs-api 3.1.0、jakarta.xml.bind-api 3.0.1 等 Jakarta EE 9+
+            命名空间版本）已上抛到 ddd4j 仓库 ddd4j-dependencies 统一管理，本模块不再重复声明。
+
+            Maven 插件版本（maven-compiler / enforcer / surefire / failsafe / source / jar / resources /
+            install / deploy / exec / git-commit-id / flatten / docker 等）由 ddd4j 仓库根 pom 统一管理，
+            本模块不重复声明，避免版本漂移。
         -->
         <jboss-logging.version>3.6.3.Final</jboss-logging.version>
         <asm.version>9.9.1</asm.version>
-        <jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
-        <jakarta.xml.bind-api.version>3.0.1</jakarta.xml.bind-api.version>
-
-        <!--
-            Maven 插件版本（ddd4j 已统一管理；这里仅声明 Quarkus 业务 parent 必需的子集）
-        -->
-        <maven-docker-plugin.version>0.48.0</maven-docker-plugin.version>
-        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
-        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -95,21 +92,6 @@
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm-analysis</artifactId>
                 <version>${asm.version}</version>
-            </dependency>
-            <!-- Quarkus 3 + Jakarta EE 9+ 强制使用 jakarta.ws.rs.* 命名空间（覆盖 ddd4j 链解析的 2.1.6） -->
-            <dependency>
-                <groupId>jakarta.ws.rs</groupId>
-                <artifactId>jakarta.ws.rs-api</artifactId>
-                <version>${jakarta.ws.rs-api.version}</version>
-            </dependency>
-            <!--
-                jakarta.xml.bind-api 3.x：hutool-all / easyexcel 等传递依赖会引用 JAXBException 等类，
-                必须用 3.x 命名空间（jakarta.xml.bind.*）才能在 Quarkus 3 + Jakarta EE 9+ 运行时解析。
-            -->
-            <dependency>
-                <groupId>jakarta.xml.bind</groupId>
-                <artifactId>jakarta.xml.bind-api</artifactId>
-                <version>${jakarta.xml.bind-api.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
