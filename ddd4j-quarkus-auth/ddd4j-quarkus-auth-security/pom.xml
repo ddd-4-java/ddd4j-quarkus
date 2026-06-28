@@ -5,31 +5,34 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.ddd4j.quarkus</groupId>
-        <artifactId>ddd4j-quarkus-parent</artifactId>
+        <artifactId>ddd4j-quarkus-auth</artifactId>
         <version>${revision}</version>
-        <relativePath>../ddd4j-quarkus-parent/pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>ddd4j-quarkus-core</artifactId>
-    <description>Quarkus 核心：RequestContext，复用 ddd4j-core（纯 Java）</description>
+    <artifactId>ddd4j-quarkus-auth-security</artifactId>
+    <description>
+        ddd4j-quarkus + Spring Security 整合：CDI Bean 注册 SecuritySubjectProvider。
+        注意：Spring Security 依赖 Spring 生态，Quarkus 环境推荐使用 sa-token。
+    </description>
 
     <dependencies>
+        <!-- ddd4j auth security 实现 -->
         <dependency>
-            <groupId>io.ddd4j.quarkus</groupId>
-            <artifactId>ddd4j-quarkus-annotation</artifactId>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-auth-security</artifactId>
+            <version>${ddd4j.version}</version>
         </dependency>
-        <!-- 使用纯 Java 的 ddd4j-core 模块 -->
+        <!-- ddd4j core -->
         <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-core</artifactId>
+            <version>${ddd4j.version}</version>
         </dependency>
+        <!-- Quarkus CDI -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
         </dependency>
     </dependencies>
 

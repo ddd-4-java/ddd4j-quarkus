@@ -50,6 +50,7 @@
         <module>ddd4j-quarkus-web</module>
         <module>ddd4j-quarkus-mq</module>
         <module>ddd4j-quarkus-monitor</module>
+        <module>ddd4j-quarkus-auth</module>
         <module>ddd4j-quarkus-parent</module>
         <module>ddd4j-quarkus-samples</module>
     </modules>

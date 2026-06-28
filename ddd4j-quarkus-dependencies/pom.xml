@@ -54,7 +54,7 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- 3. ddd4j 平台核心模块坐标（业务项目可直接 <dependency>io.ddd4j:ddd4j-core</dependency>，版本由 ddd4j-bom 提供） -->
+            <!-- 3. ddd4j 平台核心模块坐标（纯 Java，零 Spring 依赖） -->
             <dependency>
                 <groupId>io.ddd4j</groupId>
                 <artifactId>ddd4j-core</artifactId>
