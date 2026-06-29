@@ -16,7 +16,7 @@
 
     <properties>
         <!-- ddd4j 底座 revision（必须与 ddd4j 仓库实际 deploy 的一致） -->
-        <ddd4j.version>2.0.x20260625-SNAPSHOT</ddd4j.version>
+        <ddd4j.version>2.0.x.20260625-SNAPSHOT</ddd4j.version>
 
         <!--
             Quarkus 轨道专用 override：仅保留 ddd4j 仓库**未管理**且 Quarkus 生态强约束的版本。
