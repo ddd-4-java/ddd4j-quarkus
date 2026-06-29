@@ -9,11 +9,20 @@
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+
     <artifactId>ddd4j-quarkus-mq-disruptor</artifactId>
     <description>ddd4j-quarkus MQ - disruptor（无 Spring 强耦合，纯 Java SDK 实现，CDI 桥接）。</description>
+
     <dependencies>
-        <dependency><groupId>io.ddd4j.quarkus</groupId><artifactId>ddd4j-quarkus-mq-core</artifactId><version>${revision}</version></dependency>
-        <dependency><groupId>io.ddd4j</groupId><artifactId>ddd4j-mq-disruptor</artifactId>
-            <version>${ddd4j.version}</version></dependency>
+        <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-mq-core</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-mq-disruptor</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
     </dependencies>
 </project>

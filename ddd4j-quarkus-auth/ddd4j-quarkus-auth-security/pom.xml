@@ -18,19 +18,19 @@
 
     <dependencies>
         <!-- ddd4j auth security 实现 -->
-        <dependency>
+                <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-auth-security</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
         <!-- ddd4j core -->
-        <dependency>
+                <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-core</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
         <!-- Quarkus CDI -->
-        <dependency>
+                <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>

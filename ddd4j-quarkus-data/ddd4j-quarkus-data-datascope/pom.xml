@@ -18,13 +18,13 @@
 
     <dependencies>
         <!-- ddd4j 数据层数据权限 -->
-        <dependency>
+                <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-data-datascope</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
         <!-- Quarkus CDI -->
-        <dependency>
+                <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>

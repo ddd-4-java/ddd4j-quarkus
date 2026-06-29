@@ -10,25 +10,27 @@
         <relativePath>../../ddd4j-quarkus-parent/pom.xml</relativePath>
     </parent>
 
-    <artifactId>sample-api</artifactId>
-    <description>ddd4j-quarkus 最小可运行示例：REST + Health + uber-jar</description>
+    <artifactId>sample-auth-shiro</artifactId>
+    <description>ddd4j-quarkus-auth + Shiro 集成示例（老项目迁移参考）</description>
 
     <properties>
         <quarkus.package.jar.type>uber-jar</quarkus.package.jar.type>
     </properties>
 
     <dependencies>
-        <!-- 业务演示：演示 ddd4j-quarkus-core 的 RequestContext + ddd4j-core 的 R 统一响应 -->
-                <dependency>
+        <dependency>
             <groupId>io.ddd4j.quarkus</groupId>
-            <artifactId>ddd4j-quarkus-core</artifactId>
+            <artifactId>ddd4j-quarkus-annotation</artifactId>
         </dependency>
-        <!-- REST 实现：Quarkus 3 默认使用 quarkus-rest（与 resteasy 互斥） -->
-                <dependency>
+        <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-auth-shiro</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest</artifactId>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest-jackson</artifactId>
         </dependency>
@@ -36,7 +38,6 @@
 
     <build>
         <plugins>
-            <!-- 激活 parent pluginManagement 中声明的 build/generate-code/generate-code-tests goals -->
             <plugin>
                 <groupId>io.quarkus.platform</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>

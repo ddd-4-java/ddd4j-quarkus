@@ -13,12 +13,12 @@
     <description>ddd4j-quarkus 缓存层 CDI 桥接：通过 CDI @Produces 暴露 CacheKit 到 Quarkus 容器。</description>
 
     <dependencies>
-        <dependency>
+                <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-cache</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
-        <dependency>
+                <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>

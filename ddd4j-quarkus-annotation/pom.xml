@@ -12,12 +12,12 @@
     <artifactId>ddd4j-quarkus-annotation</artifactId>
     <description>Quarkus 轨注解模块，依赖 ddd4j-annotation 并预留 CDI 扩展</description>
     <dependencies>
-        <dependency>
+                <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-annotation</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
-        <dependency>
+                <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
             <scope>provided</scope>

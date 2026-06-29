@@ -14,27 +14,27 @@
     <description>fuinorg DDD/CQRS 契约聚合（无 Spring）</description>
 
     <dependencies>
-        <dependency>
+                <dependency>
             <groupId>org.fuin.ddd4j</groupId>
             <artifactId>ddd-4-java-core</artifactId>
         </dependency>
-        <dependency>
+                <dependency>
             <groupId>org.fuin.ddd4j</groupId>
             <artifactId>ddd-4-java-jackson</artifactId>
         </dependency>
-        <dependency>
+                <dependency>
             <groupId>org.fuin.cqrs4j</groupId>
             <artifactId>cqrs-4-java-core</artifactId>
         </dependency>
-        <dependency>
+                <dependency>
             <groupId>org.fuin.cqrs4j</groupId>
             <artifactId>cqrs-4-java-jackson</artifactId>
         </dependency>
-        <dependency>
+                <dependency>
             <groupId>io.ddd4j.quarkus</groupId>
             <artifactId>ddd4j-quarkus-core</artifactId>
         </dependency>
-        <dependency>
+                <dependency>
             <groupId>io.smallrye</groupId>
             <artifactId>jandex</artifactId>
         </dependency>

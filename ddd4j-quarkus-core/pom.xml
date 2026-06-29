@@ -14,20 +14,20 @@
     <description>Quarkus 核心：RequestContext，复用 ddd4j-core（纯 Java）</description>
 
     <dependencies>
-        <dependency>
+                <dependency>
             <groupId>io.ddd4j.quarkus</groupId>
             <artifactId>ddd4j-quarkus-annotation</artifactId>
         </dependency>
         <!-- 使用纯 Java 的 ddd4j-core 模块 -->
-        <dependency>
+                <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-core</artifactId>
         </dependency>
-        <dependency>
+                <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
-        <dependency>
+                <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>

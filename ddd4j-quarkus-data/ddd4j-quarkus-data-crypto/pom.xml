@@ -17,13 +17,13 @@
 
     <dependencies>
         <!-- ddd4j 数据层加解密纯 Java 实现 -->
-        <dependency>
+                <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-data-crypto</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
         <!-- Quarkus CDI -->
-        <dependency>
+                <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>

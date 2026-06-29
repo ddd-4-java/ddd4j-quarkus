@@ -18,29 +18,29 @@
 
     <dependencies>
         <!-- ddd4j auth shiro 纯 Java 实现 -->
-        <dependency>
+                <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-auth-shiro</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
         <!-- ddd4j core -->
-        <dependency>
+                <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-core</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
         <!-- Apache Shiro -->
-        <dependency>
+                <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
         </dependency>
         <!-- Quarkus CDI -->
-        <dependency>
+                <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
         <!-- Quarkus RESTEasy（ExceptionMapper） -->
-        <dependency>
+                <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
         </dependency>

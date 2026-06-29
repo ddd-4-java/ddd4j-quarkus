@@ -13,5 +13,9 @@
     <packaging>pom</packaging>
     <modules>
         <module>sample-api</module>
+        <!-- Auth 鉴权示例：演示 SubjectKit 统一鉴权入口（JAX-RS 端点） -->
+        <module>sample-auth-satoken</module>
+        <module>sample-auth-security</module>
+        <module>sample-auth-shiro</module>
     </modules>
 </project>
