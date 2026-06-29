@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.ddd4j.quarkus</groupId>
+        <artifactId>ddd4j-quarkus-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../ddd4j-quarkus-parent/pom.xml</relativePath>
+    </parent>
+    <artifactId>ddd4j-quarkus-cache</artifactId>
+    <description>ddd4j-quarkus 缓存层 CDI 桥接：通过 CDI @Produces 暴露 CacheKit 到 Quarkus 容器。</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-cache</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

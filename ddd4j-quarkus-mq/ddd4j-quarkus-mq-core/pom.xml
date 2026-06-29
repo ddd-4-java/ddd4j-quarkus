@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.ddd4j.quarkus</groupId>
+        <artifactId>ddd4j-quarkus-mq</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>ddd4j-quarkus-mq-core</artifactId>
+    <description>ddd4j-quarkus MQ 核心桥接：MQ 契约（contract/spi/publisher/consumer）+ CDI 支持，不绑定具体 broker。</description>
+    <dependencies>
+        <dependency><groupId>io.ddd4j</groupId><artifactId>ddd4j-mq-core</artifactId>
+            <version>${ddd4j.version}</version></dependency>
+        <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-arc</artifactId></dependency>
+    </dependencies>
+</project>

@@ -9,52 +9,23 @@
         <version>${revision}</version>
         <relativePath>../ddd4j-quarkus-parent/pom.xml</relativePath>
     </parent>
-
     <artifactId>ddd4j-quarkus-mq</artifactId>
+    <packaging>pom</packaging>
     <description>
-        ddd4j 消息队列在 Quarkus 轨道的桥接层。
-        复用 ddd4j-mq 的契约（contract / serialization / ack / spi）以及无 Spring 强耦合的本地实现
-        （ddd4j-mq-disruptor / ddd4j-mq-sqs / ddd4j-mq-nats / ddd4j-mq-ons）。
-        业务项目通过本模块引入 ddd4j 全部 MQ 能力，无需在自身 pom 中重复声明三方组件版本。
+        ddd4j 消息队列在 Quarkus 轨道的桥接聚合。
+        参照 ddd4j-mq 多模块范式：
+        - core（MQ 契约 + CDI 桥接）
+        - disruptor / sqs / nats / ons（无 Spring 强耦合的 broker，可直接复用）
+        强 Spring 耦合的 broker（kafka/rabbitmq/rocketmq/pulsar/redis-stream/mqtt/activemq）
+        不直接提供，业务项目通过 SmallRye Reactive Messaging 自行适配。
     </description>
 
-    <dependencies>
-        <!--
-            ddd4j 底座 MQ 契约（contract / spi / publisher / consumer / ack / registry）
-            包含 ddd4j-core 的 @MQEventListener 注解（注解侧复用 ddd4j-core）
-        -->
-        <dependency>
-            <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-mq</artifactId>
-        </dependency>
-        <!--
-            ddd4j-mq-disruptor：无 Spring 强耦合的本地实现（LMAX Disruptor 内存队列），
-            提供 DisruptorMQBrokerAdapter / DisruptorMQEventPublisher / DisruptorMessageAcknowledgment 等纯 Java 实现。
-            业务项目无需关心 Spring 容器细节。
-        -->
-        <dependency>
-            <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-mq-disruptor</artifactId>
-        </dependency>
-        <!-- Quarkus CDI 支持 -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-arc</artifactId>
-        </dependency>
-    </dependencies>
-
-    <!--
-        其他无 Spring 强耦合的 ddd4j-mq-* 实现按需引入（保持本模块依赖最小化）：
-          - ddd4j-mq-sqs（AWS SQS，纯 SDK）
-          - ddd4j-mq-nats（jnats，纯 SDK）
-          - ddd4j-mq-ons（阿里云 ONS，纯 SDK）
-        业务项目在自身 pom 中按 broker 类型选择性引入。
-
-        强 Spring 耦合的 ddd4j-mq-*（kafka / rabbitmq / rocketmq / pulsar / redis-stream / mqtt / activemq）
-        不能直接被 quarkus 复用：它们使用 @KafkaListener / @RabbitListener / Spring Boot starter 等
-        Spring 容器特性。Quarkus 端对应物为 SmallRye Reactive Messaging（quarkus-messaging-* 扩展），
-        业务项目如需这些 broker，请在 Quarkus 端通过 SmallRye 适配器实现并桥接到 ddd4j-mq 的
-        MQBrokerAdapter SPI。
-    -->
+    <modules>
+        <module>ddd4j-quarkus-mq-core</module>
+        <module>ddd4j-quarkus-mq-disruptor</module>
+        <module>ddd4j-quarkus-mq-sqs</module>
+        <module>ddd4j-quarkus-mq-nats</module>
+        <module>ddd4j-quarkus-mq-ons</module>
+    </modules>
 
 </project>

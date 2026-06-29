@@ -47,6 +47,7 @@
         <module>ddd4j-quarkus-core</module>
         <module>ddd4j-quarkus-ddd</module>
         <module>ddd4j-quarkus-data</module>
+        <module>ddd4j-quarkus-cache</module>
         <module>ddd4j-quarkus-web</module>
         <module>ddd4j-quarkus-mq</module>
         <module>ddd4j-quarkus-monitor</module>
