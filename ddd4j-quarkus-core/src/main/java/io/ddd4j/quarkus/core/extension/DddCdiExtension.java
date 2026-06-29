@@ -1,6 +1,6 @@
 package io.ddd4j.quarkus.core.extension;
 
-import io.ddd4j.annotation.*;
+import io.ddd4j.quarkus.annotation.ddd.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.spi.*;
@@ -9,13 +9,18 @@ import org.jboss.logging.Logger;
 /**
  * CDI 扩展：扫描 DDD 构造型注解并自动注册为 CDI Bean
  * <p>
- * 扫描以下注解：
+ * 扫描以下注解（完整 10 个 DDD 注解）：
  * <ul>
  *   <li>{@link ApplicationService} -> @ApplicationScoped</li>
  *   <li>{@link DomainService} -> @ApplicationScoped</li>
  *   <li>{@link DomainRepository} -> @ApplicationScoped</li>
  *   <li>{@link DomainAssembler} -> @ApplicationScoped</li>
  *   <li>{@link DomainConverter} -> @ApplicationScoped</li>
+ *   <li>{@link DomainEntity} -> @ApplicationScoped</li>
+ *   <li>{@link DomainValueObject} -> @ApplicationScoped</li>
+ *   <li>{@link DomainGateway} -> @ApplicationScoped</li>
+ *   <li>{@link QueryService} -> @ApplicationScoped</li>
+ *   <li>{@link CommandExecutor} -> @ApplicationScoped</li>
  * </ul>
  *
  * @author Loong Wan
@@ -49,6 +54,21 @@ public class DddCdiExtension implements Extension {
         } else if (type.isAnnotationPresent(DomainConverter.class)) {
             hasDddAnnotation = true;
             annotationName = "@DomainConverter";
+        } else if (type.isAnnotationPresent(DomainEntity.class)) {
+            hasDddAnnotation = true;
+            annotationName = "@DomainEntity";
+        } else if (type.isAnnotationPresent(DomainValueObject.class)) {
+            hasDddAnnotation = true;
+            annotationName = "@DomainValueObject";
+        } else if (type.isAnnotationPresent(DomainGateway.class)) {
+            hasDddAnnotation = true;
+            annotationName = "@DomainGateway";
+        } else if (type.isAnnotationPresent(QueryService.class)) {
+            hasDddAnnotation = true;
+            annotationName = "@QueryService";
+        } else if (type.isAnnotationPresent(CommandExecutor.class)) {
+            hasDddAnnotation = true;
+            annotationName = "@CommandExecutor";
         }
 
         if (hasDddAnnotation) {
