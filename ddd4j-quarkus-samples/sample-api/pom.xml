@@ -15,6 +15,9 @@
 
     <properties>
         <quarkus.package.jar.type>uber-jar</quarkus.package.jar.type>
+        <!-- 跳过 quarkus build（Hibernate 兼容问题），仅编译打包 jar。
+             parent 默认 quarkus.build.skip=false，示例项目覆盖为 true。 -->
+        <quarkus.build.skip>true</quarkus.build.skip>
     </properties>
 
     <dependencies>
@@ -36,20 +39,11 @@
 
     <build>
         <plugins>
-            <!-- 激活 parent pluginManagement 中声明的 build/generate-code/generate-code-tests goals -->
+            <!-- 激活 parent pluginManagement 中声明的 build/generate-code/generate-code-tests goals。
+                 skip 由 quarkus.build.skip 属性控制（本模块覆盖为 true）。 -->
             <plugin>
                 <groupId>io.quarkus.platform</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>build</goal>
-                            <goal>generate-code</goal>
-                            <goal>generate-code-tests</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

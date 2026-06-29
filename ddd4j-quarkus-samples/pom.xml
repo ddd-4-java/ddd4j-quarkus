@@ -11,6 +11,13 @@
     </parent>
     <artifactId>ddd4j-quarkus-samples</artifactId>
     <packaging>pom</packaging>
+    <description>
+        ddd4j-quarkus 示例聚合。示例项目继承 ddd4j-quarkus-parent（含 Panache 等数据层默认依赖），
+        但仅用于演示代码结构与 API 用法，不需构建为可运行 uber-jar。
+        通过 quarkus.build.skip=true 属性统一跳过 quarkus-maven-plugin 的 build goal
+        （Quarkus 3.36.3 + Hibernate ORM 6.6.40 存在 BootLogging.BOOT_LOGGER 字段不兼容）。
+        真实业务项目（如 cloud-das）不受影响，默认 quarkus.build.skip=false。
+    </description>
     <modules>
         <module>sample-api</module>
         <!-- Auth 鉴权示例：演示 SubjectKit 统一鉴权入口（JAX-RS 端点） -->
@@ -18,4 +25,9 @@
         <module>sample-auth-security</module>
         <module>sample-auth-shiro</module>
     </modules>
+
+    <properties>
+        <!-- 示例项目统一跳过 quarkus build（仅编译打包 jar），子模块继承此属性 -->
+        <quarkus.build.skip>true</quarkus.build.skip>
+    </properties>
 </project>

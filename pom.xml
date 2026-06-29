@@ -23,7 +23,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <revision>3.3.x.20260625-SNAPSHOT</revision>
+        <revision>3.3.x.20260630-SNAPSHOT</revision>
         <ddd4j.version>2.0.x.20260630-SNAPSHOT</ddd4j.version>
         <!-- 与 ddd4j 2.0.x 底座保持一致 -->
         <java.version>17</java.version>

@@ -19,6 +19,10 @@
         <docker.skip>true</docker.skip>
         <docker.push.skip>true</docker.push.skip>
 
+        <!-- Quarkus build goal 开关（默认 false，业务项目正常构建 uber-jar）。
+             示例项目（ddd4j-quarkus-samples）覆盖为 true 跳过 Hibernate 增强步骤。 -->
+        <quarkus.build.skip>false</quarkus.build.skip>
+
         <!--
             Maven 插件版本由 ddd4j 仓库根 pom 统一管理（maven-compiler / enforcer / surefire /
             failsafe / source / jar / resources / install / deploy / exec / git-commit-id /
@@ -208,12 +212,17 @@
                     时自动获得，无需在此重复声明。
                 -->
 
-                <!-- Quarkus 构建：生成代码 + 打包 + 测试代码生成 -->
+                <!-- Quarkus 构建：生成代码 + 打包 + 测试代码生成。
+                     通过 quarkus.build.skip 属性控制是否执行 build goal（默认 false，业务项目正常构建）。
+                     示例项目（ddd4j-quarkus-samples）覆盖为 true，跳过 Hibernate 增强步骤。 -->
                 <plugin>
                     <groupId>io.quarkus.platform</groupId>
                     <artifactId>quarkus-maven-plugin</artifactId>
                     <version>${quarkus-bom.version}</version>
                     <extensions>true</extensions>
+                    <configuration>
+                        <skip>${quarkus.build.skip}</skip>
+                    </configuration>
                     <executions>
                         <execution>
                             <goals>
