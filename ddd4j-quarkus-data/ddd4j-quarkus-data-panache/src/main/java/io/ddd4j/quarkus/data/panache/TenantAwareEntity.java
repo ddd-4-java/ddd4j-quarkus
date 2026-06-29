@@ -1,4 +1,4 @@
-package io.ddd4j.quarkus.data;
+package io.ddd4j.quarkus.data.panache;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.ddd4j.core.contract.Page;

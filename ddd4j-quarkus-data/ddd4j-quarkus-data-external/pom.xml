@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.ddd4j.quarkus</groupId>
+        <artifactId>ddd4j-quarkus-data</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>ddd4j-quarkus-data-external</artifactId>
+    <description>
+        ddd4j-quarkus 数据层 - 外部服务 CDI 桥接：
+        复用 ddd4j-data-external 的 Template 实现（地理位置/天气/行政区划），
+        通过 CDI Bean 暴露 RestClient + Redis 依赖的 Template。
+        注意：external 深度依赖 Spring RestClient/RedisOperationTemplate，Quarkus 端需自行适配为 Vert.x HttpClient。
+    </description>
+
+    <dependencies>
+        <!-- ddd4j 数据层外部服务 -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-data-external</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+        <!-- Quarkus CDI -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

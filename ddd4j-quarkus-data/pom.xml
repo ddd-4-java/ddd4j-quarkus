@@ -10,41 +10,24 @@
         <relativePath>../ddd4j-quarkus-parent/pom.xml</relativePath>
     </parent>
     <artifactId>ddd4j-quarkus-data</artifactId>
+    <packaging>pom</packaging>
     <description>
-        ddd4j 数据层在 Quarkus 轨道的桥接层。
-        复用 ddd4j-data 的契约（Repository/TypeHandlerRegistry SPI 已收敛到 ddd4j-core），
-        提供 Panache 多租户实体基类、雪花 ID 生成器、查询构建辅助。
-        业务项目通过本模块引入 ddd4j 数据能力 + Quarkus Panache ORM。
+        ddd4j 数据层在 Quarkus 轨道的桥接聚合。
+        参照 ddd4j-data 多模块范式，按子领域拆分：
+        - panache（Panache 多租户实体基类 + 雪花 ID + 查询辅助）
+        - crypto（加解密策略 CDI 桥接）
+        - logs（API 操作日志 CDI 桥接）
+        - external（外部服务 CDI 桥接）
+        - datascope（数据权限 CDI 桥接）
+        复用 ddd4j-data 各子模块的纯 Java 实现，本层提供 CDI Bean / Quarkus 扩展桥接。
     </description>
 
-    <dependencies>
-        <!-- ddd4j 底座核心契约（含 Repository/TypeHandlerRegistry SPI） -->
-        <dependency>
-            <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-core</artifactId>
-        </dependency>
-        <!-- Quarkus 核心 -->
-        <dependency>
-            <groupId>io.ddd4j.quarkus</groupId>
-            <artifactId>ddd4j-quarkus-core</artifactId>
-        </dependency>
-        <!-- Quarkus Panache ORM -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-hibernate-orm-panache</artifactId>
-        </dependency>
-        <!-- Quarkus CDI -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-arc</artifactId>
-        </dependency>
-    </dependencies>
-
-    <!--
-        ddd4j-data-mybatis / ddd4j-data-crypto / ddd4j-data-external / ddd4j-data-logs / ddd4j-data-datascope
-        均为 Spring 强耦合实现（@Autowired / @ControllerAdvice / spring-boot-starter），
-        不能直接被 Quarkus 复用。
-        业务项目如需这些能力，请在 Quarkus 端通过 CDI Bean 自行适配。
-    -->
+    <modules>
+        <module>ddd4j-quarkus-data-panache</module>
+        <module>ddd4j-quarkus-data-crypto</module>
+        <module>ddd4j-quarkus-data-logs</module>
+        <module>ddd4j-quarkus-data-external</module>
+        <module>ddd4j-quarkus-data-datascope</module>
+    </modules>
 
 </project>

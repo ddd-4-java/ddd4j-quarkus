@@ -1,4 +1,4 @@
-package io.ddd4j.quarkus.data;
+package io.ddd4j.quarkus.data.panache;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;

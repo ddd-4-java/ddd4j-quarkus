@@ -1,4 +1,4 @@
-package io.ddd4j.quarkus.data;
+package io.ddd4j.quarkus.data.panache;
 
 import java.io.Serializable;
 import java.util.Objects;

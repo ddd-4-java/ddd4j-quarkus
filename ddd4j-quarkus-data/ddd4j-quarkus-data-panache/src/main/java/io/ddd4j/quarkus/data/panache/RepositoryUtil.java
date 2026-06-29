@@ -1,4 +1,4 @@
-package io.ddd4j.quarkus.data;
+package io.ddd4j.quarkus.data.panache;
 
 import io.quarkus.panache.common.Sort;
 import java.util.ArrayList;
