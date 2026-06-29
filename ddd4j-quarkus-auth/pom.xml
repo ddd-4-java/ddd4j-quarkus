@@ -13,14 +13,15 @@
     <artifactId>ddd4j-quarkus-auth</artifactId>
     <packaging>pom</packaging>
     <description>
-        ddd4j-quarkus 认证授权整合聚合：satoken / security / shiro 三鉴权与 Quarkus CDI 深度整合。
-        底层复用 io.ddd4j:ddd4j-auth-* 纯 Java 实现，本层提供 CDI Bean、Quarkus ExceptionMapper。
+        ddd4j-quarkus 认证授权整合聚合：satoken / security / shiro / jwt 四鉴权与 Quarkus CDI 深度整合。
+        底层复用 io.ddd4j:ddd4j-auth-* 纯 Java 实现（jwt 为无状态验证型，直接基于 SmallRye JWT），本层提供 CDI Bean、Quarkus ExceptionMapper。
     </description>
 
     <modules>
         <module>ddd4j-quarkus-auth-satoken</module>
         <module>ddd4j-quarkus-auth-security</module>
         <module>ddd4j-quarkus-auth-shiro</module>
+        <module>ddd4j-quarkus-auth-jwt</module>
     </modules>
 
 </project>

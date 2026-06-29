@@ -31,7 +31,7 @@ public class CdiDomainEventPublisher implements DomainEventPublisher {
             logger.warn("Attempted to publish null domain event");
             return;
         }
-        logger.debugf("Publishing domain event: %s, aggregateId: %s", event.getEventType(), event.getAggregateId());
+        logger.debugf("Publishing domain event: %s", event.getClass().getSimpleName());
         eventBus.fire(event);
     }
 

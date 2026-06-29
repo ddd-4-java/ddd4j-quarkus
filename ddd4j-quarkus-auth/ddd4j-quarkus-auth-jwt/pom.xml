@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.ddd4j.quarkus</groupId>
+        <artifactId>ddd4j-quarkus-auth</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ddd4j-quarkus-auth-jwt</artifactId>
+    <description>
+        ddd4j-quarkus + SmallRye JWT 整合：无状态 JWT 认证场景的 SubjectProvider CDI 实现。
+        适配 cloud-das 这类「SmallRye JWT（PEM 公私钥）+ @RolesAllowed + HTTP Header 多租户」技术栈，
+        解锁 ddd4j Subject API（SubjectKit.getSubject()）在纯 JWT 模式下的可用性。
+        与 satoken/security/shiro 三鉴权互斥，按需引入其一。
+    </description>
+
+    <dependencies>
+        <!-- ddd4j core（Subject / SubjectProvider / SubjectKit / AuthPrincipal） -->
+                <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-core</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+        <!-- Quarkus CDI -->
+                <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
+        <!-- SmallRye JWT：JsonWebToken Bean + JWT 验证（mp.jwt.verify.*） -->
+                <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-jwt</artifactId>
+        </dependency>
+        <!-- Vert.x HttpServerRequest：从请求头解析 tenantId/uid（多租户场景） -->
+                <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-vertx</artifactId>
+        </dependency>
+        <!-- Jakarta REST（ExceptionMapper 需要） -->
+                <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

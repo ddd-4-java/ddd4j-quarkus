@@ -33,9 +33,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  * @since 2.0.x
  */
-@Slf4j(topic = "### DDD4J-QUARKUS : CommandBus ###")
 @ApplicationScoped
 public class QuarkusCommandBus {
+
+    private static final Logger log = Logger.getLogger("### DDD4J-QUARKUS : CommandBus ###");
 
     private final Map<Class<? extends Command>, CommandExecutor<Void, Result<?>, ?>> executorMap = new ConcurrentHashMap<>();
 
@@ -87,12 +88,13 @@ public class QuarkusCommandBus {
         }
 
         try {
-            return (Result<R>) executor.execute(null, command);
-        } catch (AggregateVersionConflictException | AggregateNotFoundException
-                | AggregateVersionNotFoundException | AggregateDeletedException
-                | AggregateAlreadyExistsException e) {
+            @SuppressWarnings({"rawtypes", "unchecked"})
+            Object raw = ((CommandExecutor) executor).execute(null, command);
+            return (Result<R>) raw;
+        } catch (CommandExecutionFailedException e) {
             throw e;
         } catch (Exception e) {
+            // fuinorg 聚合异常（AggregateAlreadyExistsException 等）统一包装为 CommandExecutionFailedException
             throw new CommandExecutionFailedException(e);
         }
     }

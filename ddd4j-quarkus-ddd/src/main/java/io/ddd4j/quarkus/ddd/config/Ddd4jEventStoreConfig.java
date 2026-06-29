@@ -11,6 +11,8 @@ import org.fuin.esc.api.EventStore;
 import org.fuin.esc.mem.InMemoryEventStore;
 import org.jboss.logging.Logger;
 
+import java.util.concurrent.Executors;
+
 /**
  * Quarkus EventStore 自动配置。
  *
@@ -52,14 +54,14 @@ public class Ddd4jEventStoreConfig {
 
         if ("mem".equals(type)) {
             logger.info("Using in-memory EventStore (development/test mode)");
-            return new InMemoryEventStore();
+            return new InMemoryEventStore(Executors.newCachedThreadPool());
         }
 
         // 生产环境：KurrentDB/EventStoreDB
         // 业务项目应自行注入 EventStore Bean
         logger.warnf("EventStore type '%s' not supported by auto-configuration. " +
                 "Please provide your own EventStore bean.", type);
-        return new InMemoryEventStore();
+        return new InMemoryEventStore(Executors.newCachedThreadPool());
     }
 
     void onStart(@Observes StartupEvent event) {

@@ -72,7 +72,82 @@
         </dependency>
                     <dependency>
             <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-data-panache</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-data-crypto</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-data-logs</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-data-external</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-data-datascope</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
             <artifactId>ddd4j-quarkus-web</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-auth-jwt</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-auth-satoken</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-auth-security</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-auth-shiro</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-cache</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-mq-core</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-mq-disruptor</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-mq-sqs</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-mq-nats</artifactId>
+            <version>${revision}</version>
+        </dependency>
+                    <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-mq-ons</artifactId>
             <version>${revision}</version>
         </dependency>
                     <dependency>

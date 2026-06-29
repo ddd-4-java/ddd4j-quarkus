@@ -39,10 +39,10 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
-        <!-- Quarkus RESTEasy（ExceptionMapper） -->
+        <!-- Quarkus REST（ExceptionMapper；3.31+ 原 quarkus-resteasy-reactive-jackson 重命名为 quarkus-rest-jackson） -->
                 <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
+            <artifactId>quarkus-rest-jackson</artifactId>
         </dependency>
     </dependencies>
 

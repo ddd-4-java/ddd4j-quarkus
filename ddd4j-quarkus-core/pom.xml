@@ -23,6 +23,15 @@
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-core</artifactId>
         </dependency>
+        <!-- fuinorg CQRS/DDD4J：QuarkusCommandBus + DddCommandExecutor 依赖 -->
+                <dependency>
+            <groupId>org.fuin.cqrs4j</groupId>
+            <artifactId>cqrs-4-java-core</artifactId>
+        </dependency>
+                <dependency>
+            <groupId>org.fuin.ddd4j</groupId>
+            <artifactId>ddd-4-java-core</artifactId>
+        </dependency>
                 <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
