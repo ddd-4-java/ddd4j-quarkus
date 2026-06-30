@@ -181,19 +181,19 @@
         <profile>
             <id>ddd4j-full</id>
             <dependencies>
-                        <dependency>
-            <groupId>io.ddd4j.quarkus</groupId>
-            <artifactId>ddd4j-quarkus-annotation</artifactId>
+            <dependency>
+                <groupId>io.ddd4j.quarkus</groupId>
+                <artifactId>ddd4j-quarkus-annotation</artifactId>
         </dependency>
-                        <dependency>
+            <dependency>
             <groupId>io.ddd4j.quarkus</groupId>
             <artifactId>ddd4j-quarkus-core</artifactId>
         </dependency>
-                        <dependency>
+            <dependency>
             <groupId>io.ddd4j.quarkus</groupId>
             <artifactId>ddd4j-quarkus-data-panache</artifactId>
         </dependency>
-                        <dependency>
+            <dependency>
             <groupId>io.ddd4j.quarkus</groupId>
             <artifactId>ddd4j-quarkus-web</artifactId>
         </dependency>

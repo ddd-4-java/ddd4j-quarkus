@@ -10,17 +10,50 @@
         <relativePath>../ddd4j-quarkus-parent/pom.xml</relativePath>
     </parent>
     <artifactId>ddd4j-quarkus-annotation</artifactId>
-    <description>Quarkus 轨注解模块，依赖 ddd4j-annotation 并预留 CDI 扩展</description>
+    <description>Quarkus 轨注解兼容桥接模块，实际实现已收敛到 io.ddd4j:ddd4j-quarkus</description>
     <dependencies>
-                <dependency>
+        <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-annotation</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>add-converged-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/../../ddd4j/ddd4j-quarkus/src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>io/ddd4j/quarkus/annotation/**/*.java</include>
+                        <include>io/ddd4j/quarkus/annotation/package-info.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

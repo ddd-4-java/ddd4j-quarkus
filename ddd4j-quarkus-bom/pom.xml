@@ -49,8 +49,13 @@
             <version>${ddd4j.version}</version>
         </dependency>
 
-            <!-- ddd4j-quarkus 自身模块 -->
-                    <dependency>
+            <!-- ddd4j 与 ddd4j-quarkus 自身模块 -->
+            <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-quarkus</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+            <dependency>
             <groupId>io.ddd4j.quarkus</groupId>
             <artifactId>ddd4j-quarkus-annotation</artifactId>
             <version>${revision}</version>
