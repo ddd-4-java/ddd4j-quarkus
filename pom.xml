@@ -43,7 +43,6 @@
     <modules>
         <module>ddd4j-quarkus-bom</module>
         <module>ddd4j-quarkus-dependencies</module>
-        <module>ddd4j-quarkus-annotation</module>
         <module>ddd4j-quarkus-core</module>
         <module>ddd4j-quarkus-ddd</module>
         <module>ddd4j-quarkus-data</module>

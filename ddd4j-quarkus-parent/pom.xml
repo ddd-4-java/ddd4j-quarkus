@@ -170,7 +170,7 @@
             启用方式：mvn -Pddd4j-full ... 或在业务项目 <activation> 中默认启用。
 
             引入的推荐组合：
-              - ddd4j-quarkus-annotation : DDD 构造型注解（@ApplicationService/@DomainService/...）
+              - ddd4j-quarkus            : DDD 构造型注解（@ApplicationService/@DomainService/...）
               - ddd4j-quarkus-core       : 核心 SPI（Subject/I18n/DomainEvent）CDI 桥接
               - ddd4j-quarkus-data-panache : 多租户 Panache 实体基类 + 查询构建 + ID 生成
               - ddd4j-quarkus-web        : JAX-RS 资源基类 + 全局异常映射 + 访问日志
@@ -181,9 +181,9 @@
         <profile>
             <id>ddd4j-full</id>
             <dependencies>
-            <dependency>
-                <groupId>io.ddd4j.quarkus</groupId>
-                <artifactId>ddd4j-quarkus-annotation</artifactId>
+                <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-quarkus</artifactId>
         </dependency>
             <dependency>
             <groupId>io.ddd4j.quarkus</groupId>

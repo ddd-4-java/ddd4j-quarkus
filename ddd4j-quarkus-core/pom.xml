@@ -15,8 +15,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.ddd4j.quarkus</groupId>
-            <artifactId>ddd4j-quarkus-annotation</artifactId>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-quarkus</artifactId>
         </dependency>
         <!-- 使用纯 Java 的 ddd4j-core 模块 -->
                 <dependency>

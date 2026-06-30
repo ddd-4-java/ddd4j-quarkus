@@ -21,8 +21,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.ddd4j.quarkus</groupId>
-            <artifactId>ddd4j-quarkus-annotation</artifactId>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-quarkus</artifactId>
         </dependency>
         <dependency>
             <groupId>io.ddd4j.quarkus</groupId>

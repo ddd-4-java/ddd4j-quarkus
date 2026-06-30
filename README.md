@@ -9,7 +9,7 @@ Quarkus 轨道的 ddd4j 平台，与 `ddd4j-boot` 对称，**不继承 Spring Bo
 | `ddd4j-quarkus-dependencies` | `quarkus-bom` + `ddd4j-platform-dependencies` |
 | `ddd4j-quarkus-bom` | Quarkus 模块版本 |
 | `ddd4j-quarkus-parent` | 业务 parent（插件、Jakarta 基础依赖） |
-| `ddd4j-quarkus-annotation` | CDI 构造型 |
+| `io.ddd4j:ddd4j-quarkus` | CDI 构造型 |
 | `ddd4j-quarkus-core` | 请求上下文等 |
 | `ddd4j-quarkus-ddd` | fuinorg DDD/CQRS |
 | `ddd4j-quarkus-data/web/mq/monitor` | Phase 2+ 桩模块 |

@@ -22,8 +22,8 @@
     <dependencies>
         <!-- ddd4j-quarkus 注解（DDD 注解同名复制 + CDI 元注解融合） -->
         <dependency>
-            <groupId>io.ddd4j.quarkus</groupId>
-            <artifactId>ddd4j-quarkus-annotation</artifactId>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-quarkus</artifactId>
         </dependency>
         <!-- ddd4j-quarkus auth sa-token 适配 -->
         <dependency>
