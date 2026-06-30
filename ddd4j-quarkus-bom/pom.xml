@@ -97,11 +97,6 @@
         </dependency>
                     <dependency>
             <groupId>io.ddd4j.quarkus</groupId>
-            <artifactId>ddd4j-quarkus-web</artifactId>
-            <version>${revision}</version>
-        </dependency>
-                    <dependency>
-            <groupId>io.ddd4j.quarkus</groupId>
             <artifactId>ddd4j-quarkus-auth-jwt</artifactId>
             <version>${revision}</version>
         </dependency>

@@ -10,7 +10,7 @@ import jakarta.ws.rs.ext.Provider;
  * SmallRye JWT 验证异常映射器：将 JWT 解析/验证异常转为统一 401 响应。
  *
  * <p>对标 satoken/security/shiro 三鉴权的 ExceptionMapper，覆盖 JWT 模式的 401 场景。
- * 响应体格式：{@code {"code":401,"msg":"..."}}，与 ddd4j-quarkus-web 的 {@code R.fail} 风格一致。
+ * 响应体格式：{@code {"code":401,"msg":"..."}}，与 {@code io.ddd4j:ddd4j-web-quarkus} 的 {@code R.fail} 风格一致。
  *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  * @since 3.3.x

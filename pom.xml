@@ -43,11 +43,12 @@
     <modules>
         <module>ddd4j-quarkus-bom</module>
         <module>ddd4j-quarkus-dependencies</module>
+        <!-- Quarkus 深度适配层：对齐 ddd4j-boot，保留 core/ddd 聚合模块，不走大规模删除策略 -->
         <module>ddd4j-quarkus-core</module>
         <module>ddd4j-quarkus-ddd</module>
+        <!-- 领域聚合（对齐 ddd4j-boot 结构） -->
         <module>ddd4j-quarkus-data</module>
         <module>ddd4j-quarkus-cache</module>
-        <module>ddd4j-quarkus-web</module>
         <module>ddd4j-quarkus-mq</module>
         <module>ddd4j-quarkus-monitor</module>
         <module>ddd4j-quarkus-auth</module>

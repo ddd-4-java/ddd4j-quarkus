@@ -11,7 +11,10 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-ddd</artifactId>
-    <description>fuinorg DDD/CQRS 契约聚合（无 Spring）</description>
+    <description>
+        ddd4j-quarkus DDD 深度适配层：集成 fuinorg DDD/CQRS/EventStore，并作为 Quarkus 轨的 DDD 聚合入口。
+        通用运行时能力优先复用 io.ddd4j:ddd4j-quarkus，本模块保留 Quarkus 轨道的整合语义与依赖编排职责。
+    </description>
 
     <dependencies>
                 <dependency>

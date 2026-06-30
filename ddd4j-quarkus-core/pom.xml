@@ -11,7 +11,10 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-core</artifactId>
-    <description>Quarkus 核心：RequestContext，复用 ddd4j-core（纯 Java）</description>
+    <description>
+        ddd4j-quarkus 核心深度适配层：对外保留 Quarkus 轨 core 模块形态，底层复用 io.ddd4j:ddd4j-quarkus
+        通用适配实现，并承载 Quarkus 轨特有的聚合式装配入口。
+    </description>
 
     <dependencies>
         <dependency>

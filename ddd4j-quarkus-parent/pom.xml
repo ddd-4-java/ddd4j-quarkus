@@ -167,13 +167,14 @@
 
         <!--
             ddd4j-full profile：一键引入 ddd4j Quarkus 轨道推荐模块组合，开箱即用 ddd4j 能力。
+            本仓定位对齐 ddd4j-boot：作为 Quarkus 深度适配聚合层，保留 core/ddd/auth/data/mq/cache 等模块边界。
             启用方式：mvn -Pddd4j-full ... 或在业务项目 <activation> 中默认启用。
 
             引入的推荐组合：
               - ddd4j-quarkus            : DDD 构造型注解（@ApplicationService/@DomainService/...）
               - ddd4j-quarkus-core       : 核心 SPI（Subject/I18n/DomainEvent）CDI 桥接
               - ddd4j-quarkus-data-panache : 多租户 Panache 实体基类 + 查询构建 + ID 生成
-              - ddd4j-quarkus-web        : JAX-RS 资源基类 + 全局异常映射 + 访问日志
+              - Web 模块已迁入主仓 io.ddd4j:ddd4j-web-quarkus（不再由本仓 profile 自动引入）
 
             需要额外能力（MQ/DDD/Auth/Cache）时，业务项目按需在自身 dependencies 中追加对应模块。
             版本由 ddd4j-quarkus-bom 统一管理，无需在此声明 version。
@@ -192,10 +193,6 @@
             <dependency>
             <groupId>io.ddd4j.quarkus</groupId>
             <artifactId>ddd4j-quarkus-data-panache</artifactId>
-        </dependency>
-            <dependency>
-            <groupId>io.ddd4j.quarkus</groupId>
-            <artifactId>ddd4j-quarkus-web</artifactId>
         </dependency>
             </dependencies>
         </profile>
