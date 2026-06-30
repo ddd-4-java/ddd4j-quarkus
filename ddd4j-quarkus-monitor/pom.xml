@@ -11,5 +11,9 @@
     </parent>
     <artifactId>ddd4j-quarkus-monitor</artifactId>
     <packaging>pom</packaging>
-    <description>SmallRye Health + 告警（Phase 2 实现）</description>
+    <description>
+        ddd4j-quarkus 监控告警深度适配聚合。
+        对齐 ddd4j-boot extension/monitor 的扩展定位，保留 SmallRye Health、Metrics、告警等 Quarkus 原生适配边界。
+        当前作为后续实现承载模块，不通过删除模块来收窄 ddd4j-quarkus 的深度适配结构。
+    </description>
 </project>

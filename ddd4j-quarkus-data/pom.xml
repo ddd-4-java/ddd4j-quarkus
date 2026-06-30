@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <description>
         ddd4j 数据层在 Quarkus 轨道的桥接聚合。
+        对齐 ddd4j-boot-data 的深度适配边界；Quarkus 轨道以 Panache 承接 ORM 适配，不直接复制 Spring/MyBatis 适配形态。
         参照 ddd4j-data 多模块范式，按子领域拆分：
         - panache（Panache 多租户实体基类 + 雪花 ID + 查询辅助）
         - crypto（加解密策略 CDI 桥接）
