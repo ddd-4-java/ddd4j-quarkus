@@ -32,13 +32,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @ApplicationScoped
 public class QuarkusViewScheduler implements ViewScheduler {
 
-    private static final Logger logger = Logger.getLogger(QuarkusViewScheduler.class);
-
     /**
      * JobDataMap 中携带 Runnable 的键。
      */
     static final String TASK_KEY = "ddd4j.task";
-
+    private static final Logger logger = Logger.getLogger(QuarkusViewScheduler.class);
     @Inject
     Scheduler scheduler;
 

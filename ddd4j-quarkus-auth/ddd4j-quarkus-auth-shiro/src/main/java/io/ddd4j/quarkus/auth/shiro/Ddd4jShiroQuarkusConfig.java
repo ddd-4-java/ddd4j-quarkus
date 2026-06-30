@@ -44,8 +44,8 @@ public class Ddd4jShiroQuarkusConfig {
         @Override
         public Response toResponse(AuthenticationException ex) {
             return Response.status(Response.Status.UNAUTHORIZED)
-                .entity(Map.of("code", 401, "msg", "未登录或登录已过期"))
-                .build();
+                    .entity(Map.of("code", 401, "msg", "未登录或登录已过期"))
+                    .build();
         }
     }
 
@@ -58,8 +58,8 @@ public class Ddd4jShiroQuarkusConfig {
         @Override
         public Response toResponse(AuthorizationException ex) {
             return Response.status(Response.Status.FORBIDDEN)
-                .entity(Map.of("code", 403, "msg", "无权限访问"))
-                .build();
+                    .entity(Map.of("code", 403, "msg", "无权限访问"))
+                    .build();
         }
     }
 

@@ -10,14 +10,14 @@ Quarkus 轨道的 ddd4j 平台，与 `ddd4j-boot` 对称，**不继承 Spring Bo
 
 ## 模块
 
-| 模块 | 说明 |
-|------|------|
-| `ddd4j-quarkus-dependencies` | `quarkus-bom` + `ddd4j-platform-dependencies` |
-| `ddd4j-quarkus-bom` | Quarkus 模块版本 |
-| `ddd4j-quarkus-parent` | 业务 parent（插件、Jakarta 基础依赖） |
-| `io.ddd4j:ddd4j-quarkus` | 主仓通用 Quarkus 适配底座（注解、CDI、CQRS、EventStore 通用能力） |
-| `ddd4j-quarkus-ddd` | Quarkus DDD 深度适配聚合 |
-| `ddd4j-quarkus-data/cache/auth/mq/monitor` | Quarkus 轨业务域深度适配聚合 |
+| 模块                                         | 说明                                             |
+|--------------------------------------------|------------------------------------------------|
+| `ddd4j-quarkus-dependencies`               | `quarkus-bom` + `ddd4j-platform-dependencies`  |
+| `ddd4j-quarkus-bom`                        | Quarkus 模块版本                                   |
+| `ddd4j-quarkus-parent`                     | 业务 parent（插件、Jakarta 基础依赖）                     |
+| `io.ddd4j:ddd4j-quarkus`                   | 主仓通用 Quarkus 适配底座（注解、CDI、CQRS、EventStore 通用能力） |
+| `ddd4j-quarkus-ddd`                        | Quarkus DDD 深度适配聚合                             |
+| `ddd4j-quarkus-data/cache/auth/mq/monitor` | Quarkus 轨业务域深度适配聚合                             |
 
 ## 构建顺序
 

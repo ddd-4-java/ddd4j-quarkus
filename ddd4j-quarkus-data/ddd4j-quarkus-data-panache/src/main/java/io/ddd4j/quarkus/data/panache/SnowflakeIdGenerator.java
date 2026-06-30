@@ -3,6 +3,7 @@ package io.ddd4j.quarkus.data.panache;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.IdentifierGenerator;
+
 import java.io.Serializable;
 import java.net.NetworkInterface;
 import java.security.SecureRandom;
@@ -43,6 +44,31 @@ public class SnowflakeIdGenerator implements IdentifierGenerator {
         return INSTANCE.generateId();
     }
 
+    private static long timestamp() {
+        return Instant.now().toEpochMilli() - CUSTOM_EPOCH;
+    }
+
+    private static int createNodeId() {
+        int nodeId;
+        try {
+            StringBuilder sb = new StringBuilder();
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (networkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = networkInterfaces.nextElement();
+                byte[] mac = networkInterface.getHardwareAddress();
+                if (mac != null) {
+                    for (byte b : mac) {
+                        sb.append(String.format("%02X", b));
+                    }
+                }
+            }
+            nodeId = sb.toString().hashCode();
+        } catch (Exception ex) {
+            nodeId = new SecureRandom().nextInt();
+        }
+        return nodeId & MAX_NODE_ID;
+    }
+
     @Override
     public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
         return generateId();
@@ -68,35 +94,10 @@ public class SnowflakeIdGenerator implements IdentifierGenerator {
         return id;
     }
 
-    private static long timestamp() {
-        return Instant.now().toEpochMilli() - CUSTOM_EPOCH;
-    }
-
     private long waitNextMillis(long currentTimestamp) {
         while (currentTimestamp == lastTimestamp) {
             currentTimestamp = timestamp();
         }
         return currentTimestamp;
-    }
-
-    private static int createNodeId() {
-        int nodeId;
-        try {
-            StringBuilder sb = new StringBuilder();
-            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-            while (networkInterfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = networkInterfaces.nextElement();
-                byte[] mac = networkInterface.getHardwareAddress();
-                if (mac != null) {
-                    for (byte b : mac) {
-                        sb.append(String.format("%02X", b));
-                    }
-                }
-            }
-            nodeId = sb.toString().hashCode();
-        } catch (Exception ex) {
-            nodeId = new SecureRandom().nextInt();
-        }
-        return nodeId & MAX_NODE_ID;
     }
 }

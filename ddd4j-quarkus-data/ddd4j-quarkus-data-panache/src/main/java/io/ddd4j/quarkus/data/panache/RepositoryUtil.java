@@ -1,6 +1,7 @@
 package io.ddd4j.quarkus.data.panache;
 
 import io.quarkus.panache.common.Sort;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

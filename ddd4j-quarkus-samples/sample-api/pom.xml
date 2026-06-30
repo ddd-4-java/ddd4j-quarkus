@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -21,17 +21,17 @@
     </properties>
 
     <dependencies>
-        <!-- 业务演示：演示 ddd4j-quarkus-core 的 RequestContext + ddd4j-core 的 R 统一响应 -->
-                <dependency>
-            <groupId>io.ddd4j.quarkus</groupId>
-            <artifactId>ddd4j-quarkus-core</artifactId>
+        <!-- 业务演示：演示 io.ddd4j:ddd4j-quarkus 的 Quarkus 核心适配 + ddd4j-core 的 R 统一响应 -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-quarkus</artifactId>
         </dependency>
         <!-- REST 实现：Quarkus 3 默认使用 quarkus-rest（与 resteasy 互斥） -->
-                <dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest</artifactId>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest-jackson</artifactId>
         </dependency>

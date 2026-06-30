@@ -48,8 +48,8 @@ public class Ddd4jSaTokenQuarkusConfig {
         @Override
         public Response toResponse(SaTokenException ex) {
             return Response.status(Response.Status.UNAUTHORIZED)
-                .entity(Map.of("code", ex.getCode(), "msg", ex.getMessage()))
-                .build();
+                    .entity(Map.of("code", ex.getCode(), "msg", ex.getMessage()))
+                    .build();
         }
     }
 

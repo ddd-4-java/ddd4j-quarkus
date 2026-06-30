@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -14,7 +14,8 @@
     <packaging>pom</packaging>
     <description>
         ddd4j-quarkus 认证授权整合聚合：satoken / security / shiro / jwt 四鉴权与 Quarkus CDI 深度整合。
-        底层复用 io.ddd4j:ddd4j-auth-* 纯 Java 实现（jwt 为无状态验证型，直接基于 SmallRye JWT），本层提供 CDI Bean、Quarkus ExceptionMapper。
+        底层复用 io.ddd4j:ddd4j-auth-* 纯 Java 实现（jwt 为无状态验证型，直接基于 SmallRye JWT），本层提供 CDI Bean、Quarkus
+        ExceptionMapper。
         对齐 ddd4j-boot-auth 的深度适配定位；license 属于后续 Quarkus 轨道扩展点，当前不通过删除模块来收窄边界。
     </description>
 

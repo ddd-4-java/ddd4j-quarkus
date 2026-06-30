@@ -34,7 +34,7 @@ import java.util.Map;
  * <h2>使用示例（对标 cloud-das 的 UserAssetBaseEntity 四字段主键）</h2>
  * <pre>{@code
  * @Entity
- * @IdClass(UserAssetId.class)   // 业务自定义四字段主键类
+ * @IdClass(UserAssetId.class) // 业务自定义四字段主键类
  * public class UserAsset extends TenantAwareEntityBase {
  *
  *     @Id

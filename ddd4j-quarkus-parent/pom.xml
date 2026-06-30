@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -49,96 +49,96 @@
                - 新项目（推荐）：在 pom.xml 中添加 quarkus-rest + quarkus-rest-jackson
                - 遗留项目：在 pom.xml 中添加 quarkus-resteasy + quarkus-resteasy-jackson
              parent 提供 legacy-resteasy profile，启用后自动注入经典 resteasy（通过 -Plegacy-resteasy）。 -->
-                <dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
 
         <!-- Web 周边：API 文档 / 健康检查 / JWT / 容错 -->
-                <dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-openapi</artifactId>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-health</artifactId>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-jwt</artifactId>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
         </dependency>
 
         <!-- 数据 / 事务 -->
-                <dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-orm-panache</artifactId>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-narayana-jta</artifactId>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jdbc-mysql</artifactId>
         </dependency>
 
         <!-- 调度 -->
-                <dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-quartz</artifactId>
         </dependency>
 
         <!-- 业务通用：Excel 导入导出 -->
-                <dependency>
+        <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>easyexcel</artifactId>
         </dependency>
 
         <!-- Jakarta API -->
-                <dependency>
+        <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
         </dependency>
 
         <!-- 日志 / 工具 -->
-                <dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <!-- Test -->
-                <dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
             <scope>test</scope>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
@@ -154,14 +154,14 @@
         <profile>
             <id>legacy-resteasy</id>
             <dependencies>
-                        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy</artifactId>
-        </dependency>
-                        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-jackson</artifactId>
-        </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-resteasy</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-resteasy-jackson</artifactId>
+                </dependency>
             </dependencies>
         </profile>
 
@@ -183,13 +183,13 @@
             <id>ddd4j-full</id>
             <dependencies>
                 <dependency>
-                <groupId>io.ddd4j</groupId>
-                <artifactId>ddd4j-quarkus</artifactId>
-        </dependency>
-            <dependency>
-            <groupId>io.ddd4j.quarkus</groupId>
-            <artifactId>ddd4j-quarkus-data-panache</artifactId>
-        </dependency>
+                    <groupId>io.ddd4j</groupId>
+                    <artifactId>ddd4j-quarkus</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.ddd4j.quarkus</groupId>
+                    <artifactId>ddd4j-quarkus-data-panache</artifactId>
+                </dependency>
             </dependencies>
         </profile>
     </profiles>
@@ -273,7 +273,9 @@
                         <skipPush>${docker.push.skip}</skipPush>
                         <images>
                             <image>
-                                <name>${docker.registry.host:registry.ddd4j.io}/${project.artifactId}:${project.version}</name>
+                                <name>
+                                    ${docker.registry.host:registry.ddd4j.io}/${project.artifactId}:${project.version}
+                                </name>
                                 <build>
                                     <dockerFile>${project.basedir}/Dockerfile</dockerFile>
                                 </build>
