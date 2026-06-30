@@ -43,8 +43,7 @@
     <modules>
         <module>ddd4j-quarkus-bom</module>
         <module>ddd4j-quarkus-dependencies</module>
-        <!-- Quarkus 深度适配层：对齐 ddd4j-boot，保留 core/ddd 聚合模块，不走大规模删除策略 -->
-        <module>ddd4j-quarkus-core</module>
+        <!-- Quarkus 深度适配层：核心运行时已收敛到 io.ddd4j:ddd4j-quarkus，保留 ddd/auth/data/mq/cache 等深度适配模块 -->
         <module>ddd4j-quarkus-ddd</module>
         <!-- 领域聚合（对齐 ddd4j-boot 结构） -->
         <module>ddd4j-quarkus-data</module>
