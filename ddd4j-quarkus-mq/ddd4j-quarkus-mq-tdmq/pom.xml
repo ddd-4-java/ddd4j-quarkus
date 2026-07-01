@@ -18,5 +18,10 @@
             <groupId>io.ddd4j.quarkus</groupId>
             <artifactId>ddd4j-quarkus-mq-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-mq-tdmq</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
     </dependencies>
 </project>
