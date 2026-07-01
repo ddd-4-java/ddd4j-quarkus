@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -128,14 +129,14 @@ public class QuarkusMQListenerRegistrar {
         Set<Bean<?>> beans = beanManager.getBeans(Object.class);
         for (Bean<?> bean : beans) {
             Class<?> beanClass = bean.getBeanClass();
-            if (beanClass == null || beanClass.isSynthetic()) {
+            if (Objects.isNull(beanClass) || beanClass.isSynthetic()) {
                 continue;
             }
             for (Method method : beanClass.getDeclaredMethods()) {
                 MQEventListener ann = method.getAnnotation(MQEventListener.class);
-                if (ann != null) {
+                if (Objects.nonNull(ann)) {
                     Object instance = resolveBeanInstance(bean);
-                    if (instance != null) {
+                    if (Objects.nonNull(instance)) {
                         definitions.add(MQListenerDefinition.from(instance, method, ann));
                     }
                 }
@@ -188,7 +189,7 @@ public class QuarkusMQListenerRegistrar {
                             }
                         });
             } catch (Exception ex) {
-                if (properties.getConsumer() != null
+                if (Objects.nonNull(properties.getConsumer())
                         && properties.getConsumer().isManualAck()
                         && !effectiveAck.isAcknowledged()) {
                     effectiveAck.requeue();
@@ -208,10 +209,10 @@ public class QuarkusMQListenerRegistrar {
             MQMessage<?> message,
             MessageAcknowledgment ack) {
         MessageAcknowledgment resolved = adapter.resolveAcknowledgment(message);
-        if (resolved != null) {
+        if (Objects.nonNull(resolved)) {
             return resolved;
         }
-        return ack != null ? ack : new NoOpMessageAcknowledgment();
+        return Objects.nonNull(ack) ? ack : new NoOpMessageAcknowledgment();
     }
 
     /**

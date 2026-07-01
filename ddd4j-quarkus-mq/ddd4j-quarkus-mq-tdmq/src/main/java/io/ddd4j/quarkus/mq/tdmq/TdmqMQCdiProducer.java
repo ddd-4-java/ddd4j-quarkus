@@ -7,6 +7,7 @@ import io.ddd4j.mq.tdmq.client.TdmqClient;
 import io.ddd4j.mq.tdmq.client.TdmqClientPlaceholder;
 import io.ddd4j.mq.tdmq.spi.TdmqMQBrokerAdapter;
 import io.ddd4j.mq.tdmq.spi.TdmqMQProperties;
+import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
@@ -22,6 +23,7 @@ import org.eclipse.microprofile.config.ConfigProvider;
 public class TdmqMQCdiProducer {
 
     @Produces
+    @DefaultBean
     @Singleton
     public TdmqMQProperties tdmqMQProperties() {
         Config config = ConfigProvider.getConfig();
@@ -38,12 +40,14 @@ public class TdmqMQCdiProducer {
     }
 
     @Produces
+    @DefaultBean
     @Singleton
     public TdmqClient tdmqClient() {
         return new TdmqClientPlaceholder();
     }
 
     @Produces
+    @DefaultBean
     @Singleton
     public TdmqMQBrokerAdapter tdmqMQBrokerAdapter(
             TdmqClient tdmqClient,
@@ -54,6 +58,7 @@ public class TdmqMQCdiProducer {
     }
 
     @Produces
+    @DefaultBean
     @Singleton
     public MQEventPublisher tdmqMQEventPublisher(
             TdmqMQBrokerAdapter tdmqMQBrokerAdapter,
