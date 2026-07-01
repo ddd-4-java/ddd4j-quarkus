@@ -1,9 +1,13 @@
 package io.ddd4j.quarkus.auth.satoken;
 
 import cn.dev33.satoken.exception.SaTokenException;
+import cn.dev33.satoken.strategy.SaAnnotationStrategy;
+import io.ddd4j.auth.satoken.handler.SaInternalCheckHandler;
+import io.ddd4j.auth.satoken.handler.SaMixCheckLoginHandler;
 import io.ddd4j.auth.satoken.subject.SaTokenSubjectProvider;
 import io.ddd4j.core.subject.SubjectProvider;
 import io.ddd4j.core.util.SubjectKit;
+import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Singleton;
@@ -20,6 +24,7 @@ import java.util.Map;
  * <ul>
  *   <li>注册 {@link SubjectProvider}（SaTokenSubjectProvider）为 CDI Bean</li>
  *   <li>启动时写回 {@link SubjectKit} 全局注册中心</li>
+ *   <li>启动时注册 ddd4j Sa-Token 扩展注解处理器</li>
  *   <li>提供 Sa-Token 异常的 JAX-RS ExceptionMapper</li>
  * </ul>
  *
@@ -29,6 +34,14 @@ import java.util.Map;
 public class Ddd4jSaTokenQuarkusConfig {
 
     /**
+     * 启动时注册 ddd4j Sa-Token 扩展注解处理器。
+     */
+    void onStart(@Observes StartupEvent event) {
+        SaAnnotationStrategy.instance.registerAnnotationHandler(new SaMixCheckLoginHandler());
+        SaAnnotationStrategy.instance.registerAnnotationHandler(new SaInternalCheckHandler());
+    }
+
+    /**
      * 提供 SubjectProvider CDI Bean，同时写回 SubjectKit。
      */
     @Singleton
@@ -36,6 +49,22 @@ public class Ddd4jSaTokenQuarkusConfig {
         SaTokenSubjectProvider provider = new SaTokenSubjectProvider();
         SubjectKit.register(provider);
         return provider;
+    }
+
+    /**
+     * 多账号混合登录注解处理器。
+     */
+    @Singleton
+    public SaMixCheckLoginHandler saMixCheckLoginHandler() {
+        return new SaMixCheckLoginHandler();
+    }
+
+    /**
+     * 内部服务 API Key 注解处理器。
+     */
+    @Singleton
+    public SaInternalCheckHandler saInternalCheckHandler() {
+        return new SaInternalCheckHandler();
     }
 
     /**
