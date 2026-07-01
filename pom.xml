@@ -49,7 +49,7 @@
         <module>ddd4j-quarkus-data</module>
         <module>ddd4j-quarkus-cache</module>
         <module>ddd4j-quarkus-mq</module>
-        <module>ddd4j-quarkus-monitor</module>
+        <module>ddd4j-quarkus-extensions</module>
         <module>ddd4j-quarkus-auth</module>
         <module>ddd4j-quarkus-parent</module>
         <module>ddd4j-quarkus-samples</module>

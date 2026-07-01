@@ -17,7 +17,8 @@ Quarkus 轨道的 ddd4j 平台，与 `ddd4j-boot` 对称，**不继承 Spring Bo
 | `ddd4j-quarkus-parent`                     | 业务 parent（插件、Jakarta 基础依赖）                     |
 | `io.ddd4j:ddd4j-quarkus`                   | 主仓通用 Quarkus 适配底座（注解、CDI、CQRS、EventStore 通用能力） |
 | `ddd4j-quarkus-ddd`                        | Quarkus DDD 深度适配聚合                             |
-| `ddd4j-quarkus-data/cache/auth/mq/monitor` | Quarkus 轨业务域深度适配聚合                             |
+| `ddd4j-quarkus-data/cache/auth/mq`         | Quarkus 轨业务域深度适配聚合，对齐 boot 的领域模块边界                |
+| `ddd4j-quarkus-extensions`                 | Quarkus 轨跨领域扩展聚合，对齐 boot extensions 中已有底座的扩展模块       |
 
 ## 构建顺序
 
@@ -26,7 +27,7 @@ cd ../ddd4j
 mvn install -DskipTests
 
 cd ../ddd4j-quarkus
-mvn -pl ddd4j-quarkus-samples/sample-api -am clean package -DskipTests
+mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-api -am clean package -DskipTests
 ```
 
 说明：

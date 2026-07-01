@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.ddd4j.quarkus</groupId>
+        <artifactId>ddd4j-quarkus-extensions</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ddd4j-quarkus-extension-monitor</artifactId>
+    <packaging>pom</packaging>
+    <description>
+        ddd4j-quarkus 监控告警扩展适配。
+        对齐 ddd4j-boot-extension-monitor 的扩展定位，保留 SmallRye Health、Metrics、告警等 Quarkus 原生适配边界。
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-extension-monitor</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-health</artifactId>
+        </dependency>
+    </dependencies>
+</project>

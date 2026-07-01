@@ -15,17 +15,26 @@
         ddd4j 消息队列在 Quarkus 轨道的桥接聚合。
         参照 ddd4j-mq 多模块范式：
         - core（MQ 契约 + CDI 桥接）
-        - disruptor / sqs / nats / ons（无 Spring 强耦合的 broker，可直接复用）
-        强 Spring 耦合的 broker（kafka/rabbitmq/rocketmq/pulsar/redis-stream/mqtt/activemq）
-        不直接提供，业务项目通过 SmallRye Reactive Messaging 自行适配。
+        - activemq / disruptor / kafka / mqtt / mqtt-mica / sqs / nats / ons / pulsar / rabbitmq / redis-stream / rocketmq / tdmq
+        对齐 ddd4j-boot-mq 的模块边界；底层优先复用 io.ddd4j:ddd4j-mq-* 纯 Java 能力，Quarkus 侧承载 CDI 与依赖编排。
+        tdmq 当前复用 MQ core 作为 Quarkus 侧扩展入口，避免引入 Spring Boot 自动配置。
     </description>
 
     <modules>
         <module>ddd4j-quarkus-mq-core</module>
+        <module>ddd4j-quarkus-mq-activemq</module>
         <module>ddd4j-quarkus-mq-disruptor</module>
+        <module>ddd4j-quarkus-mq-kafka</module>
+        <module>ddd4j-quarkus-mq-mqtt</module>
+        <module>ddd4j-quarkus-mq-mqtt-mica</module>
         <module>ddd4j-quarkus-mq-sqs</module>
         <module>ddd4j-quarkus-mq-nats</module>
         <module>ddd4j-quarkus-mq-ons</module>
+        <module>ddd4j-quarkus-mq-pulsar</module>
+        <module>ddd4j-quarkus-mq-rabbitmq</module>
+        <module>ddd4j-quarkus-mq-redis-stream</module>
+        <module>ddd4j-quarkus-mq-rocketmq</module>
+        <module>ddd4j-quarkus-mq-tdmq</module>
     </modules>
 
 </project>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.ddd4j.quarkus</groupId>
+        <artifactId>ddd4j-quarkus-mq</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ddd4j-quarkus-mq-tdmq</artifactId>
+    <description>ddd4j-quarkus MQ - tdmq：对齐 boot 模块结构，当前复用 MQ core 作为 Quarkus 侧扩展入口。</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-mq-core</artifactId>
+        </dependency>
+    </dependencies>
+</project>

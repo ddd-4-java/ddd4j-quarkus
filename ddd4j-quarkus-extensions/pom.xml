@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.ddd4j.quarkus</groupId>
+        <artifactId>ddd4j-quarkus-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../ddd4j-quarkus-parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ddd4j-quarkus-extensions</artifactId>
+    <packaging>pom</packaging>
+    <description>
+        ddd4j-quarkus 跨领域扩展聚合。
+        对齐 ddd4j-boot-extensions 的扩展边界，按 Quarkus 原生能力承载 cola、monitor 等扩展适配。
+    </description>
+
+    <modules>
+        <module>ddd4j-quarkus-extension-akka</module>
+        <module>ddd4j-quarkus-extension-cola</module>
+        <module>ddd4j-quarkus-extension-excel</module>
+        <module>ddd4j-quarkus-extension-jackson</module>
+        <module>ddd4j-quarkus-extension-monitor</module>
+        <module>ddd4j-quarkus-extension-pf4j</module>
+        <module>ddd4j-quarkus-extension-qlexpress</module>
+    </modules>
+</project>

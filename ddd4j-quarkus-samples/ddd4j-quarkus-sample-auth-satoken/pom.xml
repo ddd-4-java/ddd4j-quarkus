@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.ddd4j.quarkus</groupId>
+        <artifactId>ddd4j-quarkus-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../../ddd4j-quarkus-parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ddd4j-quarkus-sample-auth-satoken</artifactId>
+    <description>ddd4j-quarkus-auth + sa-token 集成示例：演示 SubjectKit 统一鉴权入口（JAX-RS）</description>
+
+    <properties>
+        <quarkus.package.jar.type>uber-jar</quarkus.package.jar.type>
+        <!-- 跳过 quarkus build（Hibernate 兼容问题），仅编译打包 jar -->
+        <quarkus.build.skip>true</quarkus.build.skip>
+    </properties>
+
+    <dependencies>
+        <!-- ddd4j-quarkus 注解（DDD 注解同名复制 + CDI 元注解融合） -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-quarkus</artifactId>
+        </dependency>
+        <!-- ddd4j-quarkus auth sa-token 适配 -->
+        <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-auth-satoken</artifactId>
+        </dependency>
+        <!-- REST 实现 -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest-jackson</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>generate-code</goal>
+                            <goal>generate-code-tests</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
