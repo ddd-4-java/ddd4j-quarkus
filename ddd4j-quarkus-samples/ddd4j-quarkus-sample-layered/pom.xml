@@ -26,7 +26,7 @@
         </dependency>
         <dependency>
             <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-quarkus</artifactId>
+            <artifactId>ddd4j-runtime-quarkus</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
         <dependency>

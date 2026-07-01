@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-quarkus</artifactId>
+            <artifactId>ddd4j-runtime-quarkus</artifactId>
         </dependency>
         <dependency>
             <groupId>io.ddd4j</groupId>

@@ -21,10 +21,10 @@
     </properties>
 
     <dependencies>
-        <!-- 业务演示：演示 io.ddd4j:ddd4j-quarkus 的 Quarkus 核心适配 + ddd4j-core 的 R 统一响应 -->
+        <!-- 业务演示：演示 io.ddd4j:ddd4j-runtime-quarkus 的 Quarkus 核心适配 + ddd4j-core 的 R 统一响应 -->
         <dependency>
             <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-quarkus</artifactId>
+            <artifactId>ddd4j-runtime-quarkus</artifactId>
         </dependency>
         <!-- REST 实现：Quarkus 3 默认使用 quarkus-rest（与 resteasy 互斥） -->
         <dependency>

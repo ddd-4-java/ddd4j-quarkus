@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Quarkus CQRS 视图调度器：基于 {@code quarkus-quartz} 的 {@link Scheduler} 实现动态 CRON 调度。
  *
- * <p>实现 ddd4j-core 的 {@link ViewScheduler} SPI，对标 ddd4j-spring 的 {@code SpringViewScheduler}。
+ * <p>实现 ddd4j-core 的 {@link ViewScheduler} SPI，对标 ddd4j-runtime-spring 的 {@code SpringViewScheduler}。
  * 与 Quarkus 声明式 {@code @Scheduled}（编译期固定 cron）不同，本实现支持运行时动态注册，
  * 满足 {@link io.ddd4j.core.cqrs.projection.ViewManager} 按视图名注册不同 cron 的需求。
  *

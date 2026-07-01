@@ -94,7 +94,7 @@
             <!-- ddd4j 与 ddd4j-quarkus 自身模块 -->
             <dependency>
                 <groupId>io.ddd4j</groupId>
-                <artifactId>ddd4j-quarkus</artifactId>
+                <artifactId>ddd4j-runtime-quarkus</artifactId>
                 <version>${ddd4j.version}</version>
             </dependency>
             <dependency>

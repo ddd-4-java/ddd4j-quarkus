@@ -11,7 +11,7 @@ import org.jboss.logging.Logger;
 /**
  * Quarkus CQRS 投影拉取服务：周期性从事件流拉取增量事件，更新读模型（投影）。
  *
- * <p>由 {@link io.quarkus.scheduler.Scheduled}（quarkus-quartz）触发，对标 ddd4j-spring 的
+ * <p>由 {@link io.quarkus.scheduler.Scheduled}（quarkus-quartz）触发，对标 ddd4j-runtime-spring 的
  * {@code SpringJpaProjectionService}。每次执行：
  * <ol>
  *   <li>读取各视图当前的 {@link ProjectionPosition}（上次处理到的事件号）</li>
@@ -87,4 +87,3 @@ public class QuarkusJpaProjectionService {
         logger.debugf("pullAndApply for stream '%s' (override me to implement actual projection)", streamId);
     }
 }
-

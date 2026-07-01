@@ -28,7 +28,7 @@
         <!-- Quarkus 核心 -->
         <dependency>
             <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-quarkus</artifactId>
+            <artifactId>ddd4j-runtime-quarkus</artifactId>
         </dependency>
         <!-- Quarkus Panache ORM -->
         <dependency>
