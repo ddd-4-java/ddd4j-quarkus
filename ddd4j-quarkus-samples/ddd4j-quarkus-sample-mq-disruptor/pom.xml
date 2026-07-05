@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.ddd4j.quarkus</groupId>
+        <artifactId>ddd4j-quarkus-samples</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>ddd4j-quarkus-sample-mq-disruptor</artifactId>
+    <description>ddd4j-quarkus Disruptor 本地 MQ 示例：业务发布 DomainEvent → MQ 投递 → @MQEventListener 消费（无外部依赖）</description>
+
+    <dependencies>
+        <!-- ddd4j 核心与注解 -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-core</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-annotation</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-kit</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+
+        <!-- ddd4j Quarkus 运行时绑定 -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-runtime-quarkus</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+
+        <!-- ddd4j MQ 核心 -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-mq-core</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+
+        <!--
+            ddd4j-mq-disruptor：LMAX Disruptor 进程内 RingBuffer 本地 MQ 实现。
+            完全本地、无任何外部 Broker 依赖，最适合作为 sample 演示。
+            切换 Kafka / RabbitMQ 时只需替换此依赖为 ddd4j-mq-kafka / ddd4j-mq-rabbitmq，
+            业务代码、@MQEventListener 调用方式完全无需修改。
+        -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-mq-disruptor</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+
+        <!-- Quarkus RESTEasy Reactive -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-reactive</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                    <skipTests>false</skipTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

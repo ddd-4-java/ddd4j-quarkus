@@ -36,6 +36,10 @@
         <module>ddd4j-quarkus-sample-auth-satoken</module>
         <module>ddd4j-quarkus-sample-auth-security</module>
         <module>ddd4j-quarkus-sample-auth-shiro</module>
+        <!-- MQ 集成示例：业务发布 DomainEvent → MQ 投递 → @MQEventListener 消费，三套实现互为对照 -->
+        <module>ddd4j-quarkus-sample-mq-disruptor</module>
+        <module>ddd4j-quarkus-sample-mq-kafka</module>
+        <module>ddd4j-quarkus-sample-mq-rabbitmq</module>
     </modules>
 
     <properties>
