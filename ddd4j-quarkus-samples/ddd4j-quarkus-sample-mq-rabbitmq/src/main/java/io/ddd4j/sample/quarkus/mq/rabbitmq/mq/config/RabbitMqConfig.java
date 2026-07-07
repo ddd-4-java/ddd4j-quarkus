@@ -1,6 +1,6 @@
 package io.ddd4j.sample.quarkus.mq.rabbitmq.mq.config;
 
-import io.ddd4j.mq.rabbit.RabbitMQProperties;
+import io.ddd4j.mq.rabbitmq.RabbitMQProperties;
 import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
@@ -34,7 +34,7 @@ import org.jboss.logging.Logger;
  *   <li><b>Routing Key</b>（路由键）：{@code <namespace>.<topic>.<tag>}，
  *       例如 {@code quarkus-rabbitmq-sample.ORDER.CREATED}。</li>
  *   <li><b>Binding</b>（绑定）：消费者启动时按 routing key 自动 bind 到 Exchange。</li>
- *   <li><b>ACK 模式</b>：{@code manual}，由 {@link io.ddd4j.mq.rabbit.RabbitMessageAcknowledgment}
+ *   <li><b>ACK 模式</b>：{@code manual}，由 {@link io.ddd4j.mq.rabbitmq.RabbitMessageAcknowledgment}
  *       处理 basicAck / basicNack。</li>
  * </ul>
  *

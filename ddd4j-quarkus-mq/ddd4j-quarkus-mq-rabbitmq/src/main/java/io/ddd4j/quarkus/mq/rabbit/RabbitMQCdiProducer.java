@@ -2,8 +2,8 @@ package io.ddd4j.quarkus.mq.rabbit;
 
 import io.ddd4j.mq.config.Ddd4jMQProperties;
 import io.ddd4j.mq.publish.MQEventPublisher;
-import io.ddd4j.mq.rabbit.RabbitMQBrokerAdapter;
-import io.ddd4j.mq.rabbit.RabbitMQProperties;
+import io.ddd4j.mq.rabbitmq.RabbitMQBrokerAdapter;
+import io.ddd4j.mq.rabbitmq.RabbitMQProperties;
 import io.ddd4j.mq.serialization.MQEventSerialization;
 import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.context.ApplicationScoped;
