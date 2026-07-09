@@ -25,6 +25,7 @@
 
     <modules>
         <module>ddd4j-quarkus-data-panache</module>
+        <module>ddd4j-quarkus-data-jpa</module>
         <module>ddd4j-quarkus-data-crypto</module>
         <module>ddd4j-quarkus-data-logs</module>
         <module>ddd4j-quarkus-data-external</module>

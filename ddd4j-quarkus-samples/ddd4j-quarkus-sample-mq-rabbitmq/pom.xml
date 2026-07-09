@@ -71,7 +71,7 @@
         <!-- Quarkus RESTEasy Reactive -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-reactive</artifactId>
+            <artifactId>quarkus-rest</artifactId>
         </dependency>
     </dependencies>
 
