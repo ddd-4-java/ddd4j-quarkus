@@ -19,9 +19,24 @@
         <ddd4j.version>2.0.x.20260630-SNAPSHOT</ddd4j.version>
 
         <quarkus-bom.version>3.37.0</quarkus-bom.version>
+        <quarkus-amazon-services-bom.version>3.20.1</quarkus-amazon-services-bom.version>
+        <quarkus-artemis-bom.version>3.14.3</quarkus-artemis-bom.version>
+        <quarkus-azure-services-bom.version>1.2.4</quarkus-azure-services-bom.version>
+        <quarkus-business-score-bom.version>1.0.0</quarkus-business-score-bom.version>
+        <quarkus-cxf-bom.version>3.37.0</quarkus-cxf-bom.version>
+        <quarkus-flags-bom.version>1.0.0</quarkus-flags-bom.version>
+        <quarkus-flow-bom.version>0.12.0</quarkus-flow-bom.version>
+        <quarkus-google-cloud-services-bom.version>2.23.1</quarkus-google-cloud-services-bom.version>
+        <quarkus-jberet-bom.version>2.11.0</quarkus-jberet-bom.version>
+        <quarkus-jgit-bom.version>3.6.2</quarkus-jgit-bom.version>
+        <quarkus-jpastreamer-bom.version>3.0.3.Final</quarkus-jpastreamer-bom.version>
+        <quarkus-kafka-streams-processor-bom.version>6.0.7</quarkus-kafka-streams-processor-bom.version>
         <quarkus-langchain4j-bom.version>1.12.0</quarkus-langchain4j-bom.version>
         <quarkus-mcp-server-bom.version>1.13.1</quarkus-mcp-server-bom.version>
-        <quarkus-artemis-bom.version>3.14.3</quarkus-artemis-bom.version>
+        <quarkus-openid-ssf-bom.version>0.0.3</quarkus-openid-ssf-bom.version>
+        <quarkus-operator-sdk-bom.version>7.7.5</quarkus-operator-sdk-bom.version>
+        <quarkus-vault-bom.version>4.8.0</quarkus-vault-bom.version>
+        <quarkus-xmlsec-bom.version>2.5.0</quarkus-xmlsec-bom.version>
         <!--
             Quarkus 轨道专用 override：仅保留 ddd4j 仓库**未管理**且 Quarkus 生态强约束的版本。
             1) jboss-logging：Quarkus 日志桥强制版本（ddd4j 走 Spring 链解析到 3.4.x/3.5.x，
@@ -57,6 +72,103 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- 3. Quarkiverse 公共 BOM：仅导入面向业务项目的 BOM，排除 internal/test/parent 发布物 -->
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.amazonservices/quarkus-amazon-services-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.amazonservices</groupId>
+                <artifactId>quarkus-amazon-services-bom</artifactId>
+                <version>${quarkus-amazon-services-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.artemis/quarkus-artemis-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.artemis</groupId>
+                <artifactId>quarkus-artemis-bom</artifactId>
+                <version>${quarkus-artemis-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.azureservices/quarkus-azure-services-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.azureservices</groupId>
+                <artifactId>quarkus-azure-services-bom</artifactId>
+                <version>${quarkus-azure-services-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.businessscore/quarkus-business-score-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.businessscore</groupId>
+                <artifactId>quarkus-business-score-bom</artifactId>
+                <version>${quarkus-business-score-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.cxf/quarkus-cxf-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.cxf</groupId>
+                <artifactId>quarkus-cxf-bom</artifactId>
+                <version>${quarkus-cxf-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.flags/quarkus-flags-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.flags</groupId>
+                <artifactId>quarkus-flags-bom</artifactId>
+                <version>${quarkus-flags-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.flow/quarkus-flow-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.flow</groupId>
+                <artifactId>quarkus-flow-bom</artifactId>
+                <version>${quarkus-flow-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.googlecloudservices/quarkus-google-cloud-services-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.googlecloudservices</groupId>
+                <artifactId>quarkus-google-cloud-services-bom</artifactId>
+                <version>${quarkus-google-cloud-services-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.jberet/quarkus-jberet-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.jberet</groupId>
+                <artifactId>quarkus-jberet-bom</artifactId>
+                <version>${quarkus-jberet-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.jgit/quarkus-jgit-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.jgit</groupId>
+                <artifactId>quarkus-jgit-bom</artifactId>
+                <version>${quarkus-jgit-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.jpastreamer/quarkus-jpastreamer-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.jpastreamer</groupId>
+                <artifactId>quarkus-jpastreamer-bom</artifactId>
+                <version>${quarkus-jpastreamer-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.kafkastreamsprocessor/quarkus-kafka-streams-processor-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.kafkastreamsprocessor</groupId>
+                <artifactId>quarkus-kafka-streams-processor-bom</artifactId>
+                <version>${quarkus-kafka-streams-processor-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.langchain4j/quarkus-langchain4j-bom -->
             <dependency>
                 <groupId>io.quarkiverse.langchain4j</groupId>
@@ -73,22 +185,46 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.artemis/quarkus-artemis-bom -->
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.openid-ssf/quarkus-openid-ssf-bom -->
             <dependency>
-                <groupId>io.quarkiverse.artemis</groupId>
-                <artifactId>quarkus-artemis-bom</artifactId>
-                <version>${quarkus-artemis-bom.version}</version>
+                <groupId>io.quarkiverse.openid-ssf</groupId>
+                <artifactId>quarkus-openid-ssf-bom</artifactId>
+                <version>${quarkus-openid-ssf-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- 3. ddd4j 平台核心模块坐标（纯 Java，零 Spring 依赖） -->
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.operatorsdk/quarkus-operator-sdk-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.operatorsdk</groupId>
+                <artifactId>quarkus-operator-sdk-bom</artifactId>
+                <version>${quarkus-operator-sdk-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.vault/quarkus-vault-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.vault</groupId>
+                <artifactId>quarkus-vault-bom</artifactId>
+                <version>${quarkus-vault-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.xmlsec/quarkus-xmlsec-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.xmlsec</groupId>
+                <artifactId>quarkus-xmlsec-bom</artifactId>
+                <version>${quarkus-xmlsec-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- 4. ddd4j 平台核心模块坐标（纯 Java，零 Spring 依赖） -->
             <dependency>
                 <groupId>io.ddd4j</groupId>
                 <artifactId>ddd4j-core</artifactId>
                 <version>${ddd4j.version}</version>
             </dependency>
 
-            <!-- 4. Quarkus 轨道专用 override：仅保留 ddd4j 未显式管理、且 Quarkus 强约束的版本 -->
+            <!-- 5. Quarkus 轨道专用 override：仅保留 ddd4j 未显式管理、且 Quarkus 强约束的版本 -->
             <dependency>
                 <groupId>org.jboss.logging</groupId>
                 <artifactId>jboss-logging</artifactId>
