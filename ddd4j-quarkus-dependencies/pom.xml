@@ -18,6 +18,10 @@
         <!-- ddd4j 底座 revision（必须与 ddd4j 仓库实际 deploy 的一致） -->
         <ddd4j.version>2.0.x.20260630-SNAPSHOT</ddd4j.version>
 
+        <quarkus-bom.version>3.37.0</quarkus-bom.version>
+        <quarkus-langchain4j-bom.version>1.12.0</quarkus-langchain4j-bom.version>
+        <quarkus-mcp-server-bom.version>1.13.1</quarkus-mcp-server-bom.version>
+        <quarkus-artemis-bom.version>3.14.3</quarkus-artemis-bom.version>
         <!--
             Quarkus 轨道专用 override：仅保留 ddd4j 仓库**未管理**且 Quarkus 生态强约束的版本。
             1) jboss-logging：Quarkus 日志桥强制版本（ddd4j 走 Spring 链解析到 3.4.x/3.5.x，
@@ -53,7 +57,30 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.langchain4j/quarkus-langchain4j-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.langchain4j</groupId>
+                <artifactId>quarkus-langchain4j-bom</artifactId>
+                <version>${quarkus-langchain4j-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.mcp/quarkus-mcp-server-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.mcp</groupId>
+                <artifactId>quarkus-mcp-server-bom</artifactId>
+                <version>${quarkus-mcp-server-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkiverse.artemis/quarkus-artemis-bom -->
+            <dependency>
+                <groupId>io.quarkiverse.artemis</groupId>
+                <artifactId>quarkus-artemis-bom</artifactId>
+                <version>${quarkus-artemis-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- 3. ddd4j 平台核心模块坐标（纯 Java，零 Spring 依赖） -->
             <dependency>
                 <groupId>io.ddd4j</groupId>
