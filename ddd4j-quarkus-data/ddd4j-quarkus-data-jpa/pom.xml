@@ -22,9 +22,10 @@
             <artifactId>ddd4j-core</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
+        <!-- ddd4j-data-jpa：标准 JPA 仓储基类（JpaAggregateRepository + 加密监听器） -->
         <dependency>
             <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-data-mybatisplus</artifactId>
+            <artifactId>ddd4j-data-jpa</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
         <dependency>
