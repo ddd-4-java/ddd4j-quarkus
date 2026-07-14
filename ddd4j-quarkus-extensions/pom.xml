@@ -25,5 +25,6 @@
         <module>ddd4j-quarkus-extension-monitor</module>
         <module>ddd4j-quarkus-extension-pf4j</module>
         <module>ddd4j-quarkus-extension-qlexpress</module>
+        <module>ddd4j-quarkus-extension-qrcode</module>
     </modules>
 </project>

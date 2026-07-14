@@ -282,6 +282,11 @@
                 <artifactId>ddd4j-quarkus-extension-qlexpress</artifactId>
                 <version>${revision}</version>
             </dependency>
+            <dependency>
+                <groupId>io.ddd4j.quarkus</groupId>
+                <artifactId>ddd4j-quarkus-extension-qrcode</artifactId>
+                <version>${revision}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
