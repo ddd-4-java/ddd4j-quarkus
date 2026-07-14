@@ -2,7 +2,7 @@ package io.ddd4j.quarkus.qrcode;
 
 import io.ddd4j.extension.qrcode.QrCodeService;
 import io.ddd4j.extension.qrcode.command.GenerateQrCodeCommand;
-import io.github.hiwepy.zxing.model.QrCodeRequest;
+import com.google.zxing.model.QrCodeRequest;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;

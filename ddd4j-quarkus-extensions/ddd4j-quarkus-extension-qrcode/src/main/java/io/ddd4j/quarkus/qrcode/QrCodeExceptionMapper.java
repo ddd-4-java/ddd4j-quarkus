@@ -1,7 +1,7 @@
 package io.ddd4j.quarkus.qrcode;
 
-import io.github.hiwepy.zxing.exception.QrCodeErrorCode;
-import io.github.hiwepy.zxing.exception.QrCodeException;
+import com.google.zxing.exception.QrCodeErrorCode;
+import com.google.zxing.exception.QrCodeException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
