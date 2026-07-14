@@ -61,11 +61,24 @@
             <artifactId>quarkus-junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Keep RestAssured modules aligned; the shared DDD4J BOM pins transitive modules to 5.5. -->
+        <!-- Keep RestAssured modules aligned; the shared DDD4J BOM pins them to 5.5.6. -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>6.0.0</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured-common</artifactId>
             <version>6.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Quarkus MySQL Dev Services links Testcontainers' JUnit 4 compatibility API during augmentation. -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
