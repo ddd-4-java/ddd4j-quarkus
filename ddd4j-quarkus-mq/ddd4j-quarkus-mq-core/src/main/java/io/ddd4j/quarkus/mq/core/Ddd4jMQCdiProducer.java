@@ -1,23 +1,21 @@
 package io.ddd4j.quarkus.mq.core;
 
-import io.ddd4j.mq.config.Ddd4jMQProperties;
-import io.ddd4j.mq.serialization.JsonMQMessageSerialization;
-import io.ddd4j.mq.serialization.MQEventSerialization;
-import io.ddd4j.mq.serialization.MQMessageSerialization;
+import io.ddd4j.mq.MQProperties;
+import io.ddd4j.mq.event.MQEventSerialization;
+import io.ddd4j.mq.serialization.JsonMQEventSerialization;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Singleton;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
-
-import jakarta.inject.Singleton;
 
 /**
  * ddd4j MQ 核心 CDI 生产者：为 Quarkus 容器提供 mq-core 契约的默认 Bean。
  *
  * <p>对标 ddd4j-mq-spring 的 {@code Ddd4jMQPropertiesConfiguration}，产出：
  * <ul>
- *   <li>{@link Ddd4jMQProperties} —— 从 MicroProfile Config（{@code ddd4j.mq.*}）构建配置对象</li>
- *   <li>{@link MQMessageSerialization} / {@link MQEventSerialization} —— JSON 序列化默认实现</li>
+ *   <li>{@link MQProperties} —— 从 MicroProfile Config（{@code ddd4j.mq.*}）构建配置对象</li>
+ *   <li>{@link JsonMQEventSerialization} / {@link MQEventSerialization} —— JSON 序列化默认实现</li>
  * </ul>
  *
  * <p>业务项目可提供 {@code @Alternative} 或同类型的 {@code @ApplicationScoped} Bean 覆盖默认实现。
@@ -31,27 +29,28 @@ public class Ddd4jMQCdiProducer {
     /**
      * 从 MicroProfile Config 构建 MQ 配置。
      *
-     * <p>读取的关键配置项（与 ddd4j-mq-spring 对齐）：
+     * <p>读取的关键配置项（与 ddd4j-mq-core 的 {@link MQProperties} 字段对齐）：
      * <ul>
-     *   <li>{@code ddd4j.mq.enabled} —— 是否启用 MQ（默认 true）</li>
+     *   <li>{@code ddd4j.mq.enabled} —— 是否启用 MQ（默认 false）</li>
      *   <li>{@code ddd4j.mq.namespace} —— 默认命名空间</li>
-     *   <li>{@code ddd4j.mq.broker-type} —— broker 类型</li>
+     *   <li>{@code ddd4j.mq.broker} —— 当前 Broker 实现标识（如 kafka/rabbit/rocket/redisStream）</li>
+     *   <li>{@code ddd4j.mq.default-topic} —— 默认主题</li>
+     *   <li>{@code ddd4j.mq.server} —— 服务地址</li>
+     *   <li>{@code ddd4j.mq.auto-ack} —— 是否自动确认</li>
      * </ul>
      *
      * @return MQ 配置对象
      */
     @Produces
     @Singleton
-    public Ddd4jMQProperties ddd4jMQProperties() {
+    public MQProperties mqProperties() {
         Config config = ConfigProvider.getConfig();
-        Ddd4jMQProperties props = new Ddd4jMQProperties();
+        MQProperties props = new MQProperties();
         props.setEnabled(config.getOptionalValue("ddd4j.mq.enabled", Boolean.class).orElse(false));
-        props.setNamespace(config.getOptionalValue("ddd4j.mq.namespace", String.class).orElse(""));
         props.setBroker(config.getOptionalValue("ddd4j.mq.broker", String.class).orElse("none"));
-        props.setDefaultTopic(config.getOptionalValue("ddd4j.mq.default-topic", String.class).orElse("DEFAULT"));
-        // 消费端确认模式
-        String ackMode = config.getOptionalValue("ddd4j.mq.consumer.ack-mode", String.class).orElse("manual");
-        props.getConsumer().setAckMode(ackMode);
+        props.setNamespace(config.getOptionalValue("ddd4j.mq.namespace", String.class).orElse(""));
+        props.setServer(config.getOptionalValue("ddd4j.mq.server", String.class).orElse(""));
+        props.setAutoAck(config.getOptionalValue("ddd4j.mq.auto-ack", Boolean.class).orElse(false));
         return props;
     }
 
@@ -62,7 +61,16 @@ public class Ddd4jMQCdiProducer {
      */
     @Produces
     @Singleton
-    public JsonMQMessageSerialization jsonMQMessageSerialization() {
-        return new JsonMQMessageSerialization();
+    public JsonMQEventSerialization jsonMQEventSerialization() {
+        return new JsonMQEventSerialization();
+    }
+
+    /**
+     * 显式暴露 MQEventSerialization 接口绑定（便于其他模块按接口注入）。
+     */
+    @Produces
+    @Singleton
+    public MQEventSerialization mqEventSerialization(JsonMQEventSerialization impl) {
+        return impl;
     }
 }

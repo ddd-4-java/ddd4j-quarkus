@@ -1,6 +1,6 @@
 package io.ddd4j.sample.quarkus.mq.disruptor.order.domain;
 
-import io.ddd4j.core.event.MQEvent;
+import io.ddd4j.mq.event.MQEvent;
 import lombok.Getter;
 
 import java.util.Objects;

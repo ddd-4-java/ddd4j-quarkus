@@ -1,21 +1,26 @@
 package io.ddd4j.quarkus.mq.nats;
 
-import io.ddd4j.mq.config.Ddd4jMQProperties;
-import io.ddd4j.mq.nats.consumer.NatsMQConsumerEndpointRegistrar;
-import io.ddd4j.mq.nats.spi.NatsMQBrokerAdapter;
-import io.ddd4j.mq.publish.MQEventPublisher;
-import io.nats.client.Connection;
-import io.nats.client.Nats;
+import io.ddd4j.mq.nats.NatsProperties;
+import io.ddd4j.mq.nats.NatsMQClient;
+import io.ddd4j.mq.MQClient;
 import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
-import org.eclipse.microprofile.config.ConfigProvider;
 
 /**
- * Quarkus NATS MQ CDI producer.
+ * Quarkus nats MQ CDI producer.
+ *
+ * <p>暴露：
+ * <ul>
+ *   <li>{@link NatsProperties} —— nats 特有配置（从 MicroProfile Config 读取）</li>
+ *   <li>{@link NatsMQClient} —— {@link MQClient} 实现，供 {@link io.ddd4j.quarkus.mq.core.QuarkusMQListenerRegistrar} 使用</li>
+ * </ul>
+ *
+ * <p>业务项目可提供 {@code @Alternative} 或 {@code @DefaultBean} Bean 覆盖默认实现。
  *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
+ * @since 3.3.x
  */
 @ApplicationScoped
 public class NatsMQCdiProducer {
@@ -23,31 +28,24 @@ public class NatsMQCdiProducer {
     @Produces
     @Singleton
     @DefaultBean
-    public Connection natsConnection() throws Exception {
-        String server = ConfigProvider.getConfig()
-                .getOptionalValue("ddd4j.mq.nats.server", String.class)
-                .orElse("nats://localhost:4222");
-        return Nats.connect(server);
+    public NatsProperties natsProperties() {
+        return new NatsProperties();
     }
 
     @Produces
     @Singleton
     @DefaultBean
-    public NatsMQBrokerAdapter natsMQBrokerAdapter(
-            Connection connection,
-            Ddd4jMQProperties mqProperties) {
-        return new NatsMQBrokerAdapter(
-                connection,
-                mqProperties,
-                new NatsMQConsumerEndpointRegistrar(connection, mqProperties));
+    public NatsMQClient natsMQClient(NatsProperties properties) {
+        return new NatsMQClient(properties);
     }
 
+    /**
+     * 以 {@link MQClient} 接口暴露，供 QuarkusMQListenerRegistrar 查找活跃 broker。
+     */
     @Produces
     @Singleton
     @DefaultBean
-    public MQEventPublisher natsMQEventPublisher(
-            NatsMQBrokerAdapter brokerAdapter,
-            Ddd4jMQProperties mqProperties) {
-        return brokerAdapter.createPublisher(mqProperties);
+    public MQClient mqClient(NatsMQClient client) {
+        return client;
     }
 }

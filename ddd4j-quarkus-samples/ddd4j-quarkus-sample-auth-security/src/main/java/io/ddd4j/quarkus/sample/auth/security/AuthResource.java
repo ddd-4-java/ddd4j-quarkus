@@ -1,7 +1,7 @@
 package io.ddd4j.quarkus.sample.auth.security;
 
-import io.ddd4j.core.subject.AuthPrincipal;
-import io.ddd4j.core.subject.AuthRequest;
+import io.ddd4j.core.auth.AuthPrincipal;
+import io.ddd4j.core.auth.AuthRequest;
 import io.ddd4j.core.util.SubjectKit;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;

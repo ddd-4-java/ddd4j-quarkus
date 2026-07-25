@@ -1,68 +1,51 @@
 package io.ddd4j.quarkus.mq.tdmq;
 
-import io.ddd4j.mq.config.Ddd4jMQProperties;
-import io.ddd4j.mq.publish.MQEventPublisher;
-import io.ddd4j.mq.serialization.MQEventSerialization;
-import io.ddd4j.mq.tdmq.client.TdmqClient;
-import io.ddd4j.mq.tdmq.client.TdmqClientPlaceholder;
-import io.ddd4j.mq.tdmq.spi.TdmqMQBrokerAdapter;
-import io.ddd4j.mq.tdmq.spi.TdmqMQProperties;
+import io.ddd4j.mq.tdmq.TdmqProperties;
+import io.ddd4j.mq.tdmq.TdmqMQClient;
+import io.ddd4j.mq.MQClient;
 import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
 
 /**
- * Quarkus TDMQ CDI 生产者。
+ * Quarkus tdmq MQ CDI producer.
+ *
+ * <p>暴露：
+ * <ul>
+ *   <li>{@link TdmqProperties} —— tdmq 特有配置（从 MicroProfile Config 读取）</li>
+ *   <li>{@link TdmqMQClient} —— {@link MQClient} 实现，供 {@link io.ddd4j.quarkus.mq.core.QuarkusMQListenerRegistrar} 使用</li>
+ * </ul>
+ *
+ * <p>业务项目可提供 {@code @Alternative} 或 {@code @DefaultBean} Bean 覆盖默认实现。
  *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
+ * @since 3.3.x
  */
 @ApplicationScoped
 public class TdmqMQCdiProducer {
 
     @Produces
-    @DefaultBean
     @Singleton
-    public TdmqMQProperties tdmqMQProperties() {
-        Config config = ConfigProvider.getConfig();
-        TdmqMQProperties properties = new TdmqMQProperties();
-        properties.setServiceUrl(config.getOptionalValue("ddd4j.mq.tdmq.service-url", String.class).orElse(null));
-        properties.setTenant(config.getOptionalValue("ddd4j.mq.tdmq.tenant", String.class).orElse(null));
-        properties.setNamespace(config.getOptionalValue("ddd4j.mq.tdmq.namespace", String.class).orElse(null));
-        properties.setAccessKey(config.getOptionalValue("ddd4j.mq.tdmq.access-key", String.class).orElse(null));
-        properties.setSecretKey(config.getOptionalValue("ddd4j.mq.tdmq.secret-key", String.class).orElse(null));
-        properties.setDefaultGroup(config.getOptionalValue("ddd4j.mq.tdmq.default-group", String.class).orElse("ddd4j-tdmq"));
-        properties.setAutoStartConsumers(config.getOptionalValue("ddd4j.mq.tdmq.auto-start-consumers", Boolean.class).orElse(true));
-        properties.setRequeueOnError(config.getOptionalValue("ddd4j.mq.tdmq.requeue-on-error", Boolean.class).orElse(true));
-        return properties;
+    @DefaultBean
+    public TdmqProperties tdmqProperties() {
+        return new TdmqProperties();
     }
 
     @Produces
-    @DefaultBean
     @Singleton
-    public TdmqClient tdmqClient() {
-        return new TdmqClientPlaceholder();
+    @DefaultBean
+    public TdmqMQClient tdmqMQClient(TdmqProperties properties) {
+        return new TdmqMQClient(properties);
     }
 
+    /**
+     * 以 {@link MQClient} 接口暴露，供 QuarkusMQListenerRegistrar 查找活跃 broker。
+     */
     @Produces
-    @DefaultBean
     @Singleton
-    public TdmqMQBrokerAdapter tdmqMQBrokerAdapter(
-            TdmqClient tdmqClient,
-            TdmqMQProperties tdmqProperties,
-            Ddd4jMQProperties mqProperties,
-            MQEventSerialization serialization) {
-        return new TdmqMQBrokerAdapter(tdmqClient, tdmqProperties, mqProperties, serialization);
-    }
-
-    @Produces
     @DefaultBean
-    @Singleton
-    public MQEventPublisher tdmqMQEventPublisher(
-            TdmqMQBrokerAdapter tdmqMQBrokerAdapter,
-            Ddd4jMQProperties mqProperties) {
-        return tdmqMQBrokerAdapter.createPublisher(mqProperties);
+    public MQClient mqClient(TdmqMQClient client) {
+        return client;
     }
 }

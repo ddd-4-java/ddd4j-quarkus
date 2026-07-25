@@ -1,6 +1,5 @@
 package io.ddd4j.sample.quarkus.mq.rabbitmq.order.application;
 
-import io.ddd4j.core.event.MQEventPublisher;
 import io.ddd4j.sample.quarkus.mq.rabbitmq.order.domain.Order;
 import io.ddd4j.sample.quarkus.mq.rabbitmq.order.domain.event.OrderCreatedEvent;
 import io.ddd4j.sample.quarkus.mq.rabbitmq.order.infrastructure.InMemoryOrderRepository;
@@ -18,11 +17,11 @@ import java.util.Objects;
  *   <li>调用 {@link Order#create} 创建订单聚合根（充血模型）</li>
  *   <li>通过仓储持久化聚合根（示例使用 {@link InMemoryOrderRepository}）</li>
  *   <li>构造 OrderCreatedEvent（继承自 MQEvent，已设置 topic / tag）</li>
- *   <li>通过 {@link MQEventPublisher} 发布事件到 RabbitMQ Topic Exchange</li>
+ *   <li>通过 MQEvent.publish() 发布事件到 MQ Broker</li>
  * </ol>
  *
  * <p>本类<b>不引用任何 RabbitMQ / Kafka / Disruptor 的具体 API</b>，
- * 完全通过 ddd4j 抽象（{@code MQEventPublisher} + {@code MQEvent}）实现"业务零 MQ 框架耦合"。
+ * 完全通过 ddd4j 抽象（{@code MQEvent}）实现"业务零 MQ 框架耦合"。
  * 切换底层 MQ 只需修改 {@code pom.xml} 依赖与 {@code application.properties} 中的
  * {@code ddd4j.mq.broker} 配置。
  *
@@ -34,20 +33,10 @@ public class OrderApplicationService {
     private static final Logger log = Logger.getLogger(OrderApplicationService.class);
 
     private final InMemoryOrderRepository orderRepository;
-    private final MQEventPublisher mqEventPublisher;
 
-    /**
-     * CDI 构造器注入。
-     *
-     * @param orderRepository 订单仓储
-     * @param mqEventPublisher MQ 事件发布者（由 ddd4j-quarkus-mq-rabbitmq 的 RabbitMQCdiProducer 提供）
-     */
     @Inject
-    public OrderApplicationService(
-            InMemoryOrderRepository orderRepository,
-            MQEventPublisher mqEventPublisher) {
+    public OrderApplicationService(InMemoryOrderRepository orderRepository) {
         this.orderRepository = Objects.requireNonNull(orderRepository, "orderRepository must not be null");
-        this.mqEventPublisher = Objects.requireNonNull(mqEventPublisher, "mqEventPublisher must not be null");
     }
 
     /**
@@ -59,6 +48,10 @@ public class OrderApplicationService {
      * @return 已持久化的订单聚合根
      */
     public Order createOrder(String orderNo, String buyerId, String buyerName) {
+        Objects.requireNonNull(orderNo, "orderNo must not be null");
+        Objects.requireNonNull(buyerId, "buyerId must not be null");
+        Objects.requireNonNull(buyerName, "buyerName must not be null");
+
         // 1. 充血模型：调用 Order.create() 创建聚合
         Order order = Order.create(orderNo, buyerId, buyerName);
 
@@ -71,8 +64,8 @@ public class OrderApplicationService {
                 order.getOrderNo(),
                 order.getBuyerName());
 
-        // 4. 发布到 MQ（RabbitMQEventPublisher → Topic Exchange → @MQEventListener 消费）
-        mqEventPublisher.publish(event);
+        // 4. 发布到 MQ（MQEvent.publish() → BaseContext 中的 MQClient 自动路由）
+        event.publish();
 
         log.infof("Order created: id=%s, orderNo=%s, buyerName=%s",
                 order.getId(), order.getOrderNo(), order.getBuyerName());

@@ -1,6 +1,6 @@
 package io.ddd4j.quarkus.sample.cqrs.person;
 
-import io.ddd4j.core.cqrs.projection.ProjectionRunner;
+import io.ddd4j.core.cqrs.readmodel.ProjectionRunner;
 import io.ddd4j.sample.cqrs.person.domain.PersonEvent;
 import io.ddd4j.sample.cqrs.person.query.PersonListView;
 import io.quarkus.scheduler.Scheduled;

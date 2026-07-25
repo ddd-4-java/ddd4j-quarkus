@@ -1,21 +1,11 @@
 package io.ddd4j.quarkus.mq.core;
 
+import io.ddd4j.mq.MQClient;
+import io.ddd4j.mq.MQProperties;
 import io.ddd4j.mq.annotation.MQEventListener;
-import io.ddd4j.mq.ack.AckDisposition;
-import io.ddd4j.mq.ack.MessageAcknowledgment;
-import io.ddd4j.mq.ack.MQConsumeTemplates;
-import io.ddd4j.mq.ack.NoOpMessageAcknowledgment;
-import io.ddd4j.mq.config.Ddd4jMQProperties;
-import io.ddd4j.mq.consume.MQConsumerContext;
-import io.ddd4j.mq.consume.MQConsumerHandler;
-import io.ddd4j.mq.consume.MQConsumeInterceptor;
-import io.ddd4j.mq.contract.MQMessage;
-import io.ddd4j.mq.registry.MQBrokerType;
-import io.ddd4j.mq.registry.MQListenerDefinition;
-import io.ddd4j.mq.registry.MQListenerMethodInvoker;
-import io.ddd4j.mq.serialization.MQEventSerialization;
-import io.ddd4j.mq.spi.MQBrokerAdapter;
-import io.ddd4j.mq.spi.MQBrokerAdapters;
+import io.ddd4j.mq.event.MQEventSerialization;
+import io.ddd4j.mq.event.MQEventStorer;
+import io.ddd4j.mq.listener.MQListener;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -27,244 +17,173 @@ import org.jboss.logging.Logger;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Optional;
 
 /**
- * Quarkus MQ 监听器注册器：应用启动时通过 CDI {@link BeanManager} 扫描所有带
- * {@link MQEventListener} 注解方法的 Bean，构建 {@link MQListenerDefinition}，
- * 并委托 {@link MQBrokerAdapter} 注册消费端点。
+ * Quarkus MQ 监听器注册器（对齐 ddd4j-mq-spring 的 {@code MQListenerBeanPostProcessor}）。
  *
- * <p>对标 ddd4j-mq-spring 的 {@code MQListenerRegistrar}，消息处理流程一致：
+ * <p>在应用启动时（{@link StartupEvent}），扫描所有 CDI Bean 中标注了
+ * {@link MQEventListener} 的方法，构建 {@link MQListener} 定义，然后委托给
+ * 活跃的 {@link MQClient#init(List, MQProperties, MQEventSerialization, MQEventStorer)}
+ * 完成生产者初始化和消费者注册。
+ *
+ * <h3>核心流程（与 ddd4j-mq-spring 对齐）</h3>
  * <pre>
- *   Broker 原生消息
- *     ↓ Adapter 内部转为纯 Java MQMessage
- *   MQConsumerHandler.handle(message, ack)
- *     ↓ MQConsumeTemplates.execute（拦截链 + 幂等模板）
- *   MQListenerMethodInvoker.invoke → 反射调用 @MQEventListener 方法
- *   业务方法
+ *   @Observes StartupEvent
+ *       ↓
+ *   扫描 @MQEventListener → List&lt;MQListener&gt;
+ *       ↓
+ *   查找活跃 MQClient（由各 broker CdiProducer 暴露）
+ *       ↓
+ *   MQClient.init(listeners, properties, serialization, storer)
+ *       ↓
+ *   生产者注册到 BaseContext + 消费者启动
  * </pre>
  *
- * <p>与 Spring 版的区别：用 {@link BeanManager#getBeans(Object)} + {@code Bean#create()}
- * 替代 Spring 的 BeanPostProcessor 扫描；用 {@code @Observes StartupEvent} 替代
- * {@code ContextRefreshedEvent}。
- *
- * <p>当无 {@link MQBrokerAdapter} 实现时，扫描结果仅记录日志不注册（便于无 MQ 场景下安全启动）。
+ * <p>关键设计决策：不重写 consume 管道，完全复用 {@link MQClient#consume(MQListener, io.ddd4j.mq.event.MQEvent, io.ddd4j.mq.message.Acknowledgment)}
+ * 的内置逻辑（策略匹配 → 租户注入 → 持久化 → 反射调用 → 异常解包）。
  *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
- * @see MQBrokerAdapter
  * @since 3.3.x
  */
 @ApplicationScoped
 public class QuarkusMQListenerRegistrar {
 
-    private static final Logger logger = Logger.getLogger(QuarkusMQListenerRegistrar.class);
+    private static final Logger log = Logger.getLogger(QuarkusMQListenerRegistrar.class);
 
     @Inject
     BeanManager beanManager;
 
     @Inject
-    Instance<MQBrokerAdapter> adapters;
-
-    @Inject
-    Ddd4jMQProperties properties;
+    MQProperties mqProperties;
 
     @Inject
     MQEventSerialization serialization;
 
-    @Inject
-    Instance<MQConsumeInterceptor> interceptors;
-
     /**
-     * 应用启动时扫描并注册所有 MQ 监听器。
-     *
-     * @param event Quarkus 启动事件
+     * 可选注入 MQEventStorer（业务项目可提供实现，缺失时 MQClient 内部跳过持久化）。
      */
+    @Inject
+    Instance<MQEventStorer> storerInstance;
+
     void onStart(@Observes StartupEvent event) {
-        List<MQListenerDefinition> definitions = scanDefinitions();
-        if (definitions.isEmpty()) {
-            logger.debug("No @MQEventListener definitions to register");
-            return;
-        }
-        if (adapters.isUnsatisfied()) {
-            logger.warnf("Found %d @MQEventListener(s) but no MQBrokerAdapter available; listeners will NOT be registered. "
-                    + "Add a broker module (e.g. ddd4j-quarkus-mq-kafka) to enable MQ consumption.", definitions.size());
+        if (!mqProperties.isEnabled()) {
+            log.info("MQ disabled (ddd4j.mq.enabled=false), skipping listener registration");
             return;
         }
 
-        MQBrokerAdapter adapter = MQBrokerAdapters.selectAdapter(iterableToList(adapters), properties);
-        MQListenerMethodInvoker invoker = new MQListenerMethodInvoker(serialization);
-        List<MQConsumeInterceptor> orderedInterceptors = orderedInterceptors();
-
-        int registered = 0;
-        for (MQListenerDefinition definition : definitions) {
-            try {
-                MQConsumerHandler handler = createHandler(definition, adapter, invoker, orderedInterceptors);
-                adapter.registerConsumer(definition, handler);
-                registered++;
-                logger.infof("Registered MQ listener: bean=%s, method=%s, topic=%s, group=%s",
-                        definition.getBean().getClass().getSimpleName(),
-                        definition.getMethod().getName(),
-                        definition.getTopic(),
-                        definition.getGroup());
-            } catch (Exception e) {
-                logger.errorf(e, "Failed to register MQ listener: bean=%s, method=%s",
-                        definition.getBean().getClass().getSimpleName(),
-                        definition.getMethod().getName());
-            }
+        // 1. 扫描所有 @MQEventListener 方法，构建 MQListener 定义
+        List<MQListener> listeners = scanListeners();
+        if (listeners.isEmpty()) {
+            log.info("No @MQEventListener methods found, skipping MQ initialization");
+            return;
         }
-        logger.infof("MQ listener registration completed: %d/%d registered", registered, definitions.size());
+
+        // 2. 查找活跃的 MQClient（由各 broker CdiProducer 暴露）
+        Optional<MQClient> clientOpt = findActiveClient();
+        if (clientOpt.isEmpty()) {
+            log.warnf("No MQClient found for broker '%s', skipping initialization. " +
+                    "Did you add the corresponding ddd4j-quarkus-mq-<broker> dependency?",
+                    mqProperties.getBroker());
+            return;
+        }
+
+        MQClient client = clientOpt.get();
+
+        // 3. 获取可选的 MQEventStorer
+        MQEventStorer storer = storerInstance.isResolvable() ? storerInstance.get() : null;
+
+        // 4. 委托给 MQClient.init() 完成生产者初始化 + 消费者注册
+        // 这一行等价于 ddd4j-mq-spring 的 BeanPostProcessor + MQListenerRegistrar 全部工作
+        try {
+            client.init(listeners, mqProperties, serialization, storer);
+            log.infof("MQ initialized: broker=%s, listeners=%d", client.impl(), listeners.size());
+        } catch (Exception e) {
+            log.errorf(e, "Failed to initialize MQClient for broker '%s'", client.impl());
+        }
     }
 
     /**
-     * 通过 BeanManager 扫描所有 CDI Bean 中带 {@link MQEventListener} 注解的方法。
+     * 扫描所有 CDI Bean 中标注了 {@link MQEventListener} 的方法。
      *
-     * @return 监听器定义列表
+     * <p>对齐 ddd4j-mq-spring 的 {@code MQListenerBeanPostProcessor} 扫描逻辑：
+     * 遍历所有 Object 类型的 Bean，检查其类和父类的声明方法。
      */
-    private List<MQListenerDefinition> scanDefinitions() {
-        List<MQListenerDefinition> definitions = new ArrayList<>();
-        Set<Bean<?>> beans = beanManager.getBeans(Object.class);
-        for (Bean<?> bean : beans) {
-            Class<?> beanClass = bean.getBeanClass();
-            if (Objects.isNull(beanClass) || beanClass.isSynthetic()) {
+    private List<MQListener> scanListeners() {
+        List<MQListener> listeners = new ArrayList<>();
+        for (Bean<?> bean : beanManager.getBeans(Object.class)) {
+            // 跳过框架内部 Bean（Ambiguous / Decorator / Interceptor 等）
+            if (bean.getBeanClass() == null) {
                 continue;
             }
-            for (Method method : beanClass.getDeclaredMethods()) {
-                MQEventListener ann = method.getAnnotation(MQEventListener.class);
-                if (Objects.nonNull(ann)) {
-                    Object instance = resolveBeanInstance(bean);
-                    if (Objects.nonNull(instance)) {
-                        definitions.add(MQListenerDefinition.from(instance, method, ann));
-                    }
-                }
-            }
+            scanClass(beanManager.getReference(bean, bean.getBeanClass(),
+                    beanManager.createCreationalContext(null)), bean.getBeanClass(), listeners);
         }
-        return definitions;
+        return listeners;
     }
 
     /**
-     * 解析 Bean 实例（通过 BeanManager 的参考）。
+     * 递归扫描类及其父类中的 @MQEventListener 方法。
      */
-    @SuppressWarnings("unchecked")
-    private Object resolveBeanInstance(Bean<?> bean) {
+    private void scanClass(Object bean, Class<?> clazz, List<MQListener> listeners) {
+        if (clazz == null || clazz == Object.class) {
+            return;
+        }
+        for (Method method : clazz.getDeclaredMethods()) {
+            MQEventListener ann = method.getAnnotation(MQEventListener.class);
+            if (ann != null) {
+                MQListener listener = MQListener.of(bean, method, ann);
+                listeners.add(listener);
+                log.debugf("Found @MQEventListener: %s.%s (topic=%s, tags=%s)",
+                        clazz.getSimpleName(), method.getName(), ann.topic(), ann.tags());
+            }
+        }
+        // 扫描接口默认方法（接口默认实现中的 @MQEventListener）
+        for (Class<?> iface : clazz.getInterfaces()) {
+            scanClass(bean, iface, listeners);
+        }
+        // 扫描父类
+        scanClass(bean, clazz.getSuperclass(), listeners);
+    }
+
+    /**
+     * 查找与当前配置 broker 匹配的活跃 MQClient。
+     *
+     * <p>优先匹配 {@link MQClient#impl()} 与 {@link MQProperties#getBroker()} 一致的实例。
+     * 如果没有精确匹配，尝试用 {@link io.ddd4j.mq.BrokerType#from(String)} 解析后再匹配。
+     */
+    private Optional<MQClient> findActiveClient() {
+        String configuredBroker = mqProperties.getBroker();
+        Instance<MQClient> clients = beanManager.createInstance().select(MQClient.class);
+        if (clients.isUnsatisfied()) {
+            return Optional.empty();
+        }
+        // 精确匹配 impl()
+        for (MQClient client : clients) {
+            if (configuredBroker.equalsIgnoreCase(client.impl())) {
+                return Optional.of(client);
+            }
+        }
+        // 用 BrokerType 做模糊匹配
         try {
-            return beanManager.getReference((Bean<Object>) bean, bean.getBeanClass(), beanManager.createCreationalContext(null));
-        } catch (Exception e) {
-            logger.warnf(e, "Failed to resolve bean instance for %s", bean.getBeanClass());
-            return null;
-        }
-    }
-
-    /**
-     * 为单个监听器定义创建默认消费处理器（与 Spring 版逻辑一致）。
-     */
-    private MQConsumerHandler createHandler(
-            MQListenerDefinition definition,
-            MQBrokerAdapter adapter,
-            MQListenerMethodInvoker invoker,
-            List<MQConsumeInterceptor> orderedInterceptors) {
-
-        return (message, ack) -> {
-            MessageAcknowledgment effectiveAck = resolveAcknowledgment(adapter, message, ack);
-            MQConsumerContext context = invoker.buildContext(definition, message, effectiveAck);
-            AtomicReference<AckDisposition> dispositionRef = new AtomicReference<>();
-            try {
-                MQConsumeTemplates.execute(
-                        message,
-                        effectiveAck,
-                        () -> runPreCheck(orderedInterceptors, context, message),
-                        () -> {
-                            try {
-                                AckDisposition disposition = invoker.invoke(definition, context, message);
-                                dispositionRef.set(disposition);
-                                return disposition;
-                            } catch (Exception ex) {
-                                logger.errorf(ex, "MQ listener invocation failed: bean=%s, method=%s",
-                                        definition.getBean().getClass().getSimpleName(),
-                                        definition.getMethod().getName());
-                                throw new RuntimeException(ex);
-                            }
-                        });
-            } catch (Exception ex) {
-                if (Objects.nonNull(properties.getConsumer())
-                        && properties.getConsumer().isManualAck()
-                        && !effectiveAck.isAcknowledged()) {
-                    effectiveAck.requeue();
+            io.ddd4j.mq.BrokerType brokerType = io.ddd4j.mq.BrokerType.from(configuredBroker);
+            for (MQClient client : clients) {
+                if (brokerType.name().equalsIgnoreCase(client.impl())) {
+                    return Optional.of(client);
                 }
-            } finally {
-                runAfterConsume(orderedInterceptors, context, message, dispositionRef.get());
-                invoker.clearContext();
             }
-        };
-    }
-
-    /**
-     * 解析确认端口：优先 Adapter 从 nativeMessage 解析，回退传入 ack 或 NoOp。
-     */
-    private MessageAcknowledgment resolveAcknowledgment(
-            MQBrokerAdapter adapter,
-            MQMessage<?> message,
-            MessageAcknowledgment ack) {
-        MessageAcknowledgment resolved = adapter.resolveAcknowledgment(message);
-        if (Objects.nonNull(resolved)) {
-            return resolved;
+        } catch (Exception ignored) {
+            // BrokerType.from() 可能抛异常，忽略
         }
-        return Objects.nonNull(ack) ? ack : new NoOpMessageAcknowledgment();
-    }
-
-    /**
-     * 执行拦截链 preCheck，返回首个非零结果。
-     */
-    private int runPreCheck(
-            List<MQConsumeInterceptor> orderedInterceptors,
-            MQConsumerContext context,
-            MQMessage<?> message) {
-        for (MQConsumeInterceptor interceptor : orderedInterceptors) {
-            int result = interceptor.preCheck(context, message);
-            if (result != MQConsumeTemplates.PRE_CONTINUE) {
-                return result;
-            }
+        // 如果只有 1 个 MQClient，直接返回
+        List<MQClient> all = new ArrayList<>();
+        clients.forEach(all::add);
+        if (all.size() == 1) {
+            log.infof("Single MQClient found (impl=%s), using it regardless of configured broker '%s'",
+                    all.get(0).impl(), configuredBroker);
+            return Optional.of(all.get(0));
         }
-        return MQConsumeTemplates.PRE_CONTINUE;
-    }
-
-    /**
-     * 执行拦截链 afterConsume。
-     */
-    private void runAfterConsume(
-            List<MQConsumeInterceptor> orderedInterceptors,
-            MQConsumerContext context,
-            MQMessage<?> message,
-            AckDisposition disposition) {
-        for (MQConsumeInterceptor interceptor : orderedInterceptors) {
-            try {
-                interceptor.afterConsume(context, message, disposition);
-            } catch (Exception e) {
-                logger.warnf(e, "MQ interceptor afterConsume failed: %s", interceptor.getClass().getSimpleName());
-            }
-        }
-    }
-
-    /**
-     * 按优先级排序的拦截器列表。
-     */
-    private List<MQConsumeInterceptor> orderedInterceptors() {
-        List<MQConsumeInterceptor> list = iterableToList(interceptors);
-        list.sort(Comparator.comparingInt(MQConsumeInterceptor::order));
-        return list;
-    }
-
-    /**
-     * CDI Instance 转 List。
-     */
-    private <T> List<T> iterableToList(Instance<T> instance) {
-        List<T> list = new ArrayList<>();
-        for (T item : instance) {
-            list.add(item);
-        }
-        return list;
+        return Optional.empty();
     }
 }

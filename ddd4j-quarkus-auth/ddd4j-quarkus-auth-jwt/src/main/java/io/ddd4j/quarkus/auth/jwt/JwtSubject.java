@@ -1,7 +1,7 @@
 package io.ddd4j.quarkus.auth.jwt;
 
-import io.ddd4j.core.subject.AuthPrincipal;
-import io.ddd4j.core.subject.AuthRequest;
+import io.ddd4j.core.auth.AuthPrincipal;
+import io.ddd4j.core.auth.AuthRequest;
 import io.ddd4j.core.subject.Subject;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;

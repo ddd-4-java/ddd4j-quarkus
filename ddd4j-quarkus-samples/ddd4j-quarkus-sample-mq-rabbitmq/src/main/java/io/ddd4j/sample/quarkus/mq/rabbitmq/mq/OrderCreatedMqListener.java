@@ -56,11 +56,11 @@ public class OrderCreatedMqListener {
     public void onOrderCreated(OrderCreatedEvent event) {
         log.info("==================================================");
         log.info("[RabbitMQ MQ 消费者] 收到 OrderCreatedEvent！");
-        log.info("  订单 ID   : {}", event.getOrderId());
-        log.info("  订单编号  : {}", event.getOrderNo());
-        log.info("  买家名称  : {}", event.getBuyerName());
-        log.info("  Topic     : {}", event.getTopic());
-        log.info("  Tag       : {}", event.getTag());
+        log.infof("  订单 ID   : %s", event.getOrderId());
+        log.infof("  订单编号  : %s", event.getOrderNo());
+        log.infof("  买家名称  : %s", event.getBuyerName());
+        log.infof("  Topic     : %s", event.getTopic());
+        log.infof("  Tag       : %s", event.getTag());
         log.info("==================================================");
     }
 }

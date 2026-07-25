@@ -1,6 +1,6 @@
 package io.ddd4j.quarkus.sample.cqrs.person;
 
-import io.ddd4j.core.cqrs.projection.ProjectionRunner;
+import io.ddd4j.core.cqrs.readmodel.ProjectionRunner;
 import io.ddd4j.sample.cqrs.person.application.PersonCommandService;
 import io.ddd4j.sample.cqrs.person.domain.CreatePersonCommand;
 import io.ddd4j.sample.cqrs.person.domain.DeletePersonCommand;
