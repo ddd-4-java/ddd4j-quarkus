@@ -18,12 +18,12 @@
         <!-- ddd4j 底座 revision（必须与 ddd4j 仓库实际 deploy 的一致） -->
         <ddd4j.version>2.0.x.20260630-SNAPSHOT</ddd4j.version>
 
-        <quarkus-bom.version>3.37.0</quarkus-bom.version>
+        <quarkus-bom.version>3.36.3</quarkus-bom.version>
         <quarkus-amazon-services-bom.version>3.20.1</quarkus-amazon-services-bom.version>
         <quarkus-artemis-bom.version>3.14.3</quarkus-artemis-bom.version>
         <quarkus-azure-services-bom.version>1.2.4</quarkus-azure-services-bom.version>
         <quarkus-business-score-bom.version>1.0.0</quarkus-business-score-bom.version>
-        <quarkus-cxf-bom.version>3.37.0</quarkus-cxf-bom.version>
+        <quarkus-cxf-bom.version>3.36.0</quarkus-cxf-bom.version>
         <quarkus-flags-bom.version>1.0.0</quarkus-flags-bom.version>
         <quarkus-flow-bom.version>0.12.0</quarkus-flow-bom.version>
         <quarkus-google-cloud-services-bom.version>2.23.1</quarkus-google-cloud-services-bom.version>
@@ -52,6 +52,7 @@
         -->
         <jboss-logging.version>3.6.3.Final</jboss-logging.version>
         <asm.version>9.9.1</asm.version>
+        <testcontainers-bom.version>1.20.4</testcontainers-bom.version>
     </properties>
 
     <dependencyManagement>
@@ -217,11 +218,41 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- 4. ddd4j 平台核心模块坐标（纯 Java，零 Spring 依赖） -->
+            <!-- 4. ddd4j 平台核心模块坐标（纯 Java，零 Spring 依赖）。
+                 显式声明 io.ddd4j:* 全部常用模块版本，避免 ddd4j-quarkus 子模块
+                 必须依赖 ddd4j-quarkus-bom 才能解析版本。 -->
             <dependency>
                 <groupId>io.ddd4j</groupId>
                 <artifactId>ddd4j-core</artifactId>
                 <version>${ddd4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-kit</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-annotation</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-cache</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-runtime-quarkus</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+            <!-- 4.1 本仓 ddd4j-quarkus-* 模块统一版本管理。
+                 ddd4j-quarkus-bom 也声明了这些，但部分聚合子模块（如 ddd4j-quarkus-mq）
+                 没有 import bom，需要在 dependencies 顶层提供，避免子模块版本解析失败。 -->
+            <dependency>
+                <groupId>io.ddd4j.quarkus</groupId>
+                <artifactId>ddd4j-quarkus-mq-core</artifactId>
+                <version>${revision}</version>
             </dependency>
 
             <!-- 5. Quarkus 轨道专用 override：仅保留 ddd4j 未显式管理、且 Quarkus 强约束的版本 -->
@@ -255,6 +286,15 @@
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm-analysis</artifactId>
                 <version>${asm.version}</version>
+            </dependency>
+
+            <!-- 6. Testcontainers 集成（仅 ddd4j-quarkus-mq-testcontainers 等模块需要） -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

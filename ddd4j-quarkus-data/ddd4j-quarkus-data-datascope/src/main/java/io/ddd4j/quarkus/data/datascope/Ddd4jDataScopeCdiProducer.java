@@ -17,8 +17,8 @@ public class Ddd4jDataScopeCdiProducer {
     @Produces
     @ApplicationScoped
     public DataScopeProvider dataScopeProvider() {
-        return new DataScopeProvider() {
-        };
+        // 业务侧应通过 CDI @Alternative 覆盖本实现
+        return DataScopeProvider.nonNullAllowed();
     }
 
 }

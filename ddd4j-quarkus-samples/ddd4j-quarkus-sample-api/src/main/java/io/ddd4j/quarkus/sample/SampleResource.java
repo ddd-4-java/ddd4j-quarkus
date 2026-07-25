@@ -1,6 +1,6 @@
 package io.ddd4j.quarkus.sample;
 
-import io.ddd4j.core.contract.R;
+import io.ddd4j.core.api.R;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;

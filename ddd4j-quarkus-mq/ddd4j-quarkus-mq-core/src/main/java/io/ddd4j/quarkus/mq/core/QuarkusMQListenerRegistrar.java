@@ -1,6 +1,6 @@
 package io.ddd4j.quarkus.mq.core;
 
-import io.ddd4j.core.contract.annotation.MQEventListener;
+import io.ddd4j.mq.annotation.MQEventListener;
 import io.ddd4j.mq.ack.AckDisposition;
 import io.ddd4j.mq.ack.MessageAcknowledgment;
 import io.ddd4j.mq.ack.MQConsumeTemplates;

@@ -18,7 +18,7 @@
     </description>
 
     <dependencies>
-        <!-- ddd4j 数据层外部服务 -->
+        <!-- ddd4j 数据层外部服务（IP 归属地离线查询、地理编码等 Template） -->
         <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-data-external</artifactId>
@@ -29,6 +29,26 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

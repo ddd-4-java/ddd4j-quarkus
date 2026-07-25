@@ -1,6 +1,6 @@
 package io.ddd4j.quarkus.data.panache;
 
-import io.ddd4j.core.contract.Page;
+import io.ddd4j.core.api.Page;
 import io.quarkus.panache.common.Parameters;
 import io.quarkus.panache.common.Sort;
 import jakarta.persistence.GeneratedValue;

@@ -1,23 +1,33 @@
 package io.ddd4j.quarkus.cache;
 
 import io.ddd4j.cache.CacheKit;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import jakarta.enterprise.context.ApplicationScoped;
+import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithName;
 
 /**
- * ddd4j-quarkus 缓存配置。
+ * ddd4j-quarkus cache configuration mapping.
  *
- * <p>{@link CacheKit} 是静态工具类（private 构造器），无需注册为 Bean。
- * 本类仅通过 MicroProfile Config 读取默认缓存类型并设置到 CacheKit。
+ * <p>Mirrors {@code ddd4j-boot-cache.CacheProperties} (Spring Boot
+ * {@code @ConfigurationProperties(prefix = "ddd4j.cache")}) but expressed as a Quarkus
+ * SmallRye {@link io.smallrye.config.ConfigMapping} so it can be consumed at build time
+ * by {@link Ddd4jCacheBuildItemProducer}.
+ *
+ * <p>The default value is intentionally mapped from string ("CAFFEINE"/"GUAVA"/"HUTOOL")
+ * to {@link CacheKit.LocalCacheType} by the build step, isolating the framework-neutral
+ * API from the Quarkus-specific configuration shape.
  *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  */
-@ApplicationScoped
-public class Ddd4jCacheConfig {
+@io.smallrye.config.ConfigMapping(prefix = "ddd4j.cache")
+public interface Ddd4jCacheConfig {
 
-    @ConfigProperty(name = "ddd4j.cache.default-type", defaultValue = "CAFFEINE")
-    public void setDefaultType(String defaultType) {
-        CacheKit.setDefaultType(CacheKit.LocalCacheType.valueOf(defaultType));
-    }
-
+    /**
+     * Default local cache implementation.
+     *
+     * <p>Valid values map to {@link CacheKit.LocalCacheType}:
+     * {@code CAFFEINE} (default), {@code GUAVA}, {@code HUTOOL}.
+     */
+    @WithName("default-type")
+    @WithDefault("CAFFEINE")
+    String defaultType();
 }

@@ -1,7 +1,7 @@
 package io.ddd4j.quarkus.data.logs;
 
-import io.ddd4j.data.logs.aspect.ApiOperationLogProvider;
-import io.ddd4j.data.logs.aspect.DefaultApiOperationLogProvider;
+import io.ddd4j.data.logs.ApiOperationLogProvider;
+import io.ddd4j.data.logs.DefaultApiOperationLogProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 

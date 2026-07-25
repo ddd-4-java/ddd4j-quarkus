@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://mvn.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.ddd4j.quarkus</groupId>
+        <artifactId>ddd4j-quarkus-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../../ddd4j-quarkus-parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ddd4j-quarkus-mq-testcontainers</artifactId>
+    <packaging>jar</packaging>
+    <description>
+        ddd4j-quarkus 消息队列 testcontainers 共享 fixture：
+        - AbstractTestContainerFixture（统一 start/stop + withReuse）
+        - 13 个 broker 的专用 fixture（Kafka / RabbitMQ / RocketMQ / ActiveMQ / Pulsar / NATS /
+          MQTT / Redis-Stream / SQS / ONS / TDMQ / Disruptor / MQTT-Mica）
+        - QuarkusResourceLifecycleManager 集成（每个 fixture 自动注入容器连接信息到 application.properties）
+        - JunitJupiterQuarkusTestContainers 注解（一键启用）
+
+        镜像版本统一固定为：
+        - kafka:7.6.1 (confluentinc/cp-kafka, KRaft 模式)
+        - rabbitmq:3.13-management-alpine
+        - rocketmq:5.3.0 (apache/rocketmq)
+        - activemq:5.18.3 (apache/activemq-classic)
+        - pulsar:3.2.0 (apachepulsar/pulsar, standalone)
+        - nats:2.10-alpine
+        - mqtt:2.0 (eclipse-mosquitto)
+        - redis:7.4-alpine (启用 notify-keyspace-events)
+        - localstack:3.4 (SQS)
+        - disruptor: 无容器，本地内存
+    </description>
+
+    <dependencies>
+        <!-- 核心 testcontainers API -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+        </dependency>
+        <!-- 专用 broker 容器（testcontainers 子模块，1.20+ 各 broker 拆分为独立 artifact） -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>rabbitmq</artifactId>
+        </dependency>
+        <!-- Quarkus test 集成（含 QuarkusTestResourceLifecycleManager） -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit</artifactId>
+        </dependency>
+        <!-- JUnit 5 集成 -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- awaitility 用于异步断言 -->
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- 单元测试（不需要容器） -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -35,7 +35,12 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-awt</artifactId>
         </dependency>
-        <!-- The shared DDD4J BOM pins Hibernate 6.6; Quarkus 3.36 requires Hibernate 7.3. -->
+        <!--
+            Quarkus 3.36+ requires Hibernate 7.3.x; the shared DDD4J BOM still pins Hibernate 6.6.x.
+            These overrides only affect this module's test augmentation. Plan: migrate to
+            ddd4j-quarkus-dependencies in Phase P5 (alongside the planned ddd4j-quarkus-testcontainers
+            module which will own all test-scope dependency overrides centrally).
+        -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>

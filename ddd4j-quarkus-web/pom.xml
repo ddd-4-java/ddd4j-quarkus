@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://mvn.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.ddd4j.quarkus</groupId>
+        <artifactId>ddd4j-quarkus-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../ddd4j-quarkus-parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ddd4j-quarkus-web</artifactId>
+    <description>
+        ddd4j-quarkus Web 集成层：
+        - RESTEasy Reactive 请求/响应过滤器（Ddd4jQuarkusWebFilter）
+        - JAX-RS Resource 基类（TenantAwareResource）
+        - 异常映射（DefaultExceptionHandler）
+        - 请求上下文工具（WebUtils）
+        - 访问日志过滤（AccessLogFilter）
+        - Quarkus AggregateController 抽象基类（QuarkusAggregateController）
+        - SmallRye HealthCheck 健康指示器（Ddd4jQuarkusWebHealthCheck）
+
+        与 ddd4j-boot-web-{webmvc,webflux} 一一对应（Quarkus REST 替代 Spring MVC/WebFlux）。
+    </description>
+
+    <dependencies>
+        <!-- 主仓 ddd4j-web-core（框架中立 Web 抽象：WebRequestContext/SynchronousWebRequestSession 等） -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-web-core</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+        <!-- 主仓 ddd4j-runtime-quarkus（Subject/CDI 桥接） -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-runtime-quarkus</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+        <!-- RESTEasy Reactive（Quarkus 默认 REST 实现） -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest-jackson</artifactId>
+        </dependency>
+        <!-- SmallRye Health 暴露 /q/health/ready -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-health</artifactId>
+        </dependency>
+        <!-- Vert.x HttpClient（client IP 解析） -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-vertx</artifactId>
+        </dependency>
+        <!-- CDI -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -1,0 +1,14 @@
+name: io.ddd4j.quarkus.web
+description: "Quarkus Web integration for ddd4j: RESTEasy Reactive filter chain, JAX-RS resource base classes, exception mapping, health indicator."
+metadata:
+  keywords:
+    - "ddd4j"
+    - "web"
+    - "resteasy-reactive"
+    - "jax-rs"
+    - "tenant"
+  guide: "https://github.com/partme-ai/ddd4j-boot/tree/main/ddd4j-quarkus-web"
+  categories:
+    - "web"
+  status: "stable"
+  configuration-compatibility: "io.ddd4j.web"

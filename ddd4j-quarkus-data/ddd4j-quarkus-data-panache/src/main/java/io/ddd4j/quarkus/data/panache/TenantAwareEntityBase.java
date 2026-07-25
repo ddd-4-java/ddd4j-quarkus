@@ -1,7 +1,7 @@
 package io.ddd4j.quarkus.data.panache;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.ddd4j.core.contract.Page;
+import io.ddd4j.core.api.Page;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Parameters;

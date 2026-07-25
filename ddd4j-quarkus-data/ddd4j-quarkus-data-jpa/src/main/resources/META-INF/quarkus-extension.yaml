@@ -1,0 +1,13 @@
+name: io.ddd4j.quarkus.data.jpa
+description: "Quarkus JPA integration for ddd4j: bridges jakarta.persistence EntityManager to ddd4j-core RepositoryRegistry, reusing ddd4j-data-jpa JpaAggregateRepository."
+metadata:
+  keywords:
+    - "ddd4j"
+    - "jpa"
+    - "hibernate-orm"
+    - "repository"
+  guide: "https://github.com/partme-ai/ddd4j-boot/tree/main/ddd4j-quarkus-data-jpa"
+  categories:
+    - "data"
+  status: "stable"
+  configuration-compatibility: "io.ddd4j.data.jpa"

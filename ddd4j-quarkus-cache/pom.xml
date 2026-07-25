@@ -10,7 +10,7 @@
         <relativePath>../ddd4j-quarkus-parent/pom.xml</relativePath>
     </parent>
     <artifactId>ddd4j-quarkus-cache</artifactId>
-    <description>ddd4j-quarkus 缓存层 CDI 桥接：通过 CDI @Produces 暴露 CacheKit 到 Quarkus 容器。</description>
+    <description>ddd4j-quarkus 缓存层 CDI 桥接：通过 Quarkus BuildStep + Recorder 在 STATIC_INIT 阶段将配置回写到 CacheKit。</description>
 
     <dependencies>
         <dependency>
@@ -18,10 +18,45 @@
             <artifactId>ddd4j-cache</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
+        <!-- Runtime CDI -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
+        <!-- SmallRye Config mapping (build-time + runtime) -->
+        <dependency>
+            <groupId>io.smallrye.config</groupId>
+            <artifactId>smallrye-config-common</artifactId>
+        </dependency>
+        <!-- Build-step wiring -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-core-deployment</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc-deployment</artifactId>
+        </dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

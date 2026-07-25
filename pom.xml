@@ -43,7 +43,7 @@
     <modules>
         <module>ddd4j-quarkus-bom</module>
         <module>ddd4j-quarkus-dependencies</module>
-        <!-- Quarkus 深度适配层：核心运行时已收敛到 io.ddd4j:ddd4j-runtime-quarkus，保留 ddd/auth/data/mq/cache 等深度适配模块 -->
+        <!-- Quarkus 深度适配层：核心运行时已收敛到 io.ddd4j:ddd4j-runtime-quarkus，保留 ddd/auth/data/mq/cache/web 等深度适配模块 -->
         <module>ddd4j-quarkus-ddd</module>
         <!-- 领域聚合（对齐 ddd4j-boot 结构） -->
         <module>ddd4j-quarkus-data</module>
@@ -51,6 +51,8 @@
         <module>ddd4j-quarkus-mq</module>
         <module>ddd4j-quarkus-extensions</module>
         <module>ddd4j-quarkus-auth</module>
+        <!-- Web 集成（对应 ddd4j-boot 的 ddd4j-boot-web，对齐 ddd4j-boot-web-{webmvc,webflux}） -->
+        <module>ddd4j-quarkus-web</module>
         <module>ddd4j-quarkus-parent</module>
         <module>ddd4j-quarkus-samples</module>
     </modules>

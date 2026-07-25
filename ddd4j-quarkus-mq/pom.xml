@@ -35,6 +35,7 @@
         <module>ddd4j-quarkus-mq-redis-stream</module>
         <module>ddd4j-quarkus-mq-rocketmq</module>
         <module>ddd4j-quarkus-mq-tdmq</module>
+        <module>ddd4j-quarkus-mq-testcontainers</module>
     </modules>
 
 </project>

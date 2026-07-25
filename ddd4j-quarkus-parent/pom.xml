@@ -172,11 +172,13 @@
             启用方式：mvn -Pddd4j-full ... 或在业务项目 <activation> 中默认启用。
 
             引入的推荐组合：
-              - ddd4j-runtime-quarkus    : DDD 构造型注解 + 核心 SPI（Subject/I18n/DomainEvent）CDI 桥接
+              - ddd4j-runtime-quarkus      : DDD 构造型注解 + 核心 SPI（Subject/I18n/DomainEvent）CDI 桥接
+              - ddd4j-quarkus-cache        : Caffeine/Guava/Hutool 本地缓存（Quarkus BuildStep + Recorder）
               - ddd4j-quarkus-data-panache : 多租户 Panache 实体基类 + 查询构建 + ID 生成
+              - ddd4j-quarkus-ddd          : Quartz 视图调度 + JPA 投影 + EventStore 配置
               - Web 模块已迁入主仓 io.ddd4j:ddd4j-web-quarkus（不再由本仓 profile 自动引入）
 
-            需要额外能力（MQ/DDD/Auth/Cache）时，业务项目按需在自身 dependencies 中追加对应模块。
+            需要额外能力（MQ/Auth/Extensions）时，业务项目按需在自身 dependencies 中追加对应模块。
             版本由 ddd4j-quarkus-bom 统一管理，无需在此声明 version。
         -->
         <profile>
@@ -188,7 +190,15 @@
                 </dependency>
                 <dependency>
                     <groupId>io.ddd4j.quarkus</groupId>
+                    <artifactId>ddd4j-quarkus-cache</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.ddd4j.quarkus</groupId>
                     <artifactId>ddd4j-quarkus-data-panache</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.ddd4j.quarkus</groupId>
+                    <artifactId>ddd4j-quarkus-ddd</artifactId>
                 </dependency>
             </dependencies>
         </profile>

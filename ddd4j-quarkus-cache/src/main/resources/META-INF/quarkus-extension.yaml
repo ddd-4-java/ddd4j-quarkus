@@ -1,0 +1,14 @@
+name: io.ddd4j.quarkus.cache
+description: "Quarkus integration for ddd4j cache (Caffeine / Guava / Hutool local cache)."
+metadata:
+  keywords:
+    - "ddd4j"
+    - "cache"
+    - "caffeine"
+    - "guava"
+    - "hutool"
+  guide: "https://github.com/partme-ai/ddd4j-boot/tree/main/ddd4j-quarkus-cache"
+  categories:
+    - "data"
+  status: "stable"
+  configuration-compatibility: "io.ddd4j.cache"

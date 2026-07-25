@@ -1,0 +1,13 @@
+name: io.ddd4j.quarkus.data.external
+description: "Quarkus external service integration for ddd4j: bridges IP geolocation / weather / sequence Templates from ddd4j-data-external to CDI."
+metadata:
+  keywords:
+    - "ddd4j"
+    - "ip-region"
+    - "weather"
+    - "external"
+  guide: "https://github.com/partme-ai/ddd4j-boot/tree/main/ddd4j-quarkus-data-external"
+  categories:
+    - "data"
+  status: "stable"
+  configuration-compatibility: "io.ddd4j.data.external"

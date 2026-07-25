@@ -1,6 +1,6 @@
 package io.ddd4j.quarkus.ddd.cqrs;
 
-import io.ddd4j.core.cqrs.projection.ViewScheduler;
+import io.ddd4j.core.cqrs.readmodel.ViewScheduler;
 import org.jboss.logging.Logger;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;

@@ -169,7 +169,17 @@
             </dependency>
             <dependency>
                 <groupId>io.ddd4j.quarkus</groupId>
+                <artifactId>ddd4j-quarkus-web</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ddd4j.quarkus</groupId>
                 <artifactId>ddd4j-quarkus-mq-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ddd4j.quarkus</groupId>
+                <artifactId>ddd4j-quarkus-mq-testcontainers</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
