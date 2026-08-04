@@ -20,6 +20,7 @@
     <modules>
         <module>ddd4j-quarkus-extension-akka</module>
         <module>ddd4j-quarkus-extension-cola</module>
+        <module>ddd4j-quarkus-extension-dubbo</module>
         <module>ddd4j-quarkus-extension-excel</module>
         <module>ddd4j-quarkus-extension-jackson</module>
         <module>ddd4j-quarkus-extension-monitor</module>

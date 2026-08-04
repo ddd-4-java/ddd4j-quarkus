@@ -19,6 +19,12 @@
             <artifactId>ddd4j-extension-qlexpress</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
+        <!-- For CacheKit 规则缓存（替代 boot 版 Spring Cache 适配） -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-cache</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>

@@ -1,0 +1,52 @@
+package io.ddd4j.quarkus.mq.testcontainers;
+
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.utility.DockerImageName;
+
+import java.time.Duration;
+import java.util.Map;
+
+/**
+ * Mica-MQTT testcontainers fixture for Quarkus tests.
+ *
+ * <p>mica-mqtt 是 MQTT 客户端（AIO），需要连接外部 MQTT Broker，因此复用
+ * {@code eclipse-mosquitto:2.0} 镜像（默认监听 1883，允许匿名连接）。
+ * 暴露属性：{@code ddd4j.mq.mqtt-mica.broker-url}（{@code tcp://host:1883}）。
+ *
+ * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
+ * @since 3.3.x
+ */
+public class MicaMqttQuarkusTestResource extends AbstractTestContainerFixture {
+
+    private static final DockerImageName IMAGE = DockerImageName.parse("eclipse-mosquitto:2.0");
+    private static final int MQTT_PORT = 1883;
+
+    private GenericContainer<?> container;
+
+    @Override
+    protected GenericContainer<?> container() {
+        container = new GenericContainer<>(IMAGE)
+                .withExposedPorts(MQTT_PORT);
+        return container;
+    }
+
+    @Override
+    protected org.testcontainers.containers.wait.strategy.WaitStrategy waitStrategy() {
+        return Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(1));
+    }
+
+    @Override
+    protected DockerImageName dockerImageName() {
+        return IMAGE;
+    }
+
+    @Override
+    protected Map<String, String> exposedProperties() {
+        return Map.of(
+                "ddd4j.mq.mqtt-mica.broker-url", String.format("tcp://%s:%s",
+                        container.getHost(), firstMappedPort(container, MQTT_PORT)),
+                "ddd4j.mq.broker", "MQTT_MICA"
+        );
+    }
+}

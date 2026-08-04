@@ -20,28 +20,34 @@
         <dependency>
             <groupId>org.fuin.ddd4j</groupId>
             <artifactId>ddd-4-java-core</artifactId>
+            <version>0.7.0</version>
         </dependency>
         <dependency>
             <groupId>org.fuin.ddd4j</groupId>
             <artifactId>ddd-4-java-jackson</artifactId>
+            <version>0.7.0</version>
         </dependency>
         <dependency>
             <groupId>org.fuin.cqrs4j</groupId>
             <artifactId>cqrs-4-java-core</artifactId>
+            <version>0.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.fuin.cqrs4j</groupId>
             <artifactId>cqrs-4-java-jackson</artifactId>
+            <version>0.6.0</version>
         </dependency>
         <!-- EventStore Client：Ddd4jEventStoreConfig 默认提供内存版 EventStore（esc-mem），
              生产环境由业务项目注入 KurrentDB/EventStoreDB 实现（esc-api 接口） -->
         <dependency>
             <groupId>org.fuin.esc</groupId>
             <artifactId>esc-api</artifactId>
+            <version>0.9.0</version>
         </dependency>
         <dependency>
             <groupId>org.fuin.esc</groupId>
             <artifactId>esc-mem</artifactId>
+            <version>0.9.0</version>
         </dependency>
         <dependency>
             <groupId>io.ddd4j</groupId>
@@ -61,6 +67,12 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-orm-panache</artifactId>
             <optional>true</optional>
+        </dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -19,6 +19,15 @@
             <artifactId>ddd4j-extension-akka</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
+        <!-- For Akka（版本由 ddd4j-dependencies 统一管理） -->
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-slf4j_3</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>

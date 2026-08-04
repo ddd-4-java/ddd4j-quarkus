@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.ddd4j.quarkus</groupId>
+        <artifactId>ddd4j-quarkus-extensions</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ddd4j-quarkus-extension-dubbo</artifactId>
+    <description>
+        ddd4j-quarkus Dubbo 扩展适配。
+        对齐 ddd4j-boot-extension-dubbo 的扩展定位：@IfBuildProperty 条件装配 + Dubbo 核心配置
+        （ApplicationConfig / RegistryConfig / ProtocolConfig）CDI 暴露 + RpcException 统一
+        异常转换（JAX-RS ExceptionMapper）。
+        注意：boot 版依赖 dubbo-spring-boot-starter（Spring 生态）；Quarkus 版只依赖 Dubbo 核心
+        （dubbo-rpc-api / dubbo-common，均无 Spring 依赖），保持 Quarkus 轨道零 Spring 约束。
+    </description>
+
+    <properties>
+        <!-- Dubbo 版本与 ddd4j-boot-extension-dubbo 的 dubbo.version 对齐（ddd4j-dependencies 未管理 org.apache.dubbo） -->
+        <dubbo.version>3.3.6</dubbo.version>
+    </properties>
+
+    <dependencies>
+        <!-- ddd4j-core：统一响应模型（ApiCode / ApiRestResponse） -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-core</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+        <!-- Dubbo 核心：RpcException（dubbo-rpc-api）+ ApplicationConfig/RegistryConfig/ProtocolConfig（dubbo-common） -->
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-rpc-api</artifactId>
+            <version>${dubbo.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-common</artifactId>
+            <version>${dubbo.version}</version>
+        </dependency>
+        <!-- CDI Producer / @IfBuildProperty 条件装配（jakarta.ws.rs-api 由 ddd4j-quarkus-parent 提供） -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
+    </dependencies>
+</project>

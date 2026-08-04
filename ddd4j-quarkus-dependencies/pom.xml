@@ -241,6 +241,20 @@
                 <artifactId>ddd4j-cache</artifactId>
                 <version>${ddd4j.version}</version>
             </dependency>
+            <!-- 主仓 ddd4j-data-crypto 发布 POM 引用了 io.github.hiwepy:jackson-extension 但未带版本，
+                 这里显式管理版本，确保传递依赖可解析（该 artifact 版本与 ddd4j 同步发布） -->
+            <dependency>
+                <groupId>io.github.hiwepy</groupId>
+                <artifactId>jackson-extension</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+            <!-- 主仓 ddd4j-auth-license 发布 POM 引用了 de.schlichtherle.truelicense 但未带版本，
+                 这里显式管理版本（truelicense-core 1.33 为当前发布版本） -->
+            <dependency>
+                <groupId>de.schlichtherle.truelicense</groupId>
+                <artifactId>truelicense-core</artifactId>
+                <version>1.33</version>
+            </dependency>
             <dependency>
                 <groupId>io.ddd4j</groupId>
                 <artifactId>ddd4j-runtime-quarkus</artifactId>

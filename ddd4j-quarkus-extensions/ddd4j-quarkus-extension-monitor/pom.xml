@@ -11,21 +11,24 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-extension-monitor</artifactId>
-    <packaging>pom</packaging>
     <description>
         ddd4j-quarkus 监控告警扩展适配。
-        对齐 ddd4j-boot-extension-monitor 的扩展定位，保留 SmallRye Health、Metrics、告警等 Quarkus 原生适配边界。
+        对齐 ddd4j-boot-extension-monitor 的扩展定位：CDI 暴露 BaseMonitorProperties 配置模型 +
+        钉钉 / 企业微信 / 飞书机器人发送器（复用主仓 ddd4j-extension-monitor 的纯 Java 实现）。
+        Quarkus 使用 JBoss LogManager（无 Logback LoggerContext），boot 的 Logback 守卫不再需要。
     </description>
 
     <dependencies>
+        <!-- 库侧实现：纯 Java 的 monitor 通道（DingTalk/WeCom/Feishu RobotSender）+ 配置模型 -->
         <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-extension-monitor</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
+        <!-- CDI Producer / @IfBuildProperty 条件装配 -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-health</artifactId>
+            <artifactId>quarkus-arc</artifactId>
         </dependency>
     </dependencies>
 </project>
