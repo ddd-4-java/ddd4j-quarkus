@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.ddd4j.quarkus</groupId>
-        <artifactId>ddd4j-quarkus-parent</artifactId>
+        <artifactId>ddd4j-quarkus-dependencies</artifactId>
         <version>${revision}</version>
-        <relativePath>../ddd4j-quarkus-parent/pom.xml</relativePath>
+        <relativePath>../ddd4j-quarkus-dependencies/pom.xml</relativePath>
     </parent>
     <artifactId>ddd4j-quarkus-mq</artifactId>
     <packaging>pom</packaging>

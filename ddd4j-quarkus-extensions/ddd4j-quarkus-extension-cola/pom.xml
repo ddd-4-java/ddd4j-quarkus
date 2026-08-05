@@ -54,5 +54,11 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
+        <!-- JAX-RS：ColaExceptionHandler/ColaSysExceptionHandler 实现 jakarta.ws.rs.ext.ExceptionMapper
+             （框架模块不继承 quarkus-parent 的默认 jakarta 依赖，需显式声明） -->
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+        </dependency>
     </dependencies>
 </project>

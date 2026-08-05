@@ -22,6 +22,15 @@
             <artifactId>ddd4j-auth-license</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
+        <!--
+            truelicense-core：主仓 ddd4j-auth-license 发布 POM 声明了该依赖但未带版本（其
+            effective model invalid，传递依赖不可用）。版本由 ddd4j-quarkus-dependencies 管理
+            （1.33），此处显式声明使传递依赖恢复可用并消除无效 POM 警告。
+        -->
+        <dependency>
+            <groupId>de.schlichtherle.truelicense</groupId>
+            <artifactId>truelicense-core</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>

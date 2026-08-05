@@ -43,10 +43,16 @@
             <artifactId>dubbo-common</artifactId>
             <version>${dubbo.version}</version>
         </dependency>
-        <!-- CDI Producer / @IfBuildProperty 条件装配（jakarta.ws.rs-api 由 ddd4j-quarkus-parent 提供） -->
+        <!-- CDI Producer / @IfBuildProperty 条件装配 -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
+        </dependency>
+        <!-- JAX-RS：DubboExceptionMapper 实现 jakarta.ws.rs.ext.ExceptionMapper
+             （框架模块不继承 quarkus-parent 的默认 jakarta 依赖，需显式声明） -->
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
         </dependency>
     </dependencies>
 </project>

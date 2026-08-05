@@ -32,6 +32,19 @@
 
     <dependencyManagement>
         <dependencies>
+            <!--
+                ddd4j-quarkus-dependencies：Quarkus 轨道全量版本管理（ddd4j-dependencies +
+                quarkus-bom + 轨道 override）。parent 继承即获得 quarkus-* / easyexcel /
+                jakarta-* 等全部第三方版本，业务项目无需再自行 import BOM。
+            -->
+            <dependency>
+                <groupId>io.ddd4j.quarkus</groupId>
+                <artifactId>ddd4j-quarkus-dependencies</artifactId>
+                <version>${revision}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- ddd4j-quarkus-bom：本仓 io.ddd4j / io.ddd4j.quarkus 模块坐标统一版本 -->
             <dependency>
                 <groupId>io.ddd4j.quarkus</groupId>
                 <artifactId>ddd4j-quarkus-bom</artifactId>
@@ -54,49 +67,17 @@
             <artifactId>quarkus-arc</artifactId>
         </dependency>
 
-        <!-- Web 周边：API 文档 / 健康检查 / JWT / 容错 -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-openapi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-health</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-jwt</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
-        </dependency>
-
-        <!-- 数据 / 事务 -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-hibernate-orm-panache</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-narayana-jta</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-mysql</artifactId>
-        </dependency>
-
-        <!-- 调度 -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-quartz</artifactId>
-        </dependency>
-
-        <!-- 业务通用：Excel 导入导出 -->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>easyexcel</artifactId>
-        </dependency>
+        <!--
+            业务选型依赖（数据层/调度/JWT/容错/API 文档/Excel 等）不在此处默认提供——
+            parent 不应替下游项目确定技术选型。需要时通过 profile 显式激活
+            （版本由 ddd4j-quarkus-dependencies 管理，无需声明 version）：
+              -Pddd4j-web      API 文档 + JWT + 容错 + 健康检查
+              -Pddd4j-data     Panache ORM + 事务 + MySQL 驱动
+              -Pddd4j-schedule Quartz 调度
+              -Pddd4j-excel    EasyExcel
+              -Pddd4j-full     上述全部 + ddd4j-runtime-quarkus/cache/data-panache/ddd
+            或者在下游项目 pom 中直接声明所需依赖（推荐，选型更明确）。
+        -->
 
         <!-- Jakarta API -->
         <dependency>
@@ -133,11 +114,6 @@
         </dependency>
 
         <!-- Test -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-junit</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
@@ -177,12 +153,85 @@
         </profile>
 
         <!--
-            ddd4j-full profile：一键引入 ddd4j Quarkus 轨道推荐模块组合，开箱即用 ddd4j 能力。
-            本仓定位对齐 ddd4j-boot：作为 Quarkus 深度适配聚合层，核心运行时收敛到 io.ddd4j:ddd4j-runtime-quarkus，
-            本仓保留 ddd/auth/data/mq/cache 等模块边界。
+            按域选型 profile：parent 不默认提供业务选型依赖，由业务项目按需激活。
+            每个 profile 引入一组完整的业务技术栈；也可不激活任何 profile，
+            直接在下游项目 pom 中声明所需依赖（选型最明确）。
+            所有依赖版本由 ddd4j-quarkus-dependencies（quarkus-bom + ddd4j-dependencies）管理。
+        -->
+
+        <!-- Web 域：API 文档 + JWT + 容错 + 健康检查（REST 实现仍由业务项目显式声明 quarkus-rest / quarkus-resteasy） -->
+        <profile>
+            <id>ddd4j-web</id>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-smallrye-openapi</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-smallrye-jwt</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-smallrye-health</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <!-- 数据域：Panache ORM + JTA 事务 + MySQL 驱动 -->
+        <profile>
+            <id>ddd4j-data</id>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-hibernate-orm-panache</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-narayana-jta</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-jdbc-mysql</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <!-- 调度域：Quartz -->
+        <profile>
+            <id>ddd4j-schedule</id>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-quartz</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <!-- 业务通用：EasyExcel 导入导出 -->
+        <profile>
+            <id>ddd4j-excel</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>easyexcel</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <!--
+            ddd4j-full profile：一键引入 ddd4j Quarkus 轨道推荐完整组合（= ddd4j-web + ddd4j-data
+            + ddd4j-schedule + ddd4j-excel 全部业务选型依赖 + ddd4j 运行时/缓存/数据/DDD 模块），
+            开箱即用 ddd4j 能力。本仓定位对齐 ddd4j-boot：作为 Quarkus 深度适配聚合层，
+            核心运行时收敛到 io.ddd4j:ddd4j-runtime-quarkus，本仓保留 ddd/auth/data/mq/cache 等模块边界。
             启用方式：mvn -Pddd4j-full ... 或在业务项目 <activation> 中默认启用。
 
             引入的推荐组合：
+              - Web/数据/调度/Excel 选型依赖（同 ddd4j-web / ddd4j-data / ddd4j-schedule / ddd4j-excel）
               - ddd4j-runtime-quarkus      : DDD 构造型注解 + 核心 SPI（Subject/I18n/DomainEvent）CDI 桥接
               - ddd4j-quarkus-cache        : Caffeine/Guava/Hutool 本地缓存（Quarkus BuildStep + Recorder）
               - ddd4j-quarkus-data-panache : 多租户 Panache 实体基类 + 查询构建 + ID 生成
@@ -190,11 +239,52 @@
               - Web 模块已迁入主仓 io.ddd4j:ddd4j-web-quarkus（不再由本仓 profile 自动引入）
 
             需要额外能力（MQ/Auth/Extensions）时，业务项目按需在自身 dependencies 中追加对应模块。
-            版本由 ddd4j-quarkus-bom 统一管理，无需在此声明 version。
+            版本由 ddd4j-quarkus-bom / ddd4j-quarkus-dependencies 统一管理，无需在此声明 version。
         -->
         <profile>
             <id>ddd4j-full</id>
             <dependencies>
+                <!-- Web 域 -->
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-smallrye-openapi</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-smallrye-jwt</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-smallrye-health</artifactId>
+                </dependency>
+                <!-- 数据域 -->
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-hibernate-orm-panache</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-narayana-jta</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-jdbc-mysql</artifactId>
+                </dependency>
+                <!-- 调度域 -->
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-quartz</artifactId>
+                </dependency>
+                <!-- 业务通用 -->
+                <dependency>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>easyexcel</artifactId>
+                </dependency>
+                <!-- ddd4j 模块 -->
                 <dependency>
                     <groupId>io.ddd4j</groupId>
                     <artifactId>ddd4j-runtime-quarkus</artifactId>

@@ -4,17 +4,24 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.ddd4j.quarkus</groupId>
-        <artifactId>ddd4j-quarkus</artifactId>
-        <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
+        <groupId>io.ddd4j</groupId>
+    <artifactId>ddd4j-parent</artifactId>
+        <version>2.0.x.20260630-SNAPSHOT</version>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
+    <groupId>io.ddd4j.quarkus</groupId>
     <artifactId>ddd4j-quarkus-bom</artifactId>
+    <version>${revision}</version>
     <packaging>pom</packaging>
     <description>ddd4j-quarkus + ddd4j 整合模块的版本 BOM（业务项目 import 此 BOM 即可获得 ddd4j-quarkus 与 ddd4j
         平台全部模块坐标）
     </description>
+
+    <properties>
+        <revision>3.3.x.20260630-SNAPSHOT</revision>
+        <ddd4j.version>2.0.x.20260630-SNAPSHOT</ddd4j.version>
+    </properties>
 
     <dependencyManagement>
         <dependencies>
