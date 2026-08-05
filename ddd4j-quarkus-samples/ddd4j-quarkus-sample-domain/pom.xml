@@ -14,15 +14,28 @@
     <description>DDD 分层架构 Quarkus 领域层示例骨架，对齐 ddd4j-boot-sample-domain。</description>
 
     <dependencies>
+        <!-- ddd4j-core: 提供聚合根（AggregateRoot）、仓储契约（Repository）、领域事件（DomainEvent）等核心类型 -->
         <dependency>
-            <groupId>io.ddd4j.quarkus</groupId>
-            <artifactId>ddd4j-quarkus-data-panache</artifactId>
-            <version>${revision}</version>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-core</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+        <!-- ddd4j-annotation: 领域模型元数据注解（业务类型 / 领域字段等） -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-annotation</artifactId>
+            <version>${ddd4j.version}</version>
+        </dependency>
+        <!-- Test：纯 JUnit 5 单元测试（不启动 Quarkus），assertj 断言 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.ddd4j.quarkus</groupId>
-            <artifactId>ddd4j-quarkus-extension-cola</artifactId>
-            <version>${revision}</version>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

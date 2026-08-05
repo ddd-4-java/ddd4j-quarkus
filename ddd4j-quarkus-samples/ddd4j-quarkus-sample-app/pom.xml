@@ -24,6 +24,12 @@
             <artifactId>ddd4j-quarkus-sample-client</artifactId>
             <version>${revision}</version>
         </dependency>
+        <!-- Quarkus CDI（quarkus-arc 传递提供 jakarta.enterprise.cdi-api / jakarta.inject）：
+             应用层声明 @ApplicationScoped/@Inject Bean，MapStruct componentModel=jakarta 生成的实现同样需要 -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-core</artifactId>
@@ -38,5 +44,35 @@
             <artifactId>mapstruct-processor</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!-- Test：纯 JUnit 5 单元测试（不启动 Quarkus），assertj 断言 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!-- 显式声明注解处理器路径：确保 MapStruct 生成实现类（CDI componentModel=jakarta） -->
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>1.6.3</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -11,9 +11,38 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-sample-layered</artifactId>
-    <description>DDD 分层架构 Quarkus 示例骨架：对齐 ddd4j-boot-sample-layered，ORM 侧使用 Panache 替代 MyBatis。</description>
+    <description>DDD 分层架构 Quarkus 示例骨架：对齐 ddd4j-boot-sample-layered，聚合 client/app/domain/adapter/infrastructure/common 全部分层，ORM 侧使用 Panache 替代 MyBatis。</description>
 
     <dependencies>
+        <!-- 聚合全部分层：adapter 依赖 app/client，app 依赖 domain/client，此处显式声明便于演示分层依赖关系。
+             说明：不引入 ddd4j-quarkus-sample-infrastructure（Panache 持久化实现需要数据库配置），
+             分层示例默认使用 LayeredSampleConfig 装配的内存仓储，开箱即跑；需要 Panache 持久化时
+             引入 infrastructure 模块并移除 LayeredSampleConfig 的 @Produces 内存仓储即可 -->
+        <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-sample-adapter</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-sample-app</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-sample-client</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-sample-domain</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-sample-common</artifactId>
+            <version>${revision}</version>
+        </dependency>
         <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-core</artifactId>
@@ -47,6 +76,22 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest-jackson</artifactId>
+        </dependency>
+        <!-- Test：@QuarkusTest 全链路集成测试（对齐 ddd4j-quarkus-web 测试依赖组合） -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

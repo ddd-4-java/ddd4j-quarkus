@@ -147,4 +147,21 @@
         </plugins>
     </build>
 
+    <!--
+        集成测试 profile（CI 使用）：显式声明 testcontainers 测试的执行意图。
+        - 激活后启用 Testcontainers 容器 reuse（见 ddd4j-quarkus-mq-testcontainers
+          的 testcontainers.properties 与 CI 中 ~/.testcontainers.properties），
+          减少 CI / 本地重复拉取与启动 broker 镜像的开销。
+        - 预留 failsafe 分离点：后续若将集成测试迁移到 *IT 命名 + failsafe，
+          在此 profile 绑定 maven-failsafe-plugin 即可，无需改动 CI 脚本。
+    -->
+    <profiles>
+        <profile>
+            <id>integration</id>
+            <properties>
+                <testcontainers.reuse.enable>true</testcontainers.reuse.enable>
+            </properties>
+        </profile>
+    </profiles>
+
 </project>

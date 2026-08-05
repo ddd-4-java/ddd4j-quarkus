@@ -1,0 +1,78 @@
+name: Verify ddd4j-quarkus
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  workflow-lint:
+    name: GitHub Actions workflow lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate workflow syntax
+        uses: reviewdog/action-actionlint@v1
+        with:
+          reporter: github-check
+          fail_level: error
+
+  build:
+    name: Java ${{ matrix.java }} verify
+    runs-on: ubuntu-latest
+    needs: workflow-lint
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['17', '21']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - name: Verify Docker daemon (Quarkus dev services / Testcontainers)
+        run: docker info
+      - name: Build and run tests
+        run: ./mvnw -B verify
+      - name: Upload test reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-java${{ matrix.java }}
+          path: |
+            **/target/surefire-reports/*.txt
+            **/target/failsafe-reports/*.txt
+          if-no-files-found: ignore
+          retention-days: 14
+
+  infrastructure-integration:
+    name: Testcontainers infrastructure integration
+    runs-on: ubuntu-latest
+    needs: [workflow-lint, build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Verify Docker daemon
+        run: docker info
+      - name: Enable Testcontainers reuse (keep containers warm across runs)
+        run: |
+          mkdir -p ~/.testcontainers
+          echo "testcontainers.reuse.enable=true" > ~/.testcontainers.properties
+          cat ~/.testcontainers.properties
+      - name: Run broker testcontainers integration tests
+        run: ./mvnw -B verify -Pintegration -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-core,ddd4j-quarkus-mq/ddd4j-quarkus-mq-activemq,ddd4j-quarkus-mq/ddd4j-quarkus-mq-disruptor,ddd4j-quarkus-mq/ddd4j-quarkus-mq-kafka,ddd4j-quarkus-mq/ddd4j-quarkus-mq-mqtt,ddd4j-quarkus-mq/ddd4j-quarkus-mq-mqtt-mica,ddd4j-quarkus-mq/ddd4j-quarkus-mq-nats,ddd4j-quarkus-mq/ddd4j-quarkus-mq-ons,ddd4j-quarkus-mq/ddd4j-quarkus-mq-pulsar,ddd4j-quarkus-mq/ddd4j-quarkus-mq-rabbitmq,ddd4j-quarkus-mq/ddd4j-quarkus-mq-redis-stream,ddd4j-quarkus-mq/ddd4j-quarkus-mq-rocketmq,ddd4j-quarkus-mq/ddd4j-quarkus-mq-sqs,ddd4j-quarkus-mq/ddd4j-quarkus-mq-tdmq -am
