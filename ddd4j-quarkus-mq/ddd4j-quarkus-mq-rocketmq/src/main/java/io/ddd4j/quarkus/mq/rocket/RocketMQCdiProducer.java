@@ -37,10 +37,4 @@ public class RocketMQCdiProducer {
         return new RocketMQClient(properties);
     }
 
-    @Produces
-    @Singleton
-    @DefaultBean
-    public MQClient mqClient(RocketMQClient client) {
-        return client;
-    }
 }

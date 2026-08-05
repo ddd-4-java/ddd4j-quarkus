@@ -143,6 +143,17 @@
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
+        <!--
+            JUnit 4（test）：Quarkus Dev Services 处理器（如 MySQLDevServicesProcessor）
+            加载时引用 org.junit.rules.TestRule（junit4），Quarkus 3 仅传递 junit-jupiter，
+            缺 junit4 会导致 @QuarkusTest 构建阶段 NoClassDefFoundError。
+            版本由 ddd4j 仓库统一管理（4.13.2）。
+        -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <profiles>

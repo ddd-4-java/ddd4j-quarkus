@@ -46,4 +46,38 @@
         <!-- 示例项目统一跳过 quarkus build（仅编译打包 jar），子模块继承此属性 -->
         <quarkus.build.skip>true</quarkus.build.skip>
     </properties>
+
+    <dependencyManagement>
+        <!--
+            import ddd4j-quarkus-dependencies（含 quarkus-bom 3.36.3 + 轨道覆盖）：
+            samples 直接继承 ddd4j-quarkus 根 POM（其父为 ddd4j 主仓 ddd4j-parent，
+            带主仓 quarkus-bom 3.37.0 的依赖管理，如 agroal-api 2.0）。
+            此处显式 import 使 quarkus 3.36.3 轨道版本（如 agroal-api 3.2，
+            含 MultipleAcquisitionAction.LENIENT）在层级上覆盖主仓管理，避免
+            @QuarkusTest 启动时 "Cannot convert lenient" 配置转换失败。
+        -->
+        <dependencies>
+            <dependency>
+                <groupId>io.ddd4j.quarkus</groupId>
+                <artifactId>ddd4j-quarkus-dependencies</artifactId>
+                <version>${revision}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!--
+            JUnit 4（test）：Quarkus Dev Services 处理器（quarkus-devservices-h2/mysql 等）
+            加载时引用 org.junit.rules.TestRule（junit4），Quarkus 3 仅传递 junit-jupiter，
+            缺 junit4 会导致 @QuarkusTest 构建阶段 NoClassDefFoundError。
+            版本由 ddd4j 仓库统一管理（4.13.2）。
+        -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

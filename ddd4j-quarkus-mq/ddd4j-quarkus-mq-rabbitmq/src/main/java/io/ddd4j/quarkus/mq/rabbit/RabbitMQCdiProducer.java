@@ -37,10 +37,4 @@ public class RabbitMQCdiProducer {
         return new RabbitMQClient(properties);
     }
 
-    @Produces
-    @Singleton
-    @DefaultBean
-    public MQClient mqClient(RabbitMQClient client) {
-        return client;
-    }
 }

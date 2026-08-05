@@ -29,4 +29,28 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!--
+                Jandex 索引：本模块是被依赖的 Quarkus 库（含 CDI Producer Bean），
+                生成 META-INF/jandex.idx 使 @QuarkusTest 的 Arc 容器能发现其中的
+                Ddd4jMQCdiProducer（否则依赖方测试报 MQEventSerialization Unsatisfied）。
+            -->
+            <plugin>
+                <groupId>io.smallrye</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
+                <version>${jandex-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>make-index</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>jandex</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

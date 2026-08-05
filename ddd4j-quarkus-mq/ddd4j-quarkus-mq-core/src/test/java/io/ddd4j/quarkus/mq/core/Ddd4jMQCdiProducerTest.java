@@ -40,7 +40,8 @@ class Ddd4jMQCdiProducerTest {
     void producesDefaultJsonSerialization() {
         assertThat(serialization).isNotNull();
         // JsonMQEventSerialization 与 MQEventSerialization 接口绑定均指向同一默认实现
-        assertThat(String.valueOf(serialization.serialize("hello"))).contains("hello");
+        // （serialize 为 <T> T 泛型方法，显式指定 String，避免被 String.valueOf(char[]) 重载推断为 char[]）
+        assertThat(serialization.<String>serialize("hello")).contains("hello");
     }
 
     @Test

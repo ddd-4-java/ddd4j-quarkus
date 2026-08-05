@@ -108,43 +108,68 @@ public class QuarkusMQListenerRegistrar {
      * 扫描所有 CDI Bean 中标注了 {@link MQEventListener} 的方法。
      *
      * <p>对齐 ddd4j-mq-spring 的 {@code MQListenerBeanPostProcessor} 扫描逻辑：
-     * 遍历所有 Object 类型的 Bean，检查其类和父类的声明方法。
+     * 遍历所有 Object 类型的 Bean，检查其类和父类的声明方法。</p>
+     *
+     * <p><b>注意</b>：仅当某个 Bean 的类（含父类/接口）声明了 {@link MQEventListener} 方法时，
+     * 才会调用 {@code getReference} 实例化该 Bean —— 避免实例化无关 Bean（尤其是 Arc
+     * synthetic bean，如 {@code CommandLineRuntimeConfig}，其创建需要 InjectionPoint 上下文，
+     * 直接 getReference 会抛 "A synthetic injection point was not declared"）。</p>
      */
     private List<MQListener> scanListeners() {
         List<MQListener> listeners = new ArrayList<>();
         for (Bean<?> bean : beanManager.getBeans(Object.class)) {
             // 跳过框架内部 Bean（Ambiguous / Decorator / Interceptor 等）
-            if (bean.getBeanClass() == null) {
+            if (bean.getBeanClass() == null || bean.getBeanClass() == Object.class) {
                 continue;
             }
-            scanClass(beanManager.getReference(bean, bean.getBeanClass(),
-                    beanManager.createCreationalContext(null)), bean.getBeanClass(), listeners);
+            // 先反射收集该类中的 @MQEventListener 方法（不实例化 Bean）
+            List<Method> annotated = new ArrayList<>();
+            collectAnnotatedMethods(bean.getBeanClass(), annotated);
+            if (annotated.isEmpty()) {
+                continue;
+            }
+            // 仅对声明了监听器方法的 Bean 实例化（业务 Bean 均可正常创建）
+            Object instance;
+            try {
+                instance = beanManager.getReference(bean, bean.getBeanClass(),
+                        beanManager.createCreationalContext(null));
+            } catch (Exception e) {
+                // synthetic / 特殊 Bean 无法在无 InjectionPoint 上下文创建：跳过并告警
+                log.warnf("Skipping bean %s: cannot instantiate for listener scan: %s",
+                        bean.getBeanClass().getName(), e.getMessage());
+                continue;
+            }
+            for (Method method : annotated) {
+                MQEventListener ann = method.getAnnotation(MQEventListener.class);
+                if (ann == null) {
+                    continue;
+                }
+                listeners.add(MQListener.of(instance, method, ann));
+                log.debugf("Found @MQEventListener: %s.%s (topic=%s, tags=%s)",
+                        bean.getBeanClass().getSimpleName(), method.getName(), ann.topic(), ann.tags());
+            }
         }
         return listeners;
     }
 
     /**
-     * 递归扫描类及其父类中的 @MQEventListener 方法。
+     * 递归收集类、其父类及接口中声明了 {@link MQEventListener} 的方法。
      */
-    private void scanClass(Object bean, Class<?> clazz, List<MQListener> listeners) {
+    private void collectAnnotatedMethods(Class<?> clazz, List<Method> annotated) {
         if (clazz == null || clazz == Object.class) {
             return;
         }
         for (Method method : clazz.getDeclaredMethods()) {
-            MQEventListener ann = method.getAnnotation(MQEventListener.class);
-            if (ann != null) {
-                MQListener listener = MQListener.of(bean, method, ann);
-                listeners.add(listener);
-                log.debugf("Found @MQEventListener: %s.%s (topic=%s, tags=%s)",
-                        clazz.getSimpleName(), method.getName(), ann.topic(), ann.tags());
+            if (method.getAnnotation(MQEventListener.class) != null) {
+                annotated.add(method);
             }
         }
         // 扫描接口默认方法（接口默认实现中的 @MQEventListener）
         for (Class<?> iface : clazz.getInterfaces()) {
-            scanClass(bean, iface, listeners);
+            collectAnnotatedMethods(iface, annotated);
         }
         // 扫描父类
-        scanClass(bean, clazz.getSuperclass(), listeners);
+        collectAnnotatedMethods(clazz.getSuperclass(), annotated);
     }
 
     /**

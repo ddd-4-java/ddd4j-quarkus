@@ -5,7 +5,6 @@ import io.ddd4j.extension.qrcode.QrCodeService;
 import io.ddd4j.extension.qrcode.template.InMemoryQrCodeTemplateRegistry;
 import io.ddd4j.extension.qrcode.template.QrCodeTemplateBinder;
 import io.ddd4j.extension.qrcode.template.QrCodeTemplateRegistry;
-import com.google.zxing.QrCodes;
 import io.quarkus.arc.properties.IfBuildProperty;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Disposes;
@@ -20,8 +19,9 @@ public class QrCodeProducer {
     @Produces
     @Singleton
     public QrCodeService qrCodeService(QrCodeConfig config) {
-        return new DefaultQrCodeService(QrCodes.encoder(), QrCodes.decoder(),
-                config.concurrency(), config.maxBatchSize());
+        // 对齐主仓 ddd4j-extension-qrcode 当前构造器签名（int, int）：
+        // 内部使用 QrCodes.encoder()/decoder() 默认实现
+        return new DefaultQrCodeService(config.concurrency(), config.maxBatchSize());
     }
 
     @Produces

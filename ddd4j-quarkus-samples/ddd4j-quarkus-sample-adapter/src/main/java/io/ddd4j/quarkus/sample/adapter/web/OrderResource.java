@@ -101,6 +101,7 @@ public class OrderResource extends TenantAwareResource implements OrderClientSer
      */
     @POST
     @Path("/{id}/pay")
+    @Consumes(MediaType.WILDCARD)
     @Operation(summary = "支付订单", description = "对已创建的订单执行支付，状态流转 CREATED → PAID")
     public Response pay(@PathParam("id") Long id) {
         return ok(toClientDTO(orderApplicationService.payOrder(id)));
@@ -114,6 +115,7 @@ public class OrderResource extends TenantAwareResource implements OrderClientSer
      */
     @POST
     @Path("/{id}/ship")
+    @Consumes(MediaType.WILDCARD)
     @Operation(summary = "订单发货", description = "对已支付的订单执行发货，状态流转 PAID → SHIPPED")
     public Response ship(@PathParam("id") Long id) {
         return ok(toClientDTO(orderApplicationService.shipOrder(id)));
@@ -127,6 +129,7 @@ public class OrderResource extends TenantAwareResource implements OrderClientSer
      */
     @POST
     @Path("/{id}/cancel")
+    @Consumes(MediaType.WILDCARD)
     @Operation(summary = "取消订单", description = "取消指定订单，状态流转 CREATED/PAID → CANCELLED")
     public Response cancel(@PathParam("id") Long id) {
         return ok(toClientDTO(orderApplicationService.cancelOrder(id)));

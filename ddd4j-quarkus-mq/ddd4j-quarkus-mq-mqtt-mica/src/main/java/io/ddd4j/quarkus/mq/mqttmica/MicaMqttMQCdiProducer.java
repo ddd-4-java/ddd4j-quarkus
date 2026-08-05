@@ -39,13 +39,4 @@ public class MicaMqttMQCdiProducer {
         return new MicaMqttMQClient(properties);
     }
 
-    /**
-     * 以 {@link MQClient} 接口暴露，供 QuarkusMQListenerRegistrar 查找活跃 broker。
-     */
-    @Produces
-    @Singleton
-    @DefaultBean
-    public MQClient mqClient(MicaMqttMQClient client) {
-        return client;
-    }
 }

@@ -35,6 +35,10 @@ public class JwtSubjectProvider implements SubjectProvider {
         try {
             JwtSubject instance = container.instance(JwtSubject.class).get();
             if (instance != null) {
+                // @QuarkusTest / 无真实 HTTP 请求时请求上下文可能激活，但 client proxy 惰性创建
+                // 会触发 CurrentVertxRequest producer（getCurrent() 返回 null 抛
+                // IllegalProductException）：主动触碰一次，失败则走兜底
+                instance.getPrincipal();
                 return instance;
             }
         } catch (Exception e) {

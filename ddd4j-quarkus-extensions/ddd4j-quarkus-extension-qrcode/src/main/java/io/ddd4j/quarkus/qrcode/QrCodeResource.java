@@ -1,16 +1,13 @@
 package io.ddd4j.quarkus.qrcode;
 
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import io.ddd4j.extension.qrcode.QrCodeService;
 import io.ddd4j.extension.qrcode.command.DecodeQrCodeCommand;
 import io.ddd4j.extension.qrcode.command.GenerateQrCodeCommand;
+import io.ddd4j.extension.qrcode.model.QrCodeDecodeRequest;
+import io.ddd4j.extension.qrcode.model.QrCodeOutput;
+import io.ddd4j.extension.qrcode.model.QrCodeRequest;
 import io.ddd4j.extension.qrcode.result.QrCodeArtifact;
 import io.ddd4j.extension.qrcode.result.QrCodeScanResult;
-import com.google.zxing.exception.QrCodeErrorCode;
-import com.google.zxing.exception.QrCodeException;
-import com.google.zxing.model.QrCodeDecodeRequest;
-import com.google.zxing.model.QrCodeImageFormat;
-import com.google.zxing.model.QrCodeRequest;
 import io.quarkus.arc.properties.IfBuildProperty;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -26,7 +23,13 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 import java.io.IOException;
 import java.nio.file.Files;
 
-/** Opt-in Quarkus REST delivery. Remote URL decoding is intentionally unsupported. */
+/**
+ * Opt-in Quarkus REST delivery（对齐主仓 ddd4j-extension-qrcode 当前 API）。
+ *
+ * <p>主仓 2.0.x 将模型收敛到 {@code io.ddd4j.extension.qrcode.model.*}（不再依赖
+ * zxing-extension 的 {@code com.google.zxing.model.*}）：{@link QrCodeRequest}
+ * 仅保留 content/width/height，格式/容错由实现默认处理。远程 URL 解码有意不支持。</p>
+ */
 @Path("/qrcodes")
 @IfBuildProperty(name = "ddd4j.qrcode.web.enabled", stringValue = "true")
 public class QrCodeResource {
@@ -41,19 +44,17 @@ public class QrCodeResource {
     @Path("/render")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response render(RenderRequest input) {
-        QrCodeImageFormat format = QrCodeImageFormat.valueOf(input.getFormat().toUpperCase());
-        QrCodeRequest request = QrCodeRequest.builder(input.getContent())
-                .size(input.getWidth(), input.getHeight())
-                .margin(input.getMargin())
-                .errorCorrectionLevel(ErrorCorrectionLevel.valueOf(input.getErrorCorrectionLevel().toUpperCase()))
-                .format(format)
-                .selfCheck(input.isSelfCheck())
+        QrCodeRequest request = QrCodeRequest.builder()
+                .content(input.getContent())
+                .width(input.getWidth())
+                .height(input.getHeight())
                 .build();
         QrCodeArtifact artifact = service.generate(GenerateQrCodeCommand.builder()
                 .correlationId(input.getCorrelationId())
                 .request(request)
                 .build());
-        return Response.ok(artifact.getOutput().getBytes(), artifact.getOutput().getFormat().getMimeType()).build();
+        QrCodeOutput output = artifact.getOutput();
+        return Response.ok(output.getBytes(), MediaType.APPLICATION_OCTET_STREAM).build();
     }
 
     @POST
@@ -62,15 +63,12 @@ public class QrCodeResource {
     @Produces(MediaType.APPLICATION_JSON)
     public QrCodeScanResult decode(@RestForm("file") FileUpload file) throws IOException {
         if (file.size() > config.maxUploadBytes()) {
-            throw new QrCodeException(QrCodeErrorCode.QRCODE_IMAGE_TOO_LARGE,
+            throw new IllegalArgumentException(
                     "QR code image exceeds configured upload limit");
         }
         byte[] bytes = Files.readAllBytes(file.uploadedFile());
         return service.decode(DecodeQrCodeCommand.builder()
-                .request(QrCodeDecodeRequest.from(bytes)
-                        .multiple(true)
-                        .maxInputBytes(config.maxUploadBytes())
-                        .build())
+                .request(QrCodeDecodeRequest.from(bytes))
                 .build());
     }
 
@@ -81,9 +79,5 @@ public class QrCodeResource {
         private String content;
         private int width = 256;
         private int height = 256;
-        private int margin = 2;
-        private String format = "PNG";
-        private String errorCorrectionLevel = "M";
-        private boolean selfCheck;
     }
 }

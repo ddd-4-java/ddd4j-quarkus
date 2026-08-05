@@ -57,6 +57,20 @@
         <module>ddd4j-quarkus-samples</module>
     </modules>
 
+    <!--
+        JUnit 4（test，全局兜底）：Quarkus Dev Services 处理器（如 MySQLDevServicesProcessor）
+        加载时引用 org.junit.rules.TestRule（junit4），Quarkus 3 仅传递 junit-jupiter。
+        所有继承本根 POM 的模块（web/ddd/auth/extensions/samples 等）在 @QuarkusTest 时
+        都需要 junit4，否则构建阶段 NoClassDefFoundError。版本由 ddd4j 仓库统一管理（4.13.2）。
+    -->
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
     <distributionManagement>
         <repository>
             <id>2624322-release-6F6h6R</id>

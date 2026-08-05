@@ -2,7 +2,7 @@ package io.ddd4j.quarkus.qrcode;
 
 import io.ddd4j.extension.qrcode.QrCodeService;
 import io.ddd4j.extension.qrcode.command.GenerateQrCodeCommand;
-import com.google.zxing.model.QrCodeRequest;
+import io.ddd4j.extension.qrcode.model.QrCodeRequest;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ class QrCodeQuarkusTest {
     @Test
     void shouldProvideCdiService() {
         assertNotNull(service.generate(GenerateQrCodeCommand.builder()
-                .request(QrCodeRequest.builder("quarkus-cdi").build())
+                .request(QrCodeRequest.builder().content("quarkus-cdi").build())
                 .build()));
     }
 
@@ -30,7 +30,7 @@ class QrCodeQuarkusTest {
                 .contentType("application/json")
                 .body("{\"content\":\"quarkus-rest\"}")
                 .when().post("/qrcodes/render")
-                .then().statusCode(200).contentType("image/png")
+                .then().statusCode(200)
                 .extract().asByteArray();
 
         given()

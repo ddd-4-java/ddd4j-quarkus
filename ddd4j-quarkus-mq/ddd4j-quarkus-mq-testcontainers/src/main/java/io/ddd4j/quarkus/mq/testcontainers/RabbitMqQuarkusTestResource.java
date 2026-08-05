@@ -30,7 +30,9 @@ public class RabbitMqQuarkusTestResource extends AbstractTestContainerFixture {
 
     @Override
     protected org.testcontainers.containers.wait.strategy.WaitStrategy waitStrategy() {
-        return Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2));
+        // RabbitMQContainer 暴露 5672/5671/15672/15671（含 TLS 端口），
+        // rabbitmq 默认不监听 TLS（5671/15671），只能等待 AMQP 5672 + Management 15672
+        return Wait.forListeningPorts(5672, 15672).withStartupTimeout(Duration.ofMinutes(2));
     }
 
     @Override

@@ -57,20 +57,16 @@ public class Ddd4jMQCdiProducer {
     /**
      * 默认 JSON 消息序列化实现（同时作为 {@link MQEventSerialization}）。
      *
+     * <p>返回类型 {@link JsonMQEventSerialization} 实现 {@link MQEventSerialization} 接口，
+     * CDI 类型安全解析会同时满足 {@code @Inject MQEventSerialization} 与
+     * {@code @Inject JsonMQEventSerialization}，无需再显式暴露接口绑定
+     * （否则会产生两个候选 Bean，触发 Ambiguous dependencies 部署错误）。</p>
+     *
      * @return JSON 序列化器
      */
     @Produces
     @Singleton
     public JsonMQEventSerialization jsonMQEventSerialization() {
         return new JsonMQEventSerialization();
-    }
-
-    /**
-     * 显式暴露 MQEventSerialization 接口绑定（便于其他模块按接口注入）。
-     */
-    @Produces
-    @Singleton
-    public MQEventSerialization mqEventSerialization(JsonMQEventSerialization impl) {
-        return impl;
     }
 }

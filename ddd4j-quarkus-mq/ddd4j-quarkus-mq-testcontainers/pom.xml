@@ -53,6 +53,15 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit</artifactId>
         </dependency>
+        <!--
+            JUnit 4（compile）：GenericContainer#withReuse(true) 的方法签名/类型层次
+            引用 org.junit.rules.TestRule（testcontainers 内部），fixture 在 main scope，
+            需 junit4 编译期可用（版本由 ddd4j 仓库统一管理 4.13.2）。
+        -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
         <!-- JUnit 5 集成 -->
         <dependency>
             <groupId>org.testcontainers</groupId>

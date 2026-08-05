@@ -248,12 +248,60 @@
                 <artifactId>jackson-extension</artifactId>
                 <version>${ddd4j.version}</version>
             </dependency>
+            <!-- 主仓 ddd4j-extension-qrcode 发布 POM 未声明 io.github.hiwepy:zxing-extension
+                 （其源码引用 com.google.zxing.exception.* 由该库提供），此处显式管理版本，
+                 qrcode 适配模块显式依赖以补齐运行时 classpath -->
+            <dependency>
+                <groupId>io.github.hiwepy</groupId>
+                <artifactId>zxing-extension</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
             <!-- 主仓 ddd4j-auth-license 发布 POM 引用了 de.schlichtherle.truelicense 但未带版本，
                  这里显式管理版本（truelicense-core 1.33 为当前发布版本） -->
             <dependency>
                 <groupId>de.schlichtherle.truelicense</groupId>
                 <artifactId>truelicense-core</artifactId>
                 <version>1.33</version>
+            </dependency>
+            <!--
+                Agroal 连接池版本（显式覆盖）：ddd4j 底座 BOM 先 import，其 quarkus-bom 3.37.0
+                管理 agroal-api 2.0（MultipleAcquisitionAction 枚举仅 warn/strict/off）；而
+                quarkus-bom 3.36.3（本轨道）配套 agroal 3.2（枚举含 LENIENT，Quarkus 3.36
+                默认 multiple-acquisition=lenient）。BOM import 冲突按"先声明者优先"仲裁，
+                此处直接声明的 management 条目优先于 import 内容，保证 @QuarkusTest 启动时
+                配置转换不失败。
+            -->
+            <dependency>
+                <groupId>io.agroal</groupId>
+                <artifactId>agroal-api</artifactId>
+                <version>3.2</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agroal</groupId>
+                <artifactId>agroal-narayana</artifactId>
+                <version>3.2</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agroal</groupId>
+                <artifactId>agroal-pool</artifactId>
+                <version>3.2</version>
+            </dependency>
+            <!--
+                Hibernate ORM 版本（显式覆盖）：主仓 ddd4j-dependencies 先 import
+                hibernate-platform 6.6.40（BootLogging 无 BOOT_LOGGER 字段，与 Quarkus
+                3.36.3 不兼容：@QuarkusTest / quarkus:build 报 NoSuchFieldError）；quarkus-bom
+                3.36.3 配套 Hibernate ORM 7.3.7.Final。此处直接声明的 management 条目优先于
+                import 内容（同 agroal 处理），保证 quarkus 轨道运行时版本一致。
+            -->
+            <dependency>
+                <groupId>org.hibernate.orm</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>7.3.7.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.orm</groupId>
+                <artifactId>hibernate-graalvm</artifactId>
+                <version>7.3.7.Final</version>
             </dependency>
             <dependency>
                 <groupId>io.ddd4j</groupId>

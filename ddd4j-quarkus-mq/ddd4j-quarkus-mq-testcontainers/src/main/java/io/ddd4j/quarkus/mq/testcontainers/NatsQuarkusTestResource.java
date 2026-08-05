@@ -23,7 +23,9 @@ public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
     protected GenericContainer<?> container() {
         container = new GenericContainer<>(IMAGE)
                 .withExposedPorts(4222, 8222)
-                .withCommand("nats-server", "-js");
+                // -js 启用 JetStream；-m 8222 启用 HTTP monitoring，否则 8222 不监听，
+                // Wait.forListeningPort() 会等待 4222+8222 两个端口而超时
+                .withCommand("nats-server", "-js", "-m", "8222");
         return container;
     }
 

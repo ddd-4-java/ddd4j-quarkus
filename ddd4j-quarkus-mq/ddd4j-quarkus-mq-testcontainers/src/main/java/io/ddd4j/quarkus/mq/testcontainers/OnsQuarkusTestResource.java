@@ -27,7 +27,10 @@ public class OnsQuarkusTestResource extends AbstractTestContainerFixture {
     @Override
     protected GenericContainer<?> container() {
         container = new GenericContainer<>(IMAGE)
-                .withExposedPorts(NAMESRV_PORT);
+                .withExposedPorts(NAMESRV_PORT)
+                // 镜像 Cmd 为占位符 "dummy"（entrypoint 会 exec dummy 而 exit 127），
+                // 需显式指定启动命令：以 Name Server 模式启动（WorkingDir 为 bin 目录）
+                .withCommand("sh", "mqnamesrv");
         return container;
     }
 

@@ -41,13 +41,4 @@ public class KafkaMQCdiProducer {
         return new KafkaMQClient(properties, null);
     }
 
-    /**
-     * 以 {@link MQClient} 接口暴露，供 QuarkusMQListenerRegistrar 查找活跃 broker。
-     */
-    @Produces
-    @Singleton
-    @DefaultBean
-    public MQClient mqClient(KafkaMQClient client) {
-        return client;
-    }
 }

@@ -74,7 +74,9 @@ public class Ddd4jQuarkusWebFilter {
         this.idempotencyLifecycle = idempotencyLifecycle;
     }
 
-    @ServerRequestFilter(priority = Priorities.AUTHENTICATION)
+    // 注意：本基类方法不标注 @ServerRequestFilter/@ServerResponseFilter——
+    // 由上层应用以 @ApplicationScoped 子类（自行加注解）注册，避免 RESTEasy 将
+    // 基类与子类同时注册为 filter bean 导致 @Inject 歧义（Ambiguous dependencies）。
     public void request(ContainerRequestContext request) {
         // OTel: 启动 SERVER span
         Object span = WebOtelSupport.startServerSpan(
@@ -97,7 +99,6 @@ public class Ddd4jQuarkusWebFilter {
         }
     }
 
-    @ServerResponseFilter(priority = Priorities.USER)
     public void response(ContainerRequestContext request, ContainerResponseContext response) {
         Object contextValue = request.getProperty(CONTEXT_PROPERTY);
         if (contextValue instanceof WebRequestContext context) {

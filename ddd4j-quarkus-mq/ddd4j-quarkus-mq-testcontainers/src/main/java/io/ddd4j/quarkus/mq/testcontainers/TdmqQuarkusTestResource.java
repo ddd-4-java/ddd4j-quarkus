@@ -27,7 +27,10 @@ public class TdmqQuarkusTestResource extends AbstractTestContainerFixture {
     @Override
     protected GenericContainer<?> container() {
         container = new GenericContainer<>(IMAGE)
-                .withExposedPorts(BROKER_PORT);
+                .withExposedPorts(BROKER_PORT)
+                // 镜像 Cmd 为 /bin/bash（无入口命令，容器会立即退出），
+                // 需显式指定 standalone 模式启动（WorkingDir 为 /pulsar）
+                .withCommand("bin/pulsar", "standalone");
         return container;
     }
 

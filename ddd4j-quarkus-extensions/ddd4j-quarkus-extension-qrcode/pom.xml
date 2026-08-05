@@ -19,6 +19,12 @@
             <artifactId>ddd4j-extension-qrcode</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
+        <!-- 主仓 ddd4j-extension-qrcode 发布 POM 漏声明 zxing-extension（源码引用
+             com.google.zxing.exception.* / model.* 由该库提供），此处显式补齐 -->
+        <dependency>
+            <groupId>io.github.hiwepy</groupId>
+            <artifactId>zxing-extension</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
