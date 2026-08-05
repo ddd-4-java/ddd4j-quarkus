@@ -3,6 +3,8 @@ package io.ddd4j.quarkus.monitor;
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
 
+import java.util.Optional;
+
 /**
  * ddd4j-quarkus-monitor 配置（绑定 {@code ddd4j.monitor.*}）。
  *
@@ -98,14 +100,12 @@ public interface MonitorConfig {
         /**
          * 钉钉机器人 Webhook access_token。
          */
-        @WithDefault("")
-        String token();
+                Optional<String> token();
 
         /**
          * 钉钉机器人加签密钥。
          */
-        @WithDefault("")
-        String secret();
+                Optional<String> secret();
     }
 
     /**
@@ -122,8 +122,7 @@ public interface MonitorConfig {
         /**
          * 企业微信机器人 Webhook key。
          */
-        @WithDefault("")
-        String key();
+                Optional<String> key();
     }
 
     /**
@@ -140,14 +139,12 @@ public interface MonitorConfig {
         /**
          * 飞书机器人 webhook 完整地址（含 hook token）。
          */
-        @WithDefault("")
-        String webhookUrl();
+                Optional<String> webhookUrl();
 
         /**
          * 加签密钥（"不勾选签名校验"时留空）。
          */
-        @WithDefault("")
-        String secret();
+                Optional<String> secret();
     }
 
     /**
@@ -158,19 +155,16 @@ public interface MonitorConfig {
         /**
          * 项目名称。
          */
-        @WithDefault("")
-        String project();
+                Optional<String> project();
 
         /**
          * 当前环境。
          */
-        @WithDefault("")
-        String env();
+                Optional<String> env();
 
         /**
          * 应用名称。
          */
-        @WithDefault("")
-        String name();
+                Optional<String> name();
     }
 }

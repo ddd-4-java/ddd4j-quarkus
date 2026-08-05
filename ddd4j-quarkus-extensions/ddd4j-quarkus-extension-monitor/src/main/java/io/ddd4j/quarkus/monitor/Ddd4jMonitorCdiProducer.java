@@ -54,25 +54,25 @@ public class Ddd4jMonitorCdiProducer {
         MonitorConfig.DingTalk dingtalk = config.log().dingtalk();
         DingTalkProperties dingTalkProperties = log.getDingtalk();
         dingTalkProperties.setEnable(dingtalk.enable());
-        dingTalkProperties.setToken(dingtalk.token());
-        dingTalkProperties.setSecret(dingtalk.secret());
+        dingtalk.token().ifPresent(dingTalkProperties::setToken);
+        dingtalk.secret().ifPresent(dingTalkProperties::setSecret);
 
         MonitorConfig.WeCom wecom = config.log().wecom();
         WeComProperties weComProperties = log.getWecom();
         weComProperties.setEnable(wecom.enable());
-        weComProperties.setKey(wecom.key());
+        wecom.key().ifPresent(weComProperties::setKey);
 
         MonitorConfig.Feishu feishu = config.log().feishu();
         FeishuProperties feishuProperties = log.getFeishu();
         feishuProperties.setEnable(feishu.enable());
-        feishuProperties.setWebhookUrl(feishu.webhookUrl());
-        feishuProperties.setSecret(feishu.secret());
+        feishu.webhookUrl().ifPresent(feishuProperties::setWebhookUrl);
+        feishu.secret().ifPresent(feishuProperties::setSecret);
 
         MonitorConfig.App app = config.log().app();
         BaseMonitorProperties.App appProperties = log.getApp();
-        appProperties.setProject(app.project());
-        appProperties.setEnv(app.env());
-        appProperties.setName(app.name());
+        app.project().ifPresent(appProperties::setProject);
+        app.env().ifPresent(appProperties::setEnv);
+        app.name().ifPresent(appProperties::setName);
         return props;
     }
 
@@ -87,8 +87,8 @@ public class Ddd4jMonitorCdiProducer {
     @IfBuildProperty(name = "ddd4j.monitor.log.dingtalk.enable", stringValue = "true", enableIfMissing = true)
     public DingTalkRobotSender dingTalkRobotSender(MonitorConfig config) {
         return new DingTalkRobotSender(
-                config.log().dingtalk().token(),
-                config.log().dingtalk().secret());
+                config.log().dingtalk().token().orElse(""),
+                config.log().dingtalk().secret().orElse(""));
     }
 
     /**
@@ -101,7 +101,7 @@ public class Ddd4jMonitorCdiProducer {
     @Singleton
     @IfBuildProperty(name = "ddd4j.monitor.log.wecom.enable", stringValue = "true", enableIfMissing = true)
     public WeComRobotSender weComRobotSender(MonitorConfig config) {
-        return new WeComRobotSender(config.log().wecom().key());
+        return new WeComRobotSender(config.log().wecom().key().orElse(""));
     }
 
     /**
@@ -115,7 +115,7 @@ public class Ddd4jMonitorCdiProducer {
     @IfBuildProperty(name = "ddd4j.monitor.log.feishu.enable", stringValue = "true", enableIfMissing = true)
     public FeishuRobotSender feishuRobotSender(MonitorConfig config) {
         return new FeishuRobotSender(
-                config.log().feishu().webhookUrl(),
-                config.log().feishu().secret());
+                config.log().feishu().webhookUrl().orElse(""),
+                config.log().feishu().secret().orElse(""));
     }
 }

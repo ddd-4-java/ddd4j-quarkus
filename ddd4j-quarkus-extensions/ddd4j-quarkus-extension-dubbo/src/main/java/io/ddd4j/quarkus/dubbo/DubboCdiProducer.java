@@ -41,7 +41,7 @@ public class DubboCdiProducer {
     @Singleton
     public ApplicationConfig applicationConfig(DubboConfig config) {
         ApplicationConfig applicationConfig = new ApplicationConfig();
-        applicationConfig.setName(config.application().name());
+        config.application().name().ifPresent(applicationConfig::setName);
         return applicationConfig;
     }
 
@@ -55,7 +55,7 @@ public class DubboCdiProducer {
     @Singleton
     public RegistryConfig registryConfig(DubboConfig config) {
         RegistryConfig registryConfig = new RegistryConfig();
-        registryConfig.setAddress(config.registry().address());
+        config.registry().address().ifPresent(registryConfig::setAddress);
         return registryConfig;
     }
 

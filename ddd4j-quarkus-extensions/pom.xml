@@ -29,4 +29,30 @@
         <module>ddd4j-quarkus-extension-qrcode</module>
         <module>ddd4j-quarkus-extension-validation</module>
     </modules>
+
+    <build>
+        <plugins>
+            <!--
+                Jandex 索引（所有扩展模块继承）：扩展的 @ConfigMapping 接口（如
+                JacksonConfig/QLExpressConfig/DubboConfig 等）由 Quarkus 的 SmallRye
+                Config 处理器从 Jandex 索引发现；@QuarkusTest 时 Quarkus bootstrap 从
+                本地仓库解析扩展 jar，无 jandex.idx 则报
+                "SRCFG00027: Could not find a mapping for XxxConfig"。
+            -->
+            <plugin>
+                <groupId>io.smallrye</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
+                <version>${jandex-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>make-index</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>jandex</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

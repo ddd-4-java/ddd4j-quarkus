@@ -23,5 +23,10 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
+        <!-- ExcelHttpKit 构建 JAX-RS Response（下载响应头），需要 REST 运行时提供 RuntimeDelegate -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest</artifactId>
+        </dependency>
     </dependencies>
 </project>

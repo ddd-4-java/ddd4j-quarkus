@@ -3,6 +3,8 @@ package io.ddd4j.quarkus.dubbo;
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
 
+import java.util.Optional;
+
 /**
  * ddd4j-quarkus-dubbo 配置（绑定 {@code ddd4j.dubbo.*}）。
  *
@@ -61,10 +63,9 @@ public interface DubboConfig {
     interface Application {
 
         /**
-         * 应用名称。
+         * 应用名称（可空）。
          */
-        @WithDefault("")
-        String name();
+        Optional<String> name();
     }
 
     /**
@@ -73,10 +74,9 @@ public interface DubboConfig {
     interface Registry {
 
         /**
-         * 注册中心地址，如 {@code nacos://127.0.0.1:8848}。
+         * 注册中心地址，如 {@code nacos://127.0.0.1:8848}（可空）。
          */
-        @WithDefault("")
-        String address();
+        Optional<String> address();
     }
 
     /**
@@ -105,7 +105,6 @@ public interface DubboConfig {
         /**
          * Dubbo Service 扫描包（逗号分隔，可空）。
          */
-        @WithDefault("")
-        String basePackages();
+        Optional<String> basePackages();
     }
 }
