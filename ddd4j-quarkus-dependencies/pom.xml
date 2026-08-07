@@ -20,15 +20,15 @@
         <!-- 本仓 revision / ddd4j 底座 revision（必须与 ddd4j 仓库实际 deploy 的一致） -->
         <revision>3.3.x.20260630-SNAPSHOT</revision>
         <ddd4j.version>2.0.x.20260630-SNAPSHOT</ddd4j.version>
-
+        <quarkus.build.skip>false</quarkus.build.skip>
         <quarkus-bom.version>3.37.3</quarkus-bom.version>
-        <quarkus-amazon-services-bom.version>3.20.1</quarkus-amazon-services-bom.version>
+        <quarkus-amazon-services-bom.version>3.21.0</quarkus-amazon-services-bom.version>
         <quarkus-artemis-bom.version>3.14.3</quarkus-artemis-bom.version>
         <quarkus-azure-services-bom.version>1.2.4</quarkus-azure-services-bom.version>
         <quarkus-business-score-bom.version>1.0.0</quarkus-business-score-bom.version>
-        <quarkus-cxf-bom.version>3.36.0</quarkus-cxf-bom.version>
+        <quarkus-cxf-bom.version>3.38.0</quarkus-cxf-bom.version>
         <quarkus-flags-bom.version>1.0.0</quarkus-flags-bom.version>
-        <quarkus-flow-bom.version>0.12.0</quarkus-flow-bom.version>
+        <quarkus-flow-bom.version>0.13.0</quarkus-flow-bom.version>
         <quarkus-google-cloud-services-bom.version>2.23.1</quarkus-google-cloud-services-bom.version>
         <quarkus-jberet-bom.version>2.11.0</quarkus-jberet-bom.version>
         <quarkus-jgit-bom.version>3.6.2</quarkus-jgit-bom.version>

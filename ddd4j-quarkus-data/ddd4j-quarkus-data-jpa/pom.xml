@@ -33,10 +33,6 @@
             <artifactId>ddd4j-kit</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
-        <dependency>
-            <groupId>jakarta.persistence</groupId>
-            <artifactId>jakarta.persistence-api</artifactId>
-        </dependency>
         <!--
             Quarkus 轨道专用：使用纯 Hibernate ORM 引擎（不依赖 Panache），
             让 JpaAggregateRepository（标准 jakarta.persistence）能完全掌控仓储语义。
