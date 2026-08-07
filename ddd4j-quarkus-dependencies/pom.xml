@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.ddd4j</groupId>
-    <artifactId>ddd4j-parent</artifactId>
+        <artifactId>ddd4j-parent</artifactId>
         <version>2.0.x.20260630-SNAPSHOT</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
@@ -21,7 +21,7 @@
         <revision>3.3.x.20260630-SNAPSHOT</revision>
         <ddd4j.version>2.0.x.20260630-SNAPSHOT</ddd4j.version>
 
-        <quarkus-bom.version>3.37.0</quarkus-bom.version>
+        <quarkus-bom.version>3.37.3</quarkus-bom.version>
         <quarkus-amazon-services-bom.version>3.20.1</quarkus-amazon-services-bom.version>
         <quarkus-artemis-bom.version>3.14.3</quarkus-artemis-bom.version>
         <quarkus-azure-services-bom.version>1.2.4</quarkus-azure-services-bom.version>
