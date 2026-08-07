@@ -43,14 +43,7 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <!-- Test：纯 JUnit 5 单元测试（不启动 Quarkus），assertj 断言 -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+        </dependency></dependencies>
 
     <build>
         <plugins>
