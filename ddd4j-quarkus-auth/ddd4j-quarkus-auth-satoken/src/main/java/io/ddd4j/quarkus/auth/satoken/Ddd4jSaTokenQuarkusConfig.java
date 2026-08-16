@@ -10,6 +10,7 @@ import io.ddd4j.core.util.SubjectKit;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
@@ -42,8 +43,9 @@ public class Ddd4jSaTokenQuarkusConfig {
     }
 
     /**
-     * 提供 SubjectProvider CDI Bean，同时写回 SubjectKit。
+     * 提供 SubjectProvider CDI Bean（@Produces 使方法成为 producer），同时写回 SubjectKit。
      */
+    @Produces
     @Singleton
     public SubjectProvider subjectProvider() {
         SaTokenSubjectProvider provider = new SaTokenSubjectProvider();
@@ -54,6 +56,7 @@ public class Ddd4jSaTokenQuarkusConfig {
     /**
      * 多账号混合登录注解处理器。
      */
+    @Produces
     @Singleton
     public SaMixCheckLoginHandler saMixCheckLoginHandler() {
         return new SaMixCheckLoginHandler();
@@ -62,6 +65,7 @@ public class Ddd4jSaTokenQuarkusConfig {
     /**
      * 内部服务 API Key 注解处理器。
      */
+    @Produces
     @Singleton
     public SaInternalCheckHandler saInternalCheckHandler() {
         return new SaInternalCheckHandler();
