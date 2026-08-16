@@ -7,7 +7,7 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
 
 | 模块 | 说明 |
 | --- | --- |
-| `ddd4j-quarkus-bom` / `ddd4j-quarkus-dependencies` | 版本与依赖统一管理（quarkus-bom 3.36.x） |
+| `ddd4j-quarkus-bom` / `ddd4j-quarkus-dependencies` | 版本与依赖统一管理（quarkus-bom 3.37.x） |
 | `ddd4j-quarkus-ddd` / `ddd4j-quarkus-cache` / `ddd4j-quarkus-web` | 核心深度适配（BuildStep + Recorder / CDI Producer） |
 | `ddd4j-quarkus-data` | 数据访问（panache / jpa / external） |
 | `ddd4j-quarkus-mq` | MQ 适配（core + 13 broker + testcontainers fixtures） |

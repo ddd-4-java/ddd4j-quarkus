@@ -4,6 +4,7 @@ import io.ddd4j.auth.security.subject.SecuritySubjectProvider;
 import io.ddd4j.core.subject.SubjectProvider;
 import io.ddd4j.core.util.SubjectKit;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 
 /**
@@ -18,6 +19,7 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class Ddd4jSecurityQuarkusConfig {
 
+    @Produces
     @Singleton
     public SubjectProvider subjectProvider() {
         SecuritySubjectProvider provider = new SecuritySubjectProvider();

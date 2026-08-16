@@ -4,6 +4,7 @@ import io.ddd4j.auth.shiro.subject.ShiroSubjectProvider;
 import io.ddd4j.core.subject.SubjectProvider;
 import io.ddd4j.core.util.SubjectKit;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
@@ -28,6 +29,7 @@ import java.util.Map;
 @ApplicationScoped
 public class Ddd4jShiroQuarkusConfig {
 
+    @Produces
     @Singleton
     public SubjectProvider subjectProvider() {
         ShiroSubjectProvider provider = new ShiroSubjectProvider();
