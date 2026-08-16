@@ -291,11 +291,6 @@
             </dependency>
             <dependency>
                 <groupId>io.ddd4j.quarkus</groupId>
-                <artifactId>ddd4j-quarkus-extension-pf4j</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.ddd4j.quarkus</groupId>
                 <artifactId>ddd4j-quarkus-extension-qlexpress</artifactId>
                 <version>${revision}</version>
             </dependency>

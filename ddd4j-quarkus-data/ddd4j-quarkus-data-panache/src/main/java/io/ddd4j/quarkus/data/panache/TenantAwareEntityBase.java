@@ -46,7 +46,10 @@ import java.util.Map;
  *     @Id
  *     public Long assetType;
  *
- *     // tenantId 已由基类提供，子类用 @Id 标注即可（通过 @AttributeOverride 或直接 @Column 映射）
+ *     // 基类不声明任何主键字段（含 tenantId）；tenantId 需作为主键时由子类自行声明并标注 @Id
+ *     @Id
+ *     public String tenantId;
+ *
  *     public String name;
  *     public double current;
  * }
@@ -94,8 +97,7 @@ public abstract class TenantAwareEntityBase extends PanacheEntityBase {
      */
     public static <T extends TenantAwareEntityBase> List<T> list(Map<String, Object> filters, List<String> sorting, Class<T> c) {
         Map<String, Object> params = new HashMap<>();
-        String query = RepositoryUtil.formQuery(filters, params);
-        query = "from " + c.getSimpleName() + " where " + query;
+        String query = buildQuery(c, filters, params);
         Sort sort = RepositoryUtil.from(sorting);
         logger.infof("query: %s, sort: %s, filters:%s", query, sorting, filters);
         return find(query, sort, params).list();
@@ -114,11 +116,21 @@ public abstract class TenantAwareEntityBase extends PanacheEntityBase {
      */
     public static <T extends TenantAwareEntityBase> Page<T> search(Map<String, Object> filters, List<String> sorting, long page, long pageSize, Class<T> c) {
         Map<String, Object> params = new HashMap<>();
-        String query = RepositoryUtil.formQuery(filters, params);
-        query = "from " + c.getSimpleName() + " where " + query;
+        String query = buildQuery(c, filters, params);
         Sort sort = RepositoryUtil.from(sorting);
         logger.infof("query: %s, sort: %s, filters:%s", query, sorting, filters);
         return toPage(query, params, sort, page, pageSize);
+    }
+
+    /**
+     * 构造 HQL 查询语句：空过滤条件时省略 {@code where} 子句，
+     * 避免 {@code "from X where "} 尾随 where 导致的 QuerySyntaxException。
+     */
+    private static <T extends TenantAwareEntityBase> String buildQuery(Class<T> c, Map<String, Object> filters, Map<String, Object> params) {
+        String fragment = RepositoryUtil.formQuery(filters, params);
+        return fragment.isEmpty()
+                ? "from " + c.getSimpleName()
+                : "from " + c.getSimpleName() + " where " + fragment;
     }
 
     /**

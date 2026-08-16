@@ -46,7 +46,7 @@ Spring 轨                                              Quarkus 轨
 
 **计划外新增**：dubbo（旧 plan 未列，对齐 ddd4j-boot 3 文件）；validation（计划未列，业务侧需求）；qrcode（计划未列，对齐 ddd4j-boot）。
 
-**未实现删除**：`ddd4j-quarkus-extension-pf4j`（旧 plan W7 要求删除，实际仍存在但为空壳，登记为 P4 待办）。
+**已删除**：`ddd4j-quarkus-extension-pf4j`（旧 plan W7 要求删除；曾保留空壳，已于 2026-08-16 移除目录、聚合 pom 与 BOM 条目）。
 
 ## 4. 核心抽象
 

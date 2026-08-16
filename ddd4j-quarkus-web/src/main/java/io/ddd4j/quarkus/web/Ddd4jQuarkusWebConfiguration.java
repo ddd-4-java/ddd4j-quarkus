@@ -1,9 +1,9 @@
 package io.ddd4j.quarkus.web;
 
 import io.ddd4j.kit.lang.StrKit;
-import io.ddd4j.web.core.AuthenticationMode;
-import io.ddd4j.web.core.PathWebAccessPolicy;
-import io.ddd4j.web.core.WebAccessPolicy;
+import io.ddd4j.web.core.auth.AuthenticationMode;
+import io.ddd4j.web.core.auth.PathWebAccessPolicy;
+import io.ddd4j.web.core.auth.WebAccessPolicy;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.microprofile.config.Config;

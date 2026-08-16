@@ -54,12 +54,12 @@ public abstract class TenantAwareEntity extends TenantAwareEntityBase {
      */
     @Id
     @GeneratedValue(generator = "ddd4j-snowflake")
-    @GenericGenerator(name = "ddd4j-snowflake", strategy = "io.ddd4j.quarkus.data.SnowflakeIdGenerator")
+    @GenericGenerator(name = "ddd4j-snowflake", strategy = "io.ddd4j.quarkus.data.panache.SnowflakeIdGenerator")
     public Long id;
 
     /**
-     * 租户 ID 已由 {@link TenantAwareEntityBase#tenantId} 提供，
-     * 此处重新声明并标注 {@code @Id}，使其纳入本基类固定的两字段复合主键。
+     * 租户 ID：本类声明并标注 {@code @Id}，与 {@link #id} 构成固定的两字段复合主键
+     * （基类 {@link TenantAwareEntityBase} 不声明主键字段）。
      */
     @Id
     public String tenantId;

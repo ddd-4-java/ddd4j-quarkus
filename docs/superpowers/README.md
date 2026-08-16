@@ -107,7 +107,8 @@
 
 ## 已登记的待办（不在 P0-P3 范围）
 
-- [ ] 删除 `ddd4j-quarkus-extension-pf4j`（空壳）
+- [x] 删除 `ddd4j-quarkus-extension-pf4j`（空壳）— 已完成（2026-08-16，随 data-panache 缺陷修复一并提交）
+- [x] 修复 data-panache 缺陷（TenantAwareEntity strategy 类名 / 空 filters HQL / IdGeneratorProducer CDI 通配符违规）— 已完成（2026-08-16，新增 2 个 CDI 装配测试）
 - [ ] 新增 `ddd4j-quarkus-auth-testcontainers` 共享 fixture + 4 个 auth 子模块集成测试
 - [ ] 补齐 `ddd4j-quarkus-data-jpa` main src（当前仅 test）
 - [ ] 补齐 `ddd4j-quarkus-data-external` WeatherQuarkusAdapter + QuarkusExternalCdiProducer

@@ -1,8 +1,8 @@
 package io.ddd4j.quarkus.web;
 
 import io.ddd4j.core.api.R;
-import io.ddd4j.web.core.DefaultWebExceptionTranslator;
-import io.ddd4j.web.core.WebError;
+import io.ddd4j.web.core.error.DefaultWebExceptionTranslator;
+import io.ddd4j.web.core.error.WebError;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;

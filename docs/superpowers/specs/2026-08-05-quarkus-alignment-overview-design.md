@@ -147,7 +147,7 @@ ddd4j-parent  (io.ddd4j:ddd4j-parent:2.0.x.20260630-SNAPSHOT)
 |---|---|---|---|
 | `ddd4j-quarkus-data-jpa` | 补 JpaAggregateRepository/JpaCdiProducer/JpaRepositoryBuildItem | 仅 test（`JpaCdiProducerTest`），main src 留空 | 数据访问抽象统一由主仓 `io.ddd4j:ddd4j-data-jpa` 提供，Quarkus 模块仅适配测试 |
 | `ddd4j-quarkus-data-external` | IpRegion + Weather + Producer | 仅 IpRegion（无 Weather/Producer） | 同上，外置模块由主仓提供 |
-| `ddd4j-quarkus-extension-pf4j` | 删除（改用 Quarkus Plugin） | 仍存在但空壳 | 计划未实施删除；建议 P4 清理 |
+| `ddd4j-quarkus-extension-pf4j` | 删除（改用 Quarkus Plugin） | 已删除（2026-08-16） | 按计划清理空壳 |
 | `ddd4j-quarkus-auth-testcontainers` | 新增 | 未落地 | 4 个 auth 子模块当前只有 Producer，无 testcontainers 集成测试 |
 | 版本基线 | quarkus-bom 3.36.3 | quarkus-bom 3.37.x | 升级对齐 3.37.x 系（hibernate 7.4.1 + agroal 3.2） |
 | 工期 | 10 周 1 人全职 | 实际多智能体并行约 4 个工作日 | 多智能体协作效率显著高于单人估算 |

@@ -1,7 +1,7 @@
 package io.ddd4j.quarkus.web;
 
-import io.ddd4j.web.core.AuthenticationMode;
-import io.ddd4j.web.core.WebRequestContext;
+import io.ddd4j.web.core.auth.AuthenticationMode;
+import io.ddd4j.web.core.context.WebRequestContext;
 import io.smallrye.config.SmallRyeConfigBuilder;
 import org.eclipse.microprofile.config.Config;
 import org.junit.jupiter.api.Test;

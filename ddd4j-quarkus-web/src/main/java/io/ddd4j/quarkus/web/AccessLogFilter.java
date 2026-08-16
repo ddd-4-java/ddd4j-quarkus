@@ -1,6 +1,6 @@
 package io.ddd4j.quarkus.web;
 
-import io.ddd4j.web.core.WebRequestContext;
+import io.ddd4j.web.core.context.WebRequestContext;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.ContainerResponseContext;
