@@ -29,9 +29,7 @@
         <module>ddd4j-quarkus-sample-common</module>
         <module>ddd4j-quarkus-sample-api</module>
         <!-- CQRS 业务链路示例：JAX-RS 命令入口 + CDI 投影 + Scheduler 增量刷新 -->
-        <module>ddd4j-quarkus-sample-cqrs-person</module>
         <!-- 普通充血模型示例：AggregateRoot + DomainRepository + Model/PO 分离 -->
-        <module>ddd4j-quarkus-sample-rich-model</module>
         <!-- Auth 鉴权示例：演示 SubjectKit 统一鉴权入口（JAX-RS 端点） -->
         <module>ddd4j-quarkus-sample-auth-satoken</module>
         <module>ddd4j-quarkus-sample-auth-security</module>

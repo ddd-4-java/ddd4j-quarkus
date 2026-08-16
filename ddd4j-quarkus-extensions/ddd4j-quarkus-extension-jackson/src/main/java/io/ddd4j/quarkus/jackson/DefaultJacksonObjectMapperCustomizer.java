@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
-import io.github.hiwepy.jackson.JavaTimeModule;
-import io.github.hiwepy.jackson.ser.MyBeanSerializerModifier;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.ddd4j.quarkus.jackson.ser.NullTolerantBeanSerializerModifier;
 import io.quarkus.arc.properties.IfBuildProperty;
 import io.quarkus.jackson.ObjectMapperCustomizer;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -33,10 +33,11 @@ import java.time.format.DateTimeFormatter;
  *   <li>{@code simpleDateFormat}（日期时间格式）</li>
  *   <li>{@code FAIL_ON_EMPTY_BEANS / FAIL_ON_UNKNOWN_PROPERTIES} 关闭</li>
  *   <li>{@code USE_GETTERS_AS_SETTERS / ALLOW_FINAL_FIELDS_AS_MUTATORS} 开启</li>
- *   <li>注册 {@link JavaTimeModule}（hiwepy 权威实现）并覆盖 LocalDateTime/LocalDate/LocalTime
+ *   <li>注册官方 jsr310 {@link JavaTimeModule} 并覆盖 LocalDateTime/LocalDate/LocalTime
  *       序列化格式（boot 同款）</li>
- *   <li>注册 {@link MyBeanSerializerModifier}（null 默认序列化策略，6 个开关来自
- *       {@code ddd4j.jackson.default-null-*-serializer}）</li>
+ *   <li>注册 {@link NullTolerantBeanSerializerModifier}（null 默认序列化策略，6 个开关来自
+ *       {@code ddd4j.jackson.default-null-*-serializer}；自包含实现——上游 jackson-extension
+ *       3.0.x 已迁 Jackson 3 命名空间，与 Quarkus 的 Jackson 2 不兼容）</li>
  * </ul></p>
  *
  * <p><b>注意</b>：ObjectMapper 在 STATIC_INIT 阶段构建（早于 SmallRye ConfigMapping 注册），
@@ -77,7 +78,7 @@ public class DefaultJacksonObjectMapperCustomizer implements ObjectMapperCustomi
                 new LocalTimeSerializer(DateTimeFormatter.ofPattern(timePattern)));
         objectMapper.registerModule(module);
 
-        MyBeanSerializerModifier myBeanSerializerModifier = new MyBeanSerializerModifier(
+        NullTolerantBeanSerializerModifier myBeanSerializerModifier = new NullTolerantBeanSerializerModifier(
                 config.getOptionalValue("ddd4j.jackson.default-null-array-serializer", Boolean.class).orElse(true),
                 config.getOptionalValue("ddd4j.jackson.default-null-number-serializer", Boolean.class).orElse(false),
                 config.getOptionalValue("ddd4j.jackson.default-null-string-serializer", Boolean.class).orElse(true),

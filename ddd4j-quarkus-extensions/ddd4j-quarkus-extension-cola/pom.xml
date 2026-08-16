@@ -11,14 +11,11 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-extension-cola</artifactId>
-    <description>ddd4j-quarkus COLA 扩展适配：对齐 boot 模块结构，底层复用 ddd4j-ddd-cola 架构检查能力。</description>
+    <description>ddd4j-quarkus COLA 扩展适配：基于 com.alibaba.cola 组件 + ddd4j-core 统一响应契约的异常处理/响应包装（自包含，不依赖上游 ddd4j-ddd-cola——其已在主仓 3.0.x 移除）。</description>
 
     <dependencies>
-        <dependency>
-            <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-ddd-cola</artifactId>
-            <version>${ddd4j.version}</version>
-        </dependency>
+        <!-- ddd4j-ddd-cola（2.0.x 上游）已在主仓 3.0.x 移除；本模块源码仅用
+             com.alibaba.cola 组件 + io.ddd4j:ddd4j-core 契约，自包含。 -->
         <!-- For ddd4j-core: 统一响应模型（ApiRestResponse / ApiCode） -->
         <dependency>
             <groupId>io.ddd4j</groupId>
@@ -34,21 +31,24 @@
             <groupId>com.alibaba.cola</groupId>
             <artifactId>cola-component-exception</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba.cola</groupId>
-            <artifactId>cola-component-statemachine</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba.cola</groupId>
-            <artifactId>cola-component-domain-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba.cola</groupId>
-            <artifactId>cola-component-extension-starter</artifactId>
-        </dependency>
+        <!-- ResponseHandlerI 所在；COLA starter 传递 Spring Boot，Quarkus 轨必须排除 -->
         <dependency>
             <groupId>com.alibaba.cola</groupId>
             <artifactId>cola-component-catchlog-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-autoconfigure</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

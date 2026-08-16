@@ -11,12 +11,12 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-extension-jackson</artifactId>
-    <description>ddd4j-quarkus Jackson 扩展适配：对齐 boot 模块结构，底层复用 io.github.hiwepy:jackson-extension（JavaTimeModule / MyBeanSerializerModifier），通过 Quarkus ObjectMapperCustomizer 定制 ObjectMapper。</description>
+    <description>ddd4j-quarkus Jackson 扩展适配：对齐 boot 模块结构，底层复用 io.github.easy4j:jackson-extension（JavaTimeModule / MyBeanSerializerModifier），通过 Quarkus ObjectMapperCustomizer 定制 ObjectMapper。</description>
 
     <dependencies>
-        <!-- 权威实现：io.github.hiwepy:jackson-extension（boot ddd4j-boot-extension-jackson 同款依赖） -->
+        <!-- 权威实现：io.github.easy4j:jackson-extension（boot ddd4j-boot-extension-jackson 同款依赖） -->
         <dependency>
-            <groupId>io.github.hiwepy</groupId>
+            <groupId>io.github.easy4j</groupId>
             <artifactId>jackson-extension</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>

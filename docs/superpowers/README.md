@@ -97,6 +97,13 @@
 - 版本 BOM（dependencies）: [../../ddd4j-quarkus-dependencies/pom.xml](../../ddd4j-quarkus-dependencies/pom.xml)
 - 扁平 BOM: [../../ddd4j-quarkus-bom/pom.xml](../../ddd4j-quarkus-bom/pom.xml)
 
+## 分支与版本线
+
+| 分支 | ddd4j 底座 | 构建工具 | 说明 |
+|---|---|---|---|
+| `feature/3.3.x` | `ddd4j 2.0.x`（Maven 3 / POM 4.0.0） | Maven 3.9+ | 当前稳定线（288 测试） |
+| `feature/4.0.x` | `ddd4j 3.0.x`（Maven 4 / POM 4.1.0） | `./mvnw`（4.0.0-rc-6） | 对接主仓 3.0.x：revision 4.0.x；akka/cola/jackson 自包含化（上游迁 boot/Jackson3）；移除 sample-cqrs-person/rich-model（主仓 3.0.x 已有 ddd4j-sample-quarkus-* 权威示例） |
+
 ## 当前快照
 
 - **阶段状态**：P0 / P1 / P2 / P3 全部完成

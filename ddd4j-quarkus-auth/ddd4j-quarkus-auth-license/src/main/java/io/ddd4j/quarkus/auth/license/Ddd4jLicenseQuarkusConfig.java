@@ -1,6 +1,6 @@
 package io.ddd4j.quarkus.auth.license;
 
-import io.ddd4j.auth.license.LicenseVerify;
+import io.ddd4j.extension.license.LicenseVerify;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Disposes;
 import jakarta.enterprise.inject.Produces;
