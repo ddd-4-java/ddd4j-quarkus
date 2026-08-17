@@ -55,4 +55,60 @@ class LayeredOrderApplicationTest {
                 .body("data.records", notNullValue())
                 .body("data.total", greaterThanOrEqualTo(1));
     }
+
+    /**
+     * 完整状态机贯通（含正向主链路 CREATED → PAID → SHIPPED + 分支 CREATED → CANCELLED）：
+     * <p>本测试验证两条独立业务流：
+     * <ul>
+     *   <li>正向流：CREATED → PAID → SHIPPED（终态）</li>
+     *   <li>分支流：另一独立订单 CREATED → CANCELLED</li>
+     * </ul>
+     * <p>说明：领域层 {@code Order.cancel} 仅允许 CREATED/PAID → CANCELLED，
+     * SHIPPED → CANCELLED 抛出 IllegalStateException（业务约束：已发货不可取消），
+     * 因此 COMPLETED/CANCELLED 终止 SHIPPED 链。
+     */
+    @Test
+    void shouldRunCompleteOrderLifecycleAcrossAllStates() {
+        // 主链路：CREATED → PAID → SHIPPED
+        Long id = given()
+                .contentType("application/json")
+                .body("{\"orderNo\":\"ORD-LIFECYCLE-001\",\"buyerId\":\"buyer-lc-1\",\"buyerName\":\"李四\"}")
+                .when().post("/api/orders")
+                .then().statusCode(200)
+                .body("data.status", equalTo("CREATED"))
+                .extract().jsonPath().getLong("data.id");
+
+        given()
+                .when().post("/api/orders/" + id + "/pay")
+                .then().statusCode(200)
+                .body("data.status", equalTo("PAID"));
+
+        given()
+                .when().post("/api/orders/" + id + "/ship")
+                .then().statusCode(200)
+                .body("data.status", equalTo("SHIPPED"));
+
+        given()
+                .when().get("/api/orders/" + id)
+                .then().statusCode(200)
+                .body("data.status", equalTo("SHIPPED"));
+
+        // 分支链路：独立订单 CREATED → CANCELLED（验证 cancel 业务约束）
+        Long id2 = given()
+                .contentType("application/json")
+                .body("{\"orderNo\":\"ORD-LIFECYCLE-002\",\"buyerId\":\"buyer-lc-2\",\"buyerName\":\"王五\"}")
+                .when().post("/api/orders")
+                .then().statusCode(200)
+                .extract().jsonPath().getLong("data.id");
+
+        given()
+                .when().post("/api/orders/" + id2 + "/cancel")
+                .then().statusCode(200)
+                .body("data.status", equalTo("CANCELLED"));
+
+        // 业务约束：SHIPPED 订单不可取消（领域层 Order.cancel 抛 IllegalStateException → 409）
+        given()
+                .when().post("/api/orders/" + id + "/cancel")
+                .then().statusCode(409);
+    }
 }
