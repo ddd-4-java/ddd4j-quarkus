@@ -35,5 +35,14 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
+        <!-- Test scope：3.0.x 主仓 license 已从 ddd4j-auth-license 迁出至
+             ddd4j-extension-license（LicenseKit / LicenseCreator / LicenseKeyStoreGenerator
+             用于端到端测试：keytool 生成 keystore → 签发 → 安装 → 缓存命中） -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-extension-license</artifactId>
+            <version>${ddd4j.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
