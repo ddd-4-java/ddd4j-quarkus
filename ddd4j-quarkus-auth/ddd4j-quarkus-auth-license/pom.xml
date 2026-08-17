@@ -35,5 +35,8 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
+        <!-- 上述 ddd4j-extension-license（compile）同时覆盖测试用途
+             （LicenseKit / LicenseCreator / LicenseKeyStoreGenerator 用于端到端测试：
+             keytool 生成 keystore → 签发 → 安装 → 缓存命中），不再重复声明 test scope -->
     </dependencies>
 </project>
