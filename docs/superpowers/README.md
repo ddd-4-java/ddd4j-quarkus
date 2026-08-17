@@ -102,7 +102,7 @@
 | 分支 | ddd4j 底座 | 构建工具 | 说明 |
 |---|---|---|---|
 | `feature/3.3.x` | `ddd4j 2.0.x`（Maven 3 / POM 4.0.0） | Maven 3.9+ | 当前稳定线（288 测试） |
-| `feature/4.0.x` | `ddd4j 3.0.x`（Maven 4 / POM 4.1.0） | `./mvnw`（4.0.0-rc-6） | 对接主仓 3.0.x：revision 4.0.x；akka/cola/jackson 自包含化（上游迁 boot/Jackson3）；移除 sample-cqrs-person/rich-model（主仓 3.0.x 已有 ddd4j-sample-quarkus-* 权威示例） |
+| `feature/4.0.x` | `ddd4j 3.0.x`（目标 Maven 4 / POM 4.1.0） | `./mvnw`（4.0.0-rc-6 暂未启用） | **占位分支**（与 Quarkus 3.x 集成测试暂不兼容）——实测发现 Quarkus 3.37 的 BootstrapAppModelFactory 仍按 Maven 3 关键字（`project` / `<module>`）解析，4.0.0-rc-6 引入的 `managingProject` / `<subproject>` 重命名会令 Quarkus 拿到 `appArtifact=null` → surefire fork 报 "Failed to create the application model for null"。本分支当前保持 POM 4.0.0 + Maven 3 wrapper（实测 232 测试全绿）。**升级到 Maven 4 必须等 Quarkus 4.x（或 PR 修复 BootstrapAppModelFactory 兼容）**——待办登记于本表 |
 
 ## 当前快照
 
