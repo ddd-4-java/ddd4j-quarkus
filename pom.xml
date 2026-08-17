@@ -39,9 +39,9 @@
             （quarkus-maven-plugin 3.36.x + bootstrap 3.37.0 会 ClassCastException）。
             其余 Maven 插件版本由 ddd4j 根 pom 统一管理，本仓库不重复声明。
         -->
-        <quarkus-bom.version>3.37.0</quarkus-bom.version>
+        <quarkus-bom.version>3.38.2</quarkus-bom.version>
         <quarkus.build.skip>false</quarkus.build.skip>
-        <maven-quarkus-plugin.version>3.37.0</maven-quarkus-plugin.version>
+        <maven-quarkus-plugin.version>3.38.2</maven-quarkus-plugin.version>
     </properties>
 
     <modules>

@@ -24,7 +24,7 @@
         <!-- surefire 默认执行（兜底：主仓 ddd4j-parent 的 surefire 配置引用 ${skipTests}，
              链上无定义时插值失败会被当作 skip 而静默跳过全部测试） -->
         <skipTests>false</skipTests>
-        <quarkus-bom.version>3.37.3</quarkus-bom.version>
+        <quarkus-bom.version>3.38.2</quarkus-bom.version>
         <quarkus-amazon-services-bom.version>3.21.0</quarkus-amazon-services-bom.version>
         <quarkus-artemis-bom.version>3.14.3</quarkus-artemis-bom.version>
         <quarkus-azure-services-bom.version>1.2.4</quarkus-azure-services-bom.version>
