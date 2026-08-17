@@ -41,31 +41,15 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.java }}
           cache: maven
-      - name: Configure private Maven repository credentials
-        # ddd4j 主仓 SNAPSHOT 依赖托管在阿里云私有仓库（2624322-*），
-        # runner 需凭证才能解析 ddd4j-parent 等；secrets 未配置时跳过（公开依赖场景）
+      - name: Configure Maven settings (org secret)
+        # ddd-4-java 组织 secret MAVEN_SETTINGS_XML：完整 settings.xml（阿里云私服
+        # 2624322-* 凭据 + 仓库），secrets 不能用于 if 条件，经 env 传递判空
         env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+          MAVEN_SETTINGS_XML: ${{ secrets.MAVEN_SETTINGS_XML }}
         run: |
-          if [ -n "$MAVEN_USERNAME" ]; then
+          if [ -n "$MAVEN_SETTINGS_XML" ]; then
             mkdir -p ~/.m2
-            cat > ~/.m2/settings.xml <<'EOF'
-            <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
-              <servers>
-                <server>
-                  <id>2624322-release-6F6h6R</id>
-                  <username>${env.MAVEN_USERNAME}</username>
-                  <password>${env.MAVEN_PASSWORD}</password>
-                </server>
-                <server>
-                  <id>2624322-snapshot-3EoOv3</id>
-                  <username>${env.MAVEN_USERNAME}</username>
-                  <password>${env.MAVEN_PASSWORD}</password>
-                </server>
-              </servers>
-            </settings>
-            EOF
+            printf '%s' "$MAVEN_SETTINGS_XML" > ~/.m2/settings.xml
           fi
       - name: Verify Docker daemon (Quarkus dev services / Testcontainers)
         run: docker info
@@ -93,29 +77,15 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
-      - name: Configure private Maven repository credentials
+      - name: Configure Maven settings (org secret)
+        # ddd-4-java 组织 secret MAVEN_SETTINGS_XML：完整 settings.xml（阿里云私服
+        # 2624322-* 凭据 + 仓库），secrets 不能用于 if 条件，经 env 传递判空
         env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+          MAVEN_SETTINGS_XML: ${{ secrets.MAVEN_SETTINGS_XML }}
         run: |
-          if [ -n "$MAVEN_USERNAME" ]; then
+          if [ -n "$MAVEN_SETTINGS_XML" ]; then
             mkdir -p ~/.m2
-            cat > ~/.m2/settings.xml <<'EOF'
-            <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
-              <servers>
-                <server>
-                  <id>2624322-release-6F6h6R</id>
-                  <username>${env.MAVEN_USERNAME}</username>
-                  <password>${env.MAVEN_PASSWORD}</password>
-                </server>
-                <server>
-                  <id>2624322-snapshot-3EoOv3</id>
-                  <username>${env.MAVEN_USERNAME}</username>
-                  <password>${env.MAVEN_PASSWORD}</password>
-                </server>
-              </servers>
-            </settings>
-            EOF
+            printf '%s' "$MAVEN_SETTINGS_XML" > ~/.m2/settings.xml
           fi
       - name: Verify Docker daemon
         run: docker info

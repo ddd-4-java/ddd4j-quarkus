@@ -21,7 +21,7 @@
         <revision>3.3.x.20260630-SNAPSHOT</revision>
         <ddd4j.version>2.0.x.20260630-SNAPSHOT</ddd4j.version>
         <quarkus.build.skip>false</quarkus.build.skip>
-        <quarkus-bom.version>3.37.3</quarkus-bom.version>
+        <quarkus-bom.version>3.37.4</quarkus-bom.version>
         <quarkus-amazon-services-bom.version>3.21.0</quarkus-amazon-services-bom.version>
         <quarkus-artemis-bom.version>3.14.3</quarkus-artemis-bom.version>
         <quarkus-azure-services-bom.version>1.2.4</quarkus-azure-services-bom.version>
