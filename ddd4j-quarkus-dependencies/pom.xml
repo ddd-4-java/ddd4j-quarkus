@@ -318,6 +318,25 @@
                 <artifactId>hibernate-graalvm</artifactId>
                 <version>7.4.1.Final</version>
             </dependency>
+            <!--
+                Jackson 2.x（显式覆盖）：主仓 ddd4j 3.0.x 是 Jackson 3 基线
+                （jackson.version=3.2.1，jackson-bom 3.x 把 2.x 兼容钉在 jackson-core
+                2.13.5），而 Quarkus 3.38.2 的 REST 栈（resteasy-reactive-jackson）
+                需要 jackson 2.15+（StreamConstraintsException 2.15 引入）——
+                缺失时 @QuarkusTest REST 调用 NoClassDefFoundError。显式 management
+                条目优先于 import（同 hibernate/agroal 处理），对齐 quarkus-bom
+                3.38.2 的 Jackson 2.22.0。
+            -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>2.22.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.22.0</version>
+            </dependency>
             <dependency>
                 <groupId>io.ddd4j</groupId>
                 <artifactId>ddd4j-runtime-quarkus</artifactId>
