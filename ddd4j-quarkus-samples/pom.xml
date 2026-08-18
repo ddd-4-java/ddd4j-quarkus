@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+         xmlns="http://maven.apache.org/POM/4.1.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 https://maven.apache.org/xsd/maven-4.1.0.xsd">
+    <modelVersion>4.1.0</modelVersion>
     <parent>
         <groupId>io.ddd4j.quarkus</groupId>
         <artifactId>ddd4j-quarkus</artifactId>
@@ -18,27 +18,27 @@
         （Quarkus 3.36.3 + Hibernate ORM 6.6.40 存在 BootLogging.BOOT_LOGGER 字段不兼容）。
         真实业务项目（如 cloud-das）不受影响，默认 quarkus.build.skip=false。
     </description>
-    <modules>
+    <subprojects>
         <!-- DDD 分层架构示例骨架：对齐 ddd4j-boot-samples 的通用分层结构，Quarkus 侧按需补实现 -->
-        <module>ddd4j-quarkus-sample-layered</module>
-        <module>ddd4j-quarkus-sample-domain</module>
-        <module>ddd4j-quarkus-sample-adapter</module>
-        <module>ddd4j-quarkus-sample-client</module>
-        <module>ddd4j-quarkus-sample-app</module>
-        <module>ddd4j-quarkus-sample-infrastructure</module>
-        <module>ddd4j-quarkus-sample-common</module>
-        <module>ddd4j-quarkus-sample-api</module>
+        <subproject>ddd4j-quarkus-sample-layered</subproject>
+        <subproject>ddd4j-quarkus-sample-domain</subproject>
+        <subproject>ddd4j-quarkus-sample-adapter</subproject>
+        <subproject>ddd4j-quarkus-sample-client</subproject>
+        <subproject>ddd4j-quarkus-sample-app</subproject>
+        <subproject>ddd4j-quarkus-sample-infrastructure</subproject>
+        <subproject>ddd4j-quarkus-sample-common</subproject>
+        <subproject>ddd4j-quarkus-sample-api</subproject>
         <!-- CQRS 业务链路示例：JAX-RS 命令入口 + CDI 投影 + Scheduler 增量刷新 -->
         <!-- 普通充血模型示例：AggregateRoot + DomainRepository + Model/PO 分离 -->
         <!-- Auth 鉴权示例：演示 SubjectKit 统一鉴权入口（JAX-RS 端点） -->
-        <module>ddd4j-quarkus-sample-auth-satoken</module>
-        <module>ddd4j-quarkus-sample-auth-security</module>
-        <module>ddd4j-quarkus-sample-auth-shiro</module>
+        <subproject>ddd4j-quarkus-sample-auth-satoken</subproject>
+        <subproject>ddd4j-quarkus-sample-auth-security</subproject>
+        <subproject>ddd4j-quarkus-sample-auth-shiro</subproject>
         <!-- MQ 集成示例：业务发布 DomainEvent → MQ 投递 → @MQEventListener 消费，三套实现互为对照 -->
-        <module>ddd4j-quarkus-sample-mq-disruptor</module>
-        <module>ddd4j-quarkus-sample-mq-kafka</module>
-        <module>ddd4j-quarkus-sample-mq-rabbitmq</module>
-    </modules>
+        <subproject>ddd4j-quarkus-sample-mq-disruptor</subproject>
+        <subproject>ddd4j-quarkus-sample-mq-kafka</subproject>
+        <subproject>ddd4j-quarkus-sample-mq-rabbitmq</subproject>
+    </subprojects>
 
     <properties>
         <!-- 示例项目统一跳过 quarkus build（仅编译打包 jar），子模块继承此属性 -->

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+         xmlns="http://maven.apache.org/POM/4.1.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 https://maven.apache.org/xsd/maven-4.1.0.xsd">
+    <modelVersion>4.1.0</modelVersion>
     <parent>
         <groupId>io.ddd4j.quarkus</groupId>
         <artifactId>ddd4j-quarkus-dependencies</artifactId>
@@ -23,13 +23,13 @@
         复用 ddd4j-data 各子模块的纯 Java 实现，本层提供 CDI Bean / Quarkus 扩展桥接。
     </description>
 
-    <modules>
-        <module>ddd4j-quarkus-data-panache</module>
-        <module>ddd4j-quarkus-data-jpa</module>
-        <module>ddd4j-quarkus-data-crypto</module>
-        <module>ddd4j-quarkus-data-logs</module>
-        <module>ddd4j-quarkus-data-external</module>
-        <module>ddd4j-quarkus-data-datascope</module>
-    </modules>
+    <subprojects>
+        <subproject>ddd4j-quarkus-data-panache</subproject>
+        <subproject>ddd4j-quarkus-data-jpa</subproject>
+        <subproject>ddd4j-quarkus-data-crypto</subproject>
+        <subproject>ddd4j-quarkus-data-logs</subproject>
+        <subproject>ddd4j-quarkus-data-external</subproject>
+        <subproject>ddd4j-quarkus-data-datascope</subproject>
+    </subprojects>
 
 </project>

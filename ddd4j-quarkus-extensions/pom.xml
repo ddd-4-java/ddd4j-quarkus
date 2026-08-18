@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.1.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 https://maven.apache.org/xsd/maven-4.1.0.xsd">
+    <modelVersion>4.1.0</modelVersion>
     <parent>
         <groupId>io.ddd4j.quarkus</groupId>
         <artifactId>ddd4j-quarkus-dependencies</artifactId>
@@ -17,17 +17,17 @@
         对齐 ddd4j-boot-extensions 的扩展边界，按 Quarkus 原生能力承载 cola、monitor 等扩展适配。
     </description>
 
-    <modules>
-        <module>ddd4j-quarkus-extension-akka</module>
-        <module>ddd4j-quarkus-extension-cola</module>
-        <module>ddd4j-quarkus-extension-dubbo</module>
-        <module>ddd4j-quarkus-extension-excel</module>
-        <module>ddd4j-quarkus-extension-jackson</module>
-        <module>ddd4j-quarkus-extension-monitor</module>
-        <module>ddd4j-quarkus-extension-qlexpress</module>
-        <module>ddd4j-quarkus-extension-qrcode</module>
-        <module>ddd4j-quarkus-extension-validation</module>
-    </modules>
+    <subprojects>
+        <subproject>ddd4j-quarkus-extension-akka</subproject>
+        <subproject>ddd4j-quarkus-extension-cola</subproject>
+        <subproject>ddd4j-quarkus-extension-dubbo</subproject>
+        <subproject>ddd4j-quarkus-extension-excel</subproject>
+        <subproject>ddd4j-quarkus-extension-jackson</subproject>
+        <subproject>ddd4j-quarkus-extension-monitor</subproject>
+        <subproject>ddd4j-quarkus-extension-qlexpress</subproject>
+        <subproject>ddd4j-quarkus-extension-qrcode</subproject>
+        <subproject>ddd4j-quarkus-extension-validation</subproject>
+    </subprojects>
 
     <build>
         <plugins>

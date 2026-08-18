@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns="http://maven.apache.org/POM/4.1.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 https://maven.apache.org/xsd/maven-4.1.0.xsd">
     <!-- POM的模型版本 -->
-    <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.1.0</modelVersion>
 
     <!-- Inherit defaults from Ddd4j 2.0.x -->
     <parent>
@@ -44,22 +44,22 @@
         <maven-quarkus-plugin.version>3.38.2</maven-quarkus-plugin.version>
     </properties>
 
-    <modules>
-        <module>ddd4j-quarkus-bom</module>
-        <module>ddd4j-quarkus-dependencies</module>
+    <subprojects>
+        <subproject>ddd4j-quarkus-bom</subproject>
+        <subproject>ddd4j-quarkus-dependencies</subproject>
         <!-- Quarkus 深度适配层：核心运行时已收敛到 io.ddd4j:ddd4j-runtime-quarkus，保留 ddd/auth/data/mq/cache/web 等深度适配模块 -->
-        <module>ddd4j-quarkus-ddd</module>
+        <subproject>ddd4j-quarkus-ddd</subproject>
         <!-- 领域聚合（对齐 ddd4j-boot 结构） -->
-        <module>ddd4j-quarkus-data</module>
-        <module>ddd4j-quarkus-cache</module>
-        <module>ddd4j-quarkus-mq</module>
-        <module>ddd4j-quarkus-extensions</module>
-        <module>ddd4j-quarkus-auth</module>
+        <subproject>ddd4j-quarkus-data</subproject>
+        <subproject>ddd4j-quarkus-cache</subproject>
+        <subproject>ddd4j-quarkus-mq</subproject>
+        <subproject>ddd4j-quarkus-extensions</subproject>
+        <subproject>ddd4j-quarkus-auth</subproject>
         <!-- Web 集成（对应 ddd4j-boot 的 ddd4j-boot-web，对齐 ddd4j-boot-web-{webmvc,webflux}） -->
-        <module>ddd4j-quarkus-web</module>
-        <module>ddd4j-quarkus-parent</module>
-        <module>ddd4j-quarkus-samples</module>
-    </modules>
+        <subproject>ddd4j-quarkus-web</subproject>
+        <subproject>ddd4j-quarkus-parent</subproject>
+        <subproject>ddd4j-quarkus-samples</subproject>
+    </subprojects>
 
     <!--
         JUnit 4（test，全局兜底）：Quarkus Dev Services 处理器（如 MySQLDevServicesProcessor）
@@ -153,10 +153,16 @@
 
     <build>
         <plugins>
+            <!--
+                flatten-maven-plugin：Maven 4 原生支持 CI-friendly ${revision} 解析，
+                flatten 插件冗余，skip=true 禁用（避免 flatten 1.8.0 内嵌的 Maven 3
+                ModelBuilder 读 POM 4.1.0 报 'modelVersion 4.1.0 is newer' 错误）。
+            -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
                 <configuration>
+                    <skip>true</skip>
                     <flattenMode>resolveCiFriendliesOnly</flattenMode>
                     <updatePomFile>true</updatePomFile>
                 </configuration>
