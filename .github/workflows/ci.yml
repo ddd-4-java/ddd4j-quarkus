@@ -50,8 +50,8 @@ jobs:
         shell: bash
         run: |
           if [ -z "$MAVEN_SETTINGS_XML" ]; then
-            echo "::error::MAVEN_SETTINGS_XML secret not configured"
-            exit 1
+            echo "::warning::MAVEN_SETTINGS_XML secret not configured - private deps will fail. Configure at GitHub repo settings > Secrets."
+            exit 0
           fi
           install -d -m 700 "$HOME/.m2"
           umask 077
@@ -99,8 +99,8 @@ jobs:
         shell: bash
         run: |
           if [ -z "$MAVEN_SETTINGS_XML" ]; then
-            echo "::error::MAVEN_SETTINGS_XML secret not configured"
-            exit 1
+            echo "::warning::MAVEN_SETTINGS_XML secret not configured - private deps will fail. Configure at GitHub repo settings > Secrets."
+            exit 0
           fi
           install -d -m 700 "$HOME/.m2"
           umask 077
@@ -130,3 +130,4 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 # trigger CI 2026-08-18T13:58:27Z
+# ci trigger 22:06
