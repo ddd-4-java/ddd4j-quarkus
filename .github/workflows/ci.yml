@@ -11,7 +11,7 @@ name: Verify ddd4j-quarkus
 on:
   push:
     branches:
-      - main
+      - master
       - 'feature/**'
   pull_request:
 
@@ -129,3 +129,4 @@ jobs:
             **/target/surefire-reports/*.txt
           if-no-files-found: ignore
           retention-days: 14
+# trigger CI 2026-08-18T13:58:27Z
