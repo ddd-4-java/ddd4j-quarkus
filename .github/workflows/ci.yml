@@ -45,7 +45,6 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-          overwrite-settings: true
       - name: Configure Aliyun Maven repositories (org secret)
         shell: bash
         run: |
@@ -94,7 +93,6 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-          overwrite-settings: true
       - name: Configure Aliyun Maven repositories (org secret)
         shell: bash
         run: |
