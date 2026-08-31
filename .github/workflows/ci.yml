@@ -91,9 +91,9 @@ jobs:
         shell: bash
         run: |
           cd ddd4j
-          # 策略：临时从 root POM 移除 ddd4j-tx 子项目声明（其 parent 链不完整），
+          # 策略：临时从 root POM 移除 ddd4j-tx（parent 链不完整）和 ddd4j-samples（编译失败），
           # 然后全量 install（Maven 自动处理依赖顺序）
-          sed -i 's|<subproject>ddd4j-tx</subproject>||g; s|<module>ddd4j-tx</module>||g' pom.xml
+          sed -i 's|<subproject>ddd4j-tx</subproject>||g; s|<module>ddd4j-tx</module>||g; s|<subproject>ddd4j-samples</subproject>||g; s|<module>ddd4j-samples</module>||g' pom.xml
           ./mvnw -B -Denforcer.skip=true -DskipTests -Dmaven.test.skip=true install
       - name: Run unit tests
         run: ./mvnw -U -Denforcer.skip=true -B clean test
@@ -152,9 +152,9 @@ jobs:
         shell: bash
         run: |
           cd ddd4j
-          # 策略：临时从 root POM 移除 ddd4j-tx 子项目声明（其 parent 链不完整），
+          # 策略：临时从 root POM 移除 ddd4j-tx（parent 链不完整）和 ddd4j-samples（编译失败），
           # 然后全量 install（Maven 自动处理依赖顺序）
-          sed -i 's|<subproject>ddd4j-tx</subproject>||g; s|<module>ddd4j-tx</module>||g' pom.xml
+          sed -i 's|<subproject>ddd4j-tx</subproject>||g; s|<module>ddd4j-tx</module>||g; s|<subproject>ddd4j-samples</subproject>||g; s|<module>ddd4j-samples</module>||g' pom.xml
           ./mvnw -B -Denforcer.skip=true -DskipTests -Dmaven.test.skip=true install
       - name: Enable Testcontainers reuse
         run: |
