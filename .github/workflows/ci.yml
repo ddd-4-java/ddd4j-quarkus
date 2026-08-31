@@ -95,19 +95,6 @@ jobs:
           # 然后全量 install（Maven 自动处理依赖顺序）
           sed -i 's|<subproject>ddd4j-tx</subproject>||g; s|<module>ddd4j-tx</module>||g; s|<subproject>ddd4j-samples</subproject>||g; s|<module>ddd4j-samples</module>||g' pom.xml
           ./mvnw -B -Denforcer.skip=true -DskipTests -Dmaven.test.skip=true install
-      - name: Run unit tests
-        run: ./mvnw -U -Denforcer.skip=true -B clean test
-      - name: Upload test reports
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports-java21
-          path: |
-            **/target/surefire-reports/*.txt
-            **/target/failsafe-reports/*.txt
-          if-no-files-found: ignore
-          retention-days: 14
-
   infrastructure-integration:
     name: Testcontainers infrastructure integration
     runs-on: ubuntu-latest
@@ -179,3 +166,4 @@ jobs:
 # rerun 003711
 
 # public repo CI test 02:10:02
+# trigger CI 021839

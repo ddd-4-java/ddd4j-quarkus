@@ -49,7 +49,7 @@ public class JpaRepositoryRegistrar {
         int count = 0;
         for (Repository<?, ?> repository : repositories) {
             try {
-                RepositoryRegistry.register(repository.getClass(), repository);
+                registerUnchecked(repository);
                 LOG.infof("Registered repository: %s", repository.getClass().getName());
                 count++;
             } catch (Exception e) {
@@ -57,5 +57,17 @@ public class JpaRepositoryRegistrar {
             }
         }
         LOG.infof("Total registered repositories: %d", count);
+    }
+
+    /**
+     * 泛型捕获辅助：绕过 {@code Repository<?, ?>} 通配符与
+     * {@code RepositoryRegistry.register(Class<M>, Repository<M>)} 的类型推断不兼容问题。
+     */
+    @SuppressWarnings("unchecked")
+    private static void registerUnchecked(Repository<?, ?> repository) {
+        RepositoryRegistry.register(
+                (Class) repository.getClass(),
+                (Repository) repository
+        );
     }
 }
