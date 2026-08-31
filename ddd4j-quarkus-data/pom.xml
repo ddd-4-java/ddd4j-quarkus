@@ -25,7 +25,6 @@
 
     <subprojects>
         <subproject>ddd4j-quarkus-data-panache</subproject>
-        <subproject>ddd4j-quarkus-data-event-store-panache</subproject>
         <subproject>ddd4j-quarkus-data-jpa</subproject>
         <subproject>ddd4j-quarkus-data-crypto</subproject>
         <subproject>ddd4j-quarkus-data-logs</subproject>
