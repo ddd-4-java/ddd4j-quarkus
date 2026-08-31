@@ -1,0 +1,12 @@
+name: io.ddd4j.quarkus.ddd
+description: "Quarkus integration for ddd4j DDD core (DomainEventPublisher, EntityIdRegistry, CommandBus, CQRS)."
+metadata:
+  keywords:
+    - "ddd4j"
+    - "ddd"
+    - "cqrs"
+    - "event-sourcing"
+  guide: "https://github.com/ddd-4-java/ddd4j-quarkus/tree/main/ddd4j-quarkus-ddd"
+  categories:
+    - "core"
+  status: "stable"

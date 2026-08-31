@@ -1,0 +1,12 @@
+name: io.ddd4j.quarkus.data.eventstore.panache
+description: "Quarkus Panache implementation for ddd4j EventStore SPI (event sourcing persistence)."
+metadata:
+  keywords:
+    - "ddd4j"
+    - "event-store"
+    - "panache"
+    - "event-sourcing"
+  guide: "https://github.com/ddd-4-java/ddd4j-quarkus/tree/main/ddd4j-quarkus-data/ddd4j-quarkus-data-event-store-panache"
+  categories:
+    - "data"
+  status: "stable"

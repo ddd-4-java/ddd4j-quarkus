@@ -19,7 +19,7 @@
     <properties>
         <!-- 本仓 revision / ddd4j 底座 revision（必须与 ddd4j 仓库实际 deploy 的一致） -->
         <revision>4.0.x.20260630-SNAPSHOT</revision>
-        <ddd4j.version>3.0.x.20260630-SNAPSHOT</ddd4j.version>
+        <ddd4j.version>3.0.x.20260730-SNAPSHOT</ddd4j.version>
         <quarkus.build.skip>false</quarkus.build.skip>
         <!-- surefire 默认执行（兜底：主仓 ddd4j-parent 的 surefire 配置引用 ${skipTests}，
              链上无定义时插值失败会被当作 skip 而静默跳过全部测试） -->
@@ -254,6 +254,11 @@
             <dependency>
                 <groupId>io.ddd4j</groupId>
                 <artifactId>ddd4j-cache</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-data-event-store</artifactId>
                 <version>${ddd4j.version}</version>
             </dependency>
             <!-- 主仓 ddd4j-data-crypto 发布 POM 引用了 io.github.hiwepy:jackson-extension 但未带版本，

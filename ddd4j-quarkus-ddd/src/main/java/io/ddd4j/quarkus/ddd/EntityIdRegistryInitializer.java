@@ -24,6 +24,7 @@ import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -63,10 +64,17 @@ public class EntityIdRegistryInitializer {
             return;
         }
 
+        List<String> allowedPrefixes = config.factoryClassPrefixes();
+        boolean whitelistEnabled = allowedPrefixes != null && !allowedPrefixes.isEmpty();
+
         for (Map.Entry<String, String> entry : registry.entrySet()) {
             String typeName = entry.getKey();
             String factoryClassName = entry.getValue();
             try {
+                if (whitelistEnabled && !isAllowed(factoryClassName, allowedPrefixes)) {
+                    throw new IllegalArgumentException(
+                            "Factory class name '" + factoryClassName + "' is not in any allowed prefix: " + allowedPrefixes);
+                }
                 Function<String, EntityId> factory = instantiateFactory(factoryClassName);
                 EntityIdRegistry.register(typeName, factory);
                 LOG.infof("Registered EntityId type '%s' with factory %s", typeName, factoryClassName);
@@ -74,6 +82,22 @@ public class EntityIdRegistryInitializer {
                 LOG.errorf(e, "Failed to register EntityId type '%s' with factory %s", typeName, factoryClassName);
             }
         }
+    }
+
+    /**
+     * 判断工厂类名是否匹配任一白名单前缀。
+     *
+     * @param factoryClassName 待校验类名
+     * @param prefixes         白名单前缀列表（已确认非空）
+     * @return 任一前缀匹配即返回 {@code true}
+     */
+    private static boolean isAllowed(String factoryClassName, List<String> prefixes) {
+        for (String prefix : prefixes) {
+            if (factoryClassName.startsWith(prefix)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
