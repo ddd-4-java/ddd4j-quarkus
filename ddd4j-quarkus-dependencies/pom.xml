@@ -315,6 +315,20 @@
                 <artifactId>hibernate-graalvm</artifactId>
                 <version>7.4.1.Final</version>
             </dependency>
+            <!--
+                SmallRye OpenAPI Core 版本（显式覆盖）：BOM import 仲裁把
+                smallrye-open-api-core 钉到 2.1.2（具体来源未在 ddd4j 主仓 / Quarkiverse /
+                SmallRye BOM 任何显式声明中找到，疑为某 transitive BOM first-import-wins），
+                而 SmallRyeOpenAPI 类仅存在于 4.x — quarkus-maven-plugin:build augmentation
+                阶段 NoClassDefFoundError: io/smallrye/openapi/api/SmallRyeOpenAPI。
+                对齐 quarkus-bom 3.37.4 的 4.3.3，显式 management 条目优先于 import，
+                保证 quarkus 轨道运行时版本一致（同 jackson/hibernate/agroal 处理）。
+            -->
+            <dependency>
+                <groupId>io.smallrye</groupId>
+                <artifactId>smallrye-open-api-core</artifactId>
+                <version>4.3.3</version>
+            </dependency>
             <dependency>
                 <groupId>io.ddd4j</groupId>
                 <artifactId>ddd4j-runtime-quarkus</artifactId>
