@@ -281,6 +281,11 @@
             </dependency>
             <dependency>
                 <groupId>io.ddd4j.quarkus</groupId>
+                <artifactId>ddd4j-quarkus-extension-dubbo</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ddd4j.quarkus</groupId>
                 <artifactId>ddd4j-quarkus-extension-excel</artifactId>
                 <version>${revision}</version>
             </dependency>
