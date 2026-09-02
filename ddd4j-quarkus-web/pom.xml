@@ -13,22 +13,20 @@
     <artifactId>ddd4j-quarkus-web</artifactId>
     <description>
         ddd4j-quarkus Web 集成层：
-        - RESTEasy Reactive 请求/响应过滤器（Ddd4jQuarkusWebFilter）
-        - JAX-RS Resource 基类（TenantAwareResource）
-        - 异常映射（DefaultExceptionHandler）
-        - 请求上下文工具（WebUtils）
-        - 访问日志过滤（AccessLogFilter）
-        - Quarkus AggregateController 抽象基类（QuarkusAggregateController）
-        - SmallRye HealthCheck 健康指示器（Ddd4jQuarkusWebHealthCheck）
+        - SmallRye HealthCheck 健康指示器（Ddd4jQuarkusWebHealthCheck，暴露 /q/health/ready）
+
+        过滤器/异常映射/Resource 基类等通用能力复用主仓 io.ddd4j:ddd4j-web-quarkus
+        （Ddd4jQuarkusWebFilter/AccessLogFilter/DefaultExceptionHandler/TenantAwareResource 等），
+        本模块不再维护平行副本（CONTRIBUTING.md：不重复主仓实现）。
 
         与 ddd4j-boot-web-{webmvc,webflux} 一一对应（Quarkus REST 替代 Spring MVC/WebFlux）。
     </description>
 
     <dependencies>
-        <!-- 主仓 ddd4j-web-core（框架中立 Web 抽象：WebRequestContext/SynchronousWebRequestSession 等） -->
+        <!-- 主仓 ddd4j-web-quarkus（RESTEasy Reactive 过滤器链/异常映射/TenantAwareResource 等通用 Web 能力） -->
         <dependency>
             <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-web-core</artifactId>
+            <artifactId>ddd4j-web-quarkus</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
         <!-- 主仓 ddd4j-runtime-quarkus（Subject/CDI 桥接） -->

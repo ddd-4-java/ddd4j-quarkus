@@ -57,7 +57,8 @@
             <groupId>io.smallrye</groupId>
             <artifactId>jandex</artifactId>
         </dependency>
-        <!-- Quartz 调度：QuarkusViewScheduler 动态 CRON 调度 CQRS 视图拉取 -->
+        <!-- Quartz 调度：主仓 ddd4j-runtime-quarkus 的 io.ddd4j.quarkus.cqrs.QuarkusViewScheduler
+             动态 CRON 调度 CQRS 视图拉取（其 quartz 依赖为 optional，此处显式提供保证下游 classpath） -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-quartz</artifactId>
