@@ -2,22 +2,26 @@
 #
 # ddd4j-quarkus depends on ddd4j 2.0.x SNAPSHOT.
 # We checkout ddd4j (feature/2.0.x) and install it into the local Maven cache first.
+# The checkout + Aliyun config + install sequence is shared via the composite
+# action `.github/actions/install-ddd4j` (used by both jobs below).
 #
 # ─────────────────────────────────────────────────────────────────────────────
-# ✅  版本对齐已完成（2026-08-26）
+# P1-5 重构（2026-09-02）：新增 13 个 broker matrix jobs
 # ─────────────────────────────────────────────────────────────────────────────
-# 当前 ci.yml checkout feature/2.0.x，与 ddd4j-quarkus/pom.xml 声明的
-# ddd4j.version=3.0.x.20260630-SNAPSHOT 对齐。
+# - 每个 broker 独立 matrix job：单个 broker 失败立即阻塞合并
+# - fail-fast: false：一个 broker 失败不会取消其余 broker 的测试
+# - 每个 broker 独立上传报告（integration-reports-<broker>）便于追溯
+# - Java matrix 保留 ['17', '21']（feature/3.3.x 版本线默认 Java 17）
 #
-# 版本线对齐矩阵：
+# 版本线对齐矩阵（2026-08-26 完成）：
+#   当前 ci.yml 经 composite action checkout feature/2.0.x，与
+#   ddd4j-quarkus/pom.xml 声明的 ddd4j.version=2.0.x.20260630-SNAPSHOT 对齐。
 #   - feature/3.3.x：quarkus-bom 3.37.4 ↔ ddd4j 2.0.x（revision 3.3.x.20260630-SNAPSHOT）
 #   - feature/4.0.x：quarkus-bom 3.38.2 ↔ ddd4j 3.0.x（revision 4.0.x.20260630-SNAPSHOT）
-#   当前分支：feature/2.0.x（实际为 4.0.x 版本线）
 #
 # 后续 TODO：
-#   1. 创建 feature/3.3.x 分支（对应 ddd4j 2.0.x，quarkus-bom 3.37.4）
-#   2. 重构 install 列表为 Maven 自动依赖解析（mvn dependency:list + -pl -am）
-#   3. 当 ddd4j-data-event-store-panache 等模块引入运行时依赖时，
+#   1. 重构 install 列表为 Maven 自动依赖解析（mvn dependency:list + -pl -am）
+#   2. 当 ddd4j-data-event-store-panache 等模块引入运行时依赖时，
 #      需扩展分层 install 模块列表
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -54,34 +58,59 @@ jobs:
         java: ['17', '21']
     steps:
       - uses: actions/checkout@v4
-      - name: Checkout ddd4j (feature/2.0.x) for local SNAPSHOT
-        uses: actions/checkout@v4
+      - name: Install ddd4j 2.0.x SNAPSHOT (Aliyun repos + local install)
+        uses: ./.github/actions/install-ddd4j
         with:
-          repository: ddd-4-java/ddd4j
-          ref: feature/2.0.x
-          path: ddd4j
+          java-version: ${{ matrix.java }}
+          maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
+      - name: Verify (unit + contract)
+        run: ./mvnw -B verify -Denforcer.skip=true
+
+  broker-integration:
+    name: Broker integration (${{ matrix.broker }})
+    runs-on: ubuntu-latest
+    needs: [workflow-lint, unit-and-contract]
+    strategy:
+      fail-fast: false
+      matrix:
+        broker:
+          - activemq
+          - disruptor
+          - kafka
+          - mqtt
+          - mqtt-mica
+          - nats
+          - ons
+          - pulsar
+          - rabbitmq
+          - redis-stream
+          - rocketmq
+          - sqs
+          - tdmq
+    steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: ${{ matrix.java }}
+          java-version: '17'
           cache: maven
-      - name: Configure Aliyun Maven repositories
-        shell: bash
+      - name: Install ddd4j 2.0.x SNAPSHOT (Aliyun repos + local install)
+        uses: ./.github/actions/install-ddd4j
+        with:
+          maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
+      - name: Enable Testcontainers reuse
         run: |
-          install -d -m 700 "$HOME/.m2"
-          cat > "$HOME/.m2/settings.xml" << 'SETTINGS'
-          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
-            <servers>
-              <server>
-                <id>2624322-release-6F6h6R</id>
-                <username>6927b0d679784350ec7aad16</username>
-                <password>J]iFzpi0xPnT</password>
-              </server>
-              <server>
-                <id>2624322-snapshot-3EoOv3</id>
-                <username>6927b0d679784350ec7aad16</username>
-                <password>J]iFzpi0xPnT</password>
-              </server>
-            </servers>
-          </settings>
-          SETTINGS
+          mkdir -p ~/.testcontainers
+          echo "testcontainers.reuse.enable=true" > ~/.testcontainers.properties
+      - name: Run broker integration tests (${{ matrix.broker }})
+        run: ./mvnw -B verify -Pintegration -Denforcer.skip=true -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-${{ matrix.broker }} -am
+      - name: Upload integration test reports (${{ matrix.broker }})
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-reports-${{ matrix.broker }}
+          path: |
+            **/target/failsafe-reports/*.txt
+            **/target/surefire-reports/*.txt
+          if-no-files-found: ignore
+          retention-days: 14

@@ -7,6 +7,7 @@ import io.ddd4j.mq.event.MQEventSerialization;
 import io.ddd4j.mq.event.MQEventStorer;
 import io.ddd4j.mq.listener.MQListener;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Instance;
@@ -44,10 +45,22 @@ import java.util.Optional;
  * <p>关键设计决策：不重写 consume 管道，完全复用 {@link MQClient#consume(MQListener, io.ddd4j.mq.event.MQEvent, io.ddd4j.mq.message.Acknowledgment)}
  * 的内置逻辑（策略匹配 → 租户注入 → 持久化 → 反射调用 → 异常解包）。
  *
+ * <h3>GraalVM native-image 注意事项</h3>
+ * <p>本类运行时经 {@code getDeclaredMethods()} 扫描业务 Bean 中标注
+ * {@link MQEventListener} 的方法，{@code MQClient#consume} 再经 {@code Method#invoke}
+ * 反射调用。被扫描的监听器类由业务方提供，native 反射注册责任在业务方：构建
+ * native image 前在 {@code application.properties} 加（包名替换为业务监听器所在包）：
+ * <pre>{@code
+ * quarkus.native.reflection.include-patterns=com.example.listener.*
+ * }</pre>
+ * 未注册时 JVM 模式正常，native 模式下监听器方法扫描不到（静默跳过）或消费路径抛
+ * {@code NoSuchMethodException}。
+ *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  * @since 3.3.x
  */
 @ApplicationScoped
+@RegisterForReflection(methods = true)
 public class QuarkusMQListenerRegistrar {
 
     private static final Logger log = Logger.getLogger(QuarkusMQListenerRegistrar.class);

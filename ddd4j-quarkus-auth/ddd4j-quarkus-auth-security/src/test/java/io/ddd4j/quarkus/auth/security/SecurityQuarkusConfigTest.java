@@ -5,6 +5,7 @@ import io.ddd4j.core.subject.SubjectProvider;
 import io.ddd4j.core.util.SubjectKit;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  */
 @QuarkusTest
+@Disabled("Module is deprecated since 3.3.1; see docs/MIGRATION-auth-security-to-satoken.md")
 class SecurityQuarkusConfigTest {
 
     @Inject
