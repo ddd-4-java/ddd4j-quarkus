@@ -14,11 +14,13 @@
     <description>ddd4j-quarkus Jackson 扩展适配：对齐 boot 模块结构，底层复用 io.github.easy4j:jackson-extension（JavaTimeModule / MyBeanSerializerModifier），通过 Quarkus ObjectMapperCustomizer 定制 ObjectMapper。</description>
 
     <dependencies>
-        <!-- 权威实现：io.github.easy4j:jackson-extension（boot ddd4j-boot-extension-jackson 同款依赖） -->
+        <!-- 权威实现：io.github.easy4j:jackson-extension（boot ddd4j-boot-extension-jackson 同款依赖）。
+             显式钉住 3.0.x.20260630-SNAPSHOT：该第三方制品在 snapshot 仓库没有跟随
+             ddd4j.version(3.0.x.20260730) 发布 3.0.x.20260730 版本线，按 ${ddd4j.version} 解析必然缺失 -->
         <dependency>
             <groupId>io.github.easy4j</groupId>
             <artifactId>jackson-extension</artifactId>
-            <version>${ddd4j.version}</version>
+            <version>3.0.x.20260630-SNAPSHOT</version>
         </dependency>
         <!-- Quarkus Jackson：提供 ObjectMapper + io.quarkus.jackson.ObjectMapperCustomizer 定制接口 -->
         <dependency>
