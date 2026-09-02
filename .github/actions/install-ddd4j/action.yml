@@ -1,0 +1,65 @@
+name: 'Install ddd4j SNAPSHOT'
+description: >-
+  Configure Aliyun Maven repositories from MAVEN_SETTINGS_XML (base64) and
+  build/install the ddd4j 3.0.x SNAPSHOT (feature/3.0.x) into the local Maven
+  cache, so ddd4j-quarkus can resolve its ddd4j dependency locally.
+
+inputs:
+  java-version:
+    description: 'JDK version used to build/install ddd4j'
+    required: false
+    default: '21'
+  ddd4j-ref:
+    description: 'ddd4j repository ref to checkout'
+    required: false
+    default: 'feature/3.0.x'
+  maven-settings-xml:
+    description: 'Base64-encoded Maven settings.xml (pass secrets.MAVEN_SETTINGS_XML)'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout ddd4j (${{ inputs.ddd4j-ref }}) for local SNAPSHOT
+      uses: actions/checkout@v4
+      with:
+        repository: ddd-4-java/ddd4j
+        ref: ${{ inputs.ddd4j-ref }}
+        path: ddd4j
+    - name: Set up JDK ${{ inputs.java-version }}
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: ${{ inputs.java-version }}
+        cache: maven
+    - name: Configure Aliyun Maven repositories (org secret)
+      shell: bash
+      env:
+        MAVEN_SETTINGS_XML: ${{ inputs.maven-settings-xml }}
+      run: |
+        if [ -z "$MAVEN_SETTINGS_XML" ]; then
+          echo "::warning::MAVEN_SETTINGS_XML secret not configured - private deps will fail. Configure at GitHub repo settings > Secrets."
+          exit 0
+        fi
+        install -d -m 700 "$HOME/.m2"
+        umask 077
+        printf '%s' "$MAVEN_SETTINGS_XML" | base64 --decode > "$HOME/.m2/settings.xml"
+        grep -q "2624322-snapshot-3EoOv3" "$HOME/.m2/settings.xml"
+        # Credential connectivity self-check
+        USER_NAME=$(sed -n 's/.*<id>2624322-snapshot-3EoOv3<\/id>\s*<username>\([^<]*\)<\/username>.*/\1/p' "$HOME/.m2/settings.xml" | head -1)
+        PASS_WORD=$(sed -n 's/.*<id>2624322-snapshot-3EoOv3<\/id>\s*<username>[^<]*<\/username>\s*<password>\([^<]*\)<\/password>.*/\1/p' "$HOME/.m2/settings.xml" | head -1)
+        HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "$USER_NAME:$PASS_WORD" \
+          "https://packages.aliyun.com/6927b116e6c3e0425dbdf60d/maven/2624322-snapshot-3eoov3/io/ddd4j/ddd4j-core/3.0.x.20260730-SNAPSHOT/maven-metadata.xml" || echo "curl-failed")
+        echo "Aliyun credential check: HTTP $HTTP_CODE"
+        if [ "$HTTP_CODE" != "200" ]; then
+          echo "::warning::Aliyun auth returned $HTTP_CODE - private snapshot deps may fail"
+        fi
+    - name: Install ddd4j 3.0.x SNAPSHOT into local Maven cache
+      shell: bash
+      run: |
+        cd ddd4j
+        # 策略：临时从 root POM 移除 ddd4j-tx（parent 链不完整）和 ddd4j-samples（编译失败），
+        # 然后全量 install（Maven 自动处理依赖顺序）
+        sed -i 's|<subproject>ddd4j-tx</subproject>||g; s|<module>ddd4j-tx</module>||g; s|<subproject>ddd4j-samples</subproject>||g; s|<module>ddd4j-samples</module>||g' pom.xml
+        ./mvnw -B -Denforcer.skip=true -DskipTests -Dmaven.test.skip=true install
