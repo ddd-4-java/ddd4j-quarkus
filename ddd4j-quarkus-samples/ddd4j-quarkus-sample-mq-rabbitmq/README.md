@@ -77,10 +77,10 @@ export DDD4J_MQ_RABBIT_VHOST=your-vhost
 
 ```bash
 # 开发模式（热重载）
-mvn -pl ddd4j-quarkus/ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-rabbitmq quarkus:dev
+mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-rabbitmq quarkus:dev
 
 # 或打包运行
-mvn -pl ddd4j-quarkus/ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-rabbitmq package
+mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-rabbitmq package
 java -jar target/quarkus-app/quarkus-run.jar
 ```
 

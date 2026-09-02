@@ -13,7 +13,7 @@ ddd4j-quarkus 采用 **语义化版本线 + 日期戳** 的命名规则：
 ```
 
 - `{major}.{minor}`：对齐的 Quarkus 主线版本（如 3.3.x 对齐 Quarkus 3.37.x，4.0.x 对齐 Quarkus 3.38.x）
-- `{yyyymmdd}`：版本线冻结日期（如 20260630 表示 2026-06-30 冻结）
+- `{yyyymmdd}`：版本线冻结日期（如 20260730 表示 2026-07-30 冻结）
 - `-SNAPSHOT`：快照版本标识
 
 ---
@@ -22,10 +22,10 @@ ddd4j-quarkus 采用 **语义化版本线 + 日期戳** 的命名规则：
 
 | ddd4j-quarkus 版本线 | revision | quarkus-bom | ddd4j 主仓分支 | ddd4j 主仓 revision | Java |
 |---|---|---|---|---|---|
-| feature/3.3.x | 3.3.x.20260630-SNAPSHOT | 3.37.4 | feature/2.0.x | 2.0.x.20260630-SNAPSHOT | 17 |
-| feature/4.0.x | 4.0.x.20260630-SNAPSHOT | 3.38.2 | feature/3.0.x | 3.0.x.20260630-SNAPSHOT | 21 |
+| feature/3.3.x（对应 ddd4j 2.0.x） | 3.3.x.20260630-SNAPSHOT | 3.37.4 | feature/2.0.x | 2.0.x.20260630-SNAPSHOT | 17 |
+| feature/4.0.x（当前分支，对应 ddd4j 3.0.x） | 4.0.x.20260630-SNAPSHOT | 3.38.2 | feature/3.0.x | 3.0.x.20260730-SNAPSHOT | 21 |
 
-**注意**：当前 feature/3.0.x 分支的 revision 是 4.0.x.20260630-SNAPSHOT（实际为 4.0.x 版本线），分支名与版本号存在历史遗留不一致。
+**注意**：当前分支为 feature/4.0.x（4.0.x 版本线），revision 为 4.0.x.20260630-SNAPSHOT，依赖的 ddd4j 主仓底座为 feature/3.0.x 的 3.0.x.20260730-SNAPSHOT。
 
 ---
 
@@ -50,15 +50,17 @@ ddd4j-quarkus 采用 **语义化版本线 + 日期戳** 的命名规则：
 |---|---|---|
 | feature/1.0.x | 维护中 | 旧版本线（已冻结） |
 | feature/2.0.x | 维护中 | 旧版本线（已冻结） |
-| feature/3.0.x | **活跃** | 当前主线（实际为 4.0.x 版本线） |
+| feature/3.0.x | 维护中 | 历史主线（4.0.x 版本线前身，已由 feature/4.0.x 接替） |
+| feature/4.0.x | **活跃（当前分支）** | 4.0.x 版本线，Java 21，对齐 ddd4j 3.0.x |
 | master | 稳定 | 发布分支 |
 
 ### 待创建分支
 
 | 分支 | 目标 | 说明 |
 |---|---|---|
-| feature/3.3.x | 待创建 | 对齐 ddd4j 2.0.x + quarkus-bom 3.37.4 |
-| feature/4.0.x | 待创建 | 对齐 ddd4j 3.0.x + quarkus-bom 3.38.2（当前 feature/3.0.x 实际配置） |
+| feature/3.3.x | 待创建 | 对齐 ddd4j 2.0.x + quarkus-bom 3.37.4（Java 17 维护线） |
+
+> feature/4.0.x 已创建并作为当前活跃分支（对齐 ddd4j 3.0.x + quarkus-bom 3.38.2）。
 
 ---
 

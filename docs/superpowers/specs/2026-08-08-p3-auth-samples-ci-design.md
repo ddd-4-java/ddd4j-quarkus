@@ -24,7 +24,7 @@
 
 1. **auth-* 模块 Producer 化**：每个模块至少 1 个 Producer + 1 个 ConfigMapping
 2. **samples 分层完整化**：domain 实体 + app service + infrastructure repository + adapter resource
-3. **CI 工作流**：lint + JDK 17/21 矩阵 build + testcontainers integration job
+3. **CI 工作流**：lint + JDK 21 build + testcontainers integration job
 4. **CONTRIBUTING.md**：仓库结构 / 构建测试 / 提交规范 / CI 说明
 
 ## 3. 总体架构
@@ -36,9 +36,9 @@ ddd4j-quarkus/ddd4j-quarkus-auth/
 ├── ddd4j-quarkus-auth-jwt/              # ✅ 完整（JwtSubject + Provider + jwt-config + JwtSubjectProviderQuarkusTest + JwtSubjectTest）
 │   ├── JwtConfig / Ddd4jJwtQuarkusConfig / JwtSubjectProvider / JwtSubject / JwtFilter
 │   └── 12 测试方法
-├── ddd4j-quarkus-auth-satoken/          # 🟡 Producer only（SaTokenCdiProducer + Ddd4jSaTokenQuarkusConfig）
-├── ddd4j-quarkus-auth-shiro/            # 🟡 Producer only（ShiroCdiProducer + Ddd4jShiroQuarkusConfig）
-├── ddd4j-quarkus-auth-security/         # 🟡 Producer only（SpringSecurityCdiProducer + Ddd4jSecurityQuarkusConfig）
+├── ddd4j-quarkus-auth-satoken/          # 🟡 Producer only（Ddd4jSaTokenQuarkusConfig）
+├── ddd4j-quarkus-auth-shiro/            # 🟡 Producer only（Ddd4jShiroQuarkusConfig）
+├── ddd4j-quarkus-auth-security/         # 🟡 Producer only（Ddd4jSecurityQuarkusConfig，producer logic inlined）
 └── ddd4j-quarkus-auth-license/          # 🟡 Producer only（Ddd4jLicenseQuarkusConfig） + 显式声明 truelicense-core
 ```
 
@@ -58,8 +58,6 @@ ddd4j-quarkus-sample-infrastructure/               # ✅ 完整（4 类 + 5 测�
 ddd4j-quarkus-sample-adapter/                      # ✅ 完整（2 类 + 5 测试）
 ddd4j-quarkus-sample-client/                       # ✅ 完整（3 类 + 5 测试）
 ddd4j-quarkus-sample-common/                       # ✅ 完整（5 类 + 8 测试）
-ddd4j-quarkus-sample-cqrs-person/                  # ✅ 完整（4 类 + 1 测试）
-ddd4j-quarkus-sample-rich-model/                   # 🟡 Producer only（无测试）
 ddd4j-quarkus-sample-auth-*（3 个）                # 🟡 Producer only
 ddd4j-quarkus-sample-mq-*（3 个）                  # 🟡 Producer only
 ddd4j-quarkus-sample-api/                          # 🟡 占位（1 类）
@@ -71,9 +69,9 @@ ddd4j-quarkus-sample-api/                          # 🟡 占位（1 类）
 .github/workflows/ci.yml
 ├── workflow-lint (ubuntu-latest, Maven 3.9 + actions/checkout)
 │   └── mvn -B validate + verify -DskipTests
-├── build (ubuntu-latest, JDK 17 + 21 矩阵)
+├── build (ubuntu-latest, JDK 21)
 │   └── mvn -B verify (default test profile)
-└── infrastructure-integration (ubuntu-latest, JDK 17)
+└── infrastructure-integration (ubuntu-latest, JDK 21)
     ├── docker-info 打印 docker 版本
     ├── docker rm -f quarkus-dev-services-*
     ├── mvn -B verify -Pintegration -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-core,...14 broker
@@ -126,7 +124,7 @@ ddd4j-quarkus/
 ├── ddd4j-quarkus-auth/
 │   └── ddd4j-quarkus-auth-{jwt,satoken,shiro,security,license}/
 ├── ddd4j-quarkus-samples/
-│   └── ddd4j-quarkus-sample-{api,cqrs-person,rich-model,auth-*,mq-*,layered,domain,app,client,adapter,infrastructure,common}/
+│   └── ddd4j-quarkus-sample-{api,auth-*,mq-*,layered,domain,app,client,adapter,infrastructure,common}/
 ├── CONTRIBUTING.md
 └── .github/workflows/ci.yml
 ```
@@ -147,7 +145,6 @@ ddd4j-quarkus/
 |---|---|
 | 4 个 auth 子模块（satoken/shiro/security/license）无 testcontainers 集成测试 | 后续 plan 补充 `ddd4j-quarkus-auth-testcontainers` 共享 fixture |
 | samples/mq-{disruptor,kafka,rabbitmq} 无测试 | 后续 plan 补充端到端集成测试 |
-| samples/rich-model 无测试 | 后续 plan 补充血充血模型单元测试 |
 | ddd4j-extension-pf4j 空壳未删除 | 登记为 P4 待办 |
 | GitHub Actions secrets 不能用于 `if:` 条件 | 通过 env 传递 |
 | 阿里云私有仓库需 credentials | ci.yml 注入 `MAVEN_USERNAME/MAVEN_PASSWORD` secrets |

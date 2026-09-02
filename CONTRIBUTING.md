@@ -7,7 +7,7 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
 
 | 模块 | 说明 |
 | --- | --- |
-| `ddd4j-quarkus-bom` / `ddd4j-quarkus-dependencies` | 版本与依赖统一管理（quarkus-bom 3.37.x） |
+| `ddd4j-quarkus-bom` / `ddd4j-quarkus-dependencies` | 版本与依赖统一管理（quarkus-bom 3.38.2） |
 | `ddd4j-quarkus-ddd` / `ddd4j-quarkus-cache` / `ddd4j-quarkus-web` | 核心深度适配（BuildStep + Recorder / CDI Producer） |
 | `ddd4j-quarkus-data` | 数据访问（panache / jpa / external） |
 | `ddd4j-quarkus-mq` | MQ 适配（core + 13 broker + testcontainers fixtures） |
@@ -18,7 +18,7 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
 
 ## 开发环境
 
-- JDK 17（编译基线）或 21（CI 矩阵）
+- JDK 21（编译基线 + CI）
 - Maven 3.9+（仓库自带 `./mvnw`）
 - Docker（运行 `@QuarkusTest` 中的 Testcontainers 集成测试）
 
@@ -60,7 +60,7 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
 
 ## 提交规范
 
-- 分支：基于 `feature/3.3.x` 创建 `feature/<topic>` 分支，PR 合入 `feature/3.3.x`。
+- 分支：基于 `feature/4.0.x` 创建 `feature/<topic>` 分支，PR 合入 `feature/4.0.x`。
 - 提交信息：参考 [Conventional Commits](https://www.conventionalcommits.org/)，
   如 `feat(mq): align QuarkusMQListenerRegistrar with MQClient.init contract`。
 - 单 PR 控制改动量（≤ 500 行），便于审查。
@@ -70,6 +70,6 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
 `.github/workflows/ci.yml` 三阶段：
 
 1. `workflow-lint` — actionlint 校验 workflow 语法；
-2. `build` — JDK 17 / 21 矩阵执行 `./mvnw -B verify`；
+2. `build` — JDK 21 执行 `./mvnw -B verify`；
 3. `infrastructure-integration` — 启用 Docker 复用后执行
    `./mvnw -B verify -Pintegration`（13 broker testcontainers 集成测试）。

@@ -20,7 +20,7 @@
 
     <properties>
         <revision>4.0.x.20260630-SNAPSHOT</revision>
-        <ddd4j.version>3.0.x.20260630-SNAPSHOT</ddd4j.version>
+        <ddd4j.version>3.0.x.20260730-SNAPSHOT</ddd4j.version>
     </properties>
 
     <dependencyManagement>
@@ -95,6 +95,11 @@
             <dependency>
                 <groupId>io.ddd4j</groupId>
                 <artifactId>ddd4j-mq-rocketmq</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-mq-tdmq</artifactId>
                 <version>${ddd4j.version}</version>
             </dependency>
 

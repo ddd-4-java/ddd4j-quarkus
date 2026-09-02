@@ -284,9 +284,9 @@
                 <version>1.33</version>
             </dependency>
             <!--
-                Agroal 连接池版本（显式覆盖）：ddd4j 底座 BOM 先 import，其 quarkus-bom 3.37.0
+                Agroal 连接池版本（显式覆盖）：ddd4j 底座 BOM 先 import，其 quarkus-bom
                 管理 agroal-api 2.0（MultipleAcquisitionAction 枚举仅 warn/strict/off）；而
-                quarkus-bom 3.37.0（实际 runtime）配套 agroal 3.2（枚举含 LENIENT，Quarkus 3.36
+                quarkus-bom 3.38.2（实际 runtime）配套 agroal 3.2（枚举含 LENIENT，Quarkus 3.36
                 默认 multiple-acquisition=lenient）。BOM import 冲突按"先声明者优先"仲裁，
                 此处直接声明的 management 条目优先于 import 内容，保证 @QuarkusTest 启动时
                 配置转换不失败。
@@ -310,7 +310,7 @@
                 Hibernate ORM 版本（显式覆盖）：主仓 ddd4j-dependencies 先 import
                 hibernate-platform 6.6.40（BootLogging 无 BOOT_LOGGER 字段，与 Quarkus
                 不兼容：@QuarkusTest / quarkus:build 报 NoSuchFieldError）；quarkus-bom
-                3.37.0（实际 runtime）配套 Hibernate ORM 7.4.1.Final。此处直接声明的 management 条目优先于
+                3.38.2（实际 runtime）配套 Hibernate ORM 7.4.1.Final。此处直接声明的 management 条目优先于
                 import 内容（同 agroal 处理），保证 quarkus 轨道运行时版本一致。
             -->
             <dependency>

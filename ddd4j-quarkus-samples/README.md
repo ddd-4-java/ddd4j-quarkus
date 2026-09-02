@@ -6,13 +6,13 @@
 
 | 示例                                  | 方向        | 说明 |
 |-------------------------------------|-----------|------|
-| `ddd4j-quarkus-sample-rich-model`   | 普通充血模型   | 复用 `ddd4j-sample-rich-model`，通过 CDI producer 组装 `OrderApplicationService` 与内存 PO 仓储，JAX-RS 暴露订单 API |
 | `ddd4j-quarkus-sample-layered`      | 分层骨架      | 对齐 Boot 分层样例的 Quarkus 骨架，后续可替换为 Panache 持久化 |
-| `ddd4j-quarkus-sample-cqrs-person`  | CQRS / ES | JAX-RS 命令入口 + CDI 投影 + Scheduler 增量刷新 |
 | `ddd4j-quarkus-sample-auth-*`       | Auth      | 三种鉴权实现接入示例 |
+
+> TODO: 普通充血模型（rich-model）与 CQRS/ES（cqrs-person）示例已下线，待重新设计后回归。
 
 验证命令：
 
 ```bash
-mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-rich-model -am compile -DskipTests
+mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-layered -am compile -DskipTests
 ```

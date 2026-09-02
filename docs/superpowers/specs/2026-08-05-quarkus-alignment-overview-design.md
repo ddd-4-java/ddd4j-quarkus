@@ -42,7 +42,7 @@ Quarkus 轨道的 ddd4j 平台，与 `ddd4j-boot`（Spring Boot 轨道）对称�
 ```
 ddd4j-quarkus/
 ├── ddd4j-quarkus-bom                          # 1 POM（仅依赖清单，扁平 BOM）
-├── ddd4j-quarkus-dependencies                 # 1 POM（import quarkus-bom 3.37.x + Quarkiverse BOMs）
+├── ddd4j-quarkus-dependencies                 # 1 POM（import quarkus-bom 3.38.2 + Quarkiverse BOMs）
 ├── ddd4j-quarkus-parent                       # 业务项目 parent（按域 profiles，无默认全家桶）
 ├── ddd4j-quarkus-ddd                          # DDD/CQRS/EventStore 整合
 ├── ddd4j-quarkus-cache                        # Caffeine/Guava/Hutool 缓存
@@ -50,7 +50,7 @@ ddd4j-quarkus/
 ├── ddd4j-quarkus-mq/{core + testcontainers + 14 broker}            # MQ 适配
 ├── ddd4j-quarkus-auth/{jwt,satoken,shiro,security,license}        # 认证授权
 ├── ddd4j-quarkus-extensions/{9 modules}       # 跨领域扩展
-└── ddd4j-quarkus-samples/{16 modules}         # 示例与集成测试
+└── ddd4j-quarkus-samples/{14 modules}         # 示例与集成测试
 ```
 
 合计：10 个根模块 + 53 个叶子模块 = **63 个 Maven 模块**。
@@ -59,17 +59,17 @@ ddd4j-quarkus/
 
 | 维度 | 版本 |
 |---|---|
-| `quarkus-bom` | **3.37.x**（3.37.0/3.37.3，由 quarkus-bom 自身管理） |
-| `ddd4j.version` | **2.0.x.20260630-SNAPSHOT** |
-| `ddd4j-quarkus.revision` | **3.3.x.20260630-SNAPSHOT** |
+| `quarkus-bom` | **3.38.2**（主仓 quarkus-bom 由本仓 dependencies BOM 显式覆盖） |
+| `ddd4j.version` | **3.0.x.20260730-SNAPSHOT** |
+| `ddd4j-quarkus.revision` | **4.0.x.20260630-SNAPSHOT**（当前分支 feature/4.0.x） |
 | `testcontainers-bom` | **1.20.4** |
-| JDK | **17（编译基线）/ 21（CI 矩阵）** |
-| Maven | **3.9+** |
+| JDK | **21（编译基线 + CI）** |
+| Maven | **3.9+（仓库自带 ./mvnw Maven 4 wrapper）** |
 
 ### 3.3 Parent 链重构
 
 ```
-ddd4j-parent  (io.ddd4j:ddd4j-parent:2.0.x.20260630-SNAPSHOT)
+ddd4j-parent  (io.ddd4j:ddd4j-parent:3.0.x.20260630-SNAPSHOT)
     └── ddd4j-quarkus-dependencies  (import ddd4j-dependencies + quarkus-bom)
             ├── ddd4j-quarkus-bom  (扁平 BOM)
             ├── ddd4j-quarkus-parent  (业务 parent，按域 profiles)
@@ -124,10 +124,10 @@ ddd4j-parent  (io.ddd4j:ddd4j-parent:2.0.x.20260630-SNAPSHOT)
 
 1. **能力覆盖率**：`|ddd4j-quarkus 模块| ≥ |ddd4j-boot 模块| × 80%`，缺失项书面说明原因
 2. **测试覆盖率**：每个 Quarkus starter 至少 1 个 `@QuarkusTest` + 1 个 testcontainers 集成测试
-3. **版本一致性**：所有模块锁定 `quarkus-bom 3.37.x`、`ddd4j.version 2.0.x.20260630-SNAPSHOT`
+3. **版本一致性**：所有模块锁定 `quarkus-bom 3.38.2`、`ddd4j.version 3.0.x.20260730-SNAPSHOT`
 4. **依赖一致性**：复用主仓 ddd4j-core/cache/mq/auth/data，不复制实现
 5. **API 一致性**：所有 starter 在 `META-INF/quarkus-extension.yaml` 注册，业务可通过 `quarkus extension list` 查看
-6. **CI 通过**：`mvn verify` 在 JDK 17 + 21 矩阵 100% 通过；`mvn verify -Pintegration` 跑 testcontainers 通过
+6. **CI 通过**：`mvn verify` 在 JDK 21 基线 100% 通过；`mvn verify -Pintegration` 跑 testcontainers 通过
 7. **文档完整**：每个 starter 有 `README.md`（参考 ddd4j-boot 的 starter 文档）
 
 ## 7. 风险与缓解（已记录）
@@ -136,7 +136,7 @@ ddd4j-parent  (io.ddd4j:ddd4j-parent:2.0.x.20260630-SNAPSHOT)
 |---|---|---|
 | Quarkus 编译时增强（BuildStep）开销大，14 broker 编译慢 | CI 耗时 | 拆分为 `quarkus-mq-{core,broker}` 两层；broker 模块用 `@BuildStep` 缓存 |
 | Quarkus 没有 servlet 容器，shiro/satoken-web 部分能力受限 | shiro 集成受阻 | 用 `ContainerRequestFilter` 替代 servlet filter；shiro 走 Vert.x Route 适配 |
-| Hibernate 6.6 vs Quarkus 3.37 需 7.4 | 升级复杂 | 在 `ddd4j-quarkus-dependencies` 统一升级 Hibernate 到 7.4.1.Final（仅引用 jakarta.persistence 稳定 API） |
+| Hibernate 6.6 vs Quarkus 3.38 需 7.4 | 升级复杂 | 在 `ddd4j-quarkus-dependencies` 统一升级 Hibernate 到 7.4.1.Final（仅引用 jakarta.persistence 稳定 API） |
 | Testcontainers Docker 镜像在 CI 拉取慢 | CI 超时 | 用 `withReuse(true)` 启用 Docker reuse + 阿里云镜像加速 |
 | ddd4j-quarkus 与 ddd4j-boot 在 application.properties 命名差异 | 用户困惑 | 在 README 明确"Quarkus 风格 vs Spring 风格"对照表 |
 | 框架模块隐式继承 parent 默认依赖（被全家桶污染） | 不必要依赖污染 | parent 链重构 + 按域 profiles；框架模块继承 dependencies 而非 parent，自声明依赖 |
@@ -149,7 +149,7 @@ ddd4j-parent  (io.ddd4j:ddd4j-parent:2.0.x.20260630-SNAPSHOT)
 | `ddd4j-quarkus-data-external` | IpRegion + Weather + Producer | 仅 IpRegion（无 Weather/Producer） | 同上，外置模块由主仓提供 |
 | `ddd4j-quarkus-extension-pf4j` | 删除（改用 Quarkus Plugin） | 已删除（2026-08-16） | 按计划清理空壳 |
 | `ddd4j-quarkus-auth-testcontainers` | 新增 | 未落地 | 4 个 auth 子模块当前只有 Producer，无 testcontainers 集成测试 |
-| 版本基线 | quarkus-bom 3.36.3 | quarkus-bom 3.37.x | 升级对齐 3.37.x 系（hibernate 7.4.1 + agroal 3.2） |
+| 版本基线 | quarkus-bom 3.36.3 | quarkus-bom 3.38.2 | 升级对齐 3.38.x 系（hibernate 7.4.1 + agroal 3.2） |
 | 工期 | 10 周 1 人全职 | 实际多智能体并行约 4 个工作日 | 多智能体协作效率显著高于单人估算 |
 
 ## 9. 相关文档

@@ -4,14 +4,14 @@
 
 **Goal:** 完成 5 个 auth 子模块 Producer 化、7 个 sample 分层完整化、CI 三阶段工作流、CONTRIBUTING.md
 **Architecture:** auth-* 模块 Producer/ConfigMapping；samples 按 ddd4j-boot 风格 domain/app/infrastructure/adapter 四层；CI lint + JDK 矩阵 + testcontainers integration
-**Tech Stack:** Quarkus 3.37.0 + GitHub Actions + JDK 17/21 + Docker
+**Tech Stack:** Quarkus 3.38.2 + GitHub Actions + JDK 21 + Docker
 **Related Design Doc:** [../specs/2026-08-08-p3-auth-samples-ci-design.md](../specs/2026-08-08-p3-auth-samples-ci-design.md)
 
 ## 全局约定
 
 - auth Producer：`Ddd4jXxxQuarkusConfig` + `XxxCdiProducer`
 - samples 分层：domain（无 Quarkus 依赖）/ application（无 Quarkus 依赖）/ infrastructure（依赖 panache）/ adapter（依赖 web）
-- CI 三阶段：workflow-lint + build（matrix JDK 17/21）+ infrastructure-integration
+- CI 三阶段：workflow-lint + build（matrix JDK 21）+ infrastructure-integration
 
 ## 实施阶段总览
 
@@ -53,17 +53,17 @@ Stage 6 — 全量验证 + 提交
 
 ## Stage 2 — auth-{satoken,shiro,security,license} Producer 化
 
-- [x] **Step 2.1: auth-satoken SaTokenCdiProducer + Ddd4jSaTokenQuarkusConfig**
+- [x] **Step 2.1: auth-satoken Ddd4jSaTokenQuarkusConfig**
   - 文件: `ddd4j-quarkus-auth-jwt/src/main/java/io/ddd4j/quarkus/auth/satoken/*.java`
   - 操作: Producer 暴露 SaToken 集成
   - 验证: 编译通过
 
-- [x] **Step 2.2: auth-shiro ShiroCdiProducer + Ddd4jShiroQuarkusConfig**
+- [x] **Step 2.2: auth-shiro Ddd4jShiroQuarkusConfig**
   - 文件: `ddd4j-quarkus-auth-shiro/src/main/java/io/ddd4j/quarkus/auth/shiro/*.java`
   - 操作: Shiro CDI 适配 + 异常映射
   - 验证: 编译通过
 
-- [x] **Step 2.3: auth-security SpringSecurityCdiProducer + Ddd4jSecurityQuarkusConfig**
+- [x] **Step 2.3: auth-security Ddd4jSecurityQuarkusConfig（producer logic inlined）**
   - 文件: `ddd4j-quarkus-auth-security/src/main/java/io/ddd4j/quarkus/auth/security/*.java`
   - 操作: Security CDI 适配 + 异常映射
   - 验证: 编译通过
@@ -114,12 +114,12 @@ Stage 6 — 全量验证 + 提交
 
 - [x] **Step 4.1: .github/workflows/ci.yml workflow-lint job**
   - 文件: `.github/workflows/ci.yml`
-  - 操作: `workflow-lint` job（ubuntu-latest + actions/checkout + setup-java 17）
+  - 操作: `workflow-lint` job（ubuntu-latest + actions/checkout + setup-java 21）
   - 验证: workflow 文件 YAML 合法
 
-- [x] **Step 4.2: build job JDK 17/21 矩阵**
+- [x] **Step 4.2: build job JDK 21 矩阵**
   - 文件: 同上
-  - 操作: `build` job + matrix: `{ jdk: [17, 21] }` + `./mvnw -B verify`
+  - 操作: `build` job + matrix: `{ jdk: [21] }` + `./mvnw -B verify`
   - 验证: CI 通过
 
 - [x] **Step 4.3: infrastructure-integration job**
@@ -136,7 +136,7 @@ Stage 6 — 全量验证 + 提交
 
 - [x] **Step 5.1: CONTRIBUTING.md 编写**
   - 文件: `CONTRIBUTING.md`
-  - 内容: 仓库结构表 + 开发环境（JDK 17/21 + Maven 3.9 + Docker）+ 构建测试命令 + 提交规范 + CI 三阶段说明
+  - 内容: 仓库结构表 + 开发环境（JDK 21 + Maven 3.9 + Docker）+ 构建测试命令 + 提交规范 + CI 三阶段说明
   - 验证: 文档完整
 
 ## Stage 6 — 全量验证
@@ -165,5 +165,5 @@ Stage 6 — 全量验证 + 提交
 ## 后续待办（非本次范围）
 
 - [ ] 新增 `ddd4j-quarkus-auth-testcontainers` 模块 + 4 个 auth 子模块集成测试
-- [ ] 完整化 sample-rich-model / sample-auth-* / sample-mq-*
+- [ ] 完整化 sample-auth-* / sample-mq-*
 - [ ] 删除 ddd4j-quarkus-extension-pf4j（空壳）

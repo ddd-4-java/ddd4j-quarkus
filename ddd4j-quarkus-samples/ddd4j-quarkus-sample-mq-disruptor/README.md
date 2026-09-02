@@ -34,10 +34,10 @@
 
 ```bash
 # 开发模式（热重载）
-mvn -pl ddd4j-quarkus/ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-disruptor quarkus:dev
+mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-disruptor quarkus:dev
 
 # 或打包运行
-mvn -pl ddd4j-quarkus/ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-disruptor package
+mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-disruptor package
 java -jar target/quarkus-app/quarkus-run.jar
 ```
 

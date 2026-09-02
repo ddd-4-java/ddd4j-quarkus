@@ -34,9 +34,8 @@
 
         <!--
             Quarkus 轨道专用：ddd4j 仓库未管理这些版本。
-            注意：实际 runtime 版本由主仓 quarkus-bom（3.37.0，first-wins）决定，
-            此处与 maven-quarkus-plugin 对齐 3.37.0，避免插件/运行时混用
-            （quarkus-maven-plugin 3.36.x + bootstrap 3.37.0 会 ClassCastException）。
+            ddd4j 主仓 quarkus-bom 由本仓 dependencies BOM 显式覆盖为 3.38.2，
+            确保 quarkus-maven-plugin 与运行时版本一致。
             其余 Maven 插件版本由 ddd4j 根 pom 统一管理，本仓库不重复声明。
         -->
         <quarkus-bom.version>3.38.2</quarkus-bom.version>

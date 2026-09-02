@@ -41,7 +41,7 @@ mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-api -am clean package -DskipT
 <parent>
   <groupId>io.ddd4j.quarkus</groupId>
   <artifactId>ddd4j-quarkus-parent</artifactId>
-  <version>1.0.x.20260625-SNAPSHOT</version>
+  <version>4.0.x.20260630-SNAPSHOT</version>
 </parent>
 ```
 

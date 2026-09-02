@@ -4,7 +4,7 @@
 
 **Goal:** 完成 9 个扩展模块的 CDI Producer 化（qlexpress/akka/cola/excel/jackson/monitor/dubbo/qrcode/validation），每个扩展新增 `@QuarkusTest`，新增 ddd4j-quarkus-extension-dubbo
 **Architecture:** Spring `@ConfigurationProperties` → Quarkus `@ConfigMapping`；Spring `@ConditionalOnProperty` → `@IfBuildProperty`；Spring `@AutoConfiguration` → `META-INF/quarkus-extension.yaml`
-**Tech Stack:** Quarkus 3.37.0 + ddd4j 2.0.x.20260630-SNAPSHOT + JDK 17 + smallrye-config
+**Tech Stack:** Quarkus 3.38.2 + ddd4j 3.0.x.20260730-SNAPSHOT + JDK 21 + smallrye-config
 **Related Design Doc:** [../specs/2026-08-06-p1-extensions-design.md](../specs/2026-08-06-p1-extensions-design.md)
 
 ## 全局约定

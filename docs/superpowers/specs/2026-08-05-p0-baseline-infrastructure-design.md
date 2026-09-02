@@ -21,13 +21,13 @@
 
 ### 1.3 版本基线漂移
 
-`root pom.xml`（`quarkus-bom 3.36.3`）与 `ddd4j-quarkus-dependencies`（`quarkus-bom 3.37.0`）版本不一致，导致 GACT ClassCastException、hibernate 7.4.1/7.3.7 解析失败。
+`root pom.xml` 与 `ddd4j-quarkus-dependencies` 的 quarkus-bom 版本不一致（历史基线 3.36.3 vs 3.37 系早期版本），导致 GACT ClassCastException、hibernate 7.4.1/7.3.7 解析失败。
 
 ## 2. 目标
 
 1. **三件套 Quarkus 原生化**：cache 用 `@BuildStep + @Recorder`，web 用 `@ContainerRequestFilter + @Provider + HealthCheck`，mq-core 用反射扫描 `@MQEventListener`
 2. **parent 按域 profiles**：8 个业务选型依赖改为 5 个 profile（web/data/schedule/excel/full），业务项目按需激活
-3. **版本基线统一**：quarkus-bom 3.37.0 + hibernate 7.4.1.Final + agroal 3.2
+3. **版本基线统一**：quarkus-bom 3.38.2 + hibernate 7.4.1.Final + agroal 3.2
 4. **parent 链重构**：bom（扁平 BOM）→ dependencies（版本管理）→ parent（业务父 POM），三级解耦
 
 ## 3. 总体架构
@@ -108,7 +108,7 @@ parent dependencyManagement import ddd4j-quarkus-dependencies
        ↓
 dependencies import ddd4j-dependencies (main repo BOM)
        ↓
-ddd4j-dependencies 包含 quarkus-bom 3.37.x + ddd4j 全套依赖
+ddd4j-dependencies 包含 quarkus-bom 3.38.x + ddd4j 全套依赖
        ↓
 dependencies 显式管理：hibernate 7.4.1.Final（覆盖 quarkus-bom 默认）、agroal 3.2、ASM 9.x、truelicense、zxing
 ```
@@ -146,7 +146,7 @@ dependencies 显式管理：hibernate 7.4.1.Final（覆盖 quarkus-bom 默认）
 
 ```
 ddd4j-quarkus/
-├── pom.xml                                                              # 版本对齐 3.37.0
+├── pom.xml                                                              # 版本对齐 3.38.2
 ├── ddd4j-quarkus-parent/
 │   └── pom.xml                                                          # 按域 profiles（web/data/schedule/excel/full）
 ├── ddd4j-quarkus-dependencies/pom.xml                                   # 版本管理链
@@ -200,7 +200,7 @@ ddd4j-quarkus/
 | 风险 | 缓解 |
 |---|---|
 | Quarkus BuildStep 编译慢 | 拆分 core / 实现两层，broker 模块仅 @BuildStep 缓存 |
-| Hibernate 7.4 与 quarkus-bom 3.37 默认版本冲突 | 在 `ddd4j-quarkus-dependencies` 显式覆盖 7.4.1.Final |
+| Hibernate 7.4 与 quarkus-bom 3.38 默认版本冲突 | 在 `ddd4j-quarkus-dependencies` 显式覆盖 7.4.1.Final |
 | 阿里云 snapshot 仓库 metadata 指向不存在 timestamped 快照 | `mvn install -DskipTests` 主仓依赖 + 离线构建 |
 | parent 默认依赖污染 | 按域 profiles + 框架模块继承 dependencies 而非 parent |
 | Web Filter 基类注解导致 RESTEasy 双注册 | 基类不带注解，具体子类按需声明 |
@@ -211,7 +211,7 @@ ddd4j-quarkus/
 - [x] `mvn -Pintegration verify` 全量通过（318 测试 0 失败）
 - [x] 5 个新测试类（Ddd4jCacheConfig/Ddd4jCacheQuarkus/3 个 web/QuarkusMQListenerRegistrar）全部通过
 - [x] parent 移除 8 个默认业务选型依赖
-- [x] quarkus-bom 统一为 3.37.x
+- [x] quarkus-bom 统一为 3.38.2
 - [x] hibernate 显式管理 7.4.1.Final
 - [x] parent 链三级解耦（bom/dependencies/parent）
 

@@ -22,10 +22,10 @@ export DDD4J_MQ_KAFKA_BOOTSTRAP_SERVERS=your-kafka-broker:9092
 
 ```bash
 # 开发模式
-mvn -pl ddd4j-quarkus/ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-kafka quarkus:dev
+mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-kafka quarkus:dev
 
 # 或打包运行
-mvn -pl ddd4j-quarkus/ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-kafka package
+mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-kafka package
 java -jar target/quarkus-app/quarkus-run.jar
 ```
 

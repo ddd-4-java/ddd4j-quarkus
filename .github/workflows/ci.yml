@@ -16,9 +16,9 @@
 #
 # 版本对齐背景（2026-08-26 完成）：
 #   当前 ci.yml checkout feature/3.0.x，与 ddd4j-quarkus/pom.xml 声明的
-#   ddd4j.version=3.0.x.20260630-SNAPSHOT 对齐。
-#   - feature/3.3.x：quarkus-bom 3.37.4 ↔ ddd4j 2.0.x
-#   - feature/4.0.x：quarkus-bom 3.38.2 ↔ ddd4j 3.0.x
+#   ddd4j.version=3.0.x.20260730-SNAPSHOT 对齐。
+#   - feature/3.3.x：quarkus-bom 3.37.4 ↔ ddd4j 2.0.x（Java 17）
+#   - feature/4.0.x：quarkus-bom 3.38.2 ↔ ddd4j 3.0.x（Java 21）
 #
 # 后续 TODO：
 #   1. 创建 feature/3.3.x 分支（对应 ddd4j 2.0.x，quarkus-bom 3.37.4）
