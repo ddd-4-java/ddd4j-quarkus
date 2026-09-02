@@ -3,6 +3,9 @@ package io.ddd4j.quarkus.mq.nats;
 import io.ddd4j.mq.MQClient;
 import io.ddd4j.mq.MQProperties;
 import io.ddd4j.mq.event.MQEventSerialization;
+import io.ddd4j.mq.nats.NatsProperties;
+import io.ddd4j.quarkus.mq.testcontainers.AbstractMqQuarkusIntegrationTest;
+import io.ddd4j.quarkus.mq.testcontainers.JunitJupiterQuarkusTestContainers;
 import io.ddd4j.quarkus.mq.testcontainers.NatsQuarkusTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
@@ -15,14 +18,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * nats MQ 集成测试骨架。
+ * nats MQ 集成测试。
  *
  * <p>验证：
  * <ul>
  *   <li>{@link MQClient} Bean 被 CDI 正确解析，且 impl() = "nats"</li>
  *   <li>{@link MQProperties} Bean 存在且 broker = "NATS"</li>
  *   <li>{@link MQEventSerialization} Bean 存在且可注入</li>
- *   <li>容器连接信息已由共享 fixture {@link NatsQuarkusTestResource} 注入到 application.properties</li>
+ *   <li>端到端：{@code OrderCreatedEvent.publish()} → NATS 容器（JetStream 优先，
+ *       无 stream 回落 core NATS）→ {@code @MQEventListener} 监听器收到事件
+ *       （继承 {@link AbstractMqQuarkusIntegrationTest} round-trip 骨架）</li>
  * </ul>
  *
  * <p>测试使用内嵌 {@link NatsTestResource}（委托 {@link NatsQuarkusTestResource} 的 start/stop）启动对应容器，
@@ -33,16 +38,21 @@ import java.util.Map;
  */
 @QuarkusTest
 @QuarkusTestResource(NatsQuarkusIntegrationTest.NatsTestResource.class)
-class NatsQuarkusIntegrationTest {
+@JunitJupiterQuarkusTestContainers
+class NatsQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<NatsProperties> {
 
     @Inject
-    MQClient mqClient;
+    NatsProperties natsProperties;
 
-    @Inject
-    MQProperties mqProperties;
+    @Override
+    protected NatsProperties mqPropertiesExtension() {
+        return natsProperties;
+    }
 
-    @Inject
-    MQEventSerialization serialization;
+    @Override
+    protected void applyContainerProperties(NatsProperties properties) {
+        properties.setServers(config("ddd4j.mq.nats.servers"));
+    }
 
     @Test
     void shouldInjectMQClient() {
@@ -63,6 +73,14 @@ class NatsQuarkusIntegrationTest {
         // 验证序列化 round-trip
         String json = serialization.serialize(Map.of("key", "value"));
         Assertions.assertThat(json).contains("key");
+    }
+
+    /**
+     * 端到端：OrderCreatedEvent 发布 → NATS（subject ORDER.CREATED）→ 监听器消费。
+     */
+    @Test
+    void shouldPublishAndConsumeOrderCreatedEventEndToEnd() throws Exception {
+        runOrderCreatedRoundTrip();
     }
 
     /**

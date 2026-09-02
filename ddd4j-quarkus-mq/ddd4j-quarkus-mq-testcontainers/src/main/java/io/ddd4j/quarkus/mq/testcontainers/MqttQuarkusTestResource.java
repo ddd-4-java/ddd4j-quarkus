@@ -26,7 +26,10 @@ public class MqttQuarkusTestResource extends AbstractTestContainerFixture {
     @Override
     protected GenericContainer<?> container() {
         container = new GenericContainer<>(IMAGE)
-                .withExposedPorts(MQTT_PORT);
+                .withExposedPorts(MQTT_PORT)
+                // mosquitto 2.0 无配置时仅监听容器 loopback（2.0 breaking change），
+                // 必须显式指定镜像内置的 no-auth 配置监听 0.0.0.0 并允许匿名（对齐 javalin 先例）
+                .withCommand("/usr/sbin/mosquitto", "-c", "/mosquitto-no-auth.conf", "-v");
         return container;
     }
 

@@ -8,24 +8,32 @@ import java.time.Duration;
 import java.util.Map;
 
 /**
- * ActiveMQ Classic testcontainers fixture for Quarkus tests.
+ * ActiveMQ Artemis testcontainers fixture for Quarkus tests.
  *
- * <p>镜像：{@code apache/activemq-classic:5.18.3}。默认 OpenWire 端口 61616，
- * Web 控制台 8161。
- * 暴露属性：{@code ddd4j.mq.activemq.broker-url}。
+ * <p>镜像：{@code apache/activemq-artemis:2.33.0-alpine}。<b>协议注意</b>：主仓
+ * {@code ddd4j-mq-activemq} 客户端是 {@code artemis-jakarta-client}（CORE 协议，61616），
+ * 旧版 fixture 误用 {@code apache/activemq-classic}（OpenWire 协议）导致客户端无法连接，
+ * 现已对齐 artemis 镜像。默认凭证 {@code artemis/artemis}（{@code ARTEMIS_USER} /
+ * {@code ARTEMIS_PASSWORD}），Web 控制台 8161。
+ * 暴露属性：{@code ddd4j.mq.activemq.broker-url}（{@code tcp://host:61616}）及
+ * host/port/username/password 分量。
  */
 public class ActiveMqQuarkusTestResource extends AbstractTestContainerFixture {
 
-    private static final DockerImageName IMAGE = DockerImageName.parse("apache/activemq-classic:5.18.3");
+    private static final DockerImageName IMAGE = DockerImageName.parse("apache/activemq-artemis:2.33.0-alpine");
+    private static final int CORE_PORT = 61616;
+    private static final int CONSOLE_PORT = 8161;
+    private static final String USERNAME = "artemis";
+    private static final String PASSWORD = "artemis";
 
     private GenericContainer<?> container;
 
     @Override
     protected GenericContainer<?> container() {
         container = new GenericContainer<>(IMAGE)
-                .withExposedPorts(61616, 8161)
-                .withEnv("ACTIVEMQ_ADMIN_USER", "admin")
-                .withEnv("ACTIVEMQ_ADMIN_PASSWORD", "admin");
+                .withExposedPorts(CORE_PORT, CONSOLE_PORT)
+                .withEnv("ARTEMIS_USER", USERNAME)
+                .withEnv("ARTEMIS_PASSWORD", PASSWORD);
         return container;
     }
 
@@ -42,10 +50,12 @@ public class ActiveMqQuarkusTestResource extends AbstractTestContainerFixture {
     @Override
     protected Map<String, String> exposedProperties() {
         return Map.of(
+                "ddd4j.mq.activemq.broker-url", String.format("tcp://%s:%s",
+                        container.getHost(), firstMappedPort(container, CORE_PORT)),
                 "ddd4j.mq.activemq.host", container.getHost(),
-                "ddd4j.mq.activemq.port", firstMappedPort(container, 61616),
-                "ddd4j.mq.activemq.username", "admin",
-                "ddd4j.mq.activemq.password", "admin",
+                "ddd4j.mq.activemq.port", firstMappedPort(container, CORE_PORT),
+                "ddd4j.mq.activemq.username", USERNAME,
+                "ddd4j.mq.activemq.password", PASSWORD,
                 "ddd4j.mq.broker", "ACTIVEMQ"
         );
     }

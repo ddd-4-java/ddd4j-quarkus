@@ -3,6 +3,9 @@ package io.ddd4j.quarkus.mq.rabbit;
 import io.ddd4j.mq.MQClient;
 import io.ddd4j.mq.MQProperties;
 import io.ddd4j.mq.event.MQEventSerialization;
+import io.ddd4j.mq.rabbitmq.RabbitMQProperties;
+import io.ddd4j.quarkus.mq.testcontainers.AbstractMqQuarkusIntegrationTest;
+import io.ddd4j.quarkus.mq.testcontainers.JunitJupiterQuarkusTestContainers;
 import io.ddd4j.quarkus.mq.testcontainers.RabbitMqQuarkusTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
@@ -15,14 +18,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * rabbitmq MQ 集成测试骨架。
+ * rabbitmq MQ 集成测试。
  *
  * <p>验证：
  * <ul>
  *   <li>{@link MQClient} Bean 被 CDI 正确解析，且 impl() = "rabbit"</li>
  *   <li>{@link MQProperties} Bean 存在且 broker = "RABBIT"</li>
  *   <li>{@link MQEventSerialization} Bean 存在且可注入</li>
- *   <li>容器连接信息已由共享 fixture {@link RabbitMqQuarkusTestResource} 注入到 application.properties</li>
+ *   <li>端到端：{@code OrderCreatedEvent.publish()} → RabbitMQ 容器 →
+ *       {@code @MQEventListener} 监听器收到事件（继承 {@link AbstractMqQuarkusIntegrationTest}
+ *       round-trip 骨架）</li>
  * </ul>
  *
  * <p>测试使用内嵌 {@link RabbitMqTestResource}（委托 {@link RabbitMqQuarkusTestResource} 的 start/stop）启动对应容器，
@@ -33,16 +38,32 @@ import java.util.Map;
  */
 @QuarkusTest
 @QuarkusTestResource(RabbitMqQuarkusIntegrationTest.RabbitMqTestResource.class)
-class RabbitMqQuarkusIntegrationTest {
+@JunitJupiterQuarkusTestContainers
+class RabbitMqQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<RabbitMQProperties> {
 
     @Inject
-    MQClient mqClient;
+    RabbitMQProperties rabbitProperties;
 
-    @Inject
-    MQProperties mqProperties;
+    @Override
+    protected RabbitMQProperties mqPropertiesExtension() {
+        return rabbitProperties;
+    }
 
-    @Inject
-    MQEventSerialization serialization;
+    @Override
+    protected void applyContainerProperties(RabbitMQProperties properties) {
+        properties.setHost(config("ddd4j.mq.rabbitmq.host"));
+        properties.setPort(Integer.parseInt(config("ddd4j.mq.rabbitmq.port")));
+        properties.setUsername(config("ddd4j.mq.rabbitmq.username"));
+        properties.setPassword(config("ddd4j.mq.rabbitmq.password"));
+        properties.setVirtualHost(config("ddd4j.mq.rabbitmq.virtual-host"));
+    }
+
+    @Override
+    protected void preInit() {
+        // 复用 RabbitMQ 内置 topic exchange（amq.topic）：producer basicPublish 与
+        // consumer queue bind 使用同一 exchange，免声明（对齐 javalin Ddd4jRabbitMqIT 先例）。
+        mqProperties.setExchange("amq.topic");
+    }
 
     @Test
     void shouldInjectMQClient() {
@@ -63,6 +84,14 @@ class RabbitMqQuarkusIntegrationTest {
         // 验证序列化 round-trip
         String json = serialization.serialize(Map.of("key", "value"));
         Assertions.assertThat(json).contains("key");
+    }
+
+    /**
+     * 端到端：OrderCreatedEvent 发布 → RabbitMQ（amq.topic exchange 路由 ORDER.CREATED）→ 监听器消费。
+     */
+    @Test
+    void shouldPublishAndConsumeOrderCreatedEventEndToEnd() throws Exception {
+        runOrderCreatedRoundTrip();
     }
 
     /**

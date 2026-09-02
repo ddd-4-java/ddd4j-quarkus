@@ -11,12 +11,12 @@ import java.util.Map;
 /**
  * Kafka testcontainers fixture for Quarkus tests.
  *
- * <p>镜像：{@code confluentinc/cp-kafka:7.6.1}（KRaft 模式，无需 Zookeeper）。
+ * <p>镜像：{@code confluentinc/cp-kafka:7.7.2}（KRaft 模式，无需 Zookeeper）。
  * 暴露属性：{@code ddd4j.mq.kafka.bootstrap-servers}。
  */
 public class KafkaQuarkusTestResource extends AbstractTestContainerFixture {
 
-    private static final DockerImageName IMAGE = DockerImageName.parse("confluentinc/cp-kafka:7.6.1");
+    private static final DockerImageName IMAGE = DockerImageName.parse("confluentinc/cp-kafka:7.7.2");
     private static final int KAFKA_PORT = 9092;
 
     private KafkaContainer container;

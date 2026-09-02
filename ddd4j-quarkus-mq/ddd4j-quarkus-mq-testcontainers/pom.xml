@@ -18,18 +18,20 @@
         - 13 个 broker 的专用 fixture（Kafka / RabbitMQ / RocketMQ / ActiveMQ / Pulsar / NATS /
           MQTT / Redis-Stream / SQS / ONS / TDMQ / Disruptor / MQTT-Mica）
         - QuarkusResourceLifecycleManager 集成（每个 fixture 自动注入容器连接信息到 application.properties）
-        - JunitJupiterQuarkusTestContainers 注解（一键启用）
+        - JunitJupiterQuarkusTestContainers 注解 + Ddd4jQuarkusTestContainersExtension（Docker 守护优雅跳过）
+        - AbstractMqQuarkusIntegrationTest（publish → broker → @MQEventListener round-trip 骨架）
 
-        镜像版本统一固定为：
-        - kafka:7.6.1 (confluentinc/cp-kafka, KRaft 模式)
+        镜像版本统一固定为（与 ddd4j-boot 镜像清单一致）：
+        - kafka:7.7.2 (confluentinc/cp-kafka, KRaft 模式)
         - rabbitmq:3.13-management-alpine
-        - rocketmq:5.3.0 (apache/rocketmq)
-        - activemq:5.18.3 (apache/activemq-classic)
+        - rocketmq:5.3.2 (apache/rocketmq, namesrv+broker 单容器双进程)
+        - activemq-artemis:2.33.0-alpine (主仓 ddd4j-mq-activemq 客户端为 artemis-jakarta-client,
+          CORE 协议 61616；classic OpenWire 不兼容)
         - pulsar:3.2.0 (apachepulsar/pulsar, standalone)
-        - nats:2.10-alpine
+        - nats:2.10.22
         - mqtt:2.0 (eclipse-mosquitto)
         - redis:7.4-alpine (启用 notify-keyspace-events)
-        - localstack:3.4 (SQS)
+        - localstack:3.8.0 (SQS)
         - disruptor: 无容器，本地内存
     </description>
 
@@ -62,11 +64,23 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-        <!-- JUnit 5 集成 -->
+        <!--
+            JUnit 5 集成（compile）：JunitJupiterQuarkusTestContainers 注解 +
+            Ddd4jQuarkusTestContainersExtension（ExecutionCondition）在 main scope，
+            AbstractMqQuarkusIntegrationTest 的 await/断言也引用 junit-jupiter-api。
+        -->
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
+        </dependency>
+        <!--
+            MQ 契约（compile）：AbstractMqQuarkusIntegrationTest round-trip 骨架引用
+            MQClient / MQProperties / MQEvent / MQListener（版本由父 pom ddd4j.version 管理）。
+        -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-mq-core</artifactId>
+            <version>${ddd4j.version}</version>
         </dependency>
         <!-- awaitility 用于异步断言 -->
         <dependency>
