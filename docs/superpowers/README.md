@@ -112,4 +112,4 @@
 - [ ] 新增 `ddd4j-quarkus-auth-testcontainers` 共享 fixture + 4 个 auth 子模块集成测试
 - [ ] 补齐 `ddd4j-quarkus-data-jpa` main src（当前仅 test）
 - [ ] 补齐 `ddd4j-quarkus-data-external` WeatherQuarkusAdapter + QuarkusExternalCdiProducer
-- [ ] 完整化 `sample-rich-model` / `sample-auth-*` / `sample-mq-*`
+- [ ] 完整化 `sample-auth-*` / `sample-mq-*`

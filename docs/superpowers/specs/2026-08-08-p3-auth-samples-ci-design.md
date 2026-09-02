@@ -58,8 +58,6 @@ ddd4j-quarkus-sample-infrastructure/               # ✅ 完整（4 类 + 5 测�
 ddd4j-quarkus-sample-adapter/                      # ✅ 完整（2 类 + 5 测试）
 ddd4j-quarkus-sample-client/                       # ✅ 完整（3 类 + 5 测试）
 ddd4j-quarkus-sample-common/                       # ✅ 完整（5 类 + 8 测试）
-ddd4j-quarkus-sample-cqrs-person/                  # ✅ 完整（4 类 + 1 测试）
-ddd4j-quarkus-sample-rich-model/                   # 🟡 Producer only（无测试）
 ddd4j-quarkus-sample-auth-*（3 个）                # 🟡 Producer only
 ddd4j-quarkus-sample-mq-*（3 个）                  # 🟡 Producer only
 ddd4j-quarkus-sample-api/                          # 🟡 占位（1 类）
@@ -126,7 +124,7 @@ ddd4j-quarkus/
 ├── ddd4j-quarkus-auth/
 │   └── ddd4j-quarkus-auth-{jwt,satoken,shiro,security,license}/
 ├── ddd4j-quarkus-samples/
-│   └── ddd4j-quarkus-sample-{api,cqrs-person,rich-model,auth-*,mq-*,layered,domain,app,client,adapter,infrastructure,common}/
+│   └── ddd4j-quarkus-sample-{api,auth-*,mq-*,layered,domain,app,client,adapter,infrastructure,common}/
 ├── CONTRIBUTING.md
 └── .github/workflows/ci.yml
 ```
@@ -147,7 +145,6 @@ ddd4j-quarkus/
 |---|---|
 | 4 个 auth 子模块（satoken/shiro/security/license）无 testcontainers 集成测试 | 后续 plan 补充 `ddd4j-quarkus-auth-testcontainers` 共享 fixture |
 | samples/mq-{disruptor,kafka,rabbitmq} 无测试 | 后续 plan 补充端到端集成测试 |
-| samples/rich-model 无测试 | 后续 plan 补充血充血模型单元测试 |
 | ddd4j-extension-pf4j 空壳未删除 | 登记为 P4 待办 |
 | GitHub Actions secrets 不能用于 `if:` 条件 | 通过 env 传递 |
 | 阿里云私有仓库需 credentials | ci.yml 注入 `MAVEN_USERNAME/MAVEN_PASSWORD` secrets |

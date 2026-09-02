@@ -105,11 +105,6 @@ Stage 6 — 全量验证 + 提交
   - 操作: client + common 模块
   - 验证: 5 + 8 测试通过
 
-- [x] **Step 3.7: sample-cqrs-person QuarkusPersonResourceTest**
-  - 文件: `sample-cqrs-person/src/test/java/...`
-  - 操作: 1 个测试类
-  - 验证: 1 测试通过
-
 ## Stage 4 — CI 工作流
 
 - [x] **Step 4.1: .github/workflows/ci.yml workflow-lint job**
@@ -159,11 +154,10 @@ Stage 6 — 全量验证 + 提交
 | 项 | 旧 plan 描述 | 实际落地 | 偏差原因 |
 |---|---|---|---|
 | auth-testcontainers 新增 | 计划新增共享 fixture | 未落地 | 优先级让位给 mq-testcontainers |
-| sample-rich-model 完整化 | 计划 4 层完整 | 仅骨架 | 业务项目未触发 |
 | sample-mq-* 完整化 | 计划完整化 + 集成测试 | 仅骨架 | mq 子模块已有 14 broker 集成测试覆盖 |
 
 ## 后续待办（非本次范围）
 
 - [ ] 新增 `ddd4j-quarkus-auth-testcontainers` 模块 + 4 个 auth 子模块集成测试
-- [ ] 完整化 sample-rich-model / sample-auth-* / sample-mq-*
+- [ ] 完整化 sample-auth-* / sample-mq-*
 - [ ] 删除 ddd4j-quarkus-extension-pf4j（空壳）
