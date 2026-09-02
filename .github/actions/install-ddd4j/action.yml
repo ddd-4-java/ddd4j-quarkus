@@ -50,7 +50,7 @@ runs:
         USER_NAME=$(sed -n 's/.*<id>2624322-snapshot-3EoOv3<\/id>\s*<username>\([^<]*\)<\/username>.*/\1/p' "$HOME/.m2/settings.xml" | head -1)
         PASS_WORD=$(sed -n 's/.*<id>2624322-snapshot-3EoOv3<\/id>\s*<username>[^<]*<\/username>\s*<password>\([^<]*\)<\/password>.*/\1/p' "$HOME/.m2/settings.xml" | head -1)
         HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "$USER_NAME:$PASS_WORD" \
-          "https://packages.aliyun.com/6927b116e6c3e0425dbdf60d/maven/2624322-snapshot-3eoov3/io/ddd4j/ddd4j-core/2.0.x.20260630-SNAPSHOT/maven-metadata.xml" || echo "curl-failed")
+          "https://packages.aliyun.com/6927b116e6c3e0425dbdf60d/maven/2624322-snapshot-3eoov3/io/ddd4j/ddd4j-core/2.0.x.20260730-SNAPSHOT/maven-metadata.xml" || echo "curl-failed")
         echo "Aliyun credential check: HTTP $HTTP_CODE"
         if [ "$HTTP_CODE" != "200" ]; then
           echo "::warning::Aliyun auth returned $HTTP_CODE - private snapshot deps may fail"
