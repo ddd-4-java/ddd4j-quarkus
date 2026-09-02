@@ -14,11 +14,6 @@
     <description>ddd4j-quarkus Akka 扩展适配：对齐 boot 模块结构，底层复用 ddd4j-extension-akka。</description>
 
     <dependencies>
-        <dependency>
-            <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-extension-akka</artifactId>
-            <version>${ddd4j.version}</version>
-        </dependency>
         <!-- For Akka（版本由 ddd4j-dependencies 统一管理） -->
         <dependency>
             <groupId>com.typesafe.akka</groupId>

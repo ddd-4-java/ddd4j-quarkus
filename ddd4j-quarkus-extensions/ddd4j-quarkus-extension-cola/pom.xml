@@ -14,11 +14,6 @@
     <description>ddd4j-quarkus COLA 扩展适配：对齐 boot 模块结构，底层复用 ddd4j-ddd-cola 架构检查能力。</description>
 
     <dependencies>
-        <dependency>
-            <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-ddd-cola</artifactId>
-            <version>${ddd4j.version}</version>
-        </dependency>
         <!-- For ddd4j-core: 统一响应模型（ApiRestResponse / ApiCode） -->
         <dependency>
             <groupId>io.ddd4j</groupId>
