@@ -35,6 +35,17 @@ mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-api -am clean package -DskipT
 - 先安装主仓 `ddd4j`，使 `io.ddd4j:ddd4j-runtime-quarkus` 等底座模块进入本地仓库
 - 再构建本仓 `ddd4j-quarkus`，由各深度适配模块复用主仓通用实现
 
+## 构建约定：为何用 `<modules>` 而非 Maven 4 的 `<subprojects>`
+
+feature/4.0.x 使用 Maven 4（modelVersion 4.1.0），但聚合语法刻意保留 `<modules>`：
+Quarkus 3.38.x 的 WorkspaceLoader 内嵌 Maven 3.9.9 的 `MavenXpp3Reader`，解析
+`<subprojects>` 时报 `Unrecognised tag`，导致**所有 `@QuarkusTest` 无法引导**。
+`<modules>` 是 Maven 3 / Maven 4 / Quarkus 测试引导的兼容交集（Maven 4 仍完整支持）。
+计划升级 Quarkus 4 后回归 `<subprojects>`（跟踪 quarkusio/quarkus#52190）。
+实证记录见 commit `274ee01`。
+
+feature/3.3.x 对应 ddd4j 2.0.x 线，本就是 Maven 3 + modelVersion 4.0.0 + `<modules>`，不受影响。
+
 ## 业务项目 parent
 
 ```xml

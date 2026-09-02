@@ -43,6 +43,12 @@
         <maven-quarkus-plugin.version>3.38.2</maven-quarkus-plugin.version>
     </properties>
 
+    <!-- 聚合语法刻意使用 <modules> 而非 Maven 4 的 <subprojects>：
+         Quarkus 3.38.2 的 WorkspaceLoader 内嵌 Maven 3.9.9 MavenXpp3Reader，会拒绝
+         <subprojects>（"Unrecognised tag"）导致所有 @QuarkusTest 无法引导（Failed to load POM）。
+         Maven 4 完整支持（deprecated 的）<modules>，它是 Maven 3 / Maven 4 / Quarkus 引导的兼容交集。
+         待升级 Quarkus 4 后回归 <subprojects>（quarkusio/quarkus#52190）。
+         实证记录：commit 274ee01（jshell + maven-model 3.9.9 验证）。 -->
     <modules>
         <module>ddd4j-quarkus-bom</module>
         <module>ddd4j-quarkus-dependencies</module>
