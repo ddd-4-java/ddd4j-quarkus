@@ -20,7 +20,7 @@
 
     <properties>
         <revision>3.3.x.20260630-SNAPSHOT</revision>
-        <ddd4j.version>2.0.x.20260630-SNAPSHOT</ddd4j.version>
+        <ddd4j.version>2.0.x.20260730-SNAPSHOT</ddd4j.version>
     </properties>
 
     <dependencyManagement>

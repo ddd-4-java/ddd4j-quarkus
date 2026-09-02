@@ -13,13 +13,13 @@
     <artifactId>ddd4j-quarkus-auth-license</artifactId>
     <description>
         ddd4j-quarkus License 授权校验整合。
-        底层复用 io.ddd4j:ddd4j-auth-license 纯 Java 实现，本层提供 Quarkus CDI 装配。
+        底层复用 io.ddd4j:ddd4j-extension-license 纯 Java 实现，本层提供 Quarkus CDI 装配。
     </description>
 
     <dependencies>
         <dependency>
             <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-auth-license</artifactId>
+            <artifactId>ddd4j-extension-license</artifactId>
             <version>${ddd4j.version}</version>
         </dependency>
         <!--
@@ -35,14 +35,8 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
-        <!-- Test scope：3.0.x 主仓 license 已从 ddd4j-auth-license 迁出至
-             ddd4j-extension-license（LicenseKit / LicenseCreator / LicenseKeyStoreGenerator
-             用于端到端测试：keytool 生成 keystore → 签发 → 安装 → 缓存命中） -->
-        <dependency>
-            <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-extension-license</artifactId>
-            <version>${ddd4j.version}</version>
-            <scope>test</scope>
-        </dependency>
+        <!-- 上述 ddd4j-extension-license（compile）同时覆盖测试用途
+             （LicenseKit / LicenseCreator / LicenseKeyStoreGenerator 用于端到端测试：
+             keytool 生成 keystore → 签发 → 安装 → 缓存命中），不再重复声明 test scope -->
     </dependencies>
 </project>

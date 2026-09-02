@@ -1,6 +1,6 @@
 package io.ddd4j.quarkus.auth.license;
 
-import io.ddd4j.auth.license.LicenseVerify;
+import io.ddd4j.extension.license.LicenseVerify;
 import io.ddd4j.extension.license.creator.LicenseCreatorParam;
 import io.ddd4j.extension.license.keystore.LicenseKeyStoreGenerator;
 import io.ddd4j.extension.license.keystore.LicenseKeyStoreParam;

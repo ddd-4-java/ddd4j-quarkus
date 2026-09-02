@@ -1,6 +1,6 @@
 package io.ddd4j.quarkus.auth.license;
 
-import io.ddd4j.auth.license.LicenseVerify;
+import io.ddd4j.extension.license.LicenseVerify;
 import io.quarkus.arc.properties.IfBuildProperty;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -13,8 +13,10 @@ import java.util.Optional;
 /**
  * License Quarkus CDI 装配。
  *
- * <p>纯 Java 实现来自 {@code io.ddd4j:ddd4j-auth-license}，本类仅负责从 Quarkus 配置创建
- * {@link LicenseVerify} 并对齐 boot 模块的 init/destroy 生命周期。
+ * <p>纯 Java 实现来自 {@code io.ddd4j:ddd4j-extension-license}（3.0.x 主仓从
+ * ddd4j-auth-license 迁出，包名 io.ddd4j.auth.license → io.ddd4j.extension.license），
+ * 本类仅负责从 Quarkus 配置创建 {@link LicenseVerify} 并对齐 boot 模块的
+ * init/destroy 生命周期。
  *
  * <p><b>默认不装配</b>（需 {@code license.enabled=true} 显式开启）：LicenseVerify 构造器对全部
  * 5 个参数要求非空（requireText），无条件装配会让未配置 license.* 的应用启动即失败。

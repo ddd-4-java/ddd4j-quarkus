@@ -1,6 +1,6 @@
 package io.ddd4j.quarkus.auth.license;
 
-import io.ddd4j.auth.license.LicenseVerify;
+import io.ddd4j.extension.license.LicenseVerify;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.InstanceHandle;
 import io.quarkus.test.junit.QuarkusTest;
