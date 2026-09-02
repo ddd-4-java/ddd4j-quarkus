@@ -18,6 +18,7 @@ import io.ddd4j.core.cqrs.eventstore.EventDeserializer;
 import io.ddd4j.core.ddd.event.EntityId;
 import io.ddd4j.core.ddd.event.EntityIdRegistry;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
@@ -36,10 +37,22 @@ import java.util.function.Function;
  *
  * <p>工厂类必须是 {@code Function<String, EntityId>} 的实现，且提供 public 无参构造器。
  *
+ * <h3>GraalVM native-image 注意事项</h3>
+ * <p>工厂类名来自运行时配置（无法在 build 时枚举），本类通过 {@code Class.forName} +
+ * {@code getConstructor().newInstance()} 反射实例化。工厂类由业务方提供，native 反射
+ * 注册责任在业务方：构建 native image 前在 {@code application.properties} 加
+ * （包名替换为业务工厂类所在包）：
+ * <pre>{@code
+ * quarkus.native.reflection.include-patterns=com.example.domain.*
+ * }</pre>
+ * 未注册时 JVM 模式正常，native 模式下启动日志按条目报
+ * {@code Factory class not found ...}（不阻断启动，该类型回退默认解析）。
+ *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  * @since 4.0.x
  */
 @ApplicationScoped
+@RegisterForReflection(methods = true)
 public class EntityIdRegistryInitializer {
 
     private static final Logger LOG = Logger.getLogger(EntityIdRegistryInitializer.class);
@@ -116,7 +129,17 @@ public class EntityIdRegistryInitializer {
         if (!EventDeserializer.isValidClassName(factoryClassName)) {
             throw new IllegalArgumentException("Invalid factory class name format: " + factoryClassName);
         }
-        Class<?> factoryClass = Class.forName(factoryClassName);
+        Class<?> factoryClass;
+        try {
+            factoryClass = Class.forName(factoryClassName);
+        } catch (ClassNotFoundException e) {
+            // 单独捕获给出可操作提示：JVM 模式多为配置笔误；native 模式多为缺少反射注册
+            throw new IllegalArgumentException("Factory class not found: " + factoryClassName
+                    + ". Check the configured name for typos; under GraalVM native-image the factory class "
+                    + "must be registered for reflection, e.g. "
+                    + "quarkus.native.reflection.include-patterns=<factory-package>.* (see EntityIdConfig javadoc).",
+                    e);
+        }
         if (!Function.class.isAssignableFrom(factoryClass)) {
             throw new IllegalArgumentException(
                     "Factory class must implement Function<String, EntityId>: " + factoryClassName);
