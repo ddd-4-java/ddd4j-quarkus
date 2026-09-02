@@ -3,6 +3,9 @@ package io.ddd4j.quarkus.mq.redisstream;
 import io.ddd4j.mq.MQClient;
 import io.ddd4j.mq.MQProperties;
 import io.ddd4j.mq.event.MQEventSerialization;
+import io.ddd4j.mq.redisstream.RedisStreamMQProperties;
+import io.ddd4j.quarkus.mq.testcontainers.AbstractMqQuarkusIntegrationTest;
+import io.ddd4j.quarkus.mq.testcontainers.JunitJupiterQuarkusTestContainers;
 import io.ddd4j.quarkus.mq.testcontainers.RedisStreamQuarkusTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
@@ -15,14 +18,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * redis-stream MQ 集成测试骨架。
+ * redis-stream MQ 集成测试。
  *
  * <p>验证：
  * <ul>
  *   <li>{@link MQClient} Bean 被 CDI 正确解析，且 impl() = "redisStream"</li>
  *   <li>{@link MQProperties} Bean 存在且 broker = "REDIS_STREAM"</li>
  *   <li>{@link MQEventSerialization} Bean 存在且可注入</li>
- *   <li>容器连接信息已由共享 fixture {@link RedisStreamQuarkusTestResource} 注入到 application.properties</li>
+ *   <li>端到端：{@code OrderCreatedEvent.publish()} → Redis Stream（key ORDER:CREATED）→
+ *       消费组 {@code @MQEventListener} 监听器收到事件（继承
+ *       {@link AbstractMqQuarkusIntegrationTest} round-trip 骨架）</li>
  * </ul>
  *
  * <p>测试使用内嵌 {@link RedisStreamTestResource}（委托 {@link RedisStreamQuarkusTestResource} 的 start/stop）启动对应容器，
@@ -33,16 +38,22 @@ import java.util.Map;
  */
 @QuarkusTest
 @QuarkusTestResource(RedisStreamQuarkusIntegrationTest.RedisStreamTestResource.class)
-class RedisStreamQuarkusIntegrationTest {
+@JunitJupiterQuarkusTestContainers
+class RedisStreamQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<RedisStreamMQProperties> {
 
     @Inject
-    MQClient mqClient;
+    RedisStreamMQProperties redisStreamProperties;
 
-    @Inject
-    MQProperties mqProperties;
+    @Override
+    protected RedisStreamMQProperties mqPropertiesExtension() {
+        return redisStreamProperties;
+    }
 
-    @Inject
-    MQEventSerialization serialization;
+    @Override
+    protected void applyContainerProperties(RedisStreamMQProperties properties) {
+        properties.setUrl("redis://" + config("ddd4j.mq.redis-stream.host")
+                + ":" + config("ddd4j.mq.redis-stream.port"));
+    }
 
     @Test
     void shouldInjectMQClient() {
@@ -63,6 +74,14 @@ class RedisStreamQuarkusIntegrationTest {
         // 验证序列化 round-trip
         String json = serialization.serialize(Map.of("key", "value"));
         Assertions.assertThat(json).contains("key");
+    }
+
+    /**
+     * 端到端：OrderCreatedEvent 发布 → Redis Stream（XADD ORDER:CREATED + 消费组 XREADGROUP）→ 监听器消费。
+     */
+    @Test
+    void shouldPublishAndConsumeOrderCreatedEventEndToEnd() throws Exception {
+        runOrderCreatedRoundTrip();
     }
 
     /**

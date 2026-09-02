@@ -10,8 +10,9 @@ import java.util.Map;
 /**
  * Aliyun ONS testcontainers fixture for Quarkus tests.
  *
- * <p>ONS 客户端协议基于 RocketMQ，因此复用 {@code apache/rocketmq:5.3.0} 镜像
- * （namesrv 9876），以本地 RocketMQ 充当 ONS 协议端点。
+ * <p>ONS 客户端协议基于 RocketMQ，因此复用 {@code apache/rocketmq:5.3.2} 镜像
+ * （namesrv 9876，仅 namesrv 不起 broker——ONS 商业协议无本地 round-trip 能力），
+ * 以本地 RocketMQ 充当 ONS 协议端点。
  * 暴露属性：{@code ddd4j.mq.ons.endpoint}（namesrv 地址 {@code host:9876}）。
  *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
@@ -19,7 +20,7 @@ import java.util.Map;
  */
 public class OnsQuarkusTestResource extends AbstractTestContainerFixture {
 
-    private static final DockerImageName IMAGE = DockerImageName.parse("apache/rocketmq:5.3.0");
+    private static final DockerImageName IMAGE = DockerImageName.parse("apache/rocketmq:5.3.2");
     private static final int NAMESRV_PORT = 9876;
 
     private GenericContainer<?> container;

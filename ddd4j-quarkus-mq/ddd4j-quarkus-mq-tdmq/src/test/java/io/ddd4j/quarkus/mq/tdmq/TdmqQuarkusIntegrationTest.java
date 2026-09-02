@@ -3,6 +3,9 @@ package io.ddd4j.quarkus.mq.tdmq;
 import io.ddd4j.mq.MQClient;
 import io.ddd4j.mq.MQProperties;
 import io.ddd4j.mq.event.MQEventSerialization;
+import io.ddd4j.mq.tdmq.TdmqProperties;
+import io.ddd4j.quarkus.mq.testcontainers.AbstractMqQuarkusIntegrationTest;
+import io.ddd4j.quarkus.mq.testcontainers.JunitJupiterQuarkusTestContainers;
 import io.ddd4j.quarkus.mq.testcontainers.TdmqQuarkusTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
@@ -15,34 +18,46 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * tdmq MQ 集成测试骨架。
+ * tdmq MQ 集成测试。
  *
  * <p>验证：
  * <ul>
  *   <li>{@link MQClient} Bean 被 CDI 正确解析，且 impl() = "tdmq"</li>
  *   <li>{@link MQProperties} Bean 存在且 broker = "TDMQ"</li>
  *   <li>{@link MQEventSerialization} Bean 存在且可注入</li>
- *   <li>容器连接信息已由共享 fixture {@link TdmqQuarkusTestResource} 注入到 application.properties</li>
+ *   <li>round-trip：{@code OrderCreatedEvent.publish()} → {@code TdmqMQClient} →
+ *       {@code @MQEventListener} 监听器收到事件（继承 {@link AbstractMqQuarkusIntegrationTest}
+ *       骨架）</li>
  * </ul>
  *
- * <p>测试使用内嵌 {@link TdmqTestResource}（委托 {@link TdmqQuarkusTestResource} 的 start/stop）启动对应容器，
- * 并通过 {@code @QuarkusTestResource} 自动注入连接信息到 Quarkus 运行时。
+ * <p><b>协议说明</b>：主仓 {@code TdmqMQClient} 将 publish/subscribe 委托给
+ * {@code BrokerPublisher}/{@code BrokerSubscriber} SPI（业务侧腾讯云 SDK 封装），
+ * 未注入 SPI 时回落进程内内存总线（客户端自带，供本地/测试）。因此本 round-trip
+ * 验证的是 ddd4j 完整发布/消费管道（BaseContext 路由 → 序列化 → tag 过滤 → 反射监听），
+ * 而非 Pulsar standalone 容器——容器仍由 fixture 启动（对齐 TDMQ 无开源镜像的
+ * javalin Ddd4jTdmqMqIT 先例）。
  *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  * @since 3.3.x
  */
 @QuarkusTest
 @QuarkusTestResource(TdmqQuarkusIntegrationTest.TdmqTestResource.class)
-class TdmqQuarkusIntegrationTest {
+@JunitJupiterQuarkusTestContainers
+class TdmqQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<TdmqProperties> {
 
     @Inject
-    MQClient mqClient;
+    TdmqProperties tdmqProperties;
 
-    @Inject
-    MQProperties mqProperties;
+    @Override
+    protected TdmqProperties mqPropertiesExtension() {
+        return tdmqProperties;
+    }
 
-    @Inject
-    MQEventSerialization serialization;
+    @Override
+    protected void applyContainerProperties(TdmqProperties properties) {
+        // TDMQ 客户端走 SPI/内存总线，service-url 仅作配置完整性记录
+        properties.setServiceUrl(config("ddd4j.mq.tdmq.service-url"));
+    }
 
     @Test
     void shouldInjectMQClient() {
@@ -63,6 +78,14 @@ class TdmqQuarkusIntegrationTest {
         // 验证序列化 round-trip
         String json = serialization.serialize(Map.of("key", "value"));
         Assertions.assertThat(json).contains("key");
+    }
+
+    /**
+     * round-trip：OrderCreatedEvent 发布 → TdmqMQClient（内存总线 SPI fallback）→ 监听器消费。
+     */
+    @Test
+    void shouldPublishAndConsumeOrderCreatedEventEndToEnd() throws Exception {
+        runOrderCreatedRoundTrip();
     }
 
     /**

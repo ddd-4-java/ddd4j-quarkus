@@ -10,12 +10,12 @@ import java.util.Map;
 /**
  * NATS testcontainers fixture for Quarkus tests.
  *
- * <p>镜像：{@code nats:2.10-alpine}（含 jetstream 支持）。
+ * <p>镜像：{@code nats:2.10.22}（含 jetstream 支持）。
  * 暴露属性：{@code ddd4j.mq.nats.servers}。
  */
 public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
 
-    private static final DockerImageName IMAGE = DockerImageName.parse("nats:2.10-alpine");
+    private static final DockerImageName IMAGE = DockerImageName.parse("nats:2.10.22");
 
     private GenericContainer<?> container;
 
@@ -23,9 +23,9 @@ public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
     protected GenericContainer<?> container() {
         container = new GenericContainer<>(IMAGE)
                 .withExposedPorts(4222, 8222)
-                // -js 启用 JetStream；-m 8222 启用 HTTP monitoring，否则 8222 不监听，
-                // Wait.forListeningPort() 会等待 4222+8222 两个端口而超时
-                .withCommand("nats-server", "-js", "-m", "8222");
+                // 镜像 ENTRYPOINT 为 /nats-server，只需追加参数：-js 启用 JetStream；
+                // -m 8222 启用 HTTP monitoring，否则 8222 不监听，Wait.forListeningPort() 会超时
+                .withCommand("-js", "-m", "8222");
         return container;
     }
 

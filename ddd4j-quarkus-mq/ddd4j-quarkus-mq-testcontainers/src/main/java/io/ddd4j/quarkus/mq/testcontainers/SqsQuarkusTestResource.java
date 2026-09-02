@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * AWS SQS (LocalStack) testcontainers fixture for Quarkus tests.
  *
- * <p>镜像：{@code localstack/localstack:3.4}（仅启用 sqs 服务，缩短启动时间）。
+ * <p>镜像：{@code localstack/localstack:3.8.0}（仅启用 sqs 服务，缩短启动时间）。
  * 暴露属性：{@code ddd4j.mq.sqs.endpoint}（{@code http://host:4566}），
  * 配合 {@code ddd4j.mq.sqs.region=us-east-1} 使用。
  *
@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class SqsQuarkusTestResource extends AbstractTestContainerFixture {
 
-    private static final DockerImageName IMAGE = DockerImageName.parse("localstack/localstack:3.4");
+    private static final DockerImageName IMAGE = DockerImageName.parse("localstack/localstack:3.8.0");
     private static final int EDGE_PORT = 4566;
 
     private GenericContainer<?> container;
