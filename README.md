@@ -35,6 +35,16 @@ mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-api -am clean package -DskipT
 - 先安装主仓 `ddd4j`，使 `io.ddd4j:ddd4j-runtime-quarkus` 等底座模块进入本地仓库
 - 再构建本仓 `ddd4j-quarkus`，由各深度适配模块复用主仓通用实现
 
+## CI 前置条件：`MAVEN_SETTINGS_XML` 组织 secret
+
+GitHub Actions 依赖 **ddd-4-java 组织级 secret** 解析 Aliyun 私有仓 SNAPSHOT：
+
+1. org → Settings → Secrets and variables → Actions → New organization secret
+2. Name：`MAVEN_SETTINGS_XML`；Value：**base64 编码**的 settings.xml（须含 `2624322-snapshot-3EoOv3` 服务器凭据）
+3. 本地生成：`base64 -i ~/.m2/settings.xml | pbcopy`（macOS）
+
+secret 缺失时 CI **直接失败**（fail-fast）并输出修复指引，不再降级为警告继续跑。
+
 ## 业务项目 parent
 
 ```xml

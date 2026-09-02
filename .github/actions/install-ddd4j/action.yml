@@ -39,8 +39,11 @@ runs:
         MAVEN_SETTINGS_XML: ${{ inputs.maven-settings-xml }}
       run: |
         if [ -z "$MAVEN_SETTINGS_XML" ]; then
-          echo "::warning::MAVEN_SETTINGS_XML secret not configured - private deps will fail. Configure at GitHub repo settings > Secrets."
-          exit 0
+          echo "::error::MAVEN_SETTINGS_XML secret not configured. Private snapshot deps cannot resolve."
+          echo "::error::Fix: ddd-4-java org → Settings → Secrets and variables → Actions → New organization secret"
+          echo "::error::  Name: MAVEN_SETTINGS_XML | Secret: base64(settings.xml)，需含 Aliyun 2624322-snapshot-3EoOv3 凭据"
+          echo "::error::本地生成: base64 -i ~/.m2/settings.xml（macOS 加 | pbcopy）"
+          exit 1
         fi
         install -d -m 700 "$HOME/.m2"
         umask 077
