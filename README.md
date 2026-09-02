@@ -46,6 +46,16 @@ Quarkus 3.38.x 的 WorkspaceLoader 内嵌 Maven 3.9.9 的 `MavenXpp3Reader`，�
 
 feature/3.3.x 对应 ddd4j 2.0.x 线，本就是 Maven 3 + modelVersion 4.0.0 + `<modules>`，不受影响。
 
+## CI 前置条件：`MAVEN_SETTINGS_XML` 组织 secret
+
+GitHub Actions 依赖 **ddd-4-java 组织级 secret** 解析 Aliyun 私有仓 SNAPSHOT：
+
+1. org → Settings → Secrets and variables → Actions → New organization secret
+2. Name：`MAVEN_SETTINGS_XML`；Value：**base64 编码**的 settings.xml（须含 `2624322-snapshot-3EoOv3` 服务器凭据）
+3. 本地生成：`base64 -i ~/.m2/settings.xml | pbcopy`（macOS）
+
+secret 缺失时 CI **直接失败**（fail-fast）并输出修复指引，不再降级为警告继续跑。
+
 ## 业务项目 parent
 
 ```xml
