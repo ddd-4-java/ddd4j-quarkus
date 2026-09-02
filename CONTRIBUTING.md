@@ -11,7 +11,7 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
 | `ddd4j-quarkus-ddd` / `ddd4j-quarkus-cache` / `ddd4j-quarkus-web` | 核心深度适配（BuildStep + Recorder / CDI Producer） |
 | `ddd4j-quarkus-data` | 数据访问（panache / jpa / external） |
 | `ddd4j-quarkus-mq` | MQ 适配（core + 13 broker + testcontainers fixtures） |
-| `ddd4j-quarkus-auth` | 认证授权（jwt / satoken / shiro / security / license） |
+| `ddd4j-quarkus-auth` | 认证授权（jwt / satoken / shiro / **[security (deprecated, use satoken)]** / license） |
 | `ddd4j-quarkus-extensions` | 业务扩展（akka / cola / excel / jackson / monitor / qlexpress / dubbo） |
 | `ddd4j-quarkus-parent` | 业务项目父 POM（默认依赖 + profiles） |
 | `ddd4j-quarkus-samples` | 分层架构示例（domain / app / infrastructure / adapter / client / common / layered 等） |

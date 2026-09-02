@@ -12,8 +12,9 @@
 
     <artifactId>ddd4j-quarkus-auth-security</artifactId>
     <description>
-        ddd4j-quarkus + Spring Security 整合：CDI Bean 注册 SecuritySubjectProvider。
-        注意：Spring Security 依赖 Spring 生态，Quarkus 环境推荐使用 sa-token。
+        [DEPRECATED since 4.1.0, for removal in 5.0.0]
+        Spring Security requires Spring ecosystem; use ddd4j-quarkus-auth-satoken instead.
+        See docs/MIGRATION-auth-security-to-satoken.md.
     </description>
 
     <dependencies>
