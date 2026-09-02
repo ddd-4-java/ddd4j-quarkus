@@ -40,6 +40,14 @@ import java.util.Optional;
  *
  * <p>每个配置项的值必须是 {@code Function<String, EntityId>} 的实现类全限定名。
  *
+ * <h3>GraalVM native-image</h3>
+ * <p>工厂类在运行时经反射实例化（类名来自配置，build 时不可枚举），构建 native image
+ * 前业务方需在 {@code application.properties} 注册反射（包名替换为工厂类所在包）：
+ * <pre>{@code
+ * quarkus.native.reflection.include-patterns=com.example.domain.*
+ * }</pre>
+ * 未注册时启动日志按条目报 {@code Factory class not found ...}（不阻断启动）。
+ *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  * @since 4.0.x
  */

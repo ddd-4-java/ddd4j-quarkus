@@ -23,13 +23,14 @@
         复用 ddd4j-data 各子模块的纯 Java 实现，本层提供 CDI Bean / Quarkus 扩展桥接。
     </description>
 
-    <subprojects>
-        <subproject>ddd4j-quarkus-data-panache</subproject>
-        <subproject>ddd4j-quarkus-data-jpa</subproject>
-        <subproject>ddd4j-quarkus-data-crypto</subproject>
-        <subproject>ddd4j-quarkus-data-logs</subproject>
-        <subproject>ddd4j-quarkus-data-external</subproject>
-        <subproject>ddd4j-quarkus-data-datascope</subproject>
-    </subprojects>
+    <modules>
+        <module>ddd4j-quarkus-data-panache</module>
+        <module>ddd4j-quarkus-data-jpa</module>
+        <module>ddd4j-quarkus-data-event-store-panache</module>
+        <module>ddd4j-quarkus-data-crypto</module>
+        <module>ddd4j-quarkus-data-logs</module>
+        <module>ddd4j-quarkus-data-external</module>
+        <module>ddd4j-quarkus-data-datascope</module>
+    </modules>
 
 </project>
