@@ -19,12 +19,12 @@
         对齐 ddd4j-boot-auth 的深度适配定位；jwt 属于 Quarkus 轨道额外的无状态令牌适配。
     </description>
 
-    <subprojects>
-        <subproject>ddd4j-quarkus-auth-license</subproject>
-        <subproject>ddd4j-quarkus-auth-satoken</subproject>
-        <subproject>ddd4j-quarkus-auth-security</subproject>
-        <subproject>ddd4j-quarkus-auth-shiro</subproject>
-        <subproject>ddd4j-quarkus-auth-jwt</subproject>
-    </subprojects>
+    <modules>
+        <module>ddd4j-quarkus-auth-license</module>
+        <module>ddd4j-quarkus-auth-satoken</module>
+        <module>ddd4j-quarkus-auth-security</module>
+        <module>ddd4j-quarkus-auth-shiro</module>
+        <module>ddd4j-quarkus-auth-jwt</module>
+    </modules>
 
 </project>

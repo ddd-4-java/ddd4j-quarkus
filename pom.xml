@@ -43,22 +43,22 @@
         <maven-quarkus-plugin.version>3.38.2</maven-quarkus-plugin.version>
     </properties>
 
-    <subprojects>
-        <subproject>ddd4j-quarkus-bom</subproject>
-        <subproject>ddd4j-quarkus-dependencies</subproject>
+    <modules>
+        <module>ddd4j-quarkus-bom</module>
+        <module>ddd4j-quarkus-dependencies</module>
         <!-- Quarkus 深度适配层：核心运行时已收敛到 io.ddd4j:ddd4j-runtime-quarkus，保留 ddd/auth/data/mq/cache/web 等深度适配模块 -->
-        <subproject>ddd4j-quarkus-ddd</subproject>
+        <module>ddd4j-quarkus-ddd</module>
         <!-- 领域聚合（对齐 ddd4j-boot 结构） -->
-        <subproject>ddd4j-quarkus-data</subproject>
-        <subproject>ddd4j-quarkus-cache</subproject>
-        <subproject>ddd4j-quarkus-mq</subproject>
-        <subproject>ddd4j-quarkus-extensions</subproject>
-        <subproject>ddd4j-quarkus-auth</subproject>
+        <module>ddd4j-quarkus-data</module>
+        <module>ddd4j-quarkus-cache</module>
+        <module>ddd4j-quarkus-mq</module>
+        <module>ddd4j-quarkus-extensions</module>
+        <module>ddd4j-quarkus-auth</module>
         <!-- Web 集成（对应 ddd4j-boot 的 ddd4j-boot-web，对齐 ddd4j-boot-web-{webmvc,webflux}） -->
-        <subproject>ddd4j-quarkus-web</subproject>
-        <subproject>ddd4j-quarkus-parent</subproject>
-        <subproject>ddd4j-quarkus-samples</subproject>
-    </subprojects>
+        <module>ddd4j-quarkus-web</module>
+        <module>ddd4j-quarkus-parent</module>
+        <module>ddd4j-quarkus-samples</module>
+    </modules>
 
     <!--
         JUnit 4（test，全局兜底）：Quarkus Dev Services 处理器（如 MySQLDevServicesProcessor）

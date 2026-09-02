@@ -20,22 +20,22 @@
         tdmq 当前复用 MQ core 作为 Quarkus 侧扩展入口，避免引入 Spring Boot 自动配置。
     </description>
 
-    <subprojects>
-        <subproject>ddd4j-quarkus-mq-core</subproject>
-        <subproject>ddd4j-quarkus-mq-activemq</subproject>
-        <subproject>ddd4j-quarkus-mq-disruptor</subproject>
-        <subproject>ddd4j-quarkus-mq-kafka</subproject>
-        <subproject>ddd4j-quarkus-mq-mqtt</subproject>
-        <subproject>ddd4j-quarkus-mq-mqtt-mica</subproject>
-        <subproject>ddd4j-quarkus-mq-sqs</subproject>
-        <subproject>ddd4j-quarkus-mq-nats</subproject>
-        <subproject>ddd4j-quarkus-mq-ons</subproject>
-        <subproject>ddd4j-quarkus-mq-pulsar</subproject>
-        <subproject>ddd4j-quarkus-mq-rabbitmq</subproject>
-        <subproject>ddd4j-quarkus-mq-redis-stream</subproject>
-        <subproject>ddd4j-quarkus-mq-rocketmq</subproject>
-        <subproject>ddd4j-quarkus-mq-tdmq</subproject>
-        <subproject>ddd4j-quarkus-mq-testcontainers</subproject>
-    </subprojects>
+    <modules>
+        <module>ddd4j-quarkus-mq-core</module>
+        <module>ddd4j-quarkus-mq-activemq</module>
+        <module>ddd4j-quarkus-mq-disruptor</module>
+        <module>ddd4j-quarkus-mq-kafka</module>
+        <module>ddd4j-quarkus-mq-mqtt</module>
+        <module>ddd4j-quarkus-mq-mqtt-mica</module>
+        <module>ddd4j-quarkus-mq-sqs</module>
+        <module>ddd4j-quarkus-mq-nats</module>
+        <module>ddd4j-quarkus-mq-ons</module>
+        <module>ddd4j-quarkus-mq-pulsar</module>
+        <module>ddd4j-quarkus-mq-rabbitmq</module>
+        <module>ddd4j-quarkus-mq-redis-stream</module>
+        <module>ddd4j-quarkus-mq-rocketmq</module>
+        <module>ddd4j-quarkus-mq-tdmq</module>
+        <module>ddd4j-quarkus-mq-testcontainers</module>
+    </modules>
 
 </project>
