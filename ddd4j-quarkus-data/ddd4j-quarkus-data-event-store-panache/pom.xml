@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.ddd4j.quarkus</groupId>
+        <artifactId>ddd4j-quarkus-data</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ddd4j-quarkus-data-event-store-panache</artifactId>
+    <description>ddd4j-quarkus 数据层 - 事件存储 Panache 实现：
+        镜像主仓 ddd4j-data-event-store-panache（PanacheStoredEventEntity + PanacheEventStore），
+        基于 Quarkus Hibernate ORM Panache 提供 EventStore SPI 的关系型落地。
+    </description>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Quarkus 平台 BOM 模块级再导入（= ddd4j-quarkus-dependencies 同款 ${quarkus-bom.version}）：
+                 必要（非冗余）。父链 ddd4j-quarkus-dependencies 先 import ddd4j-dependencies（把
+                 hibernate-core 管理为 Spring 线 7.2.x、hibernate-graalvm/jcache 管理为
+                 hibernate-platform 6.6.x），后 import quarkus-bom；BOM import 先声明者生效，
+                 Quarkus 3.38.2 的 hibernate-orm 运行时按 7.4.x 编译，混版实测 @QuarkusTest
+                 启动即 NoClassDefFoundError（主仓 ddd4j-data-event-store-panache 同款教训）。
+                 模块级 import 优先于父链管理项生效，使本模块的 Quarkus 全家桶
+                 （hibernate-core/graalvm/jcache、jakarta.persistence 等）整链对齐 quarkus-bom。 -->
+            <dependency>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- ddd4j 底座核心契约（版本由 ddd4j-quarkus-dependencies 链管理）；
+             SPI 完整版要求 ddd4j-core 2.0.x.20260730+（EventStore/EventPayloadSerializer/EntityIdRegistry 已 promote 进 core） -->
+        <dependency>
+            <groupId>io.ddd4j</groupId>
+            <artifactId>ddd4j-core</artifactId>
+        </dependency>
+        <!-- Quarkus Hibernate ORM Panache：版本由 quarkus-bom（模块级 import）管理，刻意不声明 -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-orm-panache</artifactId>
+        </dependency>
+        <!-- Quarkus CDI（@ApplicationScoped / @Inject / @Produces 装配） -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
+
+        <!-- ======== Test ======== -->
+        <!-- Jackson 2 jsr310（java.time 序列化）：EventPayloadSerializer 的 mapper 经
+             findAndRegisterModules 发现该 module——4.0.x 线用 Jackson 3（java.time 内建）无需此依赖，
+             3.3.x（Jackson 2 基线）必须显式提供。版本由 quarkus-bom（模块级 import）管理。 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Quarkus JUnit 5 集成（@QuarkusTest 引导；3.31+ 由 quarkus-junit5 重定位至 quarkus-junit，BOM 管理） -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Quarkus H2 JDBC 驱动（@QuarkusTest 内存库 IT 用，BOM 管理，Docker 无关） -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- surefire 默认不含 *IT.java；本模块的 @QuarkusTest 集成测试（H2 内存库）
+                 随 test 阶段执行，需在父配置（**/*Test.java 之外）追加 IT 模式。 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*IT.java</include>
+                    </includes>
+                    <!-- 排除父链（ddd4j-parent 全局 test 依赖）注入的 ArchUnit JUnit 引擎：
+                         JUnit Platform 6（quarkus-junit 3.38 链）下 archunit-junit5-engine 1.4.2
+                         的 discover 直接失败（"TestEngine with ID 'archunit' failed to discover
+                         tests"），整个 surefire 轨崩溃、零测试执行。本模块无任何架构守卫测试，
+                         从 surefire 运行时类路径剔除即可（不影响编译期 classpath）；
+                         与主仓 ddd4j-data-event-store-panache（3.0.x 线）同款修复。 -->
+                    <classpathDependencyExcludes>
+                        <classpathDependencyExclude>com.tngtech.archunit:archunit-junit5</classpathDependencyExclude>
+                        <classpathDependencyExclude>com.tngtech.archunit:archunit-junit5-engine</classpathDependencyExclude>
+                        <classpathDependencyExclude>com.tngtech.archunit:archunit-junit5-engine-api</classpathDependencyExclude>
+                        <classpathDependencyExclude>com.tngtech.archunit:archunit-junit5-api</classpathDependencyExclude>
+                        <classpathDependencyExclude>com.tngtech.archunit:archunit</classpathDependencyExclude>
+                    </classpathDependencyExcludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

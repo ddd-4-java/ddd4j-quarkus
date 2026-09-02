@@ -1,0 +1,12 @@
+name: io.ddd4j.quarkus.data.eventstore.panache
+description: "Quarkus EventStore via Panache: mirrors main-repo ddd4j-data-event-store-panache (PanacheStoredEventEntity + PanacheEventStore) for the ddd4j EventStore SPI."
+metadata:
+  keywords:
+    - "ddd4j"
+    - "event-store"
+    - "cqrs"
+    - "panache"
+  guide: "https://github.com/ddd-4-java/ddd4j-quarkus/blob/master/docs/MIGRATION-event-store-panache.md"
+  categories:
+    - "data"
+  status: "stable"
