@@ -1,5 +1,8 @@
 # P2 — MQ Testcontainers 实施计划
 
+> 历史记录：本文保留 P2 当时的命令和结果。当前 Testcontainers 2.0.5 实施与验证以
+> `2026-09-07-p4-dual-branch-testcontainers-maven4-convergence.md` 为准。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 完成 14 broker 的 testcontainers fixtures 共享模块 + 14 个 broker 子模块集成测试，Docker reuse 启用，真实环境验证

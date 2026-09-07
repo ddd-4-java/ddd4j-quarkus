@@ -4,8 +4,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.DockerImageName;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * ddd4j-quarkus 共享 testcontainers fixture 基类（testcontainers-only 形态）。
@@ -17,10 +17,12 @@ import java.util.Map;
  * <p>Quarkus 集成（{@code QuarkusTestResourceLifecycleManager}）放在 {@link QuarkusTestResourceLifecycleManagerWrapper}
  * 中（test scope），让本 fixture 可以在 main scope 使用，便于其他模块依赖本工具类。
  *
- * <p>所有容器默认启用 {@code withReuse(true)}，CI 上多模块复用 Docker 实例，避免
- * testcontainers 拉镜像耗时瓶颈。
+ * <p>fixture 拥有并关闭自己启动的容器。是否在本地启用实验性的容器复用由开发者环境决定，
+ * 本基类不会强制修改复用策略。
  */
 public abstract class AbstractTestContainerFixture {
+
+    private GenericContainer<?> runningContainer;
 
     /**
      * 子类必须返回具体的容器实例。
@@ -41,7 +43,7 @@ public abstract class AbstractTestContainerFixture {
     }
 
     /**
-     * 容器镜像名（用于 {@code withReuse} 标识）。
+     * 容器镜像名。
      */
     protected abstract DockerImageName dockerImageName();
 
@@ -50,23 +52,23 @@ public abstract class AbstractTestContainerFixture {
      * 等价于 Quarkus 的 {@code QuarkusTestResourceLifecycleManager#start}，但保持在 main scope。
      */
     public Map<String, String> start() {
-        GenericContainer<?> container = container();
-        container.withReuse(true);
-        if (waitStrategy() != null) {
-            container.waitingFor(waitStrategy());
+        runningContainer = container();
+        WaitStrategy strategy = waitStrategy();
+        if (Objects.nonNull(strategy)) {
+            runningContainer.waitingFor(strategy);
         }
-        container.start();
-        Map<String, String> props = new HashMap<>(exposedProperties());
-        props.put("ddd4j.testcontainers.reuse", "true");
-        return props;
+        runningContainer.start();
+        return Map.copyOf(exposedProperties());
     }
 
     /**
      * 停止容器。
      */
     public void stop() {
-        // withReuse(true) 时 testcontainers 不会真正停止容器，留作 CI 全局清理
-        // 子类如需强制 stop，可 override
+        if (Objects.nonNull(runningContainer)) {
+            runningContainer.stop();
+            runningContainer = null;
+        }
     }
 
     /**

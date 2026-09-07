@@ -4,8 +4,13 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * MQTT (Eclipse Mosquitto) testcontainers fixture for Quarkus tests.
@@ -22,6 +27,41 @@ public class MqttQuarkusTestResource extends AbstractTestContainerFixture {
     private static final int MQTT_PORT = 1883;
 
     private GenericContainer<?> container;
+    private String previousUserDir;
+
+    /**
+     * 把 Paho 默认文件持久化目录约束到 Maven target 下，再启动 MQTT 容器。
+     *
+     * @return 注入 Quarkus 测试配置的连接属性
+     */
+    @Override
+    public Map<String, String> start() {
+        previousUserDir = System.getProperty("user.dir");
+        Path persistenceDirectory = Path.of(previousUserDir, "target", "mqtt-persistence");
+        try {
+            Files.createDirectories(persistenceDirectory);
+            System.setProperty("user.dir", persistenceDirectory.toString());
+            return super.start();
+        } catch (IOException exception) {
+            restoreUserDir();
+            throw new UncheckedIOException("Cannot create MQTT test persistence directory", exception);
+        } catch (RuntimeException | Error exception) {
+            restoreUserDir();
+            throw exception;
+        }
+    }
+
+    /**
+     * 关闭容器并恢复测试进程的工作目录属性。
+     */
+    @Override
+    public void stop() {
+        try {
+            super.stop();
+        } finally {
+            restoreUserDir();
+        }
+    }
 
     @Override
     protected GenericContainer<?> container() {
@@ -50,5 +90,12 @@ public class MqttQuarkusTestResource extends AbstractTestContainerFixture {
                         container.getHost(), firstMappedPort(container, MQTT_PORT)),
                 "ddd4j.mq.broker", "MQTT"
         );
+    }
+
+    private void restoreUserDir() {
+        if (Objects.nonNull(previousUserDir)) {
+            System.setProperty("user.dir", previousUserDir);
+            previousUserDir = null;
+        }
     }
 }

@@ -19,7 +19,7 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
 ## 开发环境
 
 - JDK 21（编译基线 + CI）
-- Maven 3.9+（仓库自带 `./mvnw`）
+- Maven 4.0.0-rc-6（仓库自带 `./mvnw`）
 - Docker（运行 `@QuarkusTest` 中的 Testcontainers 集成测试）
 
 ## 构建与测试
@@ -34,16 +34,16 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
 # 全量单元测试（@QuarkusTest；涉及 Testcontainers 的用例需要 Docker）
 ./mvnw -B verify
 
-# 仅跑 testcontainers 集成测试（CI 的 infrastructure-integration job 使用）
-./mvnw -B verify -Pintegration -pl <mq 模块列表> -am
+# 仅跑指定 Testcontainers 集成测试（CI 的 broker matrix 使用）
+./mvnw -B verify -Denforcer.skip=true -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-<broker> -am
 ```
 
-### 容器复用
+### 容器生命周期
 
-- 仓库内 `testcontainers.properties`（classpath）与 CI 中 `~/.testcontainers.properties`
-  均开启 `testcontainers.reuse.enable=true`，本地与 CI 都会复用已启动的 broker 容器。
-- 需要临时关闭复用：`-Dtestcontainers.reuse.enable=false`。
-- 清理残留容器：`docker rm -f $(docker ps -aq --filter "label=testcontainers")`。
+- 共享 fixture 启动并关闭自己拥有的容器，CI 不启用实验性的 reusable containers。
+- 本地如需复用，由开发者在 Testcontainers 用户配置中显式开启；测试代码不得强制
+  `withReuse(true)`，也不得依赖上一次执行残留的容器。
+- 测试运行目录写入模块的 `target/`，不得在源码目录生成随机持久化目录。
 
 ## 编码约定
 
@@ -53,7 +53,7 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
    装配用 `@Produces @Singleton` + `@IfBuildProperty`（替代 Spring `@AutoConfiguration`），
    异常处理用 JAX-RS `ExceptionMapper`（替代 `@ControllerAdvice`）。
 3. **日志**：使用 `org.jboss.logging.Logger`，占位符风格为 `infof("...%s", arg)`。
-4. **测试**：每个 starter 至少 1 个 `@QuarkusTest`；涉及外部组件的用例走 Testcontainers
+4. **测试**：每个 starter 至少 1 个 `@QuarkusTest`；涉及外部组件的用例走 Testcontainers 2.0.5
    fixture（复用 `ddd4j-quarkus-mq-testcontainers` / samples 中的模式）。
 5. **版本**：新依赖必须进入 `ddd4j-quarkus-dependencies` 的 dependencyManagement，
    禁止在子模块写裸版本号；Quarkus 组件跟随 quarkus-bom，禁止覆盖版本。
@@ -71,5 +71,5 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
 
 1. `workflow-lint` — actionlint 校验 workflow 语法；
 2. `build` — JDK 21 执行 `./mvnw -B verify`；
-3. `infrastructure-integration` — 启用 Docker 复用后执行
-   `./mvnw -B verify -Pintegration`（13 broker testcontainers 集成测试）。
+3. `broker-integration` — 按 broker matrix 执行指定 MQ 模块的 Testcontainers 集成测试，
+   不启用容器复用；RocketMQ 与 Pulsar 均为阻塞性任务。

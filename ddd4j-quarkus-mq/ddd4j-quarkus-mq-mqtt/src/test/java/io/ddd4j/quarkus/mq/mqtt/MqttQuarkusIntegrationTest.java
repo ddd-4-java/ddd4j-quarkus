@@ -14,8 +14,15 @@ import jakarta.inject.Inject;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * mqtt MQ 集成测试。
@@ -40,6 +47,8 @@ import java.util.Map;
 @QuarkusTestResource(MqttQuarkusIntegrationTest.MqttTestResource.class)
 @JunitJupiterQuarkusTestContainers
 class MqttQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<MqttMQProperties> {
+
+    private static final Pattern PAHO_DIRECTORY = Pattern.compile("^ddd4j-mq-.*-tcplocalhost\\d+$");
 
     @Inject
     MqttMQProperties mqttProperties;
@@ -80,7 +89,20 @@ class MqttQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<MqttMQ
      */
     @Test
     void shouldPublishAndConsumeOrderCreatedEventEndToEnd() throws Exception {
+        Set<String> persistenceDirectoriesBefore = pahoPersistenceDirectories();
         runOrderCreatedRoundTrip();
+        Assertions.assertThat(pahoPersistenceDirectories())
+                .as("Paho 持久化目录必须位于 target，而不是 Maven 模块根目录")
+                .isEqualTo(persistenceDirectoriesBefore);
+    }
+
+    private Set<String> pahoPersistenceDirectories() throws IOException {
+        try (Stream<Path> paths = Files.list(Path.of("").toAbsolutePath())) {
+            return paths.filter(Files::isDirectory)
+                    .map(path -> path.getFileName().toString())
+                    .filter(name -> PAHO_DIRECTORY.matcher(name).matches())
+                    .collect(Collectors.toSet());
+        }
     }
 
     /**

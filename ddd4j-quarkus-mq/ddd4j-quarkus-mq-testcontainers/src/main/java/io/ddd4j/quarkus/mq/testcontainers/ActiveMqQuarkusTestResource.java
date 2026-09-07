@@ -1,10 +1,9 @@
 package io.ddd4j.quarkus.mq.testcontainers;
 
+import org.testcontainers.activemq.ArtemisContainer;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
-import java.time.Duration;
 import java.util.Map;
 
 /**
@@ -21,25 +20,17 @@ import java.util.Map;
 public class ActiveMqQuarkusTestResource extends AbstractTestContainerFixture {
 
     private static final DockerImageName IMAGE = DockerImageName.parse("apache/activemq-artemis:2.33.0-alpine");
-    private static final int CORE_PORT = 61616;
-    private static final int CONSOLE_PORT = 8161;
     private static final String USERNAME = "artemis";
     private static final String PASSWORD = "artemis";
 
-    private GenericContainer<?> container;
+    private ArtemisContainer container;
 
     @Override
     protected GenericContainer<?> container() {
-        container = new GenericContainer<>(IMAGE)
-                .withExposedPorts(CORE_PORT, CONSOLE_PORT)
-                .withEnv("ARTEMIS_USER", USERNAME)
-                .withEnv("ARTEMIS_PASSWORD", PASSWORD);
+        container = new ArtemisContainer(IMAGE)
+                .withUser(USERNAME)
+                .withPassword(PASSWORD);
         return container;
-    }
-
-    @Override
-    protected org.testcontainers.containers.wait.strategy.WaitStrategy waitStrategy() {
-        return Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2));
     }
 
     @Override
@@ -50,10 +41,9 @@ public class ActiveMqQuarkusTestResource extends AbstractTestContainerFixture {
     @Override
     protected Map<String, String> exposedProperties() {
         return Map.of(
-                "ddd4j.mq.activemq.broker-url", String.format("tcp://%s:%s",
-                        container.getHost(), firstMappedPort(container, CORE_PORT)),
+                "ddd4j.mq.activemq.broker-url", container.getBrokerUrl(),
                 "ddd4j.mq.activemq.host", container.getHost(),
-                "ddd4j.mq.activemq.port", firstMappedPort(container, CORE_PORT),
+                "ddd4j.mq.activemq.port", String.valueOf(container.getMappedPort(61616)),
                 "ddd4j.mq.activemq.username", USERNAME,
                 "ddd4j.mq.activemq.password", PASSWORD,
                 "ddd4j.mq.broker", "ACTIVEMQ"

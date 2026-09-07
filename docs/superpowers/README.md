@@ -102,14 +102,14 @@
 | 分支 | ddd4j 底座 | 构建工具 | 说明 |
 |---|---|---|---|
 | `feature/3.3.x` | `ddd4j 2.0.x`（Maven 3 / POM 4.0.0） | Maven 3.9+ | 维护线（288 测试，Java 17） |
-| `feature/4.0.x` | `ddd4j 3.0.x`（POM 4.0.0，使用 `./mvnw` Maven 4 wrapper） | `./mvnw`（4.0.0-rc-6） | **当前分支**：Java 21 基线 + Maven 4 wrapper（254 测试 0 失败）。POM 保持 4.0.0：Quarkus 3.38.2 的 WorkspaceLoader（内部用 Maven 3 ModelBuilder）读 POM 4.1.0 的 `<subprojects>` 标签报 Failed to load POM，等 Quarkus 4.x 升 Maven 4 后可切 4.1.0。主仓 feature/3.0.x 仍为 POM 4.1.0（主仓无 Quarkus bootstrap，可独立演进） |
+| `feature/4.0.x` | `ddd4j 3.0.x`（POM 4.1.0，使用 `./mvnw` Maven 4 wrapper） | `./mvnw`（4.0.0-rc-6） | **当前分支**：Java 21、Quarkus 3.38.2、Testcontainers 2.0.5。Quarkus 3.38.2 及 2026-09-07 main `999-SNAPSHOT` 均无法加载含 `<subprojects>` 的工作区，当前保留 `<modules>`，等待 quarkusio/quarkus#52190。 |
 
 ## 当前快照
 
-- **阶段状态**：P0 / P1 / P2 / P3 全部完成
-- **测试总数**：318 个（0 失败）
-- **集成测试**：14 broker testcontainers 真实运行通过
-- **CI**：3 阶段（workflow-lint + JDK 21 build + infrastructure-integration）
+- **阶段状态**：P0 / P1 / P2 / P3 已完成；P4 Testcontainers 已在 4.0.x 验证，3.3.x 待移植；Maven 4 `<subprojects>` 暂停等待上游
+- **4.0.x 新鲜验证**：`./mvnw -B clean verify -Denforcer.skip=true`，62 个 reactor 模块成功；Surefire 138 个测试、0 失败、0 错误、3 跳过
+- **集成测试**：公开镜像 broker 均通过；ONS 云服务往返和 MQTT-Mica 平台受限用例各跳过 1 个；TDMQ 当前往返使用测试专用内存 fallback，不代表腾讯云服务验收
+- **CI**：3 阶段（workflow-lint + JDK 21 build + broker matrix），容器按执行生命周期关闭，不启用 reuse
 - **生产用户**：cloud-das（com.bmgw），版本管理已整体移交 ddd4j-quarkus
 
 ## 已登记的待办（不在 P0-P3 范围）

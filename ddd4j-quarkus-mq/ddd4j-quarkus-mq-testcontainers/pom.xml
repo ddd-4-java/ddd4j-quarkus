@@ -14,7 +14,7 @@
     <packaging>jar</packaging>
     <description>
         ddd4j-quarkus 消息队列 testcontainers 共享 fixture：
-        - AbstractTestContainerFixture（统一 start/stop + withReuse）
+        - AbstractTestContainerFixture（统一 start/stop，自有容器确定性关闭）
         - 13 个 broker 的专用 fixture（Kafka / RabbitMQ / RocketMQ / ActiveMQ / Pulsar / NATS /
           MQTT / Redis-Stream / SQS / ONS / TDMQ / Disruptor / MQTT-Mica）
         - QuarkusResourceLifecycleManager 集成（每个 fixture 自动注入容器连接信息到 application.properties）
@@ -41,28 +41,31 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
         </dependency>
-        <!-- 专用 broker 容器（testcontainers 子模块，1.20+ 各 broker 拆分为独立 artifact） -->
+        <!-- Testcontainers 2.x 官方专用 broker 容器模块。 -->
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>kafka</artifactId>
+            <artifactId>testcontainers-activemq</artifactId>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>rabbitmq</artifactId>
+            <artifactId>testcontainers-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-localstack</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-pulsar</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-rabbitmq</artifactId>
         </dependency>
         <!-- Quarkus test 集成（含 QuarkusTestResourceLifecycleManager） -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit</artifactId>
-        </dependency>
-        <!--
-            JUnit 4（compile）：GenericContainer#withReuse(true) 的方法签名/类型层次
-            引用 org.junit.rules.TestRule（testcontainers 内部），fixture 在 main scope，
-            需 junit4 编译期可用（版本由 ddd4j 仓库统一管理 4.13.2）。
-        -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
         </dependency>
         <!--
             JUnit 5 集成（compile）：JunitJupiterQuarkusTestContainers 注解 +
@@ -71,7 +74,7 @@
         -->
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
         </dependency>
         <!--
             MQ 契约（compile）：AbstractMqQuarkusIntegrationTest round-trip 骨架引用

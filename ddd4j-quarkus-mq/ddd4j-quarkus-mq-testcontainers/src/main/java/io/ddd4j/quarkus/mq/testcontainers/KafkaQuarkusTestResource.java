@@ -1,11 +1,9 @@
 package io.ddd4j.quarkus.mq.testcontainers;
 
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import java.time.Duration;
 import java.util.Map;
 
 /**
@@ -17,23 +15,16 @@ import java.util.Map;
 public class KafkaQuarkusTestResource extends AbstractTestContainerFixture {
 
     private static final DockerImageName IMAGE = DockerImageName.parse("confluentinc/cp-kafka:7.7.2");
-    private static final int KAFKA_PORT = 9092;
-
-    private KafkaContainer container;
+    private ConfluentKafkaContainer container;
 
     @Override
     protected GenericContainer<?> container() {
-        container = new KafkaContainer(IMAGE)
+        container = new ConfluentKafkaContainer(IMAGE)
                 .withEnv("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "true")
                 .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", "1")
                 .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", "1")
                 .withEnv("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", "1");
         return container;
-    }
-
-    @Override
-    protected org.testcontainers.containers.wait.strategy.WaitStrategy waitStrategy() {
-        return Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2));
     }
 
     @Override

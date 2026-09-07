@@ -59,10 +59,12 @@
 | sqs(localstack) | 3.4 | 3.8.0 | 对齐 boot |
 | rabbitmq / pulsar / mqtt / redis | 3.13-management-alpine / 3.2.0 / 2.0 / 7.4-alpine | 保持 | 已与 boot 一致或非歧义 |
 
-### 4.2 端到端 round-trip 覆盖
+### 4.2 Testcontainers 2.0.5 与端到端 round-trip 覆盖
 
 - 对齐 boot 的 10 broker `*ClientIntegrationTest` 与 javalin 的 `AbstractMqIntegrationTest.shouldPublishAndConsumeRoundTrip` 模式
-- 13 broker：11 个真实往返 + ons/tdmq 按 javalin 先例 `@Disabled`（商业协议无 Testcontainers 镜像）+ mqtt-mica `@Disabled`（macOS arm64 AIO 缺陷，CI linux 可移除）
+- ActiveMQ Artemis、Kafka、RabbitMQ、Pulsar、SQS 分别使用 Testcontainers 2.0.5 官方 `ArtemisContainer`、`ConfluentKafkaContainer`、`RabbitMQContainer`、`PulsarContainer`、`LocalStackContainer`
+- 2026-09-07 的 4.0.x 全量验证中，公开镜像 broker 往返均通过；ONS 云服务往返跳过，MQTT-Mica 在 macOS arm64 跳过，TDMQ 使用测试专用内存 fallback，不能作为云服务验收
+- RocketMQ 与 Pulsar 类级 `@Disabled` 已移除，真实公开镜像往返通过；共享 fixture 不再强制容器复用并会关闭自有容器
 - payload 使用 DDD 业务事件（OrderCreated 模式），不再使用空 PingEvent
 
 ### 4.3 javalin 独有、quarkus 暂缓的 fixture（记录）

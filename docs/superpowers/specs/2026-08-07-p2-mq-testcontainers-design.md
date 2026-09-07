@@ -1,5 +1,8 @@
 # P2 — MQ Testcontainers 设计（14 broker fixtures + 共享基座）
 
+> 历史记录：本文描述 P2 当时的 Testcontainers 1.20.4 与复用策略。当前实现及验证结论以
+> `2026-09-07-p4-dual-branch-testcontainers-maven4-convergence-design.md` 为准。
+
 - 日期: 2026-08-07
 - 作者: ddd-4-java
 - 状态: 设计已确认 / 实施已对齐

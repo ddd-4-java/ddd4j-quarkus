@@ -1,10 +1,9 @@
 package io.ddd4j.quarkus.mq.testcontainers;
 
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.localstack.LocalStackContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import java.time.Duration;
 import java.util.Map;
 
 /**
@@ -20,21 +19,13 @@ import java.util.Map;
 public class SqsQuarkusTestResource extends AbstractTestContainerFixture {
 
     private static final DockerImageName IMAGE = DockerImageName.parse("localstack/localstack:3.8.0");
-    private static final int EDGE_PORT = 4566;
-
-    private GenericContainer<?> container;
+    private LocalStackContainer container;
 
     @Override
     protected GenericContainer<?> container() {
-        container = new GenericContainer<>(IMAGE)
-                .withExposedPorts(EDGE_PORT)
-                .withEnv("SERVICES", "sqs");
+        container = new LocalStackContainer(IMAGE)
+                .withServices("sqs");
         return container;
-    }
-
-    @Override
-    protected org.testcontainers.containers.wait.strategy.WaitStrategy waitStrategy() {
-        return Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2));
     }
 
     @Override
@@ -45,8 +36,7 @@ public class SqsQuarkusTestResource extends AbstractTestContainerFixture {
     @Override
     protected Map<String, String> exposedProperties() {
         return Map.of(
-                "ddd4j.mq.sqs.endpoint", String.format("http://%s:%s",
-                        container.getHost(), firstMappedPort(container, EDGE_PORT)),
+                "ddd4j.mq.sqs.endpoint", container.getEndpoint().toString(),
                 "ddd4j.mq.broker", "SQS"
         );
     }
