@@ -5,15 +5,25 @@ import io.ddd4j.extension.license.creator.LicenseCreator;
 import io.ddd4j.extension.license.creator.LicenseCreatorParam;
 import io.ddd4j.extension.license.keystore.LicenseKeyStoreGenerator;
 import io.ddd4j.extension.license.keystore.LicenseKeyStoreParam;
+import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.QuarkusTestProfile;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.Calendar;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,39 +52,25 @@ class LicenseEnabledEndToEndQuarkusTest {
     private static final String KEY_PASS = "storepass";
     private static final String PRIVATE_ALIAS = "privateKey";
     private static final String PUBLIC_ALIAS = "publicCert";
-
-    /**
-     * 测试路径位于 {@code java.io.tmpdir} 的固定子目录。Quarkus profile 在 CDI
-     * 初始化前读取配置，固定路径让 profile 与 {@link #generateKeystoreAndLicense}
-     * 访问同一组临时文件。
-     */
-    private static final String SHARED_LICENSE_PATH =
-            System.getProperty("java.io.tmpdir") + "/quarkus-license-end2end/license.lic";
-    private static final String SHARED_PUBLIC_KEYS_STORE_PATH =
-            System.getProperty("java.io.tmpdir") + "/quarkus-license-end2end/publicCerts.keystore";
-    private static final String SHARED_PRIVATE_KEYS_STORE_PATH =
-            System.getProperty("java.io.tmpdir") + "/quarkus-license-end2end/privateKeys.keystore";
+    private static final String FIXTURE_DIRECTORY_PROPERTY =
+            LicenseEnabledEndToEndQuarkusTest.class.getName() + ".fixture-directory";
+    private static final Set<PosixFilePermission> OWNER_ONLY_DIRECTORY_PERMISSIONS = Set.of(
+            PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE);
+    private static final Set<PosixFilePermission> OWNER_ONLY_FILE_PERMISSIONS = Set.of(
+            PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE);
 
     @Inject
     LicenseVerify licenseVerify;
 
-    static void generateKeystoreAndLicense() throws Exception {
-        Path dir = Path.of(System.getProperty("java.io.tmpdir"), "quarkus-license-end2end");
-        if (java.nio.file.Files.exists(dir)) {
-            java.nio.file.Files.walk(dir)
-                    .sorted(java.util.Comparator.reverseOrder())
-                    .forEach(p -> { try { java.nio.file.Files.deleteIfExists(p); } catch (Exception ignore) {} });
-        }
-        java.nio.file.Files.createDirectories(dir);
-
+    static void generateKeystoreAndLicense(LicenseFixture fixture) throws Exception {
         // 1. keytool 生成测试公私钥库。
         LicenseKeyStoreParam ksParam = LicenseKeyStoreParam.builder()
                 .privateAlias(PRIVATE_ALIAS)
                 .publicAlias(PUBLIC_ALIAS)
                 .storePass(STORE_PASS)
                 .keyPass(KEY_PASS)
-                .privateKeysStorePath(SHARED_PRIVATE_KEYS_STORE_PATH)
-                .publicKeysStorePath(SHARED_PUBLIC_KEYS_STORE_PATH)
+                .privateKeysStorePath(fixture.privateKeysStorePath().toString())
+                .publicKeysStorePath(fixture.publicKeysStorePath().toString())
                 .build();
         new LicenseKeyStoreGenerator().generate(ksParam);
 
@@ -84,14 +80,17 @@ class LicenseEnabledEndToEndQuarkusTest {
         param.setPrivateAlias(PRIVATE_ALIAS);
         param.setKeyPass(KEY_PASS);
         param.setStorePass(STORE_PASS);
-        param.setLicensePath(SHARED_LICENSE_PATH);
-        param.setPrivateKeysStorePath(SHARED_PRIVATE_KEYS_STORE_PATH);
+        param.setLicensePath(fixture.licensePath().toString());
+        param.setPrivateKeysStorePath(fixture.privateKeysStorePath().toString());
         Calendar expiry = Calendar.getInstance();
         expiry.add(Calendar.DAY_OF_YEAR, 30);
         param.setExpiryTime(expiry.getTime());
         param.setConsumerType("user");
         param.setConsumerAmount(1);
         assertThat(new LicenseCreator(param).generateLicense()).isTrue();
+        restrictToOwner(fixture.privateKeysStorePath(), OWNER_ONLY_FILE_PERMISSIONS);
+        restrictToOwner(fixture.publicKeysStorePath(), OWNER_ONLY_FILE_PERMISSIONS);
+        restrictToOwner(fixture.licensePath(), OWNER_ONLY_FILE_PERMISSIONS);
     }
 
     @Test
@@ -101,25 +100,179 @@ class LicenseEnabledEndToEndQuarkusTest {
         assertThat(licenseVerify.verify()).isTrue();
     }
 
+    @Test
+    void fixtureUsesUniquePrivateTemporaryDirectory() throws IOException {
+        LicenseFixture fixture = LicenseEnabledProfile.currentFixture();
+
+        assertThat(fixture.directory().getFileName().toString())
+                .startsWith("quarkus-license-end2end-");
+        assertThat(fixture.directory().normalize().startsWith(Path.of(System.getProperty("java.io.tmpdir")).normalize()))
+                .isTrue();
+        assertThat(System.getProperty(FIXTURE_DIRECTORY_PROPERTY)).isEqualTo(fixture.directory().toString());
+        assertThat(Files.isRegularFile(fixture.privateKeysStorePath())).isTrue();
+        assertThat(Files.isRegularFile(fixture.publicKeysStorePath())).isTrue();
+        assertThat(Files.isRegularFile(fixture.licensePath())).isTrue();
+        assertOwnerOnlyPermissions(fixture.directory(), OWNER_ONLY_DIRECTORY_PERMISSIONS);
+        assertOwnerOnlyPermissions(fixture.privateKeysStorePath(), OWNER_ONLY_FILE_PERMISSIONS);
+        assertOwnerOnlyPermissions(fixture.publicKeysStorePath(), OWNER_ONLY_FILE_PERMISSIONS);
+        assertOwnerOnlyPermissions(fixture.licensePath(), OWNER_ONLY_FILE_PERMISSIONS);
+    }
+
     /**
-     * profile 与 {@link #generateKeystoreAndLicense} 共享固定路径
-     * （{@link #SHARED_LICENSE_PATH} 等），并在 Quarkus 创建 CDI Bean 前完成夹具准备。
+     * Profile 静态持有本 JVM/测试运行的唯一夹具，并在 Quarkus 创建 CDI Bean 前完成准备。
      */
     public static class LicenseEnabledProfile implements QuarkusTestProfile {
+        private static LicenseFixture fixture;
+
         @Override
         public Map<String, String> getConfigOverrides() {
             try {
-                generateKeystoreAndLicense();
+                LicenseFixture currentFixture = prepareFixture();
+                return Map.of(
+                        "license.enabled", "true",
+                        "license.subject", SUBJECT,
+                        "license.public-alias", PUBLIC_ALIAS,
+                        "license.store-pass", STORE_PASS,
+                        "license.license-path", currentFixture.licensePath().toString(),
+                        "license.public-keys-store-path", currentFixture.publicKeysStorePath().toString());
             } catch (Exception exception) {
                 throw new IllegalStateException("无法准备 Quarkus License 端到端测试夹具", exception);
             }
-            return Map.of(
-                    "license.enabled", "true",
-                    "license.subject", SUBJECT,
-                    "license.public-alias", PUBLIC_ALIAS,
-                    "license.store-pass", STORE_PASS,
-                    "license.license-path", SHARED_LICENSE_PATH,
-                    "license.public-keys-store-path", SHARED_PUBLIC_KEYS_STORE_PATH);
         }
+
+        static LicenseFixture currentFixture() {
+            synchronized (System.getProperties()) {
+                String fixtureDirectoryValue = System.getProperty(FIXTURE_DIRECTORY_PROPERTY);
+                if (Objects.isNull(fixtureDirectoryValue) || fixtureDirectoryValue.isBlank()) {
+                    throw new IllegalStateException("Quarkus License 测试夹具尚未初始化");
+                }
+                fixture = fixtureFor(Path.of(fixtureDirectoryValue));
+                return fixture;
+            }
+        }
+
+        @Override
+        public List<TestResourceEntry> testResources() {
+            try {
+                return List.of(new TestResourceEntry(FixtureCleanupResource.class,
+                        Map.of("fixture-directory", prepareFixture().directory().toString())));
+            } catch (Exception exception) {
+                throw new IllegalStateException("无法注册 Quarkus License 测试夹具清理器", exception);
+            }
+        }
+
+        private static LicenseFixture prepareFixture() throws Exception {
+            synchronized (System.getProperties()) {
+                String fixtureDirectoryValue = System.getProperty(FIXTURE_DIRECTORY_PROPERTY);
+                if (Objects.nonNull(fixtureDirectoryValue) && !fixtureDirectoryValue.isBlank()) {
+                    fixture = fixtureFor(Path.of(fixtureDirectoryValue));
+                    return fixture;
+                }
+                Path directory = Files.createTempDirectory("quarkus-license-end2end-");
+                LicenseFixture candidate = fixtureFor(directory);
+                System.setProperty(FIXTURE_DIRECTORY_PROPERTY, directory.toString());
+                try {
+                    restrictToOwner(directory, OWNER_ONLY_DIRECTORY_PERMISSIONS);
+                    generateKeystoreAndLicense(candidate);
+                    fixture = candidate;
+                    return candidate;
+                } catch (Exception exception) {
+                    System.clearProperty(FIXTURE_DIRECTORY_PROPERTY);
+                    try {
+                        deleteRecursively(directory);
+                    } catch (IOException cleanupException) {
+                        exception.addSuppressed(cleanupException);
+                    }
+                    throw exception;
+                }
+            }
+        }
+    }
+
+    /**
+     * 由 Quarkus 在应用关闭后停止，确保 CDI 的 LicenseVerify 销毁路径完成后再清理夹具。
+     */
+    public static class FixtureCleanupResource implements QuarkusTestResourceLifecycleManager {
+        private Path fixtureDirectory;
+
+        @Override
+        public void init(Map<String, String> initArgs) {
+            String fixtureDirectoryValue = initArgs.get("fixture-directory");
+            if (Objects.isNull(fixtureDirectoryValue) || fixtureDirectoryValue.isBlank()) {
+                throw new IllegalArgumentException("缺少 License 测试夹具目录");
+            }
+            fixtureDirectory = Path.of(fixtureDirectoryValue);
+        }
+
+        @Override
+        public Map<String, String> start() {
+            return Map.of();
+        }
+
+        @Override
+        public void stop() {
+            if (Objects.isNull(fixtureDirectory)) {
+                return;
+            }
+            try {
+                deleteRecursively(fixtureDirectory);
+                synchronized (System.getProperties()) {
+                    if (fixtureDirectory.toString().equals(System.getProperty(FIXTURE_DIRECTORY_PROPERTY))) {
+                        System.clearProperty(FIXTURE_DIRECTORY_PROPERTY);
+                    }
+                }
+                fixtureDirectory = null;
+            } catch (IOException exception) {
+                throw new IllegalStateException("无法清理 Quarkus License 测试夹具目录: " + fixtureDirectory, exception);
+            }
+        }
+    }
+
+    private static void assertOwnerOnlyPermissions(Path path, Set<PosixFilePermission> permissions) throws IOException {
+        if (Files.getFileStore(path).supportsFileAttributeView(PosixFileAttributeView.class)) {
+            assertThat(Files.getPosixFilePermissions(path)).isEqualTo(permissions);
+        }
+    }
+
+    private static void restrictToOwner(Path path, Set<PosixFilePermission> permissions) throws IOException {
+        if (Files.getFileStore(path).supportsFileAttributeView(PosixFileAttributeView.class)) {
+            Files.setPosixFilePermissions(path, permissions);
+        }
+    }
+
+    private static void deleteRecursively(Path directory) throws IOException {
+        List<Path> paths;
+        try (Stream<Path> pathStream = Files.walk(directory)) {
+            paths = pathStream.sorted(Comparator.reverseOrder()).toList();
+        } catch (IOException exception) {
+            throw new IOException("无法遍历 License 测试夹具目录: " + directory, exception);
+        }
+        IOException failure = null;
+        for (Path path : paths) {
+            try {
+                Files.delete(path);
+            } catch (IOException exception) {
+                IOException pathFailure = new IOException("无法删除 License 测试夹具路径: " + path, exception);
+                if (failure == null) {
+                    failure = pathFailure;
+                } else {
+                    failure.addSuppressed(pathFailure);
+                }
+            }
+        }
+        if (failure != null) {
+            throw failure;
+        }
+        if (Files.exists(directory)) {
+            throw new IOException("License 测试夹具目录未清理: " + directory);
+        }
+    }
+
+    private static LicenseFixture fixtureFor(Path directory) {
+        return new LicenseFixture(directory, directory.resolve("license.lic"),
+                directory.resolve("publicCerts.keystore"), directory.resolve("privateKeys.keystore"));
+    }
+
+    private record LicenseFixture(Path directory, Path licensePath, Path publicKeysStorePath, Path privateKeysStorePath) {
     }
 }
