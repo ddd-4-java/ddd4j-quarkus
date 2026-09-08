@@ -19,7 +19,7 @@
     <properties>
         <!-- 本仓 revision / ddd4j 底座 revision（必须与 ddd4j 仓库实际 deploy 的一致） -->
         <revision>4.0.x.20260630-SNAPSHOT</revision>
-        <ddd4j.version>3.0.x.20260730-SNAPSHOT</ddd4j.version>
+        <ddd4j.version>3.0.x.20260630-SNAPSHOT</ddd4j.version>
         <quarkus.build.skip>false</quarkus.build.skip>
         <!-- surefire 默认执行（兜底：主仓 ddd4j-parent 的 surefire 配置引用 ${skipTests}，
              链上无定义时插值失败会被当作 skip 而静默跳过全部测试） -->
@@ -270,6 +270,11 @@
             </dependency>
             <dependency>
                 <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-extension-license</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ddd4j</groupId>
                 <artifactId>ddd4j-data-event-store</artifactId>
                 <version>${ddd4j.version}</version>
             </dependency>
@@ -289,13 +294,6 @@
                 <groupId>io.github.hiwepy</groupId>
                 <artifactId>zxing-extension</artifactId>
                 <version>3.0.x.20260630-SNAPSHOT</version>
-            </dependency>
-            <!-- 主仓 ddd4j-auth-license 发布 POM 引用了 de.schlichtherle.truelicense 但未带版本，
-                 这里显式管理版本（truelicense-core 1.33 为当前发布版本） -->
-            <dependency>
-                <groupId>de.schlichtherle.truelicense</groupId>
-                <artifactId>truelicense-core</artifactId>
-                <version>1.33</version>
             </dependency>
             <!--
                 Agroal 连接池版本（显式覆盖）：ddd4j 底座 BOM 先 import，其 quarkus-bom
@@ -373,6 +371,11 @@
             <dependency>
                 <groupId>io.ddd4j</groupId>
                 <artifactId>ddd4j-runtime-quarkus</artifactId>
+                <version>${ddd4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ddd4j</groupId>
+                <artifactId>ddd4j-web-quarkus</artifactId>
                 <version>${ddd4j.version}</version>
             </dependency>
             <!-- 4.1 本仓 ddd4j-quarkus-* 模块统一版本管理。
