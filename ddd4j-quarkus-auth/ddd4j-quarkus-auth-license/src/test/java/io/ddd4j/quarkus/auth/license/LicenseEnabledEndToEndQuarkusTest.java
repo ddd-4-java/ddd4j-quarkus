@@ -1,6 +1,7 @@
 package io.ddd4j.quarkus.auth.license;
 
 import io.ddd4j.extension.license.LicenseVerify;
+import io.ddd4j.extension.license.creator.LicenseCreator;
 import io.ddd4j.extension.license.creator.LicenseCreatorParam;
 import io.ddd4j.extension.license.keystore.LicenseKeyStoreGenerator;
 import io.ddd4j.extension.license.keystore.LicenseKeyStoreParam;
@@ -8,9 +9,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.QuarkusTestProfile;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
 import java.util.Calendar;
@@ -28,13 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *       （类级 {@code @IfBuildProperty} 生效）</li>
  *   <li>5 个 license.* 属性 {@code @ConfigProperty} 注入正确（subject / public-alias / store-pass）</li>
  *   <li>{@link LicenseVerify} Bean 被 {@code @Produces} 装配，注入点解析成功</li>
- *   <li>{@code installLicense()} 内部执行（{@code @PreDestroy}/{@code destroy} 链路无异常）</li>
+ *   <li>真实许可证完成签发、安装和验签</li>
  * </ul>
- *
- * <p><b>未覆盖</b>：license 文件签名验证 + installSuccess 断言——
- *   完整链路（含 keystore 解密 / SignedLicense.parse / Signature.verify）由主仓
- *   {@code io.ddd4j:ddd4j-extension-license} 的 LicenseKitTest / LicenseInfoTest
- *   端到端覆盖（不重复造轮子）。本测试专注 Quarkus CDI 装配层。
  *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  */
@@ -50,9 +44,9 @@ class LicenseEnabledEndToEndQuarkusTest {
     private static final String PUBLIC_ALIAS = "publicCert";
 
     /**
-     * 测试路径（固定 {@code @TempDir} 子目录——Quarkus profile 读取 getConfigOverrides
-     * 在主进程启动阶段，远早于 {@code @BeforeAll}；使用固定路径让 profile 与
-     * {@link #generateKeystoreAndLicense} 能访问同一文件集）。
+     * 测试路径位于 {@code java.io.tmpdir} 的固定子目录。Quarkus profile 在 CDI
+     * 初始化前读取配置，固定路径让 profile 与 {@link #generateKeystoreAndLicense}
+     * 访问同一组临时文件。
      */
     private static final String SHARED_LICENSE_PATH =
             System.getProperty("java.io.tmpdir") + "/quarkus-license-end2end/license.lic";
@@ -64,7 +58,6 @@ class LicenseEnabledEndToEndQuarkusTest {
     @Inject
     LicenseVerify licenseVerify;
 
-    @BeforeAll
     static void generateKeystoreAndLicense() throws Exception {
         Path dir = Path.of(System.getProperty("java.io.tmpdir"), "quarkus-license-end2end");
         if (java.nio.file.Files.exists(dir)) {
@@ -74,7 +67,7 @@ class LicenseEnabledEndToEndQuarkusTest {
         }
         java.nio.file.Files.createDirectories(dir);
 
-        // 1. keytool 生成公私钥库（仅供 setup 完整性，端到端校验由主仓 LicenseKitTest 覆盖）
+        // 1. keytool 生成测试公私钥库。
         LicenseKeyStoreParam ksParam = LicenseKeyStoreParam.builder()
                 .privateAlias(PRIVATE_ALIAS)
                 .publicAlias(PUBLIC_ALIAS)
@@ -85,7 +78,7 @@ class LicenseEnabledEndToEndQuarkusTest {
                 .build();
         new LicenseKeyStoreGenerator().generate(ksParam);
 
-        // 2. 签发许可证（即使安装失败，CDI 装配断言仍可验证）
+        // 2. 在 Quarkus 创建 LicenseVerify Bean 前签发真实测试许可证。
         LicenseCreatorParam param = new LicenseCreatorParam();
         param.setSubject(SUBJECT);
         param.setPrivateAlias(PRIVATE_ALIAS);
@@ -98,24 +91,28 @@ class LicenseEnabledEndToEndQuarkusTest {
         param.setExpiryTime(expiry.getTime());
         param.setConsumerType("user");
         param.setConsumerAmount(1);
+        assertThat(new LicenseCreator(param).generateLicense()).isTrue();
     }
 
     @Test
     void licenseVerifyBeanAssembledWhenLicenseEnabled() {
-        // 装配成功证明：@IfBuildProperty(license.enabled=true) 生效 + 5 个属性注入
-        // + LicenseVerify 构造器通过 + installLicense() 执行无 NPE（密钥库解析失败
-        // 属主仓 LicenseInfo Test 覆盖范围，本测试断言装配链路通即可）
         assertThat(licenseVerify).isNotNull();
+        assertThat(licenseVerify.isInstallSuccess()).isTrue();
+        assertThat(licenseVerify.verify()).isTrue();
     }
 
     /**
      * profile 与 {@link #generateKeystoreAndLicense} 共享固定路径
-     * （{@link #SHARED_LICENSE_PATH} 等）——Quarkus 启动阶段读取 profile 配置时，
-     * {@code @BeforeAll} 还未执行，使用静态常量避免 NullPointerException。
+     * （{@link #SHARED_LICENSE_PATH} 等），并在 Quarkus 创建 CDI Bean 前完成夹具准备。
      */
     public static class LicenseEnabledProfile implements QuarkusTestProfile {
         @Override
         public Map<String, String> getConfigOverrides() {
+            try {
+                generateKeystoreAndLicense();
+            } catch (Exception exception) {
+                throw new IllegalStateException("无法准备 Quarkus License 端到端测试夹具", exception);
+            }
             return Map.of(
                     "license.enabled", "true",
                     "license.subject", SUBJECT,
