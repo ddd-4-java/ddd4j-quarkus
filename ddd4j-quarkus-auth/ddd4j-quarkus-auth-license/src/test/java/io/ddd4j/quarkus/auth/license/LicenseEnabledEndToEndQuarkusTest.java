@@ -87,7 +87,9 @@ class LicenseEnabledEndToEndQuarkusTest {
         param.setExpiryTime(expiry.getTime());
         param.setConsumerType("user");
         param.setConsumerAmount(1);
-        assertThat(new LicenseCreator(param).generateLicense()).isTrue();
+        if (!new LicenseCreator(param).generateLicense()) {
+            throw new IllegalStateException("无法生成 Quarkus License 端到端测试许可证");
+        }
         restrictToOwner(fixture.privateKeysStorePath(), OWNER_ONLY_FILE_PERMISSIONS);
         restrictToOwner(fixture.publicKeysStorePath(), OWNER_ONLY_FILE_PERMISSIONS);
         restrictToOwner(fixture.licensePath(), OWNER_ONLY_FILE_PERMISSIONS);

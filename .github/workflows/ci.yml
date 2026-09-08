@@ -41,6 +41,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: reviewdog/action-actionlint@v1
+        with:
+          fail_level: error
+          filter_mode: nofilter
 
   unit-and-contract:
     name: Java ${{ matrix.java }} verify
