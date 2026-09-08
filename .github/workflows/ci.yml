@@ -1,30 +1,21 @@
 # CI: Build, test, and integration test for ddd4j-quarkus (feature/4.0.x — Maven 4 / Java 21)
 #
-# ddd4j-quarkus depends on ddd4j 3.0.x SNAPSHOT.
-# We checkout ddd4j (feature/3.0.x) and install it into the local Maven cache first.
-# The checkout + Aliyun config + install sequence is shared via the composite
-# action `.github/actions/install-ddd4j` (used by both jobs below).
+# ddd4j-quarkus resolves its published ddd4j 3.0.x SNAPSHOT from the configured
+# remote Maven repository. Both Maven jobs verify this from an empty cache first.
 #
 # ─────────────────────────────────────────────────────────────────────────────
 # P1-5 重构（2026-09-02）：拆分 infrastructure-integration 为 13 个 broker matrix jobs
 # ─────────────────────────────────────────────────────────────────────────────
-# - 移除 continue-on-error: true（此前会掩盖 13 个 broker 集成测试失败）
+# - 13 个 broker 集成测试失败保持阻断，不被忽略
 # - 每个 broker 独立 matrix job：单个 broker 失败立即阻塞合并
 # - fail-fast: false：一个 broker 失败不会取消其余 broker 的测试
 # - 每个 broker 独立上传报告（integration-reports-<broker>）便于追溯
 # - Java matrix 锁定为 21（与 feature/4.0.x 版本线对齐，P1-4 reconcile）
 #
-# 版本对齐背景（2026-08-26 完成）：
-#   当前 ci.yml checkout feature/3.0.x，与 ddd4j-quarkus/pom.xml 声明的
-#   ddd4j.version=3.0.x.20260730-SNAPSHOT 对齐。
+# 版本对齐背景：
+#   feature/4.0.x 解析已发布的 ddd4j.version=3.0.x.20260630-SNAPSHOT。
 #   - feature/3.3.x：quarkus-bom 3.37.4 ↔ ddd4j 2.0.x（Java 17）
 #   - feature/4.0.x：quarkus-bom 3.38.2 ↔ ddd4j 3.0.x（Java 21）
-#
-# 后续 TODO：
-#   1. 创建 feature/3.3.x 分支（对应 ddd4j 2.0.x，quarkus-bom 3.37.4）
-#   2. 重构 install 列表为 Maven 自动依赖解析（mvn dependency:list + -pl -am）
-#   3. 当 ddd4j-data-event-store-panache 等模块引入运行时依赖时，
-#      需扩展分层 install 模块列表
 # ─────────────────────────────────────────────────────────────────────────────
 
 name: Verify ddd4j-quarkus
@@ -48,7 +39,8 @@ jobs:
   workflow-lint:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Lint disabled (local actionlint validated)"
+      - uses: actions/checkout@v4
+      - uses: reviewdog/action-actionlint@v1
 
   unit-and-contract:
     name: Java ${{ matrix.java }} verify
@@ -65,10 +57,9 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.java }}
           cache: maven
-      - name: Install ddd4j 3.0.x SNAPSHOT (Aliyun repos + local install)
-        uses: ./.github/actions/install-ddd4j
+      - name: Configure Maven and verify ddd4j snapshot
+        uses: ./.github/actions/configure-maven
         with:
-          java-version: ${{ matrix.java }}
           maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
       - name: Verify (unit + contract)
         run: ./mvnw -B verify -Denforcer.skip=true
@@ -101,8 +92,8 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Install ddd4j 3.0.x SNAPSHOT (Aliyun repos + local install)
-        uses: ./.github/actions/install-ddd4j
+      - name: Configure Maven and verify ddd4j snapshot
+        uses: ./.github/actions/configure-maven
         with:
           maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
       - name: Run broker integration tests (${{ matrix.broker }})

@@ -1,0 +1,38 @@
+---
+name: 'Configure Maven and verify ddd4j snapshot'
+description: >-
+  Install MAVEN_SETTINGS_XML without logging credentials and verify the exact
+  ddd4j snapshot from an empty Maven repository.
+
+inputs:
+  maven-settings-xml:
+    description: 'Base64-encoded Maven settings.xml'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Configure Maven settings
+      shell: bash
+      env:
+        MAVEN_SETTINGS_XML: ${{ inputs.maven-settings-xml }}
+      run: |
+        if [ -z "$MAVEN_SETTINGS_XML" ]; then
+          echo "::error::MAVEN_SETTINGS_XML organization secret is missing"
+          exit 1
+        fi
+        install -d -m 700 "$HOME/.m2"
+        umask 077
+        printf '%s' "$MAVEN_SETTINGS_XML" | base64 --decode \
+          > "$HOME/.m2/settings.xml"
+        grep -q '<id>2624322-snapshot-3EoOv3</id>' "$HOME/.m2/settings.xml"
+        chmod 600 "$HOME/.m2/settings.xml"
+
+    - name: Verify remote ddd4j snapshot
+      shell: bash
+      run: |
+        P5A_CI_REPO="$(mktemp -d "$RUNNER_TEMP/ddd4j-p5a-remote.XXXXXX")"
+        ./mvnw -B -U -f .github/maven/ddd4j-remote-consumer/pom.xml \
+          -Dmaven.repo.local="$P5A_CI_REPO" \
+          -Dmaven.resolver.transport=wagon \
+          dependency:go-offline
