@@ -24,6 +24,11 @@
 | P2 plan | [plans/2026-08-07-p2-mq-testcontainers.md](plans/2026-08-07-p2-mq-testcontainers.md) | P2 实施步骤（已完成 ✅） |
 | P3 spec | [specs/2026-08-08-p3-auth-samples-ci-design.md](specs/2026-08-08-p3-auth-samples-ci-design.md) | Auth + samples + CI/CD |
 | P3 plan | [plans/2026-08-08-p3-auth-samples-ci.md](plans/2026-08-08-p3-auth-samples-ci.md) | P3 实施步骤（已完成 ✅） |
+| P5 spec | [specs/2026-09-08-quarkus-production-extension-convergence-design.md](specs/2026-09-08-quarkus-production-extension-convergence-design.md) | 生产级扩展平台收敛的唯一规格事实源；P5-A 至 P5-E 分阶段验收 |
+| P5-A plan | [plans/2026-09-08-p5a-stable-publish-consumer-baseline.md](plans/2026-09-08-p5a-stable-publish-consumer-baseline.md) | 已发布依赖、Web/License 消费契约、CI 与本地门禁的实施及证据 |
+
+P0–P3 的完成标记保留其历史计划含义，不证明 runtime/deployment/IT 产品化、Native、
+双分支或云服务已验收。当前能力状态以 P5 规格和 [能力矩阵](../CAPABILITY-ALIGNMENT.md) 为准。
 
 ## 规范骨架
 
@@ -101,16 +106,18 @@
 
 | 分支 | ddd4j 底座 | 构建工具 | 说明 |
 |---|---|---|---|
-| `feature/3.3.x` | `ddd4j 2.0.x`（Maven 3 / POM 4.0.0） | Maven 3.9+ | 维护线（288 测试，Java 17） |
+| `feature/3.3.x` | `ddd4j 2.0.x`（Maven 3 / POM 4.0.0） | Maven 3.9+ | Java 17 维护线；P5-A 未修改或验证，历史 288 测试不作为本次证据 |
 | `feature/4.0.x` | `ddd4j 3.0.x`（POM 4.1.0，使用 `./mvnw` Maven 4 wrapper） | `./mvnw`（4.0.0-rc-6） | **当前分支**：Java 21、Quarkus 3.38.2、Testcontainers 2.0.5。Quarkus 3.38.2 及 2026-09-07 main `999-SNAPSHOT` 均无法加载含 `<subprojects>` 的工作区，当前保留 `<modules>`，等待 quarkusio/quarkus#52190。 |
 
 ## 当前快照
 
-- **阶段状态**：P0 / P1 / P2 / P3 已完成；P4 Testcontainers 已在 4.0.x 验证，3.3.x 待移植；Maven 4 `<subprojects>` 暂停等待上游
-- **4.0.x 新鲜验证**：`./mvnw -B clean verify -Denforcer.skip=true`，62 个 reactor 模块成功；Surefire 138 个测试、0 失败、0 错误、3 跳过
-- **集成测试**：公开镜像 broker 均通过；ONS 云服务往返和 MQTT-Mica 平台受限用例各跳过 1 个；TDMQ 当前往返使用测试专用内存 fallback，不代表腾讯云服务验收
-- **CI**：3 阶段（workflow-lint + JDK 21 build + broker matrix），容器按执行生命周期关闭，不启用 reuse
-- **生产用户**：cloud-das（com.bmgw），版本管理已整体移交 ddd4j-quarkus
+- **阶段状态**：P5-A 本地完成，P5-B–E 待实施；3.3.x 未在本轮修改/验证，Maven 4 `<subprojects>` 仍为上游阻塞。
+- **4.0.x 新鲜验证（2026-09-09）**：`./mvnw -B clean verify -Denforcer.skip=true`，62/62 reactor 模块成功；最终 47 Surefire suites、141 tests、0 failures、0 errors、3 skipped；0 Failsafe suites。Enforcer 未验收。
+- **远端消费与关键行为**：新空仓 `/tmp/ddd4j-p5a-final.xcqRbQ` 的 Wagon `dependency:go-offline` 成功；Web 4 tests 验证传播与同线程响应后清理，License 3 tests 验证安装/验签及夹具隔离。
+- **跳过与云服务边界**：MQTT-Mica（macOS arm64）、ONS（商业协议无镜像）、Security（模块废弃）各 1 个 skip；TDMQ 往返使用测试内存 fallback，不代表腾讯云服务验收。
+- **CI**：已配置实际 actionlint、已发布 ddd4j 空仓解析和阻塞性 13 broker matrix；settings 以 0600 原子替换，已移除 ddd4j 源码安装和改写。
+- **远端与生产证据**：本轮未 push/deploy，未运行 GitHub Actions；历史 cloud-das 消费记录不作为本次生产验收。
+- **证据明细**：[P5-A 门禁、skip 类与剩余警告](specs/2026-09-08-quarkus-production-extension-convergence-design.md#9-p5-a-本地完成证据2026-09-09)。
 
 ## 已登记的待办（不在 P0-P3 范围）
 

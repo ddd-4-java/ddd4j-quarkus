@@ -1,7 +1,7 @@
 # P5 — ddd4j-quarkus 生产级扩展平台收敛设计
 
 - 日期：2026-09-08
-- 状态：待规格确认
+- 状态：P5-A 本地完成，P5-B–E 待实施
 - 项目类型：Brownfield
 - 规格事实源：本文档
 - 参考基线：`ddd4j-boot` 的能力契约、`ddd4j feature/2.0.x` 与 `feature/3.0.x` 的框架中立实现、Quarkus 官方扩展规范
@@ -335,3 +335,53 @@ flowchart TD
 - 3.3.x 与 4.0.x 均通过其版本/JDK/Maven/Testcontainers 门禁。
 - 两个 Git 远端与 Maven snapshot 分别核对成功。
 - `subprojects` 在上游未修复前保持“上游阻塞”，不影响其他阶段完成，但不标记为已实现。
+
+## 9. P5-A 本地完成证据（2026-09-09）
+
+本轮在 `feature/4.0.x`、代码基线 `278f119` 上执行 P5-A Task 5 Steps 1–5，全部本地门禁通过。
+版本矩阵已从 POM 与 `./mvnw --version` 核对：revision `4.0.x.20260630-SNAPSHOT`、
+ddd4j `3.0.x.20260630-SNAPSHOT`、Quarkus `3.38.2`、Testcontainers `2.0.5`、
+Java `21.0.12.1`、Maven `4.0.0-rc-6`、Model `4.1.0` + `modules/module`。
+
+| 门禁 | 实际命令或检查 | 观察结果 |
+|---|---|---|
+| 新空仓远端消费 | `./mvnw -B -U -f .github/maven/ddd4j-remote-consumer/pom.xml -Dmaven.repo.local=/tmp/ddd4j-p5a-final.xcqRbQ -Dmaven.resolver.transport=wagon dependency:go-offline` | exit 0，BUILD SUCCESS，1:39；目录由本轮 mktemp 新建 |
+| Web | `./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-web -am test` | exit 0，4 tests，0 failures/errors/skips，8.307 秒 |
+| License | `./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-auth/ddd4j-quarkus-auth-license -am test` | exit 0，3 tests，0 failures/errors/skips，8.147 秒 |
+| 完整 JVM reactor | `./mvnw -B clean verify -Denforcer.skip=true` | exit 0，62/62 模块 SUCCESS，9:57；02:09:38 +08:00 完成 |
+| XML 汇总 | 遍历 `**/target/{surefire,failsafe}-reports/TEST-*.xml` 并累加 suite 属性 | 47 suites、141 tests、0 failures、0 errors、3 skipped；全部 Surefire，0 Failsafe suites |
+| Workflow | `actionlint .github/workflows/ci.yml` | exit 0 |
+| 过期配置/源码改写 | 扫描指定 POM 与 `.github` 的过期 snapshot、旧 action、`sed -i`、lint 占位 | 无命中 |
+| Maven 聚合 | 指定 6 个 POM 的文本扫描及 XML 解析 | 文本仅命中根 POM:47 的说明注释；实际 subprojects/subproject 元素为 0 |
+| 文档格式 | `git diff --check` | exit 0 |
+
+新仓含 runtime-quarkus、web-quarkus、extension-license 的 POM/JAR 时间戳
+`3.0.x.20260630-20260908.152610-5`，dependencies BOM 为
+`3.0.x.20260630-20260908.152610-10`。这证明已发布上游依赖闭包可回拉；
+完整 reactor 使用本机配置的 Maven 仓库，没有使用该新仓 override，不能称整仓空缓存构建。
+
+Web 除 tenant 与非空 request-id，还通过同服务线程的响应后探针断言 tenant-id、request-id、
+Authorization 已清理。License 在 CDI 创建前完成真实签发，断言 `isInstallSuccess()` 与
+`verify()`，并检查每次运行独立临时目录及 POSIX 权限；退出清理由测试资源生命周期管理。
+
+三项 skip 均保留在 141 tests 内：
+
+| 测试类（包均以 `io.ddd4j.quarkus.` 开头） | 方法 | XML 原因 |
+|---|---|---|
+| `mq.mqttmica.MicaMqttQuarkusIntegrationTest` | `shouldPublishAndConsumeOrderCreatedEventEndToEnd` | mica-mqtt AIO 在 macOS arm64 的已知缺陷，对齐 javalin Ddd4jMicaMqttMqIT 先例；CI linux 可移除 |
+| `mq.ons.OnsQuarkusIntegrationTest` | `shouldPublishAndConsumeOrderCreatedEventEndToEnd` | ONS 商业协议无 Testcontainers 镜像，对齐 javalin Ddd4jOnsMqIT 先例 |
+| `auth.security.SecurityQuarkusConfigTest` | `subjectProviderExposedAsCdiBeanAndRegisteredInSubjectKit` | Module is deprecated since 4.1.0; see docs/MIGRATION-auth-security-to-satoken.md |
+
+TDMQ 的测试内存 fallback 不属于 skip，但不能计为腾讯云服务验收。
+本轮仍观察到上游 effective-model 警告、release 仓 metadata 的缓存 RFC9457 transfer 警告、
+Quarkus 读取 Maven wrapper settings 时的 `repositories` 解析警告、只读 `resources` 参数警告，
+以及 datasource/Flyway/Hibernate 测试配置未识别提示。它们未阻断此次命令，但未在 P5-A 修复。
+`-Denforcer.skip=true` 表示 Enforcer 没有作为通过门禁。
+
+CI 已改为配置 Maven settings、空仓消费已发布 ddd4j、实际执行 actionlint，
+并保留阻塞性 13 broker matrix；不再检出安装或修改 ddd4j 源码。settings 经临时文件校验后
+以 0600 权限原子替换。上述为本地源码/验证证据，本轮没有 push/deploy、tag 或 GitHub Actions
+运行证据，组织 secret 的实际 hosted 可用性尚未验证。
+
+P5-B–E、runtime/deployment/IT 产品化、Native、Dev Mode、3.3.x 和生产验收仍待实施/验证。
+Maven 4 `subprojects` 保留上游阻塞状态；本轮只确认没有引入这些标签，未重新测试上游修复。
