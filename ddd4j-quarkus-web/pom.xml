@@ -11,29 +11,18 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-web</artifactId>
-    <description>
-        ddd4j-quarkus Web 集成层：
-        - SmallRye HealthCheck 健康指示器（Ddd4jQuarkusWebHealthCheck，暴露 /q/health/ready）
-
-        过滤器/异常映射/Resource 基类等通用能力复用主仓 io.ddd4j:ddd4j-web-quarkus
-        （Ddd4jQuarkusWebFilter/AccessLogFilter/DefaultExceptionHandler/TenantAwareResource 等），
-        本模块不再维护平行副本（CONTRIBUTING.md：不重复主仓实现）。
-
-        与 ddd4j-boot-web-{webmvc,webflux} 一一对应（Quarkus REST 替代 Spring MVC/WebFlux）。
-    </description>
+    <description>ddd4j-quarkus Web 集成层：复用主仓 RESTEasy Reactive 过滤器、异常映射与资源基类，并提供 SmallRye readiness 健康检查。</description>
 
     <dependencies>
         <!-- 主仓 ddd4j-web-quarkus（RESTEasy Reactive 过滤器链/异常映射/TenantAwareResource 等通用 Web 能力） -->
         <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-web-quarkus</artifactId>
-            <version>${ddd4j.version}</version>
         </dependency>
         <!-- 主仓 ddd4j-runtime-quarkus（Subject/CDI 桥接） -->
         <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-runtime-quarkus</artifactId>
-            <version>${ddd4j.version}</version>
         </dependency>
         <!-- RESTEasy Reactive（Quarkus 默认 REST 实现） -->
         <dependency>
