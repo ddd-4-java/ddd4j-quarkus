@@ -23,10 +23,28 @@ runs:
         fi
         install -d -m 700 "$HOME/.m2"
         umask 077
-        printf '%s' "$MAVEN_SETTINGS_XML" | base64 --decode \
-          > "$HOME/.m2/settings.xml"
-        grep -q '<id>2624322-snapshot-3EoOv3</id>' "$HOME/.m2/settings.xml"
-        chmod 600 "$HOME/.m2/settings.xml"
+        P5A_SETTINGS_TMP=''
+        cleanup_settings_temp() {
+          if [ -n "$P5A_SETTINGS_TMP" ]; then
+            rm -f "$P5A_SETTINGS_TMP"
+          fi
+        }
+        trap cleanup_settings_temp EXIT
+        P5A_SETTINGS_TMP="$(mktemp "$HOME/.m2/settings.xml.XXXXXX")"
+        P5A_MAVEN_SERVER_ID='2624322-snapshot-3EoOv3'
+        if ! printf '%s' "$MAVEN_SETTINGS_XML" | base64 --decode \
+          > "$P5A_SETTINGS_TMP"; then
+          echo "::error::MAVEN_SETTINGS_XML is not valid base64"
+          exit 1
+        fi
+        if ! grep -q "<id>${P5A_MAVEN_SERVER_ID}</id>" "$P5A_SETTINGS_TMP"; then
+          echo "::error::MAVEN_SETTINGS_XML required server is missing"
+          exit 1
+        fi
+        chmod 600 "$P5A_SETTINGS_TMP"
+        mv -f "$P5A_SETTINGS_TMP" "$HOME/.m2/settings.xml"
+        P5A_SETTINGS_TMP=''
+        trap - EXIT
 
     - name: Verify remote ddd4j snapshot
       shell: bash
