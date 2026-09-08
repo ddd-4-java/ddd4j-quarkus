@@ -28,7 +28,8 @@
             <!--
                 ddd4j 平台核心模块（业务项目可按需选择）：
                 ddd4j-* 坐标由 io.ddd4j:ddd4j-dependencies BOM 统一管理版本，
-                此处仅显式声明 ddd4j-mq 系列（本轨道深度整合的模块），便于业务项目在 import 此 BOM 后直接引用。
+                此处显式声明 ddd4j-mq 系列（本轨道深度整合的模块）以及已发布的
+                license/runtime-quarkus/web-quarkus 消费坐标，便于业务项目在 import 此 BOM 后直接引用。
             -->
 
             <!-- ddd4j-mq 系列（深度整合模块，版本由 ddd4j 仓库定义） -->
