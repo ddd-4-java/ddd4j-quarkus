@@ -3,6 +3,9 @@ package io.ddd4j.quarkus.data.panache;
 import io.quarkus.arc.properties.IfBuildProperty;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import java.util.Optional;
 
 /**
  * ID 生成策略 CDI 生产者：按构建期配置项 {@code ddd4j.quarkus.data.id-strategy}
@@ -44,6 +47,10 @@ public class IdGeneratorProducer {
      */
     public static final String ID_STRATEGY_CONFIG = "ddd4j.quarkus.data.id-strategy";
 
+    /** 显式节点编号；未配置时由策略从本机 IP 派生。 */
+    @ConfigProperty(name = "ddd4j.quarkus.data.snowflake.worker-id")
+    Optional<Long> snowflakeWorkerId = Optional.empty();
+
     /**
      * 雪花算法策略（默认）：时间戳 + 节点 + 序列，生成递增 Long。
      *
@@ -53,7 +60,7 @@ public class IdGeneratorProducer {
     @ApplicationScoped
     @IfBuildProperty(name = ID_STRATEGY_CONFIG, stringValue = "snowflake", enableIfMissing = true)
     public IdGenerationStrategy<Long> snowflakeStrategy() {
-        return new SnowflakeIdStrategy();
+        return snowflakeWorkerId.map(SnowflakeIdStrategy::new).orElseGet(SnowflakeIdStrategy::new);
     }
 
     /**

@@ -1,6 +1,6 @@
 # feature/3.3.x P5-A 能力同步设计
 
-> 状态：feature/3.3.x P5-A 本地完成
+> 状态：feature/3.3.x P5-A 历史本地基线完成；Actions Snowflake 修复已通过本地双 JDK 模块复验，hosted 重跑待执行
 >
 > 目标分支：`feature/3.3.x`
 >
@@ -176,6 +176,18 @@ Quarkus test profile 必须在 CDI 创建 `LicenseVerify` 之前完成：
 - 每个需要私有 Maven 制品的 job 都先执行 Java setup，再执行 Maven 配置动作。
 - broker matrix 保留 3.3.x 当前平台 skip 和独立报告策略。
 - 两类 Maven job 都使用同一远端解析动作，不保留旧 `install-ddd4j` action。
+
+### 8.3 Actions Snowflake worker-id 修复契约
+
+GitHub Actions run `34331450813` 的 Java 17/21 job 暴露了 IP 派生 workerId 超出 Snowflake `0..31` 的问题（runner IP 末字节为 115/171）。此前 `597a5b7` 的本地成功只代表当时主机环境，不能覆盖该失败。
+
+- 新增可选配置 `ddd4j.quarkus.data.snowflake.worker-id`，沿用 MicroProfile `@ConfigProperty` 装配。
+- 显式配置仅接受 `0..31`，非法值立即抛出带配置键的 `IllegalArgumentException`，不得取模。
+- 未配置时，IP 派生值通过 `Math.floorMod(value, 32)` 确定性归一化；115 → 19，171 或 byte 形式 -85 → 11。
+- 保留编程式无参构造入口与 IdKit 缓存的真实 Snowflake 生成器；配置在策略创建时确定。
+- 归一化不能保证不同机器的 workerId 唯一，多节点部署应分配互不重复的显式值；本修复不扩展为分布式节点分配服务。
+- 先验证 IP 回归、0/31 边界、-1/32 拒绝和真实 CDI 配置接线的 RED，再运行 Java 17/21 定向及 data-panache reactor 验证。
+- 本地修复通过后仍须单独执行 hosted Actions；本次实现不 push、不 deploy、不触发 workflow。
 
 ## 9. 测试与验收
 

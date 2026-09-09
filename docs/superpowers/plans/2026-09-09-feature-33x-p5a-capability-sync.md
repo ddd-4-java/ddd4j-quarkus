@@ -16,6 +16,15 @@ Tasks 1–4 已完成提交和各自审查，依据本次独立克隆中的 prog
 
 Task 5 已完成，本线状态为 `feature/3.3.x P5-A 本地完成`。首轮 Java 17 qrcode 失败经 easy4j 坐标修复消除，Jackson 坐标清理和审查修正均已纳入已验证代码提交 `597a5b7`。该提交的 Java 17/21 `clean verify -Denforcer.skip=true` 各为 62/62 SUCCESS、53 suites / 186 tests / 0 failures / 0 errors / 11 skipped。远端消费者、Web/License 定向验证、actionlint、分支合约与退役 groupId 零引用、diff/status 门禁均通过；准确日志对应关系见 [CAPABILITY-ALIGNMENT](../../CAPABILITY-ALIGNMENT.md)。push/deploy 与 GitHub-hosted Actions 等非目标仍未验收。
 
+## Actions Snowflake follow-up
+
+Run `34331450813` 的 Java 17/21 已失败；历史本地验证保持原提交范围，不能作为本次修复或 hosted 成功证明。修复契约见规格 §8.3，记录见 `.superpowers/sdd/2026-09-09-feature-33x-p5a-capability-sync/snowflake-fix-report.md`。
+
+- [x] 先运行 IP 115/171、显式 0/31、-1/32 与 CDI 配置测试并保存 RED。
+- [x] 最小修复 SnowflakeIdStrategy 与 IdGeneratorProducer。
+- [x] Java 17/21 定向测试和完整 data-panache reactor 复验并自审。
+- [ ] 更新本地证据并提交；hosted Actions 重跑不属于本次子任务。
+
 ## Global Constraints
 
 审查单轮修正范围：补强 Web 资源方法内 request-id/Authorization 绑定证据；License 增加嵌套部分材料异常路径和真实 false 签发路径的清理验证；修正 ci.yml、根 POM、dependencies POM 的陈旧注释。本轮不更改生产过滤器、License 实现或依赖版本。定向、受影响模块及已验证提交的双 JDK 全量门禁均已完成，结果见能力证据。
