@@ -55,7 +55,7 @@
         -->
         <jboss-logging.version>3.6.3.Final</jboss-logging.version>
         <asm.version>9.9.1</asm.version>
-        <testcontainers-bom.version>1.20.4</testcontainers-bom.version>
+        <testcontainers-bom.version>2.0.5</testcontainers-bom.version>
     </properties>
 
     <dependencyManagement>
@@ -72,7 +72,19 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- 2. ddd4j 底座后 import：保留非 Quarkus 第三方组件的统一管理。 -->
+            <!--
+                2. Testcontainers BOM 必须在 ddd4j 底座前 import。ddd4j 2.0.x 仍管理
+                1.20.x 的专用模块；Maven 对重复管理项采用 first-import-wins，因此在此锁定
+                2.0.5，防止旧模块回流。
+            -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- 3. ddd4j 底座后 import：保留非 Quarkus 第三方组件的统一管理。 -->
             <dependency>
                 <groupId>io.ddd4j</groupId>
                 <artifactId>ddd4j-dependencies</artifactId>
@@ -372,14 +384,6 @@
                 <version>${asm.version}</version>
             </dependency>
 
-            <!-- 6. Testcontainers 集成（仅 ddd4j-quarkus-mq-testcontainers 等模块需要） -->
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>testcontainers-bom</artifactId>
-                <version>${testcontainers-bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
     <!--

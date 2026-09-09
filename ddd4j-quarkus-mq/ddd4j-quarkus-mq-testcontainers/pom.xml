@@ -41,14 +41,26 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
         </dependency>
-        <!-- 专用 broker 容器（testcontainers 子模块，1.20+ 各 broker 拆分为独立 artifact） -->
+        <!-- Testcontainers 2.x 专用 broker 容器模块。 -->
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>kafka</artifactId>
+            <artifactId>testcontainers-activemq</artifactId>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>rabbitmq</artifactId>
+            <artifactId>testcontainers-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-localstack</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-pulsar</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-rabbitmq</artifactId>
         </dependency>
         <!-- Quarkus test 集成（含 QuarkusTestResourceLifecycleManager） -->
         <dependency>
@@ -71,7 +83,7 @@
         -->
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
         </dependency>
         <!--
             MQ 契约（compile）：AbstractMqQuarkusIntegrationTest round-trip 骨架引用
