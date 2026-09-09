@@ -60,7 +60,19 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- 1. ddd4j 底座先 import：所有第三方组件版本（含 lombok/slf4j/jakarta-*/fuin-*/archunit/easyexcel 等）由 ddd4j 统一管理 -->
+            <!--
+                1. Quarkus BOM 必须第一个 import。Maven 对重复管理项采用 first-import-wins，
+                因此必须先锁定本轨道的 3.37.4，避免上游 ddd4j 或任何 Quarkiverse BOM 把
+                runtime、deployment、test 或插件依赖带到其他 Quarkus 版本。
+            -->
+            <dependency>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- 2. ddd4j 底座后 import：保留非 Quarkus 第三方组件的统一管理。 -->
             <dependency>
                 <groupId>io.ddd4j</groupId>
                 <artifactId>ddd4j-dependencies</artifactId>
@@ -68,20 +80,12 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- 1.1 本仓 ddd4j-quarkus-bom（独立 POM，无循环）：统一管理全部
+            <!-- 2.1 本仓 ddd4j-quarkus-bom（独立 POM，无循环）：统一管理全部
                  ddd4j-quarkus-* 模块版本（${revision}），供框架模块与 samples 解析 -->
             <dependency>
                 <groupId>io.ddd4j.quarkus</groupId>
                 <artifactId>ddd4j-quarkus-bom</artifactId>
                 <version>${revision}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <!-- 2. Quarkus BOM 后 import：Quarkus 框架版本优先（与 ddd4j 解耦） -->
-            <dependency>
-                <groupId>io.quarkus.platform</groupId>
-                <artifactId>quarkus-bom</artifactId>
-                <version>${quarkus-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -263,8 +267,8 @@
             <!-- 主仓 ddd4j-extension-qrcode 发布 POM 未声明 io.github.hiwepy:zxing-extension
                  （其源码引用 com.google.zxing.exception.* 由该库提供），此处显式管理版本，
                  qrcode 适配模块显式依赖以补齐运行时 classpath。
-                 显式钉住 2.0.x.20260630-SNAPSHOT：该第三方制品未跟随 ddd4j.version(2.0.x.20260730)
-                 发布新线版本，按 ${ddd4j.version} 解析必然缺失（同 4.0.x 线 easy4j/truelicense 钉版先例） -->
+                 显式钉住 2.0.x.20260630-SNAPSHOT：这是该第三方制品在已验证 ddd4j 2.0.x 发布线中
+                 可消费的版本（同 4.0.x 线 easy4j/truelicense 钉版先例）。 -->
             <dependency>
                 <groupId>io.github.hiwepy</groupId>
                 <artifactId>zxing-extension</artifactId>
