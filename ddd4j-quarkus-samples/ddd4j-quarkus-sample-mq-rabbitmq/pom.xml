@@ -14,6 +14,17 @@
     <description>ddd4j-quarkus RabbitMQ MQ 示例：业务发布 DomainEvent → RabbitMQ 投递（AMQP Topic Exchange） → @MQEventListener 消费</description>
 
     <dependencies>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-mq-testcontainers</artifactId>
+            <version>${revision}</version>
+            <scope>test</scope>
+        </dependency>
         <!-- ddd4j 核心与注解 -->
         <dependency>
             <groupId>io.ddd4j</groupId>
@@ -57,10 +68,8 @@
             底层复用 ddd4j-mq-rabbitmq（基于 amqp-client + ddd4j MQ SPI）。
             该模块已包含 RabbitMQCdiProducer，自动提供：
               - RabbitMQProperties
-              - RabbitMQBrokerAdapter（@DefaultBean）
-              - MQEventPublisher（@DefaultBean）
-            业务代码无需关心连接 / Channel / Exchange / Queue 生命周期。
-            切换 Kafka / Disruptor 时只需替换此依赖，业务代码完全无需修改。
+              - RabbitMQClient（@DefaultBean）
+            本示例提供明确的交换机和连接生命周期，真实客户端负责 Queue / Binding 与消息收发。
         -->
         <dependency>
             <groupId>io.ddd4j.quarkus</groupId>
@@ -71,7 +80,7 @@
         <!-- Quarkus RESTEasy Reactive -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-rest</artifactId>
+            <artifactId>quarkus-rest-jackson</artifactId>
         </dependency>
     </dependencies>
 

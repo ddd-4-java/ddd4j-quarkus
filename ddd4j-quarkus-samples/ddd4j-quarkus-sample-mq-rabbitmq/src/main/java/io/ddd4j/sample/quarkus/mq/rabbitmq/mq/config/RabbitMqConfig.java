@@ -1,87 +1,106 @@
 package io.ddd4j.sample.quarkus.mq.rabbitmq.mq.config;
 
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import io.ddd4j.kit.lang.StrKit;
+import io.ddd4j.mq.MQProperties;
+import io.ddd4j.mq.rabbitmq.RabbitMQClient;
 import io.ddd4j.mq.rabbitmq.RabbitMQProperties;
-import io.quarkus.arc.DefaultBean;
+import io.quarkus.runtime.ShutdownEvent;
+import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Disposes;
 import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Typed;
 import jakarta.inject.Singleton;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
-import org.jboss.logging.Logger;
+
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 /**
- * Quarkus CDI 配置：为 RabbitMQ MQ 提供配置 Bean，覆盖 ddd4j-quarkus-mq-rabbitmq
- * 默认的 {@link RabbitMQProperties}（{@code @DefaultBean}）。
+ * RabbitMQ 示例装配：声明具名 topic exchange，并让通用路由与连接使用同一套属性。
  *
- * <h3>装配关系</h3>
- * <p>ddd4j-quarkus-mq-rabbitmq 已通过 {@code RabbitMQCdiProducer} 提供：
- * <ul>
- *   <li>{@link RabbitMQProperties}（{@code @DefaultBean}，默认值）</li>
- *   <li>{@code RabbitMQBrokerAdapter}（{@code @DefaultBean}）</li>
- *   <li>{@code MQEventPublisher}（{@code @DefaultBean}）</li>
- * </ul>
- * 本类通过 {@code @DefaultBean} 重新声明 {@link RabbitMQProperties}，
- * 从 MicroProfile Config 读取 {@code ddd4j.mq.rabbit.*} 前缀配置，
- * 从而覆盖默认值，注入到 Broker Adapter 中。
- *
- * <h3>RabbitMQ 拓扑说明</h3>
- * <ul>
- *   <li><b>Exchange</b>（交换机）：{@code ddd4j.mq.exchange}，类型 Topic，durable=true。
- *       Exchange 由 {@code RabbitMQBrokerAdapter} 在首次连接时自动 declare（{@code auto-declare=true}）。</li>
- *   <li><b>Queue</b>（队列）：由 {@code RabbitMQConsumerEndpointRegistrar} 根据
- *       {@link io.ddd4j.mq.annotation.MQEventListener} 自动生成（命名规则见
- *       {@code io.ddd4j.mq.registry.MQListenerEndpointNaming}），durable=true。</li>
- *   <li><b>Routing Key</b>（路由键）：{@code <namespace>.<topic>.<tag>}，
- *       例如 {@code quarkus-rabbitmq-sample.ORDER.CREATED}。</li>
- *   <li><b>Binding</b>（绑定）：消费者启动时按 routing key 自动 bind 到 Exchange。</li>
- *   <li><b>ACK 模式</b>：{@code manual}，由 {@link io.ddd4j.mq.rabbitmq.RabbitMessageAcknowledgment}
- *       处理 basicAck / basicNack。</li>
- * </ul>
- *
- * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
+ * <p>客户端负责队列、绑定、发布和消费；示例负责交换机及原生连接生命周期。
  */
+@Slf4j
 @ApplicationScoped
 public class RabbitMqConfig {
 
-    private static final Logger log = Logger.getLogger(RabbitMqConfig.class);
+    /** 显式保留客户端供启动注册器发现；原生连接由 CDI disposer 回收。 */
+    void shutdown(@Observes ShutdownEvent event, RabbitMQClient client) throws Exception {
+        client.close();
+    }
 
-    /**
-     * 从 MicroProfile Config 构建 {@link RabbitMQProperties}，覆盖 ddd4j-quarkus-mq-rabbitmq 默认 Bean。
-     *
-     * <p>读取的配置项（与 {@code application.properties} 对齐）：
-     * <ul>
-     *   <li>{@code ddd4j.mq.rabbit.host} —— 默认为 {@code localhost}</li>
-     *   <li>{@code ddd4j.mq.rabbit.port} —— 默认为 {@code 5672}</li>
-     *   <li>{@code ddd4j.mq.rabbit.username} —— 默认为 {@code guest}</li>
-     *   <li>{@code ddd4j.mq.rabbit.password} —— 默认为 {@code guest}</li>
-     *   <li>{@code ddd4j.mq.rabbit.virtual-host} —— 默认为 {@code /}</li>
-     *   <li>{@code ddd4j.mq.rabbit.exchange} —— 默认为 {@code ddd4j.mq.exchange}</li>
-     *   <li>{@code ddd4j.mq.rabbit.durable} —— 默认为 {@code true}</li>
-     *   <li>{@code ddd4j.mq.rabbit.auto-declare} —— 默认为 {@code true}</li>
-     * </ul>
-     *
-     * @return 已绑定的 RabbitMQ 配置对象
-     */
+    /** 将连接、交换机和通用路由配置绑定到同一个属性对象。 */
     @Produces
     @Singleton
-    @DefaultBean
-    public RabbitMQProperties rabbitMQProperties() {
-        Config config = ConfigProvider.getConfig();
+    @Typed(RabbitMQProperties.class)
+    public RabbitMQProperties rabbitMQProperties(Config config) {
         RabbitMQProperties props = new RabbitMQProperties();
-
-        props.setHost(config.getOptionalValue("ddd4j.mq.rabbit.host", String.class).orElse("localhost"));
-        props.setPort(config.getOptionalValue("ddd4j.mq.rabbit.port", Integer.class).orElse(5672));
-        props.setUsername(config.getOptionalValue("ddd4j.mq.rabbit.username", String.class).orElse("guest"));
-        props.setPassword(config.getOptionalValue("ddd4j.mq.rabbit.password", String.class).orElse("guest"));
-        props.setVirtualHost(config.getOptionalValue("ddd4j.mq.rabbit.virtual-host", String.class).orElse("/"));
-        props.setExchange(config.getOptionalValue("ddd4j.mq.rabbit.exchange", String.class).orElse("ddd4j.mq.exchange"));
-        props.setDurable(config.getOptionalValue("ddd4j.mq.rabbit.durable", Boolean.class).orElse(true));
-        props.setAutoDeclare(config.getOptionalValue("ddd4j.mq.rabbit.auto-declare", Boolean.class).orElse(true));
-
-        log.infof("RabbitMQ properties: host=%s:%d, vhost=%s, exchange=%s, durable=%s, autoDeclare=%s",
-                props.getHost(), props.getPort(), props.getVirtualHost(),
-                props.getExchange(), props.isDurable(), props.isAutoDeclare());
-
+        props.setEnabled(config.getValue("ddd4j.mq.enabled", Boolean.class));
+        props.setBroker(config.getValue("ddd4j.mq.broker", String.class));
+        props.setNamespace(config.getValue("ddd4j.mq.namespace", String.class));
+        props.setAutoAck(config.getOptionalValue("ddd4j.mq.auto-ack", Boolean.class).orElse(false));
+        props.setHost(config.getValue("ddd4j.mq.rabbitmq.host", String.class));
+        props.setPort(config.getValue("ddd4j.mq.rabbitmq.port", Integer.class));
+        props.setUsername(config.getValue("ddd4j.mq.rabbitmq.username", String.class));
+        props.setPassword(config.getValue("ddd4j.mq.rabbitmq.password", String.class));
+        props.setVirtualHost(config.getValue("ddd4j.mq.rabbitmq.virtual-host", String.class));
+        props.setExchange(config.getValue("ddd4j.mq.rabbitmq.exchange", String.class));
+        props.setDurable(config.getValue("ddd4j.mq.rabbitmq.durable", Boolean.class));
+        if (StrKit.isBlank(props.getExchange())) {
+            throw new IllegalArgumentException("RabbitMQ sample requires a named exchange");
+        }
         return props;
+    }
+
+    /**
+     * 框架通用属性生产者未绑定 exchange，使用同一 RabbitMQProperties 替代以保持路由一致。
+     */
+    @Produces
+    @Alternative
+    @Priority(1)
+    @Singleton
+    public MQProperties routingProperties(RabbitMQProperties properties) {
+        return properties;
+    }
+
+    /** 在注册消费者之前声明交换机；失败时立即关闭已建立的连接。 */
+    @Produces
+    @Singleton
+    public Connection rabbitConnection(RabbitMQProperties properties) throws IOException, TimeoutException {
+        Connection connection = properties.connectionFactory().newConnection();
+        try {
+            try (Channel channel = connection.createChannel()) {
+                channel.exchangeDeclare(properties.getExchange(), "topic", properties.isDurable());
+            }
+            log.info("RabbitMQ exchange ready: host={}:{}, exchange={}",
+                    properties.getHost(), properties.getPort(), properties.getExchange());
+            return connection;
+        } catch (IOException | TimeoutException | RuntimeException failure) {
+            try {
+                connection.close();
+            } catch (IOException closeFailure) {
+                failure.addSuppressed(closeFailure);
+            }
+            throw failure;
+        }
+    }
+
+    /** 客户端复用已声明交换机的连接，仍由框架注册真实 listener。 */
+    @Produces
+    @Singleton
+    public RabbitMQClient rabbitMQClient(Connection connection) {
+        return new RabbitMQClient(connection);
+    }
+
+    /** CDI 销毁应用时关闭生产者和消费者共用的原生连接及其 channels。 */
+    public void closeConnection(@Disposes Connection connection) throws IOException {
+        connection.close();
+        log.info("RabbitMQ connection closed: {}", !connection.isOpen());
     }
 }
