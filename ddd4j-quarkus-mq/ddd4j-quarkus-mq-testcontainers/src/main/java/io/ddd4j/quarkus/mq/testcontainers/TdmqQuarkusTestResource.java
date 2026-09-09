@@ -12,6 +12,8 @@ import java.util.Map;
  * <p>TDMQ 客户端协议兼容 Pulsar，因此复用 {@code apachepulsar/pulsar:3.2.0} 镜像
  * （standalone，broker 端口 6650），以本地 Pulsar 充当 TDMQ 协议端点。
  * 暴露属性：{@code ddd4j.mq.tdmq.service-url}（{@code pulsar://host:6650}）。
+ * <p>保留 PulsarContainer 的 standalone 启动和管理接口响应就绪检查。此夹具只提供本地协议端点；
+ * 当前集成测试的行为证据是 SPI 装配与内存 fallback，不能视为腾讯云 TDMQ 验收。
  *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  * @since 3.3.x

@@ -36,7 +36,8 @@ public class MicaMqttQuarkusTestResource extends AbstractTestContainerFixture {
 
     @Override
     protected org.testcontainers.containers.wait.strategy.WaitStrategy waitStrategy() {
-        return Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(1));
+        return Wait.forLogMessage(".*mosquitto version .* running.*", 1)
+                .withStartupTimeout(Duration.ofMinutes(1));
     }
 
     @Override

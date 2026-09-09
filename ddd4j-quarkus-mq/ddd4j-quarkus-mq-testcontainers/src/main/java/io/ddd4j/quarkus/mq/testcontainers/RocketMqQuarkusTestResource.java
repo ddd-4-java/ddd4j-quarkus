@@ -3,6 +3,7 @@ package io.ddd4j.quarkus.mq.testcontainers;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
@@ -59,7 +60,9 @@ public class RocketMqQuarkusTestResource extends AbstractTestContainerFixture {
         // QEMU/arm64 首次拉起 broker 可能较慢，放宽到 3 分钟。
         // 不能只等端口：9876（namesrv）先于 broker 启动即监听，须等 broker boot success
         // 日志，客户端 route 查询才能拿到 broker（注册约在 boot 后数秒内完成）
-        return Wait.forLogMessage(".*The broker\\[.*boot success.*", 1)
+        return new WaitAllStrategy()
+                .withStrategy(Wait.forLogMessage(".*The Name Server boot success.*", 1))
+                .withStrategy(Wait.forLogMessage(".*The broker\\[.*boot success.*", 1))
                 .withStartupTimeout(Duration.ofMinutes(3));
     }
 

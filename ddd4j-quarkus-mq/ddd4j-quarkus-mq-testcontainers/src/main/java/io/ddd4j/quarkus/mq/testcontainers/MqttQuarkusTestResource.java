@@ -35,7 +35,12 @@ public class MqttQuarkusTestResource extends AbstractTestContainerFixture {
      * @return 注入 Quarkus 测试配置的连接属性
      */
     @Override
-    public Map<String, String> start() {
+    public synchronized Map<String, String> start() {
+        if (Objects.nonNull(previousUserDir)) {
+            return super.start();
+        }
+        // 先重试上一次失败的容器回收，再安装目录覆盖，避免清理时恢复掉新目录。
+        super.stop();
         previousUserDir = System.getProperty("user.dir");
         Path persistenceDirectory = Path.of(previousUserDir, "target", "mqtt-persistence");
         try {
@@ -55,7 +60,7 @@ public class MqttQuarkusTestResource extends AbstractTestContainerFixture {
      * 关闭容器并恢复测试进程的工作目录属性。
      */
     @Override
-    public void stop() {
+    public synchronized void stop() {
         try {
             super.stop();
         } finally {
@@ -75,7 +80,8 @@ public class MqttQuarkusTestResource extends AbstractTestContainerFixture {
 
     @Override
     protected org.testcontainers.containers.wait.strategy.WaitStrategy waitStrategy() {
-        return Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(1));
+        return Wait.forLogMessage(".*mosquitto version .* running.*", 1)
+                .withStartupTimeout(Duration.ofMinutes(1));
     }
 
     @Override

@@ -17,12 +17,12 @@ import java.util.Objects;
  * <p>Quarkus 集成（{@code QuarkusTestResourceLifecycleManager}）放在 {@link QuarkusTestResourceLifecycleManagerWrapper}
  * 中（test scope），让本 fixture 可以在 main scope 使用，便于其他模块依赖本工具类。
  *
- * <p>fixture 拥有并关闭自己启动的容器。是否在本地启用实验性的容器复用由开发者环境决定，
- * 本基类不会强制修改复用策略。
+ * <p>夹具拥有自己启动的容器，负责幂等启动、停止与部分启动失败后的回收；不强制启用复用。
  */
 public abstract class AbstractTestContainerFixture {
 
     private GenericContainer<?> runningContainer;
+    private Map<String, String> runningProperties;
 
     /**
      * 子类必须返回具体的容器实例。
@@ -51,20 +51,41 @@ public abstract class AbstractTestContainerFixture {
      * 启动容器并返回注入到 application.properties 的配置项。
      * 等价于 Quarkus 的 {@code QuarkusTestResourceLifecycleManager#start}，但保持在 main scope。
      */
-    public Map<String, String> start() {
-        runningContainer = container();
-        WaitStrategy strategy = waitStrategy();
-        if (Objects.nonNull(strategy)) {
-            runningContainer.waitingFor(strategy);
+    public synchronized Map<String, String> start() {
+        if (Objects.nonNull(runningProperties)) {
+            return runningProperties;
         }
-        runningContainer.start();
-        return Map.copyOf(exposedProperties());
+        // 上一次清理失败时保留所有权，必须先回收旧资源才能创建下一只容器。
+        if (Objects.nonNull(runningContainer)) {
+            stop();
+        }
+        runningContainer = Objects.requireNonNull(container(), "fixture container");
+        try {
+            WaitStrategy strategy = waitStrategy();
+            if (Objects.nonNull(strategy)) {
+                runningContainer.waitingFor(strategy);
+            }
+            runningContainer.start();
+            runningProperties = Map.copyOf(exposedProperties());
+            return runningProperties;
+        } catch (RuntimeException | Error failure) {
+            // start 或配置提取失败均可能留下 Docker 资源，保留原始失败并附带清理失败。
+            try {
+                stop();
+            } catch (RuntimeException | Error cleanupFailure) {
+                if (cleanupFailure != failure) {
+                    failure.addSuppressed(cleanupFailure);
+                }
+            }
+            throw failure;
+        }
     }
 
     /**
      * 停止容器。
      */
-    public void stop() {
+    public synchronized void stop() {
+        runningProperties = null;
         if (Objects.nonNull(runningContainer)) {
             runningContainer.stop();
             runningContainer = null;
@@ -76,7 +97,7 @@ public abstract class AbstractTestContainerFixture {
      */
     protected String firstMappedPort(GenericContainer<?> container, int internalPort) {
         Integer mapped = container.getMappedPort(internalPort);
-        return mapped == null ? null : String.valueOf(mapped);
+        return Objects.isNull(mapped) ? null : String.valueOf(mapped);
     }
 
     /**

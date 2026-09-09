@@ -37,7 +37,8 @@ public class OnsQuarkusTestResource extends AbstractTestContainerFixture {
 
     @Override
     protected org.testcontainers.containers.wait.strategy.WaitStrategy waitStrategy() {
-        return Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2));
+        return Wait.forLogMessage(".*The Name Server boot success.*", 1)
+                .withStartupTimeout(Duration.ofMinutes(2));
     }
 
     @Override
