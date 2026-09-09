@@ -233,4 +233,3 @@ Quarkus test profile 必须在 CDI 创建 `LicenseVerify` 之前完成：
 - 跟踪工作区干净，MQTT 运行目录被正确忽略。
 - 文档不扩大本地证据的含义。
 - 如获发布授权，GitHub、Codeup 与本地 HEAD SHA 一致。
-
