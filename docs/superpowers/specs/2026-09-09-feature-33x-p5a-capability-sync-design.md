@@ -1,6 +1,6 @@
 # feature/3.3.x P5-A 能力同步设计
 
-> 状态：进行中；Tasks 1–4 已提交，Task 5 被 Java 17 全量门禁阻塞
+> 状态：Task 5 修复后双 JDK 本地门禁通过；最终独立审查与 final-HEAD 门禁待执行
 >
 > 目标分支：`feature/3.3.x`
 >
@@ -93,6 +93,10 @@ Task 1 已按下列规则选择 `2.0.x.20260630-SNAPSHOT`，并统一 parent、�
 3. 若 `20260730` 不完整，则记录缺失坐标和仓库响应，再验证已发布的 `20260630` 集合。
 4. 选定版本必须统一写入 parent、`ddd4j.version`、BOM、dependencies 和远端消费者 fixture。
 5. 不允许依赖开发者现有 `~/.m2` 缓存得出结论。
+
+Task 5 修复授权补充：全量门禁发现 qrcode 消费的退役发布组 ZXing 为 Java 21 字节码。叶模块改用 ddd4j 2.0.x BOM 已管理的 `io.github.easy4j:zxing-extension`，保留无版本依赖，移除本仓对旧坐标的管理。该修复保持 Java 17、ddd4j 2.0.x 和 Quarkus 3.37.4 原有验收合约；不修改 ci.yml 或 QR 业务源码，修复后重新运行双 JDK 完整门禁。
+
+新增约束：自有第三方组件统一采用 `io.github.easy4j`；仓库已跟踪源码、POM、注释、规格和文档中的退役 groupId 必须为零引用。Jackson 版本由导入的 ddd4j BOM 管理，移除本地陈旧管理项；自包含 Jackson 2 序列化行为保持不变。
 
 ## 6. Web 生命周期契约
 
@@ -225,7 +229,7 @@ Quarkus test profile 必须在 CDI 创建 `LicenseVerify` 之前完成：
 
 ## 13. 完成定义
 
-2026-09-09 独立克隆重跑结果：远端消费者和 Web/License 定向测试通过；Java 17 full clean verify 在 qrcode 编译失败，发布的 `zxing-extension` 为 Java 21 字节码。当前未满足本节完成定义，不得标记“feature/3.3.x P5-A 本地完成”。原始统计、失败原因和范围见 [能力证据](../../CAPABILITY-ALIGNMENT.md)。最终独立审查和修复后 final-HEAD 门禁仍待执行。
+2026-09-09 独立克隆重跑结果：远端消费者和 Web/License 定向测试通过；首轮 Java 17 的 qrcode 编译失败经 Fix round 1 的 easy4j 坐标修复消除。修复后 Java 17/21 各自 full clean verify 为 62/62 SUCCESS，各 53 suites / 185 tests / 0 failures / 0 errors / 11 skipped。原始失败、修复、最后坐标清理与验证范围见 [能力证据](../../CAPABILITY-ALIGNMENT.md)。最终独立审查和 final-HEAD 门禁仍待执行，因此本页只确认本地门禁结果，不提前宣告最终完成。
 
 本变更完成必须同时满足：
 

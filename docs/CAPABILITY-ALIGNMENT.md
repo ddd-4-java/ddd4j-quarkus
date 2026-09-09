@@ -1,8 +1,8 @@
 # feature/3.3.x P5-A 能力证据
 
-本页只记录 `feature/3.3.x` 在普通独立克隆 `ddd4j-quarkus-33x-sync` 中于 2026-09-09 执行的本地门禁。代码基线为 `7c62a27`；中断前 Task 5 及 `feature/4.0.x` 的运行结果均未复用。规格事实源为 [P5-A design](superpowers/specs/2026-09-09-feature-33x-p5a-capability-sync-design.md)，实施步骤见 [plan](superpowers/plans/2026-09-09-feature-33x-p5a-capability-sync.md)。
+本页只记录 `feature/3.3.x` 在普通独立克隆 `ddd4j-quarkus-33x-sync` 中于 2026-09-09 执行的本地门禁。首轮代码基线为 `7c62a27`；Fix round 1 在 `7c62cdd` 上修复 POM 并重新验证。中断前 Task 5 及 `feature/4.0.x` 的运行结果均未复用。规格事实源为 [P5-A design](superpowers/specs/2026-09-09-feature-33x-p5a-capability-sync-design.md)，实施步骤见 [plan](superpowers/plans/2026-09-09-feature-33x-p5a-capability-sync.md)。
 
-当前状态：**Task 5 被 Java 17 全量门禁阻塞，P5-A 未本地完成**。远端消费者、Web/License 定向测试通过不等于整条维护线通过。
+当前状态：**修复后 Java 17/21 全量门禁均通过；最终独立审查与 final-HEAD 门禁待执行**。首轮 Java 17 阻塞已由 QR 依赖坐标修复解决，原始失败证据保留在下文。
 
 ## 版本与远端消费者
 
@@ -14,6 +14,7 @@
 | Maven wrapper / POM / 聚合 | `3.8.1` / Model `4.0.0` / `<modules>` |
 | Java 17 | Amazon Corretto `17.0.20.1`（XML java.version），macOS aarch64 |
 | Java 21 | Microsoft `21.0.12.1`，macOS aarch64 |
+| 自有第三方组件 groupId | 统一 `io.github.easy4j`；已跟踪源码、POM、注释和文档均清除退役发布组引用 |
 
 Task 1 的版本选择记录说明 `20260730` 缺少 `io.ddd4j:ddd4j-dependencies:pom`，因此统一到 `20260630`。本次没有重新测试失败候选，独立重跑的是最终选定版本：
 
@@ -50,25 +51,43 @@ License 为 2 suites / 4 tests / 0 failures / 0 errors / 0 skipped，结束于 `
 
 License 已登记 Minor：失败准备测试使用空目录，尚未覆盖部分密钥已生成或签发返回 false 的情形；不能把该测试描述为覆盖所有签发失败路径。
 
-## Java 17 全量门禁与发布依赖阻塞
+## 首轮 Java 17 全量门禁与发布依赖阻塞（修复前 RED）
 
 执行 `JAVA_HOME` 指向 Corretto 17.0.20.1、对应 `bin` 在 PATH 首位的 `./mvnw -B clean verify -Denforcer.skip=true`，返回 1；耗时 06:03，结束于 `2026-09-09T14:50:27+08:00`。Reactor 共 62 个模块：37 SUCCESS、`ddd4j-quarkus-extension-qrcode` FAILURE、后续 24 SKIPPED。
 
 首个编译错误为 `com.google.zxing.exception.QrCodeErrorCode` / `QrCodeException` 的 class major version 65，而 Java 17 编译器要求 61。后续找不到符号、RenderRequest getter 缺失均发生在这两个类无法加载之后；本任务未修改源代码以掩盖依赖版本问题。
 
-为排除共享 Maven 缓存污染，本次又将 `io.github.hiwepy:zxing-extension:2.0.x.20260630-SNAPSHOT` 以 `dependency:get -Dtransitive=false` 下载到隔离仓库，解析到 `2.0.x.20260630-20260715.051948-2`，退出码 0。新下载与原缓存 JAR 的 SHA256 均为 `a7ae2680633f5199ab6a351fc5dc22643c6d6dfd9ff30fe45fe42c34dccc8707`；JDK 21 `javap -verbose` 确认 `QrCodeErrorCode` major version 为 65。这证明发布制品不满足 Java 17 字节码基线。
+为排除共享 Maven 缓存污染，首轮又将退役发布组下的 `zxing-extension:2.0.x.20260630-SNAPSHOT` 以 `dependency:get -Dtransitive=false` 下载到隔离仓库，解析到 `2.0.x.20260630-20260715.051948-2`，退出码 0。新下载与原缓存 JAR 的 SHA256 均为 `a7ae2680633f5199ab6a351fc5dc22643c6d6dfd9ff30fe45fe42c34dccc8707`；JDK 21 `javap -verbose` 确认 `QrCodeErrorCode` major version 为 65。这证明旧发布制品不满足 Java 17 字节码基线；完整旧坐标保留于本机原始失败日志，不作为当前推荐依赖。
 
 Java 17 已完成模块的新 XML 为 **32 suites / 106 tests / 0 failures / 0 errors / 10 skipped**，仅为部分 reactor 结果。原始目录遍历得到 36 suites / 114 tests，是因为 Maven 在 qrcode 中断，尚未到达 Web/License 模块的 clean，遗留此前定向门禁的 4 suites / 8 tests。原始混合快照保存在 `jdk17-failed/`，按本次 reactor SUCCESS 模块筛选后的新报告保存在 `jdk17-fresh-only/`，不得将混合统计称为全量通过。
 
-## Java 21 全量门禁
+## 首轮 Java 21 全量门禁（修复前）
 
 `JAVA_HOME` 指向 Microsoft 21.0.12.1、对应 `bin` 在 PATH 首位，独立执行 `./mvnw -B clean verify -Denforcer.skip=true`，返回 0；耗时 08:29，结束于 `2026-09-09T14:59:41+08:00`，62/62 模块 SUCCESS。最终 XML 为 **53 suites / 185 tests / 0 failures / 0 errors / 11 skipped**；报告存于 `jdk21/xml/`，摘要 `jdk21/summary.json`，日志 `jdk21-clean-verify.log`。XML java.version 唯一值为 `21.0.12.1`；Java 17 新报告的唯一值为 `17.0.20.1`。
 
-Java 21 的通过不能替代 Java 17 维护基线，当前双 JDK 完成门禁仍失败。最终独立审查与修复后的 final-HEAD 全门禁待执行。
+首轮 Java 21 的通过未替代当时失败的 Java 17 维护基线。Fix round 1 的双 JDK 新结果如下，最终独立审查与 final-HEAD 全门禁仍待执行。
+
+## Fix round 1：恢复 QR 依赖的 Java 17 合约
+
+在 `7c62cdd` 文档提交后，获准将 qrcode 叶模块的 ZXing groupId 改为 `io.github.easy4j`，保留无版本依赖；dependencies POM 移除退役发布组的 ZXing 管理项与相关陈旧注释，版本由导入的 ddd4j BOM 管理。未修改 QR 业务源码和 ci.yml。
+
+新坐标解析到 `2.0.x.20260630-20260907.070807-1`，Java 17 javap 确认 `QrCodeErrorCode` major 61。依赖树只包含 `io.github.easy4j:zxing-extension:jar:2.0.x.20260630-SNAPSHOT:compile`。父任务的独立制品审查确认 39 个类均为 major 61，公开 JVM API 与旧坐标一致。
+
+Java 17 `./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-extensions/ddd4j-quarkus-extension-qrcode -am clean test` 返回 0，3/3 模块成功，结束于 `2026-09-09T15:13:42+08:00`（29.129s）。`QrCodeQuarkusTest` 的 2 个测试实际验证 CDI 生成二维码和 REST render/decode 往返，1 suite / 2 tests / 0 failures / 0 errors / 0 skipped。
+
+Fix round 1 的新日志与 XML 独立保存于 `/tmp/ddd4j-p5a-33-fix1.jQvV1w`。首轮失败与修复后验证证据分别保留，不把定向测试通过当作双 JDK 全量通过。
+
+修复后的 Java 17 完整 `clean verify -Denforcer.skip=true` 已返回 0，62/62 SUCCESS，耗时 10:51，结束于 `2026-09-09T15:25:12+08:00`。独立 `jdk17/` XML 归档为 53 suites / 185 tests / 0 failures / 0 errors / 11 skipped；所有模块均重新执行 clean/test。
+
+修复后的 Java 21 使用同一组 POM 重新执行完整 `clean verify -Denforcer.skip=true`，返回 0，62/62 SUCCESS，耗时 13:33，结束于 `2026-09-09T15:39:08+08:00`。独立 `jdk21/` XML 归档同为 53 suites / 185 tests / 0 failures / 0 errors / 11 skipped。
+
+双 JDK 全量完成后，按新增 groupId 规则删除 dependencies POM 中已无消费者的旧 Jackson 管理项；当前发布的 ddd4j-data-crypto POM 未声明 Jackson 扩展，导入的 ddd4j BOM 已管理 `io.github.easy4j:jackson-extension:2.0.x.20260630-SNAPSHOT`。Jackson 模块仅更新 description/Javadoc，继续使用自包含 Jackson 2 序列化实现，未新增运行时依赖。此最后清理由 qrcode/Jackson 依赖树和模块 clean test 补验，完整双 JDK 日志对应清理前状态；最终 HEAD 全门禁仍由最终审查阶段执行。
+
+最后清理后的依赖树返回 0：qrcode 只含 easy4j ZXing；Jackson 模块未增加 Jackson extension 运行时依赖。qrcode/Jackson 的双 JDK `-am clean test` 补验各为 4/4 模块、2 suites / 6 tests / 0 failures / 0 errors / 0 skipped。Java 17 结束于 `15:40:48+08:00`（15.973s），Java 21 结束于 `15:43:34+08:00`（15.749s）；独立归档为 `final-modules-jdk17/`、`final-modules-jdk21/`。全仓已跟踪文件的退役 groupId 扫描为零匹配，结果保存在 `final-retired-group-scan.log`。
 
 ## XML skip 原因
 
-以下为 Java 17 新报告及 Java 21 完整报告共同记录的 10 个 skip。类名前缀均为 `io.ddd4j.quarkus.mq.`，表中列出全部方法及 XML 原始 message，不从 tests 总数减去 skipped。
+以下为修复后 Java 17/21 完整报告共同记录的 10 个 MQ skip。类名前缀均为 `io.ddd4j.quarkus.mq.`，表中列出全部方法及 XML 原始 message，不从 tests 总数减去 skipped。
 
 | 类（加上述前缀） | 方法 | XML 原始原因 |
 |---|---|---|
@@ -83,7 +102,7 @@ Java 21 的通过不能替代 Java 17 维护基线，当前双 JDK 完成门禁�
 | `rocket.RocketMqQuarkusIntegrationTest` | `shouldInjectMQProperties` | RocketMQ warm-up send fails intermittently; broker startup race condition — skip until fixed |
 | `rocket.RocketMqQuarkusIntegrationTest` | `shouldInjectSerialization` | RocketMQ warm-up send fails intermittently; broker startup race condition — skip until fixed |
 
-Java 21 另有 1 项：`io.ddd4j.quarkus.auth.security.SecurityQuarkusConfigTest#subjectProviderExposedAsCdiBeanAndRegisteredInSubjectKit`，原始原因 `Module is deprecated since 3.3.1; see docs/MIGRATION-auth-security-to-satoken.md`。Java 17 未运行到该模块，因此不计入 Java 17 新报告。
+修复后两个 JDK 均另有 1 项：`io.ddd4j.quarkus.auth.security.SecurityQuarkusConfigTest#subjectProviderExposedAsCdiBeanAndRegisteredInSubjectKit`，原始原因 `Module is deprecated since 3.3.1; see docs/MIGRATION-auth-security-to-satoken.md`。首轮失败的 Java 17 未运行到该模块，故其历史部分报告只有 10 个 skip。
 
 ## CI 与结构证据
 
@@ -91,7 +110,7 @@ Java 21 另有 1 项：`io.ddd4j.quarkus.auth.security.SecurityQuarkusConfigTest
 
 配置动作以临时文件解码、校验 server id、0600 权限和原子替换安装 settings，失败时保留旧目标并清除临时文件。Task 4 已有配置成功/失败路径验证记录；Task 5 不将该历史记录当成本次新执行的 shell 测试。
 
-本次扫描目标 POM 和 `.github`：无 Model 4.1.0、`<subprojects>`、`<subproject>`、`3.0.x.20260630-SNAPSHOT`，无 `install-ddd4j`、`sed -i`、`Lint disabled` 匹配。CI 与 dependencies POM 中的陈旧说明性注释作为最终审查 Minor 保留，本任务未修改这两份代码/配置文件。
+本次扫描目标 POM 和 `.github`：无 Model 4.1.0、`<subprojects>`、`<subproject>`、`3.0.x.20260630-SNAPSHOT`，无 `install-ddd4j`、`sed -i`、`Lint disabled` 匹配。Fix round 1 在 dependencies POM 删除退役的 ZXing/Jackson 管理项；该 POM 其余历史 BOM/Agroal/Hibernate 注释及 CI 陈旧 checkout 注释仍留待最终审查，ci.yml 未修改。
 
 本次 MQTT 测试生成的两个 UUID `.lck` 文件均由 `.gitignore:111` 的 `**/ddd4j-mq-*-tcplocalhost*/` 忽略；文档暂存前 status 只包含六份授权文档，`git diff --check` 返回 0。
 

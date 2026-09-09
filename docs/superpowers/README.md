@@ -24,7 +24,7 @@
 | P2 plan | [plans/2026-08-07-p2-mq-testcontainers.md](plans/2026-08-07-p2-mq-testcontainers.md) | P2 实施步骤（已完成 ✅） |
 | P3 spec | [specs/2026-08-08-p3-auth-samples-ci-design.md](specs/2026-08-08-p3-auth-samples-ci-design.md) | Auth + samples + CI/CD |
 | P3 plan | [plans/2026-08-08-p3-auth-samples-ci.md](plans/2026-08-08-p3-auth-samples-ci.md) | P3 实施步骤（已完成 ✅） |
-| 3.3.x P5-A spec | [specs/2026-09-09-feature-33x-p5a-capability-sync-design.md](specs/2026-09-09-feature-33x-p5a-capability-sync-design.md) | Tasks 1–4 已提交；Task 5 Java 17 发布依赖字节码阻塞 |
+| 3.3.x P5-A spec | [specs/2026-09-09-feature-33x-p5a-capability-sync-design.md](specs/2026-09-09-feature-33x-p5a-capability-sync-design.md) | Task 5 坐标修复后双 JDK 门禁通过；最终审查待执行 |
 | 3.3.x P5-A plan | [plans/2026-09-09-feature-33x-p5a-capability-sync.md](plans/2026-09-09-feature-33x-p5a-capability-sync.md) | 普通独立克隆重新执行全部门禁；禁止 Git worktree |
 | 3.3.x P5-A evidence | [../CAPABILITY-ALIGNMENT.md](../CAPABILITY-ALIGNMENT.md) | 本线版本、消费者、Web/License、双 JDK 结果及 skip 原因 |
 
@@ -103,8 +103,9 @@
 ## 当前快照
 
 - 本页此前的 P0–P3 完成状态、318 tests 与 14 broker 通过记录属于历史快照，不能作为 3.3.x P5-A 本次门禁证据。
-- 当前 3.3.x P5-A：Tasks 1–4 已提交，Task 5 Java 17 clean verify 因远端 zxing-extension 的 Java 21 字节码失败；尚未本地完成。
-- 本次空缓存消费者、Web 4 tests、License 4 tests 通过；Java 21 为 62/62 模块、53 suites / 185 tests / 11 skipped，Java 17 部分 reactor 为 32 suites / 106 tests / 10 skipped；两者 XML failures/errors 均为 0，但 Java 17 编译失败。逐项 skip 见 [能力证据](../CAPABILITY-ALIGNMENT.md)。
+- 当前 3.3.x P5-A：Task 5 的 Java 17 字节码阻塞已通过 easy4j ZXing 坐标修复消除，修复后双 JDK 全量门禁通过；最终独立审查和 final-HEAD 门禁仍待执行。
+- 本次空缓存消费者、Web 4 tests、License 4 tests 通过；修复后 Java 17/21 均为 62/62 模块、53 suites / 185 tests / 11 skipped，failures/errors 均为 0。首轮失败与最后坐标清理补验均独立保留，逐项 skip 见 [能力证据](../CAPABILITY-ALIGNMENT.md)。
+- 自有第三方组件统一采用 `io.github.easy4j`，全仓已跟踪源码、POM、注释和文档中的退役 groupId 以零引用为门禁。
 - CI 静态结构为 `workflow-lint`、Java 17/21 `unit-and-contract`、13 broker `broker-integration`；GitHub-hosted Actions 未实际验证。
 - Native、Dev Mode、Enforcer、deploy、云服务、P5-B–E、master 和生产用户验收均不由此更新。
 

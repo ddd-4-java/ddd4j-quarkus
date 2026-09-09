@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-extension-jackson</artifactId>
-    <description>ddd4j-quarkus Jackson 扩展适配：对齐 boot 模块结构，null 容错序列化采用自包含实现（io.ddd4j.quarkus.jackson.ser.NullTolerantBeanSerializerModifier，与 4.0.x 逐字节一致——io.github.hiwepy:jackson-extension 从未发布 2.0.x.20260630 构件），通过 Quarkus ObjectMapperCustomizer 定制 ObjectMapper。</description>
+    <description>ddd4j-quarkus Jackson 扩展适配：null 容错序列化采用自包含的 NullTolerantBeanSerializerModifier，通过 Quarkus ObjectMapperCustomizer 定制 Jackson 2 ObjectMapper；扩展制品坐标统一采用 io.github.easy4j。</description>
 
     <dependencies>
         <!-- Quarkus Jackson：提供 ObjectMapper + io.quarkus.jackson.ObjectMapperCustomizer 定制接口 -->

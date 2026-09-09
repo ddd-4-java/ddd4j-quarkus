@@ -14,13 +14,14 @@
 
 Tasks 1–4 已完成提交和各自审查，依据本次独立克隆中的 progress ledger 与提交记录：Task 1 `53457a1`；Web `9e6a4c2` 与 Quarkus BOM 顺序修正 `ace5097`；License `b2936f1`；CI `7c62a27`。
 
-Task 5 重新验证：空缓存最终版本解析、Web/License 定向测试、actionlint 与结构检查通过；Java 17 完整 clean verify 在第 38/62 个模块 qrcode 编译失败。远端发布的 `zxing-extension` 为 Java 21 class major 65，不满足 Java 17 的 61 基线。Java 21 clean verify 为 62/62 SUCCESS，53 suites / 185 tests / 0 failures / 0 errors / 11 skipped；Java 17 只完成 32 suites / 106 tests / 0 failures / 0 errors / 10 skipped。Task 5 未完成，最终独立审查与修复后的 final-HEAD 全门禁仍待执行；逐项证据见 [CAPABILITY-ALIGNMENT](../../CAPABILITY-ALIGNMENT.md)。未将失败门禁勾选通过。
+Task 5 首轮 Java 17 qrcode 编译失败作为 RED 保留。Fix round 1 改用 ddd4j BOM 管理的 easy4j ZXing，Java 17 qrcode clean test 通过后，重新执行 Java 17/21 全量 clean verify，均为 62/62 SUCCESS、53 suites / 185 tests / 0 failures / 0 errors / 11 skipped。随后按新增坐标规则清理 Jackson 旧管理项和说明，并补验依赖树与受影响模块。远端最终版本解析、Web/License 定向测试和 actionlint/结构检查已有本轮独立证据。最终独立审查与 final-HEAD 全门禁仍待执行；准确日志对应关系见 [CAPABILITY-ALIGNMENT](../../CAPABILITY-ALIGNMENT.md)。
 
 ## Global Constraints
 
 - 目标分支仅为 `feature/3.3.x`；不修改 `master` 或 `feature/4.0.x`。
 - 保持 `revision=3.3.x.20260630-SNAPSHOT`、Quarkus BOM/插件 `3.37.4`、Java 基线 17。
 - 保持 Maven Model `4.0.0` 与 `<modules>`；禁止引入 `<subprojects>`。
+- 自有第三方组件 groupId 统一为 `io.github.easy4j`；全仓已跟踪源码、POM、注释和文档不得引用退役发布组，版本优先沿用导入的 ddd4j BOM。
 - 根据新版 AGENTS.md，在普通独立克隆 `ddd4j-quarkus-33x-sync` 中执行；禁止创建、访问或修改 Git worktree。中断前 Task 5 的证据不复用，全部门禁重新运行。
 - 保护现有 MQTT UUID 运行目录，不暂存、不提交其中的 `.lck`。
 - 不复制 ddd4j 的生产 Web filter 或 License 实现。
@@ -414,6 +415,10 @@ git commit -m "ci: resolve published ddd4j 2.0 snapshot remotely"
 ### Task 5: Run dual-JDK completion gates and record 3.3.x evidence
 
 **Files:**
+- Fix round 1 authorized modification: `ddd4j-quarkus-dependencies/pom.xml` (remove retired ZXing/Jackson management and comments)
+- Fix round 1 authorized modification: `ddd4j-quarkus-extensions/ddd4j-quarkus-extension-qrcode/pom.xml` (versionless easy4j ZXing groupId only)
+- Coordinate-rule follow-up: `ddd4j-quarkus-extensions/ddd4j-quarkus-extension-jackson/pom.xml` (current description)
+- Coordinate-rule follow-up: `ddd4j-quarkus-extensions/ddd4j-quarkus-extension-jackson/src/main/java/io/ddd4j/quarkus/jackson/ser/NullTolerantBeanSerializerModifier.java` (Javadoc only)
 - Modify: `README.md`
 - Modify: `CONTRIBUTING.md`
 - Create or modify: `docs/CAPABILITY-ALIGNMENT.md`
@@ -424,6 +429,8 @@ git commit -m "ci: resolve published ddd4j 2.0 snapshot remotely"
 **Interfaces:**
 - Consumes: Tasks 1–4 commits and their reports.
 - Produces: final Java 17/21 evidence, exact XML totals, scoped documentation, and a push/deploy authorization checkpoint.
+
+Fix round 1 retains the first Java17 qrcode compiler failure as RED, uses the published Java17-compatible easy4j ZXing artifact already managed by imported ddd4j BOM, then requires a Java17 qrcode clean test plus fresh Java17 and Java21 full clean verify. The later coordinate-rule cleanup additionally requires qrcode/Jackson dependency trees, affected-module clean tests, and a zero-reference tracked-source scan. ci.yml remains outside this fix's file ownership. Keep historical failure logs separate from passing logs/XML; deferred final review and final-HEAD gates remain explicit.
 
 - [x] **Step 1: Repeat empty-cache remote resolution**
 
@@ -446,7 +453,7 @@ Expected: exit 0 with runtime, Web, License and imported dependency artifacts in
 
 Expected: both commands exit 0 with Web cleanup and real License verification tests executed.
 
-- [ ] **Step 3: Run the Java 17 full reactor**
+- [x] **Step 3: Run the Java 17 full reactor**
 
 ```bash
 JAVA_HOME="$(/usr/libexec/java_home -v 17)" PATH="$JAVA_HOME/bin:$PATH" \

@@ -68,6 +68,9 @@ actionlint .github/workflows/ci.yml
    fixture（复用 `ddd4j-quarkus-mq-testcontainers` / samples 中的模式）。
 5. **版本**：新依赖必须进入 `ddd4j-quarkus-dependencies` 的 dependencyManagement，
    禁止在子模块写裸版本号；Quarkus 组件跟随 quarkus-bom，禁止覆盖版本。
+6. **自有第三方坐标**：统一使用 `io.github.easy4j`，已跟踪源码、POM、注释和文档中的退役 groupId 必须零引用。优先使用导入的 ddd4j BOM 管理版本；已有管理时删除重复本地条目，不新增无必要的运行时依赖。
+
+2026-09-09 Fix round 1 将 ZXing 切换为 BOM 管理的 easy4j 坐标并重新完成 Java 17/21 全量验证（各 62/62 模块、53 suites / 185 tests / 11 skipped，failures/errors 均为 0）。Jackson 继续使用自包含 Jackson 2 实现，旧管理项和说明清理后另做模块补验。最终审查与 final-HEAD 门禁尚待执行，日志边界见能力证据。
 
 ## 提交规范
 
