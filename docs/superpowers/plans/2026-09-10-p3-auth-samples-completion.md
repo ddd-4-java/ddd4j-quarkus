@@ -10,11 +10,12 @@
 
 **Spec:** `docs/superpowers/specs/2026-08-08-p3-auth-samples-ci-design.md`
 
-**Task status:** Task 1 completed on 2026-09-10. The proposed shared
+**Task status:** Tasks 1–2 completed on feature/4.0.x on 2026-09-10. The proposed shared
 `ddd4j-quarkus-auth-testcontainers` module is cancelled as an obsolete
 abstraction, not completed. Auth behavior is routed to direct Quarkus runtime
-integration in the auth samples/modules; the sample-auth and sample-mq
-backlogs remain open for Tasks 2–4.
+integration in the auth samples/modules. Task 2 now verifies Sa-Token/Shiro
+HTTP journeys and removes the deprecated Security sample on feature/4.0.x;
+MQ sample behavior and feature/3.3.x parity remain open for Tasks 3–4.
 
 ## Global Constraints
 
@@ -59,12 +60,25 @@ observable order-publication-to-listener-consumption assertions.
 - Modify: `ddd4j-quarkus-samples/pom.xml`
 - Modify: `ddd4j-quarkus-bom/pom.xml`
 
-- [ ] Add HTTP lifecycle tests for Sa-Token and Shiro: unauthenticated status/me, login returns nonblank token, authenticated status/me, role/permission result, logout and post-logout state.
-- [ ] Run tests before required sample wiring/config to record RED.
-- [ ] Add minimal sample wiring/config; use real backend Subject through `SubjectKit`.
-- [ ] Remove deprecated Security sample from reactor/BOM and document replacement by Sa-Token/Shiro.
-- [ ] Run both sample modules and full samples reactor on Java 21.
-- [ ] Commit: `test(samples): complete Quarkus auth journeys`.
+- [x] Add HTTP lifecycle tests for Sa-Token and Shiro: unauthenticated status/me, login returns nonblank token, authenticated status/me, role/permission result, logout and post-logout state.
+- [x] Run tests before required sample wiring/config to record RED.
+- [x] Add minimal sample wiring/config; use real backend Subject through `SubjectKit`.
+- [x] Remove deprecated Security sample from reactor/BOM and document replacement by Sa-Token/Shiro.
+- [x] Run both sample modules and full samples reactor on Java 21.
+- [x] Commit: `test(samples): complete Quarkus auth journeys`.
+
+Task 2 evidence: both initial HTTP journeys failed on `/auth/status` returning
+500 from the default CDI Subject provider. Both independent sample
+`clean verify` runs now pass. The final Java 21 / Maven 4 samples reactor
+`-DskipTests=false -pl ddd4j-quarkus-samples -am clean verify` passed all 26
+selected modules, with 107 tests across 27 suites, 0 failures/errors/skips
+(50 tests in samples). The explicit flag overrides the upstream dependencies
+BOM's skipped-test default. Evidence is recorded in
+`.superpowers/sdd/2026-09-10-p3-auth-samples-completion/task-2-report.md`.
+The BOM had no Security sample coordinate to remove; the library's existing
+deprecated coordinate remains unchanged. Existing nonfatal Javadoc/model
+diagnostics are not cleared by this result, and packaging/publication/CI remain
+separate gates.
 
 ### Task 3: Complete feature/4.0.x MQ samples
 
