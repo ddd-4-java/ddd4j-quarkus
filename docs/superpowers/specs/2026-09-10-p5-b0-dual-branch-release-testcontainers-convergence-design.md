@@ -173,7 +173,7 @@ JUnit 5 集成使用：
 ### 8.3 共同门禁
 
 - actionlint 成功。
-- `io.github.hiwepy` 零引用，只使用 `io.github.easy4j`。
+- 已退役的前序扩展 group 坐标零引用；扩展统一使用 `io.github.easy4j`。
 - Surefire/Failsafe XML 汇总 failures/errors 为 0。
 - 每个 skip 逐项解释。
 - 本地、GitHub、Codeup 分支 SHA 一致。

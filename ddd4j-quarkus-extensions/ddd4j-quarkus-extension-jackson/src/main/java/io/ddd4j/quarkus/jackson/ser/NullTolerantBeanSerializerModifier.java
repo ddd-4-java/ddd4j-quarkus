@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * null 值默认序列化策略：按属性类型将 {@code null} 序列化为类型默认值而非省略字段。
  *
- * <p>对齐 boot 轨 {@code io.github.hiwepy:jackson-extension} 的
+ * <p>参考 {@code io.github.easy4j:jackson-extension} 的
  * {@code MyBeanSerializerModifier} 语义（该上游 3.0.x 已迁移 Jackson 3 命名空间
  * {@code tools.jackson}，与 Quarkus 3.x 的 Jackson 2 不兼容，故本模块自包含实现）。
  *
