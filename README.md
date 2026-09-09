@@ -40,6 +40,14 @@ Maven settings 必须能访问已发布 ddd4j 快照仓库；消费者直接解�
 
 已闭环的审查修正补强了 Web 清理前绑定及 License 部分材料/false 签发清理证据，并更正 CI/BOM 注释。受影响模块的 Java 17/21 clean test 均通过：Web 4 tests、License 5 tests，共 4 suites / 9 tests，failures/errors/skipped 均为 0；随后已由上述已验证提交的双 JDK 全量门禁覆盖。
 
+## P5-B0 Testcontainers 本地验证（2026-09-10）
+
+`feature/3.3.x` 的 `c37c843` 已完成 Java 17/21 全量门禁：各 62/62 模块成功、
+57 suites / 211 tests / 0 failures / 0 errors / 3 skips。Testcontainers 源码依赖树和
+实际测试 classpath 均为 `2.0.5`；13 broker 的镜像、readiness、往返与 skip 边界见
+[双分支本地验证证据](docs/P5-B0-LOCAL-VERIFICATION.md)。这些结果覆盖此前迁移与 Snowflake 修复，
+仍不代表目标提交的 GitHub Actions、Enforcer、Maven 发布或发布后空缓存消费完成。
+
 ## CI 前置条件：`MAVEN_SETTINGS_XML` 组织 secret
 
 GitHub Actions 依赖 **ddd-4-java 组织级 secret** 解析 Aliyun 私有仓 SNAPSHOT：

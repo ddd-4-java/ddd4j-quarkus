@@ -49,12 +49,19 @@ actionlint .github/workflows/ci.yml
 
 本次版本、能力和测试证据统一记录于 [CAPABILITY-ALIGNMENT](docs/CAPABILITY-ALIGNMENT.md)，不能引用其他维护线的统计代替本线验证。
 
-### 容器复用
+### 容器生命周期
 
-- 仓库内 `testcontainers.properties`（classpath）与 CI 中 `~/.testcontainers.properties`
-  均开启 `testcontainers.reuse.enable=true`，本地与 CI 都会复用已启动的 broker 容器。
-- 需要临时关闭复用：`-Dtestcontainers.reuse.enable=false`。
-- 清理残留容器：`docker rm -f $(docker ps -aq --filter "label=testcontainers")`。
+- 共享 fixture 幂等启动并关闭自己拥有的容器，失败启动也执行清理；失败清理保留所有权，重试成功后才创建替代容器。
+- 测试资源配置关闭复用，fixture 不得强制 `withReuse(true)`。不要清理其他任务拥有的容器。
+- MQTT 的 Paho 持久化目录由现有 `.gitignore` 规则忽略；本线未采用 4.0.x 的 `target/mqtt-persistence` 目录覆盖。
+
+### P5-B0 本地门禁（2026-09-10）
+
+`c37c843` 的 Java 17/21 完整 `clean verify -Denforcer.skip=true` 各通过 62/62 模块、
+57 suites / 211 tests / 0 failures / 0 errors / 3 skips。源码 reactor 的版本检查使用
+`org.apache.maven.plugins:maven-dependency-plugin:3.8.1:tree -Dincludes=org.testcontainers -Dverbose`；
+旧版 2.8 standalone tree 会读到陈旧制品描述，不作为源码版本证据。运行记录与逐项 skip 见
+[P5-B0 本地验证](docs/P5-B0-LOCAL-VERIFICATION.md)。Enforcer、CI、发布与空缓存消费仍须各自验收。
 
 ## 编码约定
 
