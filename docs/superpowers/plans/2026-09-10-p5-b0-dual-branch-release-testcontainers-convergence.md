@@ -17,7 +17,7 @@
 - 不引入活动 `<subprojects>`/`<subproject>`。
 - 两分支 Testcontainers effective version 必须为 `2.0.5`。
 - ActiveMQ、Kafka、LocalStack、Pulsar、RabbitMQ 使用 Testcontainers 2.x Java 专用模块/类；没有合适 Java 官方模块的 broker 使用受控 `GenericContainer`。
-- 已退役的前序扩展 group 坐标零引用；扩展统一使用 `io.github.easy4j`。
+- 已退役的前序扩展 group 坐标零引用；用 `git grep -E 'io[.]github[.]hiwepy'` 执行门禁，扩展统一使用 `io.github.easy4j`。
 - 任何 skip 必须记录类、方法、原因和恢复条件。
 - 不把 ONS/TDMQ fallback 或本地模拟称为云服务验收。
 - 不把 Maven upload、BUILD SUCCESS、Actions 或 consumer 中任意单项独立称为发布完成。
@@ -160,6 +160,52 @@ git commit -m "test(3.3.x): align Testcontainers 2 broker harness"
 **Interfaces:**
 - Consumes: final 3.3.x and 4.0.x implementation heads.
 - Produces: XML totals, skip ledger, effective-version matrix and clean push candidates.
+
+#### 4.0.x Easy4J structural precheck evidence
+
+此预检查仅关闭 4.0.x 的扩展坐标结构阻塞，不得将 Task 4、双分支验证、CI、发布或空缓存消费标为完成。
+
+- `ddd4j-data-crypto` 已不再消费 Easy4J Jackson extension；它通过 `ddd4j-core` 获得 `tools.jackson`。
+- `io.ddd4j:ddd4j-dependencies:3.0.x.20260630-SNAPSHOT` 管理 `io.github.easy4j:jackson-extension` 与 `io.github.easy4j:zxing-extension`，版本均为 `3.0.x.20260630-SNAPSHOT`。
+- 两个 Quarkus 叶子必须直接声明 Easy4J group 和相应 artifact，但不得声明 `<version>`；实际版本只能由 ddd4j 3.0.x BOM 提供。
+
+在 Java 21 / Maven 4 下执行下列门禁。`MAVEN4` 必须指向 Maven `4.0.0-rc-6` 可执行文件：
+
+```bash
+set -euo pipefail
+: "${MAVEN4:?set MAVEN4 to the Maven 4.0.0-rc-6 executable}"
+
+retired_group_regex='io[.]github[.]hiwepy'
+set +e
+git grep -n -E "$retired_group_regex"
+retired_group_status=$?
+set -e
+if [ "$retired_group_status" -eq 0 ]; then
+  echo "retired extension group remains in tracked source" >&2
+  exit 1
+fi
+if [ "$retired_group_status" -ne 1 ]; then
+  exit "$retired_group_status"
+fi
+
+assert_versionless_easy4j_leaf() {
+  pom=$1
+  artifact=$2
+  rg -U -q "<groupId>io[.]github[.]easy4j</groupId>[[:space:]]*<artifactId>${artifact}</artifactId>[[:space:]]*</dependency>" "$pom"
+}
+
+assert_versionless_easy4j_leaf ddd4j-quarkus-extensions/ddd4j-quarkus-extension-jackson/pom.xml jackson-extension
+assert_versionless_easy4j_leaf ddd4j-quarkus-extensions/ddd4j-quarkus-extension-qrcode/pom.xml zxing-extension
+
+"$MAVEN4" -B -Denforcer.skip=true \
+  -pl ddd4j-quarkus-extensions/ddd4j-quarkus-extension-jackson -am \
+  dependency:tree '-Dincludes=io.github.easy4j:jackson-extension' -Dverbose \
+  | rg -F 'io.github.easy4j:jackson-extension:jar:3.0.x.20260630-SNAPSHOT:compile'
+"$MAVEN4" -B -Denforcer.skip=true \
+  -pl ddd4j-quarkus-extensions/ddd4j-quarkus-extension-qrcode -am \
+  dependency:tree '-Dincludes=io.github.easy4j:zxing-extension' -Dverbose \
+  | rg -F 'io.github.easy4j:zxing-extension:jar:3.0.x.20260630-SNAPSHOT:compile'
+```
 
 - [ ] **Step 1: Verify feature/3.3.x**
 

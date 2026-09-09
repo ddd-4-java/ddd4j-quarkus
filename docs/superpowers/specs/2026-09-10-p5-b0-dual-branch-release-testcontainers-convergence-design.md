@@ -173,12 +173,25 @@ JUnit 5 集成使用：
 ### 8.3 共同门禁
 
 - actionlint 成功。
-- 已退役的前序扩展 group 坐标零引用；扩展统一使用 `io.github.easy4j`。
+- 已退役的前序扩展 group 坐标零引用；`git grep -n -E 'io[.]github[.]hiwepy'` 必须返回 1，扩展统一使用 `io.github.easy4j`。
 - Surefire/Failsafe XML 汇总 failures/errors 为 0。
 - 每个 skip 逐项解释。
 - 本地、GitHub、Codeup 分支 SHA 一致。
 - GitHub Actions 对目标 HEAD 成功。
 - 不用既有 `~/.m2` 或前一分支缓存替代发布消费证据。
+
+### 8.4 Easy4J extension coordinate structural precheck
+
+对每个待验证分支执行以下门禁；命中已退役 group 即失败。这里的正则写法避免在受管源码中保留已禁止的连续坐标字面量：
+
+```bash
+if git grep -n -E 'io[.]github[.]hiwepy'; then
+  echo "retired extension group remains in tracked source" >&2
+  exit 1
+fi
+```
+
+4.0.x 的 ddd4j 3.0.x BOM 必须管理 Easy4J 的 `jackson-extension` 与 `zxing-extension`，版本为 `3.0.x.20260630-SNAPSHOT`。Jackson 和 QR-code 叶子都必须省略 `<version>`，并以 Maven 4 dependency tree 分别证明两个实际解析坐标。`ddd4j-data-crypto` 已不再消费 Easy4J Jackson extension；它通过 `ddd4j-core` 获得 `tools.jackson`。该预检查只证明坐标治理，不替代本节或 Task 4 的完整门禁。
 
 ## 9. 发布顺序
 
