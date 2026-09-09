@@ -8,7 +8,7 @@
 
 ## 1. 背景与问题
 
-### 1.1 Auth 模块多数仅 Producer，无测试
+### 1.1 Auth 模块与样例的覆盖层级不一致
 
 5 个 auth 子模块（jwt/satoken/shiro/security/license）中 JWT 和 License
 已有直接 runtime fixture；Sa-Token、Shiro、Security 仍主要是
@@ -64,8 +64,8 @@ ddd4j-quarkus-sample-infrastructure/               # ✅ 完整（4 类 + 5 测�
 ddd4j-quarkus-sample-adapter/                      # ✅ 完整（2 类 + 5 测试）
 ddd4j-quarkus-sample-client/                       # ✅ 完整（3 类 + 5 测试）
 ddd4j-quarkus-sample-common/                       # ✅ 完整（5 类 + 8 测试）
-ddd4j-quarkus-sample-auth-*（3 个）                # 🟡 Producer only
-ddd4j-quarkus-sample-mq-*（3 个）                  # 🟡 Producer only
+ddd4j-quarkus-sample-auth-*（3 个）                # 🟡 AuthResource only；当前无 src/test
+ddd4j-quarkus-sample-mq-*（3 个）                  # 🟡 Resource + application service + listener；SampleMq*BootTest 仅验证启动/Bean 注入，尚无发布→真实消费→投影 E2E
 ddd4j-quarkus-sample-api/                          # 🟡 占位（1 类）
 ```
 
@@ -150,7 +150,8 @@ ddd4j-quarkus/
 | 风险 | 缓解 |
 |---|---|
 | 4 个 auth 子模块没有共同 testcontainers 集成测试 | 取消 `ddd4j-quarkus-auth-testcontainers`；按后端在各模块/样例使用直接 Quarkus runtime 验证 |
-| samples/mq-{disruptor,kafka,rabbitmq} 无测试 | 后续 plan 补充端到端集成测试 |
+| samples/auth-{satoken,security,shiro} 仅有 AuthResource、无 `src/test` | 保持 sample backlog 开放；Security sample 删除，Sa-Token/Shiro 补齐 login/status/me/role/permission/logout HTTP 生命周期 |
+| samples/mq-{disruptor,kafka,rabbitmq} 仅有启动/Bean 注入测试 | 保持 sample backlog 开放；后续补齐 HTTP 创建订单、实际发布、真实 listener 消费和可观察投影的端到端断言 |
 | ddd4j-extension-pf4j 空壳未删除 | 登记为 P4 待办 |
 | GitHub Actions secrets 不能用于 `if:` 条件 | 通过 env 传递 |
 | 阿里云私有仓库需 credentials | ci.yml 注入 `MAVEN_USERNAME/MAVEN_PASSWORD` secrets |

@@ -53,3 +53,15 @@ git diff --check
 当前 checkout 为 `feature/4.0.x`；`feature/3.3.x` 与 `ddd4j-boot` 的无该模块结论
 按既有双分支证据及本任务输入保留在规格/计划中。未执行源码、测试、push、deploy
 或 CI 操作。
+
+## Round 1 status correction
+
+根据复核，P3 spec 的 sample 状态已进一步精确化：
+
+- auth samples 是 `AuthResource` 主源码，当前没有 `src/test`；它们不是 auth
+  module 的 “Producer only” 状态描述。
+- MQ samples 已有 Resource、application service 和 listener；各自的
+  `SampleMq*BootTest` 仅验证启动/Bean 注入，尚未证明 HTTP 发布、真实 listener
+  消费或可观察投影的 E2E 行为。
+
+上述 sample backlog 继续保持开放，未标记为完成。此次增量仍仅修改文档。
