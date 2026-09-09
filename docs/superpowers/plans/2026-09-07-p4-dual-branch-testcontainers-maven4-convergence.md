@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Upgrade both maintained ddd4j-quarkus branches to Testcontainers 2.0.5 and restore truthful broker round-trip coverage. Maven 4 `subprojects` remains a tracked acceptance target, paused until Quarkus can load that model.
+**Goal:** Upgrade both maintained ddd4j-quarkus branches to Testcontainers 2.0.5 and restore truthful broker round-trip coverage. The Maven 4 `subprojects` conversion is cancelled by user decision; the executable Model 4.1.0 + `<modules>` boundary remains.
 
 **Architecture:** Keep one published test-harness module that owns container lifecycle, connection properties, readiness, and shared round-trip behavior. Use official Testcontainers container classes where available and bounded GenericContainer adapters elsewhere; keep branch differences limited to ddd4j, Quarkus, Java, Maven model, and aggregator syntax.
 
@@ -14,7 +14,7 @@
 
 - `feature/3.3.x` stays on ddd4j `feature/2.0.x`, revision `3.3.x.20260630-SNAPSHOT`, Quarkus BOM `3.37.4`, Java 17, Maven model 4.0.0, and `modules/module`.
 - `feature/4.0.x` stays on ddd4j `feature/3.0.x`, revision `4.0.x.20260630-SNAPSHOT`, Quarkus BOM `3.38.2`, Java 21, and Maven model 4.1.0.
-- The `subprojects/subproject` conversion is paused after both Quarkus 3.38.2 and the authorized `maven-repo-main-2026-09-07` nightly failed to parse the workspace; current executable aggregation remains `modules/module` until quarkusio/quarkus#52190 is fixed.
+- The `subprojects/subproject` conversion is cancelled by user decision after both Quarkus 3.38.2 and the authorized `maven-repo-main-2026-09-07` nightly failed to parse the workspace; current executable aggregation remains `modules/module`.
 - Both branches must converge on Testcontainers BOM `2.0.5`; feature/4.0.x is verified and feature/3.3.x remains to be ported.
 - Do not create or use a Git worktree.
 - Preserve the existing untracked MQTT runtime directory and all unrelated user changes.
@@ -27,8 +27,16 @@
 
 - feature/4.0.x: Testcontainers 2.0.5, deterministic lifecycle, official container adapters, RocketMQ/Pulsar round trips, MQTT persistence isolation, and disposable-container CI are implemented.
 - Fresh gate: `./mvnw -B clean verify -Denforcer.skip=true` completed all 62 reactor modules; Surefire recorded 138 tests, 0 failures, 0 errors, and 3 skipped.
-- Maven 4 probe: native reactor validation accepted `subprojects`, but Quarkus 3.38.2 and main `999-SNAPSHOT` both failed workspace bootstrap. The six aggregators were restored to `modules` and Task 6 is paused.
+- Maven 4 probe: native reactor validation accepted `subprojects`, but Quarkus 3.38.2 and main `999-SNAPSHOT` both failed workspace bootstrap. The six aggregators were restored to `modules`; Task 6 is cancelled by user decision.
 - feature/3.3.x: pending after the authorized feature/4.0.x checkpoint commit.
+
+## Status reconciliation — 2026-09-10
+
+- 4.0.x completed-step evidence is `5ea9d6e` (Testcontainers 2.0.5 harness, lifecycle test, dedicated adapters, MQTT isolation, CI/docs) together with the recorded 62-module clean-verify result and subsequent CI commits `8b07c4e`, `6bb8a56`, `97d5ac1` and `278f119`.
+- The historical RED command/logs were not retained for Task 1 Step 3 or Task 2 Step 2; those boxes remain open rather than inferred from the resulting implementation.
+- Task 4 Steps 1–2 remain open: the current RocketMQ fixture still uses a fixed `sleep 10` plus log readiness, not the requested `mqadmin clusterList` route-polling contract. Step 4 also remains open because no retained evidence proves three consecutive successful runs.
+- Task 5 Step 4 remains open because its required before/after RED-to-GREEN record was not retained. Task 7 Step 2 remains open because its required pre-edit actionlint evidence was not retained; the final workflow is independently actionlint-clean.
+- Task 6 is cancelled by user decision: preserve Model 4.1.0 + `<modules>`, not a completed or pending `<subprojects>` migration.
 
 ---
 
@@ -59,7 +67,7 @@
 
 ### Maven, CI, and documentation
 
-- Root and five domain aggregator POMs: Maven 4 subprojects target on feature/4.0.x only; currently retained as modules while Task 6 is paused.
+- Root and five domain aggregator POMs: retain Maven 4 Model 4.1.0 + `<modules>`; the `subprojects` conversion in Task 6 is cancelled by user decision.
 - `.github/actions/install-ddd4j/action.yml`: matching ddd4j checkout/install.
 - `.github/workflows/ci.yml`: unit and per-broker gates without reusable containers.
 - P4/P2 specs and plans, `docs/CAPABILITY-ALIGNMENT.md`, `README.md`, `CONTRIBUTING.md`: evidence-backed current status.
@@ -94,7 +102,7 @@ docker info --format '{{.ServerVersion}}'
 
 Expected: branch is `feature/4.0.x`; Java is 21; Maven is 4.0.0-rc-6; the existing MQTT directory remains untracked.
 
-- [ ] **Step 2: Expose the two disabled broker failures**
+- [x] **Step 2: Expose the two disabled broker failures**
 
 Remove only the class-level `@Disabled` annotations and imports from:
 
@@ -114,7 +122,7 @@ Run each command independently:
 
 Expected: at least one test fails for broker readiness or round-trip timeout. Save the exact failure and container logs; an unrelated dependency-resolution error must be fixed before accepting RED.
 
-- [ ] **Step 4: Upgrade managed Testcontainers coordinates**
+- [x] **Step 4: Upgrade managed Testcontainers coordinates**
 
 In `ddd4j-quarkus-dependencies/pom.xml`:
 
@@ -135,7 +143,7 @@ testcontainers-localstack
 
 The shared harness keeps these dependencies at compile scope because its `src/main` publishes their types. Broker modules consume `ddd4j-quarkus-mq-testcontainers` at test scope.
 
-- [ ] **Step 5: Verify dependency resolution**
+- [x] **Step 5: Verify dependency resolution**
 
 Run:
 
@@ -146,7 +154,7 @@ Run:
 
 Expected: every resolved Testcontainers artifact is 2.0.5 and the existing GenericContainer-based harness still compiles. Any package error must name an old Testcontainers 1.x import that Task 3 replaces.
 
-- [ ] **Step 6: Commit only if authorization exists**
+- [x] **Step 6: Commit only if authorization exists**
 
 ```bash
 git add ddd4j-quarkus-dependencies/pom.xml ddd4j-quarkus-mq/ddd4j-quarkus-mq-testcontainers/pom.xml ddd4j-quarkus-mq/*/pom.xml ddd4j-quarkus-mq/ddd4j-quarkus-mq-pulsar/src/test/java/io/ddd4j/quarkus/mq/pulsar/PulsarQuarkusIntegrationTest.java ddd4j-quarkus-mq/ddd4j-quarkus-mq-rocketmq/src/test/java/io/ddd4j/quarkus/mq/rocket/RocketMqQuarkusIntegrationTest.java
@@ -168,7 +176,7 @@ Expected: skip this step unless explicit commit authorization was granted.
 - Consumes: `container()`, `waitStrategy()`, `exposedProperties()`.
 - Produces: `start(): Map<String,String>` and `stop(): void` with owned-container cleanup and no forced reuse.
 
-- [ ] **Step 1: Write the failing lifecycle tests**
+- [x] **Step 1: Write the failing lifecycle tests**
 
 Create a package-private fake container that records lifecycle calls:
 
@@ -205,7 +213,7 @@ Implement `RecordingContainer` by overriding `start()`, `stop()`, and `withReuse
 
 Expected: the stop-count and reuse assertions fail against the current implementation.
 
-- [ ] **Step 3: Implement owned-container lifecycle**
+- [x] **Step 3: Implement owned-container lifecycle**
 
 Store the created container in the base class:
 
@@ -232,7 +240,7 @@ public void stop() {
 
 Use imported `java.util.Objects`; do not add a test-only production method.
 
-- [ ] **Step 4: Run the lifecycle and extension tests**
+- [x] **Step 4: Run the lifecycle and extension tests**
 
 ```bash
 ./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-testcontainers -Dtest=AbstractTestContainerFixtureTest test
@@ -240,7 +248,7 @@ Use imported `java.util.Objects`; do not add a test-only production method.
 
 Expected: all selected tests pass and no container is left running by the lifecycle test.
 
-- [ ] **Step 5: Commit only if authorization exists**
+- [x] **Step 5: Commit only if authorization exists**
 
 ```bash
 git add ddd4j-quarkus-mq/ddd4j-quarkus-mq-testcontainers/src/main/java/io/ddd4j/quarkus/mq/testcontainers/AbstractTestContainerFixture.java ddd4j-quarkus-mq/ddd4j-quarkus-mq-testcontainers/src/main/java/io/ddd4j/quarkus/mq/testcontainers/Ddd4jQuarkusTestContainersExtension.java ddd4j-quarkus-mq/ddd4j-quarkus-mq-testcontainers/src/test/java/io/ddd4j/quarkus/mq/testcontainers/AbstractTestContainerFixtureTest.java
@@ -269,7 +277,7 @@ git commit -m "testcontainers: make fixture lifecycle deterministic"
 - Consumes: official Testcontainers 2.0.5 APIs and shared lifecycle.
 - Produces: the existing `ddd4j.mq.*` property keys with endpoints returned by official container APIs.
 
-- [ ] **Step 1: Migrate Pulsar first to satisfy the existing RED test**
+- [x] **Step 1: Migrate Pulsar first to satisfy the existing RED test**
 
 Use:
 
@@ -292,7 +300,7 @@ protected Map<String, String> exposedProperties() {
 
 Remove the hand-written command and port composition.
 
-- [ ] **Step 2: Run Pulsar to verify GREEN**
+- [x] **Step 2: Run Pulsar to verify GREEN**
 
 ```bash
 ./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-pulsar -am test
@@ -300,7 +308,7 @@ Remove the hand-written command and port composition.
 
 Expected: `PulsarQuarkusIntegrationTest` runs rather than skips and its real round-trip passes.
 
-- [ ] **Step 3: Migrate the other official containers**
+- [x] **Step 3: Migrate the other official containers**
 
 Use these exact types and endpoint APIs:
 
@@ -340,7 +348,7 @@ Map.of("ddd4j.mq.sqs.endpoint", container.getEndpoint().toString(),
         "ddd4j.mq.broker", "SQS");
 ```
 
-- [ ] **Step 4: Run each official-container broker**
+- [x] **Step 4: Run each official-container broker**
 
 ```bash
 ./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-activemq -am test
@@ -352,7 +360,7 @@ Map.of("ddd4j.mq.sqs.endpoint", container.getEndpoint().toString(),
 
 Expected: public-image tests pass; an intentionally disabled commercial TDMQ method is reported as skipped and is not counted as passed. If LocalStack requires authentication, report that exact external prerequisite rather than silently disabling the test.
 
-- [ ] **Step 5: Commit only if authorization exists**
+- [x] **Step 5: Commit only if authorization exists**
 
 ```bash
 git add ddd4j-quarkus-mq/ddd4j-quarkus-mq-testcontainers/src/main/java/io/ddd4j/quarkus/mq/testcontainers/{ActiveMq,Kafka,RabbitMq,Pulsar,Sqs,Tdmq}QuarkusTestResource.java ddd4j-quarkus-mq/ddd4j-quarkus-mq-{activemq,kafka,rabbitmq,pulsar,sqs,tdmq}/pom.xml
@@ -416,7 +424,7 @@ private void awaitBrokerRoute(GenericContainer<?> container) {
 
 Import `io.ddd4j.kit.lang.StrKit`, `java.util.Objects`, and `java.util.concurrent.locks.LockSupport`; all waits remain bounded.
 
-- [ ] **Step 3: Run RocketMQ to verify GREEN**
+- [x] **Step 3: Run RocketMQ to verify GREEN**
 
 ```bash
 ./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-rocketmq -am test
@@ -432,7 +440,7 @@ for run in 1 2 3; do ./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-mq/ddd4j-q
 
 Expected: three consecutive passes.
 
-- [ ] **Step 5: Commit only if authorization exists**
+- [x] **Step 5: Commit only if authorization exists**
 
 ```bash
 git add ddd4j-quarkus-mq/ddd4j-quarkus-mq-testcontainers/src/main/java/io/ddd4j/quarkus/mq/testcontainers/RocketMqQuarkusTestResource.java ddd4j-quarkus-mq/ddd4j-quarkus-mq-testcontainers/src/main/resources/rocketmq/broker.conf ddd4j-quarkus-mq/ddd4j-quarkus-mq-rocketmq/src/test/java/io/ddd4j/quarkus/mq/rocket/RocketMqQuarkusIntegrationTest.java
@@ -460,7 +468,7 @@ git commit -m "test(rocketmq): wait for broker route before round trip"
 - Consumes: deterministic lifecycle from Task 2.
 - Produces: consistent real-event assertions and explicit public/commercial/platform result categories.
 
-- [ ] **Step 1: Run all GenericContainer-backed tests**
+- [x] **Step 1: Run all GenericContainer-backed tests**
 
 ```bash
 for broker in nats mqtt mqtt-mica redis-stream ons; do
@@ -470,11 +478,11 @@ done
 
 Expected: public protocols run; ONS commercial round-trip remains explicitly skipped; MQTT-Mica platform skip remains method-scoped rather than hiding injection/startup tests.
 
-- [ ] **Step 2: Add a failing assertion for truthful round-trip results**
+- [x] **Step 2: Add a failing assertion for truthful round-trip results**
 
 In each public-protocol test, assert a literal event ID/payload produced by the test and received through the real broker. The production mutation caught is an empty consumer result or a publisher that never reaches the listener.
 
-- [ ] **Step 3: Prevent MQTT persistence from writing into the repository**
+- [x] **Step 3: Prevent MQTT persistence from writing into the repository**
 
 In `MqttQuarkusTestResource`, save the previous `user.dir`, point it at a module target directory before Quarkus constructs Paho, and restore it during stop:
 
@@ -506,7 +514,7 @@ Add a test that runs the resource and asserts no new `ddd4j-mq-*-tcplocalhost*` 
 
 Run the relevant single module before and after the minimal adapter/configuration change. Expected RED is a payload mismatch or timeout; expected GREEN is the exact event payload.
 
-- [ ] **Step 5: Verify no class-level broker disable remains**
+- [x] **Step 5: Verify no class-level broker disable remains**
 
 ```bash
 rg -n '@Disabled' ddd4j-quarkus-mq/*/src/test/java
@@ -514,7 +522,7 @@ rg -n '@Disabled' ddd4j-quarkus-mq/*/src/test/java
 
 Expected: only method-scoped, documented commercial-service or platform limitation skips remain.
 
-- [ ] **Step 6: Commit only if authorization exists**
+- [x] **Step 6: Commit only if authorization exists**
 
 ```bash
 git add ddd4j-quarkus-mq/ddd4j-quarkus-mq-testcontainers/src/main/java/io/ddd4j/quarkus/mq/testcontainers ddd4j-quarkus-mq/ddd4j-quarkus-mq-{nats,mqtt,mqtt-mica,redis-stream,ons}/src/test
@@ -523,7 +531,7 @@ git commit -m "test(mq): enforce truthful generic broker round trips"
 
 ---
 
-### Task 6: Convert feature/4.0.x aggregators to Maven 4 subprojects — PAUSED
+### Task 6: Convert feature/4.0.x aggregators to Maven 4 subprojects — 取消
 
 **Files:**
 - Modify: `pom.xml`
@@ -537,7 +545,9 @@ git commit -m "test(mq): enforce truthful generic broker round trips"
 - Consumes: Maven model 4.1.0 and Maven 4 wrapper.
 - Produces: a Maven 4 reactor containing the same projects in the same order.
 
-- [ ] **Step 1: Capture the structural RED check**
+**状态：取消。** 用户确认保持 Model 4.1.0 + `<modules>`；Quarkus 3.38.2 WorkspaceLoader 不支持 `<subprojects>` 的已记录上游限制不是待解决的本任务。后续仅在该约束解除并获得新的用户决策后重新立项。
+
+- **取消：Step 1: Capture the structural RED check**
 
 ```bash
 rg -n '<modules>|<module>' pom.xml ddd4j-quarkus-{auth,data,extensions,mq,samples}/pom.xml
@@ -545,7 +555,7 @@ rg -n '<modules>|<module>' pom.xml ddd4j-quarkus-{auth,data,extensions,mq,sample
 
 Expected: the command reports all six aggregators.
 
-- [ ] **Step 2: Replace aggregation syntax**
+- **取消：Step 2: Replace aggregation syntax**
 
 For each of the six POMs:
 
@@ -557,7 +567,7 @@ For each of the six POMs:
 
 Preserve child order and comments exactly; change only `modules/module` to `subprojects/subproject`.
 
-- [ ] **Step 3: Verify structural GREEN**
+- **取消：Step 3: Verify structural GREEN**
 
 ```bash
 rg -n '<modules>|<module>' pom.xml ddd4j-quarkus-{auth,data,extensions,mq,samples}/pom.xml
@@ -566,7 +576,7 @@ rg -n '<subprojects>|<subproject>' pom.xml ddd4j-quarkus-{auth,data,extensions,m
 
 Expected: the first command returns no matches; the second lists six aggregators and every child.
 
-- [ ] **Step 4: Verify the Maven 4 reactor**
+- **取消：Step 4: Verify the Maven 4 reactor**
 
 ```bash
 ./mvnw -B -N validate -Denforcer.skip=true
@@ -576,7 +586,7 @@ Expected: the first command returns no matches; the second lists six aggregators
 
 Expected: reactor discovery and install succeed. Record all Maven model warnings rather than suppressing them.
 
-- [ ] **Step 5: Verify Quarkus tests through root and leaf gates**
+- **取消：Step 5: Verify Quarkus tests through root and leaf gates**
 
 ```bash
 ./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-cache test
@@ -585,7 +595,7 @@ Expected: reactor discovery and install succeed. Record all Maven model warnings
 
 Expected: both execute the actual `@QuarkusTest`. The probe established that WorkspaceLoader rejects model 4.1.0/subprojects, so the executable branch was restored to modules. Keep this task open until quarkusio/quarkus#52190 is fixed and a working non-skip invocation exists.
 
-- [ ] **Step 6: Commit only if authorization exists**
+- **取消：Step 6: Commit only if authorization exists**
 
 ```bash
 git add pom.xml ddd4j-quarkus-{auth,data,extensions,mq,samples}/pom.xml
@@ -605,7 +615,7 @@ git commit -m "build: use Maven 4 subprojects on the 4.0 line"
 - Consumes: matching branch matrix and broker Maven commands.
 - Produces: fail-fast settings bootstrap, unit gate, and blocking broker matrix.
 
-- [ ] **Step 1: Write the expected workflow behavior**
+- [x] **Step 1: Write the expected workflow behavior**
 
 The workflow must:
 
@@ -624,11 +634,11 @@ actionlint .github/workflows/ci.yml
 
 Expected: current YAML syntax passes; the semantic reuse check from Step 1 fails because the workflow still enables reusable containers. If `command -v actionlint` fails, report the missing local validator and do not install it without authorization.
 
-- [ ] **Step 3: Remove reusable-container CI configuration**
+- [x] **Step 3: Remove reusable-container CI configuration**
 
 Delete the root `integration` profile and the workflow's `Enable Testcontainers reuse` step. Remove `-Pintegration` from broker commands because the tests already use Surefire naming and the profile never activates tests. Keep Docker discovery and report upload. Ensure RocketMQ and Pulsar remain blocking matrix entries.
 
-- [ ] **Step 4: Verify workflow and secret hygiene**
+- [x] **Step 4: Verify workflow and secret hygiene**
 
 ```bash
 actionlint .github/workflows/ci.yml
@@ -637,7 +647,7 @@ rg -n 'MAVEN_SETTINGS_XML|continue-on-error|testcontainers.reuse|rocketmq|pulsar
 
 Expected: settings secret and both brokers are present; `continue-on-error` and reuse configuration are absent; no secret value is printed.
 
-- [ ] **Step 5: Commit only if authorization exists**
+- [x] **Step 5: Commit only if authorization exists**
 
 ```bash
 git add pom.xml .github/actions/install-ddd4j/action.yml .github/workflows/ci.yml
@@ -661,7 +671,7 @@ git commit -m "ci: gate disposable broker integration tests"
 - Consumes: fresh Surefire/Failsafe results.
 - Produces: current, separated passed/failed/skipped evidence.
 
-- [ ] **Step 1: Run the complete 4.0.x verification**
+- [x] **Step 1: Run the complete 4.0.x verification**
 
 ```bash
 ./mvnw -B clean verify -Denforcer.skip=true
@@ -671,7 +681,7 @@ git diff --check
 
 Expected: record exit codes and exact passed/failed/skipped counts. Enforcer remains a separately reported unresolved gate when skipped.
 
-- [ ] **Step 2: Audit test reports**
+- [x] **Step 2: Audit test reports**
 
 ```bash
 rg -n 'Tests run:|Failures:|Errors:|Skipped:' --glob '*.txt' --glob '*.xml' . | rg 'target/(surefire|failsafe)-reports'
@@ -679,11 +689,11 @@ rg -n 'Tests run:|Failures:|Errors:|Skipped:' --glob '*.txt' --glob '*.xml' . | 
 
 Expected: RocketMQ and Pulsar have executed results; no documentation derives counts from Maven BUILD SUCCESS alone.
 
-- [ ] **Step 3: Update documentation with literal observed counts**
+- [x] **Step 3: Update documentation with literal observed counts**
 
 Replace obsolete claims such as `318 tests, 0 failures` and `all broker fixtures passed` with the results from Step 2. Keep ONS/TDMQ commercial validation and MQTT-Mica platform constraints separate.
 
-- [ ] **Step 4: Verify version and Maven syntax**
+- [x] **Step 4: Verify version and Maven syntax**
 
 ```bash
 rg -n '<revision>|<ddd4j.version>|<quarkus-bom.version>|<testcontainers-bom.version>' pom.xml ddd4j-quarkus-dependencies/pom.xml
@@ -693,7 +703,7 @@ git diff --check
 
 Expected for the current executable checkpoint: 4.0.x/3.0.x/3.38.2/2.0.5 with the documented temporary module aggregation; the subprojects acceptance item remains open.
 
-- [ ] **Step 5: Commit only if authorization exists**
+- [x] **Step 5: Commit only if authorization exists**
 
 ```bash
 git add docs README.md CONTRIBUTING.md

@@ -165,5 +165,9 @@ Stage 6 — 全量验证 + 提交
 ## 后续待办（非本次范围）
 
 - [ ] 新增 `ddd4j-quarkus-auth-testcontainers` 模块 + 4 个 auth 子模块集成测试
+  - 当前缺口：两条维护分支均不存在该模块；需提供可启动 fixture，并覆盖至少四个 auth 子模块的真实认证/授权行为。
 - [ ] 完整化 sample-auth-* / sample-mq-*
-- [ ] 删除 ddd4j-quarkus-extension-pf4j（空壳）
+  - 当前缺口：`sample-auth-satoken`、`sample-auth-security`、`sample-auth-shiro` 都只有 `AuthResource` 主源码、没有 `src/test`；需分别启动对应后端并验证 login/logout/me/role/permission 流程。
+  - 当前缺口：`sample-mq-disruptor`、`sample-mq-kafka`、`sample-mq-rabbitmq` 只有 `OrderResource` 可注入的启动测试；Kafka/RabbitMQ 未启动 broker，三个 sample 都没有创建订单到监听器可观测副作用的端到端断言。
+- [x] 删除 ddd4j-quarkus-extension-pf4j（空壳）
+  - 证据：`3f63a93` 删除模块、聚合条目与 BOM 条目；两条维护分支的树均已不存在该模块。

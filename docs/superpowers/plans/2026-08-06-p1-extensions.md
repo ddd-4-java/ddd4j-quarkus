@@ -178,5 +178,7 @@ Stage 10 — 全量验证 + 提交
 
 ## 后续待办（非本次范围）
 
-- [ ] 删除 `ddd4j-quarkus-extension-pf4j`（空壳）
-- [ ] 补充 ddd4j-quarkus-data-jpa 与 ddd4j-quarkus-data-external 的 main src
+- [x] 删除 `ddd4j-quarkus-extension-pf4j`（空壳）
+  - 证据：`3f63a93` 删除模块、聚合条目与 BOM 条目；`feature/3.3.x` 与 `feature/4.0.x` 均不含该模块。
+- [x] 补充 ddd4j-quarkus-data-jpa 与 ddd4j-quarkus-data-external 的 main src
+  - 证据：`ac4ae46` 引入 data 模块；两分支均含 `JpaRepositoryRegistrar.java` 和 `IpRegionQuarkusAdapter.java` 的 `src/main` 生产源码。
