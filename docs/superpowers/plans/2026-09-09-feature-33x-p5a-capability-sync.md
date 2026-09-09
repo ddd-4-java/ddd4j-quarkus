@@ -23,7 +23,7 @@ Run `34331450813` 的 Java 17/21 已失败；历史本地验证保持原提交�
 - [x] 先运行 IP 115/171、显式 0/31、-1/32 与 CDI 配置测试并保存 RED。
 - [x] 最小修复 SnowflakeIdStrategy 与 IdGeneratorProducer。
 - [x] Java 17/21 定向测试和完整 data-panache reactor 复验并自审。
-- [ ] 更新本地证据并提交；hosted Actions 重跑不属于本次子任务。
+- [x] 更新本地证据并提交；修复提交 `a5add95`，hosted Actions 重跑不属于本次子任务。
 
 ## Global Constraints
 

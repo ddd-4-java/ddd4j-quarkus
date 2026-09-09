@@ -4,7 +4,15 @@
 
 当前状态：**feature/3.3.x P5-A 本地完成**。已验证代码提交为 `597a5b7`，已包含坐标清理、Web/License 审查修正和 CI/BOM 注释修正，并通过双 JDK 完整门禁。以下首轮失败及 185 tests 记录均为历史证据，当前验收统计以本节的 186 tests 为准。
 
-## 已验证代码提交 597a5b7 的验收
+## Actions Snowflake 后续修复（2026-09-09）
+
+GitHub Actions run `34331450813` 的 Java 17/21 实际失败：IP 派生 workerId 超出 `0..31`。下面 `597a5b7` 的 186 tests 是该提交的历史本地全量证据，不能视为 hosted 成功或后续修复的完整 reactor 结果。
+
+修复增加 `ddd4j.quarkus.data.snowflake.worker-id` 可选配置：显式 `0..31` 原值使用，非法显式值立即拒绝；缺省 IP 通过 `Math.floorMod(value, 32)` 归一化。多节点应分配互不重复的显式节点编号，缺省归一化不保证跨机器唯一。
+
+修复提交 `a5add95` 已完成本地 Java 17/21 data-panache `clean verify`，两个 JDK 均为相关 reactor 3/3 SUCCESS、6 suites / 17 tests / 0 failures / 0 errors / 0 skipped。新增六项行为先取得 6 failures / 0 errors 的 RED，修复后全部 GREEN。测试布局收敛为一个 CDI 配置 profile 加普通边界测试，避免多 profile 累积导致 Metaspace 耗尽。完整本地报告保存在 Git 忽略的 `.superpowers/sdd/2026-09-09-feature-33x-p5a-capability-sync/snowflake-fix-report.md`；原始模块日志为 `/private/tmp/ddd4j-33x-snowflake-module-final-j17.log` 和 `/private/tmp/ddd4j-33x-snowflake-module-final-j21.log`。本轮未重跑 62 模块全量或 hosted Actions，未 push/deploy。
+
+## 已验证代码提交 597a5b7 的验收（历史）
 
 两个 JDK 分别执行 `./mvnw -B clean verify -Denforcer.skip=true`，均返回 0，所有 62 个 reactor 模块成功。最终独立报告统计如下：
 
