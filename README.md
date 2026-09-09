@@ -50,9 +50,18 @@ License 3 tests 均零失败/错误/跳过；`clean verify` 的 62/62 模块成�
 没有 Failsafe suite。跳过项分别为 MQTT-Mica 的 macOS arm64 限制、ONS 商业协议缺少镜像、
 Security 模块废弃，具体类与原因见 [P5-A 完成证据](docs/superpowers/specs/2026-09-08-quarkus-production-extension-convergence-design.md#9-p5-a-本地完成证据2026-09-09)。
 
-当前状态：P5-A 本地完成，P5-B–E 待实施。本轮未执行 push/deploy，也没有本轮 GitHub Actions
+上述为历史 P5-A 本地证据；P5-B–E 待实施。本轮未执行 push/deploy，也没有本轮 GitHub Actions
 运行证据；上游模型、settings 解析和测试配置警告仍存在。该结果不等于生产扩展、Native、
 Dev Mode、3.3.x 或云服务已验收。
+
+## P5-B0 Testcontainers 本地验证（2026-09-10）
+
+`702a1db` 的 Java 21 / Maven 4 完整 `clean verify -Denforcer.skip=true` 通过：
+62/62 模块、51 suites / 170 tests / 0 failures / 0 errors / 3 skips。
+源码 reactor 与测试 classpath 的 Testcontainers 全为 `2.0.5`；Easy4J Jackson/ZXing
+均从 ddd4j 3.0.x BOM 取得版本。双分支 13 broker 比较、skip 原因和原始证据见
+[P5-B0 本地验证](docs/P5-B0-LOCAL-VERIFICATION.md)。本地门禁已完成，目标 HEAD 的 CI、
+发布和发布后空缓存消费仍待执行；不能将本地通过视为 P5-B0 整体完成。
 
 ## 构建约定：为何用 `<modules>` 而非 Maven 4 的 `<subprojects>`
 

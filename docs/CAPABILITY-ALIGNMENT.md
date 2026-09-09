@@ -2,14 +2,20 @@
 
 > 对齐基线：`ddd4j-boot` 3.4.x.20260630（Spring Boot 3.4.13 / Java 17 / ddd4j 2.0.x）
 > 对照轨：`ddd4j-quarkus` feature/3.3.x（Quarkus 3.37.4，ddd4j 2.0.x）与 feature/4.0.x（Quarkus 3.38.2，ddd4j 3.0.x）
-> 更新日期：2026-09-09；本次验证范围仅 `feature/4.0.x` P5-A。
+> 更新日期：2026-09-10；新增 P5-B0 双分支本地验证，以下 P5-A 数据保留为历史记录。
 
 状态按证据划分：`已验证` 限定到明确的行为与运行模式；`部分完成` 表示已有适配但仍有
 契约缺口；`占位` 表示只有描述/POM/fallback；`未验证` 表示缺少对应运行证据；
 `上游阻塞` 表示受外部实现限制。模块映射、CDI 注入和构建通过均不等于生产能力全量对齐。
 后续范围以 [P5 设计](superpowers/specs/2026-09-08-quarkus-production-extension-convergence-design.md) 为准。
 
-P5-A 本地完成，P5-B–E 待实施。2026-09-09 新空仓远端解析成功，`clean verify`
+最新 P5-B0 本地验证：4.0.x `702a1db` 的 Java 21 完整 reactor 为 62/62 SUCCESS、
+51 suites / 170 tests / 0 failures / 0 errors / 3 skips；3.3.x `c37c843` 的 Java 17/21
+各为 57 suites / 211 tests / 0 failures / 0 errors / 3 skips。两线 Testcontainers 全部
+2.0.5，13 broker 的行为与差异、skip 恢复条件和结构证据见 [P5-B0 本地验证](P5-B0-LOCAL-VERIFICATION.md)。
+该本地结果尚未包含目标 HEAD 的 hosted CI、Maven 发布和发布后空缓存消费。
+
+历史 P5-A 本地完成，P5-B–E 待实施。2026-09-09 新空仓远端解析成功，`clean verify`
 62/62 模块成功；最终 XML 为 47 Surefire suites、141 tests、0 failures、0 errors、
 3 skipped，0 Failsafe suites。跳过类、原因和已知警告见
 [P5-A 完成证据](superpowers/specs/2026-09-08-quarkus-production-extension-convergence-design.md#9-p5-a-本地完成证据2026-09-09)。

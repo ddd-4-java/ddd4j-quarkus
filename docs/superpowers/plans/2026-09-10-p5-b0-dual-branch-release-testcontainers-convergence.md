@@ -207,29 +207,35 @@ assert_versionless_easy4j_leaf ddd4j-quarkus-extensions/ddd4j-quarkus-extension-
   | rg -F 'io.github.easy4j:zxing-extension:jar:3.0.x.20260630-SNAPSHOT:compile'
 ```
 
-- [ ] **Step 1: Verify feature/3.3.x**
+- [x] **Step 1: Verify feature/3.3.x**
 
 Run Java 17 and Java 21 `clean verify -Denforcer.skip=true`, actionlint, effective Testcontainers tree, Model 4.0/modules scan and zero-retired-group scan.
 
-- [ ] **Step 2: Verify feature/4.0.x**
+- [x] **Step 2: Verify feature/4.0.x**
 
 Run Java 21 `clean verify -Denforcer.skip=true`, actionlint, effective Testcontainers tree, Model 4.1/modules scan and zero-retired-group scan.
 
-- [ ] **Step 3: Aggregate XML evidence**
+- [x] **Step 3: Aggregate XML evidence**
 
 For each run, total suites/tests/failures/errors/skipped and list every skipped method/reason. Do not reuse earlier totals after tests change.
 
-- [ ] **Step 4: Compare broker matrix**
+- [x] **Step 4: Compare broker matrix**
 
 Produce a 13-row comparison showing fixture type, image, readiness, round-trip and skip category on both branches. Differences require an explicit version/API justification.
 
-- [ ] **Step 5: Commit evidence docs**
+- [x] **Step 5: Commit evidence docs**
 
 ```bash
 git add README.md CONTRIBUTING.md docs
 git diff --cached --check
 git commit -m "docs: record dual-branch Testcontainers 2 verification"
 ```
+
+Task 4 本地验证证据（2026-09-10）：3.3.x `c37c843` 的 Java 17/21 各为 62/62 模块、
+57 suites / 211 tests / 0 failures / 0 errors / 3 skips；4.0.x `702a1db` 的 Java 21 为
+62/62 模块、51 suites / 170 tests / 0 failures / 0 errors / 3 skips。结构、Testcontainers 2.0.5
+和 Easy4J 门禁通过。完整矩阵及限制见 [本地运行记录](../../P5-B0-LOCAL-VERIFICATION.md)。
+Task 5–8 与 P5-B0 发布闭环仍未完成；本地门禁不替代 hosted CI 或发布消费。
 
 ---
 
