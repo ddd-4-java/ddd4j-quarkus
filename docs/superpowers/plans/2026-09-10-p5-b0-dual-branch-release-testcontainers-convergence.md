@@ -31,6 +31,7 @@
 **Files:**
 - Modify: `docs/superpowers/plans/2026-08-06-p1-extensions.md`
 - Modify: `docs/superpowers/plans/2026-08-08-p3-auth-samples-ci.md`
+- Modify: `docs/superpowers/plans/2026-09-10-p3-auth-samples-completion.md`
 - Modify: `docs/superpowers/plans/2026-09-07-p4-dual-branch-testcontainers-maven4-convergence.md`
 
 **Interfaces:**
@@ -43,7 +44,7 @@ Verify on both branches that `ddd4j-quarkus-extension-pf4j` is absent and both d
 
 - [ ] **Step 2: Prove P3 deferred items**
 
-Verify pf4j deletion as complete. Keep `ddd4j-quarkus-auth-testcontainers` open because the module is absent. Inspect sample-auth/sample-mq source and tests; mark complete only when each existing sample has runnable behavior evidence, otherwise keep it open with an exact missing list.
+Verify pf4j deletion as complete. Record the proposed `ddd4j-quarkus-auth-testcontainers` module as cancelled/replaced by direct Quarkus runtime integration: it is absent from ddd4j-boot and both Quarkus branches, and the four auth backends have no common container dependency. Do not mark that cancelled proposal complete or keep it as an open P5-B0 deliverable. Route auth behavior to `docs/superpowers/plans/2026-09-10-p3-auth-samples-completion.md`; inspect sample-auth/sample-mq source and tests, marking them complete only when each retained sample has runnable behavior evidence, otherwise keep them open with the exact missing list.
 
 - [ ] **Step 3: Reconcile P4 steps**
 
@@ -322,7 +323,7 @@ Mark Testcontainers, matrix, Actions, deploy and consumer items complete only wh
 
 - [ ] **Step 2: Preserve genuine P3 open items**
 
-Keep auth-testcontainers and any concretely incomplete samples open with exact acceptance criteria. Create the next separate plan for these items rather than hiding them inside P5-B0.
+Keep only the concretely incomplete sample-auth/sample-mq behavior open with exact acceptance criteria, routed to `docs/superpowers/plans/2026-09-10-p3-auth-samples-completion.md` Tasks 2–4. The proposed auth-testcontainers module is cancelled/replaced by direct Quarkus runtime integration and must not be reopened or counted as a P5-B0 deliverable.
 
 - [ ] **Step 3: Commit final status**
 

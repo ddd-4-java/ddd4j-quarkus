@@ -10,6 +10,12 @@
 
 **Spec:** `docs/superpowers/specs/2026-08-08-p3-auth-samples-ci-design.md`
 
+**Task status:** Task 1 completed on 2026-09-10. The proposed shared
+`ddd4j-quarkus-auth-testcontainers` module is cancelled as an obsolete
+abstraction, not completed. Auth behavior is routed to direct Quarkus runtime
+integration in the auth samples/modules; the sample-auth and sample-mq
+backlogs remain open for Tasks 2–4.
+
 ## Global Constraints
 
 - 两分支保持各自 ddd4j、Quarkus、Java、Maven Model 和 `<modules>` 合约。
@@ -29,11 +35,20 @@
 - Modify: `docs/superpowers/specs/2026-08-08-p3-auth-samples-ci-design.md`
 - Modify: `docs/superpowers/plans/2026-08-08-p3-auth-samples-ci.md`
 - Modify: `docs/superpowers/plans/2026-09-10-p5-b0-dual-branch-release-testcontainers-convergence.md`
+- Modify: this plan's Task 1 status ledger
 
-- [ ] Verify ddd4j-boot and both Quarkus branches have no common auth container dependency.
-- [ ] Mark auth-testcontainers as cancelled/replaced by direct runtime integration, not complete.
-- [ ] Keep sample completion open until Tasks 2–4 pass.
-- [ ] Commit: `docs: replace obsolete auth-testcontainers backlog`.
+- [x] Verify ddd4j-boot and both Quarkus branches have no common auth container dependency.
+- [x] Mark auth-testcontainers as cancelled/replaced by direct runtime integration, not complete.
+- [x] Keep sample completion open until Tasks 2–4 pass.
+- [x] Commit: `docs: replace obsolete auth-testcontainers backlog`.
+
+Task 1 evidence: neither `ddd4j-boot` nor the Quarkus `feature/3.3.x` and
+`feature/4.0.x` trees contain an auth-testcontainers module. The Quarkus
+Sa-Token, Shiro, Security, and License modules share no container dependency;
+License/JWT retain direct runtime fixtures. The remaining sample gaps are
+unchanged: Sa-Token/Shiro need HTTP lifecycle assertions (the deprecated
+Security sample is to be removed), and Disruptor/Kafka/RabbitMQ need
+observable order-publication-to-listener-consumption assertions.
 
 ### Task 2: Complete feature/4.0.x auth samples
 

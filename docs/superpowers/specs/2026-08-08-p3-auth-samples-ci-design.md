@@ -2,7 +2,7 @@
 
 - 日期: 2026-08-08
 - 作者: ddd-4-java
-- 状态: 设计已确认 / 实施已对齐
+- 状态: 设计已确认 / 原始基线已对齐；历史 deferred backlog 已校正
 - 范围: ddd4j-quarkus-{auth,samples} + .github/workflows/ci.yml + CONTRIBUTING.md
 - 涉及模块: 5 个 auth 子模块 + 14 个 sample 子模块 + CI 工作流
 
@@ -10,7 +10,9 @@
 
 ### 1.1 Auth 模块多数仅 Producer，无测试
 
-5 个 auth 子模块（jwt/satoken/shiro/security/license）中仅 jwt 有完整测试覆盖，其余 4 个仅含 Producer/ConfigMapping。
+5 个 auth 子模块（jwt/satoken/shiro/security/license）中 JWT 和 License
+已有直接 runtime fixture；Sa-Token、Shiro、Security 仍主要是
+Producer/ConfigMapping，待由各自真实 runtime 集成补齐行为覆盖。
 
 ### 1.2 Samples 骨架未完整化
 
@@ -39,10 +41,14 @@ ddd4j-quarkus/ddd4j-quarkus-auth/
 ├── ddd4j-quarkus-auth-satoken/          # 🟡 Producer only（Ddd4jSaTokenQuarkusConfig）
 ├── ddd4j-quarkus-auth-shiro/            # 🟡 Producer only（Ddd4jShiroQuarkusConfig）
 ├── ddd4j-quarkus-auth-security/         # 🟡 Producer only（Ddd4jSecurityQuarkusConfig，producer logic inlined）
-└── ddd4j-quarkus-auth-license/          # 🟡 Producer only（Ddd4jLicenseQuarkusConfig） + 显式声明 truelicense-core
+└── ddd4j-quarkus-auth-license/          # 🟡 Producer（Ddd4jLicenseQuarkusConfig）+ 直接 runtime fixture + 显式声明 truelicense-core
 ```
 
-**注**：`ddd4j-quarkus-auth-testcontainers`（旧 plan 计划新增的共享 fixture 模块）未落地。4 个 auth 子模块（satoken/shiro/security/license）当前没有 testcontainers 集成测试。
+**注**：旧 plan 提议的 `ddd4j-quarkus-auth-testcontainers` 共享 fixture
+已取消，不计为完成项：`ddd4j-boot` 与两条 Quarkus 维护分支都没有该模块，
+且 Sa-Token、Shiro、Security、License 没有共同的容器依赖。License/JWT
+保留各自的直接 runtime fixture；其余 auth 行为由各模块/样例的真实
+Quarkus runtime 集成验证，不再为了容器数量新增空壳模块。
 
 ### 3.2 Samples 分层
 
@@ -134,7 +140,7 @@ ddd4j-quarkus/
 | 模块 | 测试类型 | 测试目标 |
 |---|---|---|
 | auth-jwt | `@QuarkusTest` + `@InjectMock` | 启动 + Provider 注入 + JWT 解析 |
-| auth-{satoken,shiro,security,license} | （缺失） | 建议后续补充 testcontainers 集成测试 |
+| auth-{satoken,shiro,security,license} | 直接 runtime fixture（按后端选择文件/内存等真实依赖） | License/JWT 已有直接 runtime fixture；其余行为在样例完成计划中补齐，不新增共同 auth 容器 |
 | sample-layered | `@QuarkusTest` | 分层架构端到端验证 |
 | sample-app | JUnit `@Test` | Application Service 单元测试 |
 | sample-domain | JUnit `@Test` | 实体行为测试 |
@@ -143,7 +149,7 @@ ddd4j-quarkus/
 
 | 风险 | 缓解 |
 |---|---|
-| 4 个 auth 子模块（satoken/shiro/security/license）无 testcontainers 集成测试 | 后续 plan 补充 `ddd4j-quarkus-auth-testcontainers` 共享 fixture |
+| 4 个 auth 子模块没有共同 testcontainers 集成测试 | 取消 `ddd4j-quarkus-auth-testcontainers`；按后端在各模块/样例使用直接 Quarkus runtime 验证 |
 | samples/mq-{disruptor,kafka,rabbitmq} 无测试 | 后续 plan 补充端到端集成测试 |
 | ddd4j-extension-pf4j 空壳未删除 | 登记为 P4 待办 |
 | GitHub Actions secrets 不能用于 `if:` 条件 | 通过 env 传递 |
@@ -161,3 +167,4 @@ ddd4j-quarkus/
 
 - 总览 spec: [`./2026-08-05-quarkus-alignment-overview-design.md`](./2026-08-05-quarkus-alignment-overview-design.md)
 - 实施计划: [`../plans/2026-08-08-p3-auth-samples-ci.md`](../plans/2026-08-08-p3-auth-samples-ci.md)
+- auth/sample backlog 完成计划: [`../plans/2026-09-10-p3-auth-samples-completion.md`](../plans/2026-09-10-p3-auth-samples-completion.md)
