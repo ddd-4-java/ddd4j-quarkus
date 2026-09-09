@@ -30,7 +30,8 @@ public class RedisStreamQuarkusTestResource extends AbstractTestContainerFixture
 
     @Override
     protected org.testcontainers.containers.wait.strategy.WaitStrategy waitStrategy() {
-        return Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(1));
+        return Wait.forSuccessfulCommand("redis-cli ping | grep -q PONG")
+                .withStartupTimeout(Duration.ofMinutes(1));
     }
 
     @Override

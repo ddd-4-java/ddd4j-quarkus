@@ -4,8 +4,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.DockerImageName;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * ddd4j-quarkus 共享 testcontainers fixture 基类（testcontainers-only 形态）。
@@ -17,10 +17,12 @@ import java.util.Map;
  * <p>Quarkus 集成（{@code QuarkusTestResourceLifecycleManager}）放在 {@link QuarkusTestResourceLifecycleManagerWrapper}
  * 中（test scope），让本 fixture 可以在 main scope 使用，便于其他模块依赖本工具类。
  *
- * <p>所有容器默认启用 {@code withReuse(true)}，CI 上多模块复用 Docker 实例，避免
- * testcontainers 拉镜像耗时瓶颈。
+ * <p>夹具拥有自己启动的容器，负责幂等启动、停止与部分启动失败后的回收；不强制启用复用。
  */
 public abstract class AbstractTestContainerFixture {
+
+    private GenericContainer<?> runningContainer;
+    private Map<String, String> runningProperties;
 
     /**
      * 子类必须返回具体的容器实例。
@@ -41,7 +43,7 @@ public abstract class AbstractTestContainerFixture {
     }
 
     /**
-     * 容器镜像名（用于 {@code withReuse} 标识）。
+     * 容器镜像名。
      */
     protected abstract DockerImageName dockerImageName();
 
@@ -49,24 +51,45 @@ public abstract class AbstractTestContainerFixture {
      * 启动容器并返回注入到 application.properties 的配置项。
      * 等价于 Quarkus 的 {@code QuarkusTestResourceLifecycleManager#start}，但保持在 main scope。
      */
-    public Map<String, String> start() {
-        GenericContainer<?> container = container();
-        container.withReuse(true);
-        if (waitStrategy() != null) {
-            container.waitingFor(waitStrategy());
+    public synchronized Map<String, String> start() {
+        if (Objects.nonNull(runningProperties)) {
+            return runningProperties;
         }
-        container.start();
-        Map<String, String> props = new HashMap<>(exposedProperties());
-        props.put("ddd4j.testcontainers.reuse", "true");
-        return props;
+        // 上一次清理失败时保留所有权，必须先回收旧资源才能创建下一只容器。
+        if (Objects.nonNull(runningContainer)) {
+            stop();
+        }
+        runningContainer = Objects.requireNonNull(container(), "fixture container");
+        try {
+            WaitStrategy strategy = waitStrategy();
+            if (Objects.nonNull(strategy)) {
+                runningContainer.waitingFor(strategy);
+            }
+            runningContainer.start();
+            runningProperties = Map.copyOf(exposedProperties());
+            return runningProperties;
+        } catch (RuntimeException | Error failure) {
+            // start 或配置提取失败均可能留下 Docker 资源，保留原始失败并附带清理失败。
+            try {
+                stop();
+            } catch (RuntimeException | Error cleanupFailure) {
+                if (cleanupFailure != failure) {
+                    failure.addSuppressed(cleanupFailure);
+                }
+            }
+            throw failure;
+        }
     }
 
     /**
      * 停止容器。
      */
-    public void stop() {
-        // withReuse(true) 时 testcontainers 不会真正停止容器，留作 CI 全局清理
-        // 子类如需强制 stop，可 override
+    public synchronized void stop() {
+        runningProperties = null;
+        if (Objects.nonNull(runningContainer)) {
+            runningContainer.stop();
+            runningContainer = null;
+        }
     }
 
     /**
@@ -74,7 +97,7 @@ public abstract class AbstractTestContainerFixture {
      */
     protected String firstMappedPort(GenericContainer<?> container, int internalPort) {
         Integer mapped = container.getMappedPort(internalPort);
-        return mapped == null ? null : String.valueOf(mapped);
+        return Objects.isNull(mapped) ? null : String.valueOf(mapped);
     }
 
     /**

@@ -1,11 +1,9 @@
 package io.ddd4j.quarkus.mq.testcontainers;
 
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.RabbitMQContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.rabbitmq.RabbitMQContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import java.time.Duration;
 import java.util.Map;
 
 /**
@@ -29,13 +27,6 @@ public class RabbitMqQuarkusTestResource extends AbstractTestContainerFixture {
     }
 
     @Override
-    protected org.testcontainers.containers.wait.strategy.WaitStrategy waitStrategy() {
-        // RabbitMQContainer 暴露 5672/5671/15672/15671（含 TLS 端口），
-        // rabbitmq 默认不监听 TLS（5671/15671），只能等待 AMQP 5672 + Management 15672
-        return Wait.forListeningPorts(5672, 15672).withStartupTimeout(Duration.ofMinutes(2));
-    }
-
-    @Override
     protected DockerImageName dockerImageName() {
         return IMAGE;
     }
@@ -44,9 +35,9 @@ public class RabbitMqQuarkusTestResource extends AbstractTestContainerFixture {
     protected Map<String, String> exposedProperties() {
         return Map.of(
                 "ddd4j.mq.rabbitmq.host", container.getHost(),
-                "ddd4j.mq.rabbitmq.port", firstMappedPort(container, 5672),
-                "ddd4j.mq.rabbitmq.username", "guest",
-                "ddd4j.mq.rabbitmq.password", "guest",
+                "ddd4j.mq.rabbitmq.port", String.valueOf(container.getAmqpPort()),
+                "ddd4j.mq.rabbitmq.username", container.getAdminUsername(),
+                "ddd4j.mq.rabbitmq.password", container.getAdminPassword(),
                 "ddd4j.mq.rabbitmq.virtual-host", "/",
                 "ddd4j.mq.broker", "RABBIT"
         );

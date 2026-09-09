@@ -27,7 +27,7 @@ public class TdmqQuarkusTestResource extends AbstractTestContainerFixture {
     @Override
     protected GenericContainer<?> container() {
         container = new GenericContainer<>(IMAGE)
-                .withExposedPorts(BROKER_PORT)
+                .withExposedPorts(BROKER_PORT, 8080)
                 // 镜像 Cmd 为 /bin/bash（无入口命令，容器会立即退出），
                 // 需显式指定 standalone 模式启动（WorkingDir 为 /pulsar）
                 .withCommand("bin/pulsar", "standalone");
@@ -36,7 +36,8 @@ public class TdmqQuarkusTestResource extends AbstractTestContainerFixture {
 
     @Override
     protected org.testcontainers.containers.wait.strategy.WaitStrategy waitStrategy() {
-        return Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2));
+        return Wait.forHttp("/admin/v2/brokers/health").forPort(8080).forStatusCode(200)
+                .withStartupTimeout(Duration.ofMinutes(3));
     }
 
     @Override

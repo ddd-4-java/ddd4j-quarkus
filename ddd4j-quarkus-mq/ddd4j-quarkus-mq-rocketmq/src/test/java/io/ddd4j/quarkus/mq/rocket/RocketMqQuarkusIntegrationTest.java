@@ -8,7 +8,6 @@ import io.ddd4j.quarkus.mq.testcontainers.AbstractMqQuarkusIntegrationTest;
 import io.ddd4j.quarkus.mq.testcontainers.JunitJupiterQuarkusTestContainers;
 import io.ddd4j.quarkus.mq.testcontainers.RocketMqQuarkusTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
-import org.junit.jupiter.api.Disabled;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -18,7 +17,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +42,6 @@ import java.util.Map;
 @QuarkusTest
 @QuarkusTestResource(RocketMqQuarkusIntegrationTest.RocketMqTestResource.class)
 @JunitJupiterQuarkusTestContainers
-@Disabled("RocketMQ warm-up send fails intermittently; broker startup race condition — skip until fixed")
 class RocketMqQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<RocketMQProperties> {
 
     @Inject
@@ -66,7 +63,7 @@ class RocketMqQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<Ro
         // 上游 client 按 partition key 走 MessageQueueSelector 发送路径，该路径没有
         // 自动建 topic 兜底——先用一次性原生 producer warm-up 建 topic（push consumer
         // 默认 CONSUME_FROM_LAST_OFFSET，随后注册即从最新 offset 开始，不会重复消费
-        // warm-up 消息；tag=warmup 也与监听器 CREATED 不匹配）。对齐 javalin Ddd4jRocketMqIT。
+        // warm-up 消息；tag=WARMUP 也与监听器 CREATED 不匹配）。对齐 javalin Ddd4jRocketMqIT。
         DefaultMQProducer warmUp = rocketProperties.newProducer();
         Exception lastFailure = null;
         try {
@@ -74,7 +71,7 @@ class RocketMqQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<Ro
             long deadline = System.currentTimeMillis() + 90_000L;
             while (System.currentTimeMillis() < deadline) {
                 try {
-                    warmUp.send(new Message(TOPIC, TAG, "warmup".getBytes(StandardCharsets.UTF_8)));
+                    warmUp.send(new Message(TOPIC, "WARMUP", "warmup".getBytes(StandardCharsets.UTF_8)));
                     return;
                 } catch (Exception e) {
                     lastFailure = e;

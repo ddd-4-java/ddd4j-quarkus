@@ -31,7 +31,8 @@ public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
 
     @Override
     protected org.testcontainers.containers.wait.strategy.WaitStrategy waitStrategy() {
-        return Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(1));
+        return Wait.forHttp("/healthz?js-enabled-only=true").forPort(8222).forStatusCode(200)
+                .withStartupTimeout(Duration.ofMinutes(1));
     }
 
     @Override
