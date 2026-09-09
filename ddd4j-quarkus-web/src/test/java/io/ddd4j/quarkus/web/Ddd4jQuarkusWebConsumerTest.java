@@ -52,6 +52,10 @@ class Ddd4jQuarkusWebConsumerTest {
                 .extract()
                 .response();
 
+        assertThat(response.jsonPath().getString("tenantId")).isEqualTo("tenant-cleanup");
+        assertThat(response.jsonPath().getString("requestId")).isEqualTo("request-cleanup");
+        assertThat(response.jsonPath().getString("authorization")).isEqualTo("Bearer cleanup-contract");
+        assertThat(response.getHeader("X-Request-Id")).isEqualTo("request-cleanup");
         assertThat(response.jsonPath().getString("serviceThread"))
                 .isEqualTo(response.getHeader("X-Ddd4j-Test-Post-Response-Service-Thread"));
         assertThat(response.getHeader("X-Ddd4j-Test-Post-Response-Tenant-Cleared")).isEqualTo("true");

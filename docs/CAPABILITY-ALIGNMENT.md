@@ -2,7 +2,7 @@
 
 本页只记录 `feature/3.3.x` 在普通独立克隆 `ddd4j-quarkus-33x-sync` 中于 2026-09-09 执行的本地门禁。首轮代码基线为 `7c62a27`；Fix round 1 在 `7c62cdd` 上修复 POM 并重新验证。中断前 Task 5 及 `feature/4.0.x` 的运行结果均未复用。规格事实源为 [P5-A design](superpowers/specs/2026-09-09-feature-33x-p5a-capability-sync-design.md)，实施步骤见 [plan](superpowers/plans/2026-09-09-feature-33x-p5a-capability-sync.md)。
 
-当前状态：**修复后 Java 17/21 全量门禁均通过；最终独立审查与 final-HEAD 门禁待执行**。首轮 Java 17 阻塞已由 QR 依赖坐标修复解决，原始失败证据保留在下文。
+当前状态：**Fix round 1 双 JDK 全量门禁通过；最终审查修正的双 JDK 模块门禁通过，待复审与 final-HEAD 全量门禁**。首轮 Java 17 阻塞已由 QR 依赖坐标修复解决，原始失败证据保留在下文。
 
 ## 版本与远端消费者
 
@@ -49,7 +49,26 @@ Web 为 2 suites / 4 tests / 0 failures / 0 errors / 0 skipped，结束于 `14:4
 
 License 为 2 suites / 4 tests / 0 failures / 0 errors / 0 skipped，结束于 `14:43:40+08:00`。`LicenseEnabledEndToEndQuarkusTest` 的 3 个测试包含真实签发后 CDI 安装与验签、POSIX 目录 0700/文件 0600 断言、失败目录清理，以及嵌套文件和桥接系统属性清理；另 1 个为配置测试。保留直接、无版本的 `truelicense-core`（managed `1.33`），因为本次新仓库中的 ddd4j License POM 只声明 `ddd4j-cache`，未声明 TrueLicense。
 
-License 已登记 Minor：失败准备测试使用空目录，尚未覆盖部分密钥已生成或签发返回 false 的情形；不能把该测试描述为覆盖所有签发失败路径。
+License 当时登记的 Minor 为失败准备测试使用空目录；最终审查修正已覆盖嵌套部分材料与签发 false 返回，见下节。此处 4 tests 保留为原始运行统计。
+
+## 最终审查单轮修正
+
+在 `06c7222` 上修正三个审查问题：Web 资源方法返回实际 `ThreadContext` 中的租户、request-id、Authorization 与线程，客户端先断言输入值已绑定，再断言同一服务线程上的清理状态；License 准备异常测试先创建嵌套占位密钥材料，另新增可读但无效 keystore 令真实 `LicenseCreator.generateLicense()` 返回 false 的测试，两者均验证材料、目录和桥接属性清除；CI 与两个 POM 的说明改为发布制品解析、Quarkus 3.37.4 BOM-first 仲裁及保留的 License 兼容依赖理由。未修改生产过滤器、License 实现、依赖版本或实际安装/验签断言。
+
+Web RED 为新增资源绑定断言得到 null（2 tests / 1 failure，`15:59:15+08:00`）。License 在临时把失败清理指向不存在子目录的 mutation check 下，两条材料清理断言均失败（4 tests / 2 failures，`16:00:34+08:00`）；该 mutation 已恢复，未进入提交。
+
+Java 17 定向 GREEN：Web `-Dtest=Ddd4jQuarkusWebConsumerTest` 为 1 suite / 2 tests；License `-Dtest=LicenseEnabledEndToEndQuarkusTest` 为 1 suite / 4 tests；均 0 failures/errors/skipped，分别结束于 `16:01:02+08:00` 与 `16:01:48+08:00`。
+
+受影响模块命令：
+
+```bash
+./mvnw -B -Denforcer.skip=true \
+  -pl ddd4j-quarkus-web,ddd4j-quarkus-auth/ddd4j-quarkus-auth-license -am clean test
+```
+
+Java 17（XML `17.0.20.1`）返回 0，4/4 模块 SUCCESS，22.865s，结束 `16:02:21+08:00`；Java 21（XML `21.0.12.1`）返回 0，4/4 模块 SUCCESS，16.582s，结束 `16:02:57+08:00`。每个 JDK 独立保存 4 suites / 9 tests / 0 failures / 0 errors / 0 skipped：Web 4、License 5。此处只统计这两模块 fresh XML，历史 full reactor 185 tests 不因新增用例被改写成未经执行的全量统计。
+
+新日志及按 JDK 保存的 XML/JSON 位于 `/tmp/ddd4j-p5a-33-final-fixes.orpSyP`。定向报告只选运行的测试类，分别位于 `web-focused-only`、`license-focused-only`；初始 `web-focused` 混入旧健康检查 XML，不作为新定向证据。`modules-jdk17` 与 `modules-jdk21` 均源自各自 clean test。actionlint、零退役 groupId、CI 源码修改模式扫描、目标 POM 结构扫描与 diff 检查均通过。真实 false 路径会记录预期的 `Invalid keystore format` 错误；日志不包含口令或真实私钥材料。最终复审及 final-HEAD 全量门禁由最终阶段继续。
 
 ## 首轮 Java 17 全量门禁与发布依赖阻塞（修复前 RED）
 
@@ -65,7 +84,7 @@ Java 17 已完成模块的新 XML 为 **32 suites / 106 tests / 0 failures / 0 e
 
 `JAVA_HOME` 指向 Microsoft 21.0.12.1、对应 `bin` 在 PATH 首位，独立执行 `./mvnw -B clean verify -Denforcer.skip=true`，返回 0；耗时 08:29，结束于 `2026-09-09T14:59:41+08:00`，62/62 模块 SUCCESS。最终 XML 为 **53 suites / 185 tests / 0 failures / 0 errors / 11 skipped**；报告存于 `jdk21/xml/`，摘要 `jdk21/summary.json`，日志 `jdk21-clean-verify.log`。XML java.version 唯一值为 `21.0.12.1`；Java 17 新报告的唯一值为 `17.0.20.1`。
 
-首轮 Java 21 的通过未替代当时失败的 Java 17 维护基线。Fix round 1 的双 JDK 新结果如下，最终独立审查与 final-HEAD 全门禁仍待执行。
+首轮 Java 21 的通过未替代当时失败的 Java 17 维护基线。Fix round 1 的双 JDK 新结果如下，最终复审与 final-HEAD 全门禁仍待执行。
 
 ## Fix round 1：恢复 QR 依赖的 Java 17 合约
 
@@ -110,7 +129,7 @@ Fix round 1 的新日志与 XML 独立保存于 `/tmp/ddd4j-p5a-33-fix1.jQvV1w`�
 
 配置动作以临时文件解码、校验 server id、0600 权限和原子替换安装 settings，失败时保留旧目标并清除临时文件。Task 4 已有配置成功/失败路径验证记录；Task 5 不将该历史记录当成本次新执行的 shell 测试。
 
-本次扫描目标 POM 和 `.github`：无 Model 4.1.0、`<subprojects>`、`<subproject>`、`3.0.x.20260630-SNAPSHOT`，无 `install-ddd4j`、`sed -i`、`Lint disabled` 匹配。Fix round 1 在 dependencies POM 删除退役的 ZXing/Jackson 管理项；该 POM 其余历史 BOM/Agroal/Hibernate 注释及 CI 陈旧 checkout 注释仍留待最终审查，ci.yml 未修改。
+本次扫描目标 POM 和 `.github`：无 Model 4.1.0、`<subprojects>`、`<subproject>`、`3.0.x.20260630-SNAPSHOT`，无 `install-ddd4j`、`sed -i`、`Lint disabled` 匹配。Fix round 1 在 dependencies POM 删除退役的 ZXing/Jackson 管理项，未修改 ci.yml；其后最终审查单轮修正纠正了历史 BOM/Agroal/Hibernate/SmallRye 说明、License 兼容依赖说明、根 POM 和 CI checkout 陈旧注释，保留实际依赖与工作流行为。
 
 本次 MQTT 测试生成的两个 UUID `.lck` 文件均由 `.gitignore:111` 的 `**/ddd4j-mq-*-tcplocalhost*/` 忽略；文档暂存前 status 只包含六份授权文档，`git diff --check` 返回 0。
 

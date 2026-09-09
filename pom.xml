@@ -31,9 +31,9 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <!--
-            Quarkus 轨道专用：ddd4j 仓库未管理这些版本。
-            注意：实际 runtime 版本由主仓 quarkus-bom（first-wins）决定，
-            此处与 maven-quarkus-plugin 对齐 3.37.4，避免插件/运行时混用
+            Quarkus 轨道版本由本仓固定：ddd4j-quarkus-dependencies 首先导入
+            Quarkus 3.37.4 BOM，以 first-import-wins 仲裁重复导入的管理项。
+            此处将 maven-quarkus-plugin 同样固定为 3.37.4，避免插件/运行时混用
             （插件与 bootstrap 版本不一致会 ClassCastException）。
             其余 Maven 插件版本由 ddd4j 根 pom 统一管理，本仓库不重复声明。
         -->

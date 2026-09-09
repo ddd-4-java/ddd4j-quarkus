@@ -83,10 +83,55 @@ class LicenseEnabledEndToEndQuarkusTest {
         Path directory = Files.createTempDirectory("quarkus-license-signing-failure-");
 
         try {
+            Path partialKey = Files.createDirectories(directory.resolve("partial/nested"))
+                    .resolve("private-key.placeholder");
+            Files.writeString(partialKey, "test-only-sensitive-placeholder");
+            System.setProperty(FAILED_FIXTURE_DIRECTORY_PROPERTY, directory.toString());
+            assertThat(Files.isRegularFile(partialKey)).isTrue();
+            assertThat(System.getProperty(FAILED_FIXTURE_DIRECTORY_PROPERTY)).isEqualTo(directory.toString());
+
             assertThatThrownBy(() -> LicenseEnabledProfile.prepareFixture(directory,
                     FAILED_FIXTURE_DIRECTORY_PROPERTY, false))
                     .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("无法生成 Quarkus License 端到端测试许可证");
+                    .hasMessageContaining("无法生成 Quarkus License 端到端测试许可证")
+                    .hasRootCauseMessage("私钥库不存在或不可读: " + directory.resolve("privateKeys.keystore"));
+            assertThat(Files.exists(partialKey)).isFalse();
+            assertThat(Files.exists(directory)).isFalse();
+            assertThat(System.getProperty(FAILED_FIXTURE_DIRECTORY_PROPERTY)).isNull();
+        } finally {
+            if (Files.exists(directory)) {
+                deleteFixtureDirectory(directory, null);
+            }
+            System.clearProperty(FAILED_FIXTURE_DIRECTORY_PROPERTY);
+        }
+    }
+
+    /**
+     * 可读但无效的私钥库令真实签发器返回 false；该分支也必须删除部分材料与桥接属性。
+     */
+    @Test
+    void falseSigningResultDeletesPartialKeyMaterialAndClearsBridgeProperty() throws IOException {
+        Path directory = Files.createTempDirectory("quarkus-license-false-signing-");
+
+        try {
+            Fixture fixture = Fixture.at(directory);
+            Path nestedKey = Files.createDirectories(directory.resolve("partial/nested"))
+                    .resolve("private-key.placeholder");
+            Files.writeString(nestedKey, "test-only-sensitive-placeholder");
+            Files.writeString(fixture.privateKeysStore(), "test-only-invalid-keystore");
+            System.setProperty(FAILED_FIXTURE_DIRECTORY_PROPERTY, directory.toString());
+            assertThat(Files.isReadable(fixture.privateKeysStore())).isTrue();
+            assertThat(Files.isRegularFile(nestedKey)).isTrue();
+
+            assertThatThrownBy(() -> LicenseEnabledProfile.prepareFixture(directory,
+                    FAILED_FIXTURE_DIRECTORY_PROPERTY, false))
+                    .isInstanceOf(IllegalStateException.class)
+                    .cause()
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("无法生成 Quarkus License 端到端测试许可证")
+                    .hasNoCause();
+            assertThat(Files.exists(nestedKey)).isFalse();
+            assertThat(Files.exists(fixture.privateKeysStore())).isFalse();
             assertThat(Files.exists(directory)).isFalse();
             assertThat(System.getProperty(FAILED_FIXTURE_DIRECTORY_PROPERTY)).isNull();
         } finally {

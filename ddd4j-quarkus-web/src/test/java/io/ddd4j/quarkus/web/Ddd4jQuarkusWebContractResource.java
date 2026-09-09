@@ -27,6 +27,8 @@ public class Ddd4jQuarkusWebContractResource {
     public ContractResponse contract() {
         return new ContractResponse(
                 ThreadContext.get(ContextConstants.TENANT_ID),
+                ThreadContext.get(WebContextScope.REQUEST_ID),
+                ThreadContext.get(ContextConstants.AUTHORIZATION),
                 Thread.currentThread().getName());
     }
 
@@ -45,8 +47,8 @@ public class Ddd4jQuarkusWebContractResource {
     }
 
     /**
-     * 暴露资源处理器所在的线程与租户，供 HTTP 契约断言使用。
+     * 暴露资源处理期间的线程与请求上下文，证明清理前各状态已实际绑定。
      */
-    public record ContractResponse(String tenantId, String serviceThread) {
+    public record ContractResponse(String tenantId, String requestId, String authorization, String serviceThread) {
     }
 }

@@ -257,20 +257,18 @@
                 <artifactId>ddd4j-cache</artifactId>
                 <version>${ddd4j.version}</version>
             </dependency>
-            <!-- 主仓 ddd4j-auth-license 发布 POM 引用了 de.schlichtherle.truelicense 但未带版本，
-                 这里显式管理版本（truelicense-core 1.33 为当前发布版本） -->
+            <!-- 已验证的 ddd4j-extension-license 2.0.x 发布 POM 只声明 ddd4j-cache，
+                 未传递 TrueLicense；为本仓 License 适配器保留直接兼容依赖的 1.33 版本管理。 -->
             <dependency>
                 <groupId>de.schlichtherle.truelicense</groupId>
                 <artifactId>truelicense-core</artifactId>
                 <version>1.33</version>
             </dependency>
             <!--
-                Agroal 连接池版本（显式覆盖）：ddd4j 底座 BOM 先 import，其 quarkus-bom 3.37.0
-                管理 agroal-api 2.0（MultipleAcquisitionAction 枚举仅 warn/strict/off）；而
-                quarkus-bom 3.37.0（实际 runtime）配套 agroal 3.2（枚举含 LENIENT，Quarkus 3.36
-                默认 multiple-acquisition=lenient）。BOM import 冲突按"先声明者优先"仲裁，
-                此处直接声明的 management 条目优先于 import 内容，保证 @QuarkusTest 启动时
-                配置转换不失败。
+                Agroal 连接池兼容版本（显式覆盖）：当前先导入 Quarkus 3.37.4 BOM，
+                再导入 ddd4j/Quarkiverse BOM；重复导入管理项按 first-import-wins 仲裁。
+                此处直接管理 agroal 3.2，优先于所有 import 内容，保留本轨道已验证的
+                MultipleAcquisitionAction.LENIENT 配置兼容性。
             -->
             <dependency>
                 <groupId>io.agroal</groupId>
@@ -288,11 +286,9 @@
                 <version>3.2</version>
             </dependency>
             <!--
-                Hibernate ORM 版本（显式覆盖）：主仓 ddd4j-dependencies 先 import
-                hibernate-platform 6.6.40（BootLogging 无 BOOT_LOGGER 字段，与 Quarkus
-                不兼容：@QuarkusTest / quarkus:build 报 NoSuchFieldError）；quarkus-bom
-                3.37.0（实际 runtime）配套 Hibernate ORM 7.4.1.Final。此处直接声明的 management 条目优先于
-                import 内容（同 agroal 处理），保证 quarkus 轨道运行时版本一致。
+                Hibernate ORM 兼容版本（显式覆盖）：Quarkus 3.37.4 BOM 已先于
+                ddd4j/Quarkiverse BOM 导入；此处仍以直接 management 固定 7.4.1.Final，
+                优先于 import 内容，保留本轨道已验证的 BootLogging API 兼容性。
             -->
             <dependency>
                 <groupId>org.hibernate.orm</groupId>
@@ -305,13 +301,9 @@
                 <version>7.4.1.Final</version>
             </dependency>
             <!--
-                SmallRye OpenAPI Core 版本（显式覆盖）：BOM import 仲裁把
-                smallrye-open-api-core 钉到 2.1.2（具体来源未在 ddd4j 主仓 / Quarkiverse /
-                SmallRye BOM 任何显式声明中找到，疑为某 transitive BOM first-import-wins），
-                而 SmallRyeOpenAPI 类仅存在于 4.x — quarkus-maven-plugin:build augmentation
-                阶段 NoClassDefFoundError: io/smallrye/openapi/api/SmallRyeOpenAPI。
-                对齐 quarkus-bom 3.37.4 的 4.3.3，显式 management 条目优先于 import，
-                保证 quarkus 轨道运行时版本一致（同 jackson/hibernate/agroal 处理）。
+                SmallRye OpenAPI Core 兼容版本（显式覆盖）：当前优先导入 Quarkus 3.37.4 BOM；
+                直接 management 仍固定 4.3.3，优先于 import，保留 augmentation 所需的
+                io.smallrye.openapi.api.SmallRyeOpenAPI API 兼容性。
             -->
             <dependency>
                 <groupId>io.smallrye</groupId>

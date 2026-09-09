@@ -11,11 +11,10 @@
 # - 每个 broker 独立上传报告（integration-reports-<broker>）便于追溯
 # - Java matrix 保留 ['17', '21']（feature/3.3.x 版本线默认 Java 17）
 #
-# 版本线对齐矩阵（2026-08-26 完成）：
-#   当前 ci.yml 经 composite action checkout feature/2.0.x，与
-#   ddd4j-quarkus/pom.xml 声明的 ddd4j.version=2.0.x.20260630-SNAPSHOT 对齐。
+# 当前版本线与发布制品解析（2026-09-09）：
+#   configure-maven 经组织 settings 从空缓存验证已发布的
+#   ddd4j.version=2.0.x.20260630-SNAPSHOT，与根 POM 和消费者 fixture 对齐。
 #   - feature/3.3.x：quarkus-bom 3.37.4 ↔ ddd4j 2.0.x（revision 3.3.x.20260630-SNAPSHOT）
-#   - feature/4.0.x：quarkus-bom 3.38.2 ↔ ddd4j 3.0.x（revision 4.0.x.20260630-SNAPSHOT）
 #
 # ─────────────────────────────────────────────────────────────────────────────
 

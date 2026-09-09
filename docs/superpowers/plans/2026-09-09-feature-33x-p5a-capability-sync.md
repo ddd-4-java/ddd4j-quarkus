@@ -14,9 +14,11 @@
 
 Tasks 1–4 已完成提交和各自审查，依据本次独立克隆中的 progress ledger 与提交记录：Task 1 `53457a1`；Web `9e6a4c2` 与 Quarkus BOM 顺序修正 `ace5097`；License `b2936f1`；CI `7c62a27`。
 
-Task 5 首轮 Java 17 qrcode 编译失败作为 RED 保留。Fix round 1 改用 ddd4j BOM 管理的 easy4j ZXing，Java 17 qrcode clean test 通过后，重新执行 Java 17/21 全量 clean verify，均为 62/62 SUCCESS、53 suites / 185 tests / 0 failures / 0 errors / 11 skipped。随后按新增坐标规则清理 Jackson 旧管理项和说明，并补验依赖树与受影响模块。远端最终版本解析、Web/License 定向测试和 actionlint/结构检查已有本轮独立证据。最终独立审查与 final-HEAD 全门禁仍待执行；准确日志对应关系见 [CAPABILITY-ALIGNMENT](../../CAPABILITY-ALIGNMENT.md)。
+Task 5 首轮 Java 17 qrcode 编译失败作为 RED 保留。Fix round 1 改用 ddd4j BOM 管理的 easy4j ZXing，Java 17 qrcode clean test 通过后，重新执行 Java 17/21 全量 clean verify，均为 62/62 SUCCESS、53 suites / 185 tests / 0 failures / 0 errors / 11 skipped。随后按新增坐标规则清理 Jackson 旧管理项和说明，并补验依赖树与受影响模块。远端最终版本解析、Web/License 定向测试和 actionlint/结构检查已有本轮独立证据。最终复审与 final-HEAD 全门禁仍待执行；准确日志对应关系见 [CAPABILITY-ALIGNMENT](../../CAPABILITY-ALIGNMENT.md)。
 
 ## Global Constraints
+
+最终审查单轮修正范围：补强 Web 资源方法内 request-id/Authorization 绑定证据；License 增加嵌套部分材料异常路径和真实 false 签发路径的清理验证；修正 ci.yml、根 POM、dependencies POM 的陈旧注释。本轮不更改生产过滤器、License 实现或依赖版本。定向与受影响模块的双 JDK 结果见能力证据；最终复审与 final-HEAD 全量门禁由最终阶段继续。
 
 - 目标分支仅为 `feature/3.3.x`；不修改 `master` 或 `feature/4.0.x`。
 - 保持 `revision=3.3.x.20260630-SNAPSHOT`、Quarkus BOM/插件 `3.37.4`、Java 基线 17。
@@ -173,7 +175,7 @@ Create `Ddd4jQuarkusWebConsumerTest` with a first request that sends `X-Tenant-I
 
 - [x] **Step 2: Write the deterministic cleanup test**
 
-Add a request containing tenant, request ID, and Authorization. Assert the resource service-thread value equals the probe response header and that these headers are all `true`:
+Add a request containing tenant, request ID, and Authorization. Assert the resource method returns all three exact bound values before checking cleanup. Assert the response request ID equals the input, the resource service-thread value equals the probe response header, and these headers are all `true`:
 
 ```java
 X-Ddd4j-Test-Post-Response-Tenant-Cleared
@@ -192,7 +194,7 @@ Expected: fail because `/ddd4j/contract` or its probe does not exist. Record the
 
 - [x] **Step 4: Create the contract resource and response probe**
 
-Create a JAX-RS resource returning tenant ID and current thread. Add a test-only `@ServerResponseFilter(priority = Priorities.AUTHENTICATION)` that records the current thread and uses `Objects.isNull(ThreadContext.get(...))` for tenant, request ID, and Authorization.
+Create a JAX-RS resource returning tenant ID, request ID, Authorization and current thread. Add a test-only `@ServerResponseFilter(priority = Priorities.AUTHENTICATION)` that records the current thread and uses `Objects.isNull(ThreadContext.get(...))` for tenant, request ID, and Authorization.
 
 Before selecting constants, compile against ddd4j 2.0.x. Use the actual 2.0.x symbols; do not add compatibility copies. Verify the published upstream filter priority is `Priorities.USER` or otherwise prove the probe executes after its cleanup under Quarkus 3.37.4 response-filter ordering.
 
@@ -282,6 +284,8 @@ files:     OWNER_READ, OWNER_WRITE
 ```
 
 Register a `QuarkusTestResourceLifecycleManager` that removes the directory after application shutdown. Implement recursive deletion with try-with-resources around `Files.walk`; preserve per-path cleanup failures and clear the system property. The fixture preparation catch path must also delete the directory when signing fails.
+
+The final review adds deterministic failure cases with nested placeholder material: missing main keystore triggers preparation validation failure; readable invalid keystore triggers the real `generateLicense()` false result. Both must remove partial files, the directory, and bridge property. Keep the real install/verify test intact.
 
 - [x] **Step 5: Normalize License dependencies from fresh evidence**
 

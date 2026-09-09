@@ -1,6 +1,6 @@
 # feature/3.3.x P5-A 能力同步设计
 
-> 状态：Task 5 修复后双 JDK 本地门禁通过；最终独立审查与 final-HEAD 门禁待执行
+> 状态：Task 5 修复后双 JDK 本地门禁通过；最终审查修正待复审与 final-HEAD 门禁
 >
 > 目标分支：`feature/3.3.x`
 >
@@ -105,6 +105,7 @@ Task 5 修复授权补充：全量门禁发现 qrcode 消费的退役发布组 Z
 测试资源端点必须通过实际发布的 `ddd4j-web-quarkus` filter 处理请求，并验证：
 
 - 请求头中的租户标识进入 `ThreadContext`。
+- 资源方法内的 request-id 与 Authorization 等于请求输入，证明清理前已经绑定；响应 request-id 与输入一致。
 - 响应中存在非空请求 ID。
 - Authorization 等请求态不会越过请求边界泄漏。
 
@@ -145,6 +146,7 @@ Quarkus test profile 必须在 CDI 创建 `LicenseVerify` 之前完成：
 - 应用关闭后递归清理目录。
 - `Files.walk` 必须关闭；删除失败不得静默吞掉。
 - 签发失败必须进入同一清理路径，不能遗留系统属性或密钥文件。
+- 失败覆盖包含嵌套部分材料已存在时的准备异常，以及可读但无效 keystore 导致真实签发器返回 false；两条路径均验证目录、材料与桥接属性被清除。
 
 ### 7.3 依赖治理
 
@@ -229,7 +231,7 @@ Quarkus test profile 必须在 CDI 创建 `LicenseVerify` 之前完成：
 
 ## 13. 完成定义
 
-2026-09-09 独立克隆重跑结果：远端消费者和 Web/License 定向测试通过；首轮 Java 17 的 qrcode 编译失败经 Fix round 1 的 easy4j 坐标修复消除。修复后 Java 17/21 各自 full clean verify 为 62/62 SUCCESS，各 53 suites / 185 tests / 0 failures / 0 errors / 11 skipped。原始失败、修复、最后坐标清理与验证范围见 [能力证据](../../CAPABILITY-ALIGNMENT.md)。最终独立审查和 final-HEAD 门禁仍待执行，因此本页只确认本地门禁结果，不提前宣告最终完成。
+2026-09-09 独立克隆重跑结果：远端消费者和 Web/License 定向测试通过；首轮 Java 17 的 qrcode 编译失败经 Fix round 1 的 easy4j 坐标修复消除。修复后 Java 17/21 各自 full clean verify 为 62/62 SUCCESS，各 53 suites / 185 tests / 0 failures / 0 errors / 11 skipped。原始失败、修复、最后坐标清理与验证范围见 [能力证据](../../CAPABILITY-ALIGNMENT.md)。最终复审和 final-HEAD 门禁仍待执行，因此本页只确认本地门禁结果，不提前宣告最终完成。
 
 本变更完成必须同时满足：
 
