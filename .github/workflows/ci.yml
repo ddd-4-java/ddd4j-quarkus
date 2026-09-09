@@ -1,9 +1,7 @@
 # CI: Build, test, and integration test for ddd4j-quarkus (feature/3.3.x — Maven 3 / Java 17+21)
 #
-# ddd4j-quarkus depends on ddd4j 2.0.x SNAPSHOT.
-# We checkout ddd4j (feature/2.0.x) and install it into the local Maven cache first.
-# The checkout + Aliyun config + install sequence is shared via the composite
-# action `.github/actions/install-ddd4j` (used by both jobs below).
+# ddd4j-quarkus resolves its published ddd4j 2.0.x SNAPSHOT from the configured
+# remote Maven repository. Both Maven jobs verify this from an empty cache first.
 #
 # ─────────────────────────────────────────────────────────────────────────────
 # P1-5 重构（2026-09-02）：新增 13 个 broker matrix jobs
@@ -19,10 +17,6 @@
 #   - feature/3.3.x：quarkus-bom 3.37.4 ↔ ddd4j 2.0.x（revision 3.3.x.20260630-SNAPSHOT）
 #   - feature/4.0.x：quarkus-bom 3.38.2 ↔ ddd4j 3.0.x（revision 4.0.x.20260630-SNAPSHOT）
 #
-# 后续 TODO：
-#   1. 重构 install 列表为 Maven 自动依赖解析（mvn dependency:list + -pl -am）
-#   2. 当 ddd4j-data-event-store-panache 等模块引入运行时依赖时，
-#      需扩展分层 install 模块列表
 # ─────────────────────────────────────────────────────────────────────────────
 
 name: Verify ddd4j-quarkus
@@ -46,7 +40,11 @@ jobs:
   workflow-lint:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Lint disabled (local actionlint v1.7.12 has validated this workflow)"
+      - uses: actions/checkout@v4
+      - uses: reviewdog/action-actionlint@v1
+        with:
+          fail_level: error
+          filter_mode: nofilter
 
   unit-and-contract:
     name: Java ${{ matrix.java }} verify
@@ -58,10 +56,14 @@ jobs:
         java: ['17', '21']
     steps:
       - uses: actions/checkout@v4
-      - name: Install ddd4j 2.0.x SNAPSHOT (Aliyun repos + local install)
-        uses: ./.github/actions/install-ddd4j
+      - uses: actions/setup-java@v4
         with:
+          distribution: temurin
           java-version: ${{ matrix.java }}
+          cache: maven
+      - name: Configure Maven and verify ddd4j snapshot
+        uses: ./.github/actions/configure-maven
+        with:
           maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
       - name: Verify (unit + contract)
         run: ./mvnw -B verify -Denforcer.skip=true
@@ -94,8 +96,8 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
-      - name: Install ddd4j 2.0.x SNAPSHOT (Aliyun repos + local install)
-        uses: ./.github/actions/install-ddd4j
+      - name: Configure Maven and verify ddd4j snapshot
+        uses: ./.github/actions/configure-maven
         with:
           maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
       - name: Enable Testcontainers reuse

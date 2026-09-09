@@ -108,6 +108,7 @@ nbdist/
 MANIFEST.MF
 _site/
 activemq-data
+**/ddd4j-mq-*-tcplocalhost*/
 dump.rdb
 interpolated*.xml
 manifest.yml
