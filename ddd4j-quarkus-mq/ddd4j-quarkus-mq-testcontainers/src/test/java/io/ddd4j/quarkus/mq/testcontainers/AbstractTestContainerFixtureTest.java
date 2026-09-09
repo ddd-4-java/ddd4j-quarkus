@@ -5,14 +5,20 @@ import org.testcontainers.DockerClientFactory;
 import org.testcontainers.activemq.ArtemisContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.kafka.ConfluentKafkaContainer;
 import org.testcontainers.localstack.LocalStackContainer;
 import org.testcontainers.pulsar.PulsarContainer;
 import org.testcontainers.rabbitmq.RabbitMQContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import java.lang.reflect.Field;
+import java.time.Duration;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -130,8 +136,46 @@ class AbstractTestContainerFixtureTest {
     }
 
     @Test
-    void shouldWaitForBothRocketMqProcesses() {
-        assertThat(new RocketMqQuarkusTestResource().waitStrategy()).isInstanceOf(WaitAllStrategy.class);
+    void shouldWaitForBothRocketMqProcesses() throws Exception {
+        WaitStrategy strategy = new RocketMqQuarkusTestResource().waitStrategy();
+        assertThat(strategy).isInstanceOf(WaitAllStrategy.class);
+        List<?> children = (List<?>) strategyField(strategy, WaitAllStrategy.class, "strategies");
+        assertThat(children).hasSize(2);
+        String nameserverReady = "The Name Server boot success. serializeType=JSON\n";
+        String brokerReady = "The broker[broker-a, 127.0.0.1:10911] boot success.\n";
+        int nameserverConditions = 0;
+        int brokerConditions = 0;
+        for (Object child : children) {
+            assertThat(child).isInstanceOf(LogMessageWaitStrategy.class);
+            Pattern condition = Pattern.compile((String) strategyField(child,
+                    LogMessageWaitStrategy.class, "regEx"), Pattern.DOTALL);
+            boolean acceptsNameserver = condition.matcher(nameserverReady).matches();
+            boolean acceptsBroker = condition.matcher(brokerReady).matches();
+            // 每个子条件必须只接受对应进程的 ready 日志，不能拿另一进程或无关日志充数。
+            assertThat(acceptsNameserver ^ acceptsBroker).isTrue();
+            assertThat(condition.matcher("port 9876 listening\n").matches()).isFalse();
+            assertThat(strategyField(child, LogMessageWaitStrategy.class, "times")).isEqualTo(1);
+            nameserverConditions += acceptsNameserver ? 1 : 0;
+            brokerConditions += acceptsBroker ? 1 : 0;
+        }
+        assertThat(nameserverConditions).isEqualTo(1);
+        assertThat(brokerConditions).isEqualTo(1);
+    }
+
+    @Test
+    void shouldBoundTheWholeRocketMqReadinessSequenceToThreeMinutes() throws Exception {
+        WaitStrategy strategy = new RocketMqQuarkusTestResource().waitStrategy();
+        assertThat(strategyField(strategy, WaitAllStrategy.class, "mode"))
+                .isEqualTo(WaitAllStrategy.Mode.WITH_OUTER_TIMEOUT);
+        assertThat(strategyField(strategy, WaitAllStrategy.class, "timeout"))
+                .isEqualTo(Duration.ofMinutes(3));
+    }
+
+    /** 2.0.5 未公开组合等待配置 getter；只读实际配置，避免等待三分钟或启动额外 Docker 进程。 */
+    private static Object strategyField(Object strategy, Class<?> declaringClass, String name) throws Exception {
+        Field field = declaringClass.getDeclaredField(name);
+        field.setAccessible(true);
+        return field.get(strategy);
     }
 
     /** 使用真实生命周期代码，仅替换 Docker 进程边界。 */
