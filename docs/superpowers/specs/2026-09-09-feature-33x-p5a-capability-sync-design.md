@@ -231,7 +231,7 @@ Quarkus test profile 必须在 CDI 创建 `LicenseVerify` 之前完成：
 
 ## 13. 完成定义
 
-2026-09-09 普通独立克隆的代码验收 HEAD `597a5b7` 已通过最终 Java 17/21 `clean verify -Denforcer.skip=true`：每个 JDK 均为 62/62 SUCCESS、53 suites / 186 tests / 0 failures / 0 errors / 11 skipped。远端消费者、Web/License 行为、actionlint、分支合约、退役 groupId 零引用及 diff/status 检查均通过，最终审查修正已纳入该 HEAD。本规格标记为 `feature/3.3.x P5-A 本地完成`；日志、历史失败和逐项 skip 见 [能力证据](../../CAPABILITY-ALIGNMENT.md)。本状态不包含 GitHub-hosted Actions、Enforcer、push/deploy、Native、Dev Mode、云服务、P5-B–E、master 或生产验收。
+2026-09-09 普通独立克隆的已验证代码提交 `597a5b7` 已通过 Java 17/21 `clean verify -Denforcer.skip=true`：每个 JDK 均为 62/62 SUCCESS、53 suites / 186 tests / 0 failures / 0 errors / 11 skipped。远端消费者、Web/License 行为、actionlint、分支合约、退役 groupId 零引用及 diff/status 检查均通过，审查修正已纳入该提交。本规格标记为 `feature/3.3.x P5-A 本地完成`；日志、历史失败和逐项 skip 见 [能力证据](../../CAPABILITY-ALIGNMENT.md)。本状态不包含 GitHub-hosted Actions、Enforcer、push/deploy、Native、Dev Mode、云服务、P5-B–E、master 或生产验收。
 
 本变更完成必须同时满足：
 

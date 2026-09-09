@@ -2,9 +2,9 @@
 
 本页只记录 `feature/3.3.x` 在普通独立克隆 `ddd4j-quarkus-33x-sync` 中于 2026-09-09 执行的本地门禁。首轮代码基线为 `7c62a27`；Fix round 1 在 `7c62cdd` 上修复 POM 并重新验证。中断前 Task 5 及 `feature/4.0.x` 的运行结果均未复用。规格事实源为 [P5-A design](superpowers/specs/2026-09-09-feature-33x-p5a-capability-sync-design.md)，实施步骤见 [plan](superpowers/plans/2026-09-09-feature-33x-p5a-capability-sync.md)。
 
-当前状态：**feature/3.3.x P5-A 本地完成**。最终代码验收 HEAD 为 `597a5b7`，已包含坐标清理、Web/License 审查修正和 CI/BOM 注释修正，并通过双 JDK 完整门禁。以下首轮失败及 185 tests 记录均为历史证据，当前验收统计以本节的 186 tests 为准。
+当前状态：**feature/3.3.x P5-A 本地完成**。已验证代码提交为 `597a5b7`，已包含坐标清理、Web/License 审查修正和 CI/BOM 注释修正，并通过双 JDK 完整门禁。以下首轮失败及 185 tests 记录均为历史证据，当前验收统计以本节的 186 tests 为准。
 
-## 最终代码 HEAD 597a5b7 验收
+## 已验证代码提交 597a5b7 的验收
 
 两个 JDK 分别执行 `./mvnw -B clean verify -Denforcer.skip=true`，均返回 0，所有 62 个 reactor 模块成功。最终独立报告统计如下：
 
@@ -13,9 +13,9 @@
 | 17 | 62/62 SUCCESS | 53 | 186 | 0 | 0 | 11 | 07:05 | 2026-09-09 16:18:25 |
 | 21 | 62/62 SUCCESS | 53 | 186 | 0 | 0 | 11 | 05:57 | 2026-09-09 16:24:56 |
 
-原始日志为 `/tmp/ddd4j-p5a-33-final-jdk17.log` 和 `/tmp/ddd4j-p5a-33-final-jdk21.log`；两份日志逐 suite 汇总均与上述统计一致。最终 HEAD 的 actionlint、分支合约扫描、退役 groupId 零引用、diff/status 检查通过。11 个 skip 按下方 XML 原始理由保留，不从 tests 中减去。
+原始日志为 `/tmp/ddd4j-p5a-33-final-jdk17.log` 和 `/tmp/ddd4j-p5a-33-final-jdk21.log`；两份日志逐 suite 汇总均与上述统计一致。该已验证提交的 actionlint、分支合约扫描、退役 groupId 零引用、diff/status 检查通过。11 个 skip 按下方 XML 原始理由保留，不从 tests 中减去。
 
-最终审查新增的 License 清理测试已计入 186 tests；Web 4 tests、License 5 tests 均包含在本次全量结果中。本次后续提交仅更新文档，不修改已经验证的代码、POM 或 CI。GitHub-hosted Actions、Enforcer、push/deploy、Native、Dev Mode、云服务、P5-B–E、master 和生产验收仍不属于本地完成范围。
+审查新增的 License 清理测试已计入 186 tests；Web 4 tests、License 5 tests 均包含在本次全量结果中。本次后续提交仅更新文档，不修改已经验证的代码、POM 或 CI。GitHub-hosted Actions、Enforcer、push/deploy、Native、Dev Mode、云服务、P5-B–E、master 和生产验收仍不属于本地完成范围。
 
 ## 版本与远端消费者
 
@@ -64,7 +64,7 @@ License 为 2 suites / 4 tests / 0 failures / 0 errors / 0 skipped，结束于 `
 
 License 当时登记的 Minor 为失败准备测试使用空目录；最终审查修正已覆盖嵌套部分材料与签发 false 返回，见下节。此处 4 tests 保留为原始运行统计。
 
-## 最终审查单轮修正
+## 审查单轮修正
 
 在 `06c7222` 上修正三个审查问题：Web 资源方法返回实际 `ThreadContext` 中的租户、request-id、Authorization 与线程，客户端先断言输入值已绑定，再断言同一服务线程上的清理状态；License 准备异常测试先创建嵌套占位密钥材料，另新增可读但无效 keystore 令真实 `LicenseCreator.generateLicense()` 返回 false 的测试，两者均验证材料、目录和桥接属性清除；CI 与两个 POM 的说明改为发布制品解析、Quarkus 3.37.4 BOM-first 仲裁及保留的 License 兼容依赖理由。未修改生产过滤器、License 实现、依赖版本或实际安装/验签断言。
 
@@ -81,7 +81,7 @@ Java 17 定向 GREEN：Web `-Dtest=Ddd4jQuarkusWebConsumerTest` 为 1 suite / 2 
 
 Java 17（XML `17.0.20.1`）返回 0，4/4 模块 SUCCESS，22.865s，结束 `16:02:21+08:00`；Java 21（XML `21.0.12.1`）返回 0，4/4 模块 SUCCESS，16.582s，结束 `16:02:57+08:00`。每个 JDK 独立保存 4 suites / 9 tests / 0 failures / 0 errors / 0 skipped：Web 4、License 5。此处只统计这两模块 fresh XML，历史 full reactor 185 tests 不因新增用例被改写成未经执行的全量统计。
 
-新日志及按 JDK 保存的 XML/JSON 位于 `/tmp/ddd4j-p5a-33-final-fixes.orpSyP`。定向报告只选运行的测试类，分别位于 `web-focused-only`、`license-focused-only`；初始 `web-focused` 混入旧健康检查 XML，不作为新定向证据。`modules-jdk17` 与 `modules-jdk21` 均源自各自 clean test。actionlint、零退役 groupId、CI 源码修改模式扫描、目标 POM 结构扫描与 diff 检查均通过。真实 false 路径会记录预期的 `Invalid keystore format` 错误；日志不包含口令或真实私钥材料。这些修正提交于 `597a5b7`，已由本页开头的最终 HEAD 双 JDK 全量门禁覆盖。
+新日志及按 JDK 保存的 XML/JSON 位于 `/tmp/ddd4j-p5a-33-final-fixes.orpSyP`。定向报告只选运行的测试类，分别位于 `web-focused-only`、`license-focused-only`；初始 `web-focused` 混入旧健康检查 XML，不作为新定向证据。`modules-jdk17` 与 `modules-jdk21` 均源自各自 clean test。actionlint、零退役 groupId、CI 源码修改模式扫描、目标 POM 结构扫描与 diff 检查均通过。真实 false 路径会记录预期的 `Invalid keystore format` 错误；日志不包含口令或真实私钥材料。这些修正提交于 `597a5b7`，已由本页开头所列双 JDK 全量门禁覆盖。
 
 ## 首轮 Java 17 全量门禁与发布依赖阻塞（修复前 RED）
 
@@ -113,7 +113,7 @@ Fix round 1 的新日志与 XML 独立保存于 `/tmp/ddd4j-p5a-33-fix1.jQvV1w`�
 
 修复后的 Java 21 使用同一组 POM 重新执行完整 `clean verify -Denforcer.skip=true`，返回 0，62/62 SUCCESS，耗时 13:33，结束于 `2026-09-09T15:39:08+08:00`。独立 `jdk21/` XML 归档同为 53 suites / 185 tests / 0 failures / 0 errors / 11 skipped。
 
-双 JDK 全量完成后，按新增 groupId 规则删除 dependencies POM 中已无消费者的旧 Jackson 管理项；当前发布的 ddd4j-data-crypto POM 未声明 Jackson 扩展，导入的 ddd4j BOM 已管理 `io.github.easy4j:jackson-extension:2.0.x.20260630-SNAPSHOT`。Jackson 模块仅更新 description/Javadoc，继续使用自包含 Jackson 2 序列化实现，未新增运行时依赖。该清理当时以 qrcode/Jackson 依赖树和模块 clean test 补验，以上历史双 JDK 日志对应清理前状态；此后 `597a5b7` 的最终完整门禁已覆盖全部清理与审查修正。
+双 JDK 全量完成后，按新增 groupId 规则删除 dependencies POM 中已无消费者的旧 Jackson 管理项；当前发布的 ddd4j-data-crypto POM 未声明 Jackson 扩展，导入的 ddd4j BOM 已管理 `io.github.easy4j:jackson-extension:2.0.x.20260630-SNAPSHOT`。Jackson 模块仅更新 description/Javadoc，继续使用自包含 Jackson 2 序列化实现，未新增运行时依赖。该清理当时以 qrcode/Jackson 依赖树和模块 clean test 补验，以上历史双 JDK 日志对应清理前状态；此后 `597a5b7` 的完整门禁已覆盖全部清理与审查修正。
 
 最后清理后的依赖树返回 0：qrcode 只含 easy4j ZXing；Jackson 模块未增加 Jackson extension 运行时依赖。qrcode/Jackson 的双 JDK `-am clean test` 补验各为 4/4 模块、2 suites / 6 tests / 0 failures / 0 errors / 0 skipped。Java 17 结束于 `15:40:48+08:00`（15.973s），Java 21 结束于 `15:43:34+08:00`（15.749s）；独立归档为 `final-modules-jdk17/`、`final-modules-jdk21/`。全仓已跟踪文件的退役 groupId 扫描为零匹配，结果保存在 `final-retired-group-scan.log`。
 
@@ -142,7 +142,7 @@ Fix round 1 的新日志与 XML 独立保存于 `/tmp/ddd4j-p5a-33-fix1.jQvV1w`�
 
 配置动作以临时文件解码、校验 server id、0600 权限和原子替换安装 settings，失败时保留旧目标并清除临时文件。Task 4 已有配置成功/失败路径验证记录；Task 5 不将该历史记录当成本次新执行的 shell 测试。
 
-本次扫描目标 POM 和 `.github`：无 Model 4.1.0、`<subprojects>`、`<subproject>`、`3.0.x.20260630-SNAPSHOT`，无 `install-ddd4j`、`sed -i`、`Lint disabled` 匹配。Fix round 1 在 dependencies POM 删除退役的 ZXing/Jackson 管理项，未修改 ci.yml；其后最终审查单轮修正纠正了历史 BOM/Agroal/Hibernate/SmallRye 说明、License 兼容依赖说明、根 POM 和 CI checkout 陈旧注释，保留实际依赖与工作流行为。
+本次扫描目标 POM 和 `.github`：无 Model 4.1.0、`<subprojects>`、`<subproject>`、`3.0.x.20260630-SNAPSHOT`，无 `install-ddd4j`、`sed -i`、`Lint disabled` 匹配。Fix round 1 在 dependencies POM 删除退役的 ZXing/Jackson 管理项，未修改 ci.yml；其后审查单轮修正纠正了历史 BOM/Agroal/Hibernate/SmallRye 说明、License 兼容依赖说明、根 POM 和 CI checkout 陈旧注释，保留实际依赖与工作流行为。
 
 本次 MQTT 测试生成的两个 UUID `.lck` 文件均由 `.gitignore:111` 的 `**/ddd4j-mq-*-tcplocalhost*/` 忽略；文档暂存前 status 只包含六份授权文档，`git diff --check` 返回 0。
 
