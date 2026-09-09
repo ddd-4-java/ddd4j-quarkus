@@ -68,7 +68,8 @@
 ### Maven, CI, and documentation
 
 - Root and five domain aggregator POMs: retain Maven 4 Model 4.1.0 + `<modules>`; the `subprojects` conversion in Task 6 is cancelled by user decision.
-- `.github/actions/install-ddd4j/action.yml`: matching ddd4j checkout/install.
+- Historical, superseded by `10bccd9`: `.github/actions/install-ddd4j/action.yml` (deleted; do not recreate it).
+- Current: `.github/actions/configure-maven/action.yml` validates the published ddd4j snapshot before CI Maven commands.
 - `.github/workflows/ci.yml`: unit and per-broker gates without reusable containers.
 - P4/P2 specs and plans, `docs/CAPABILITY-ALIGNMENT.md`, `README.md`, `CONTRIBUTING.md`: evidence-backed current status.
 
@@ -593,7 +594,7 @@ Expected: reactor discovery and install succeed. Record all Maven model warnings
 ./mvnw -B -f ddd4j-quarkus-cache/pom.xml -Denforcer.skip=true test
 ```
 
-Expected: both execute the actual `@QuarkusTest`. The probe established that WorkspaceLoader rejects model 4.1.0/subprojects, so the executable branch was restored to modules. Keep this task open until quarkusio/quarkus#52190 is fixed and a working non-skip invocation exists.
+Expected: both execute the actual `@QuarkusTest`. The probe established that WorkspaceLoader rejects model 4.1.0/subprojects, so the executable branch remains Model 4.1.0 + `<modules>`. This acceptance is cancelled by user decision; do not reopen it merely because the upstream parser changes.
 
 - **取消：Step 6: Commit only if authorization exists**
 
@@ -608,19 +609,22 @@ git commit -m "build: use Maven 4 subprojects on the 4.0 line"
 
 **Files:**
 - Modify: `pom.xml`
-- Modify: `.github/actions/install-ddd4j/action.yml`
+- Historical, superseded by `10bccd9`: `.github/actions/install-ddd4j/action.yml` (deleted; do not recreate or execute it)
+- Current: `.github/actions/configure-maven/action.yml`
 - Modify: `.github/workflows/ci.yml`
 
 **Interfaces:**
 - Consumes: matching branch matrix and broker Maven commands.
 - Produces: fail-fast settings bootstrap, unit gate, and blocking broker matrix.
 
+**Historical status note:** the completed Task 7 steps describe the then-current checkout/install workflow. Commit `10bccd9` supersedes it: the current CI path uses `configure-maven` to validate the published ddd4j snapshot. Keep the completed status as history, but future execution must use the current action and must not recreate `install-ddd4j`.
+
 - [x] **Step 1: Write the expected workflow behavior**
 
 The workflow must:
 
 1. fail before Maven if `secrets.MAVEN_SETTINGS_XML` is empty;
-2. install ddd4j `feature/3.0.x` with Java 21 on feature/4.0.x;
+2. historically install ddd4j `feature/3.0.x` with Java 21 on feature/4.0.x; this is superseded by `10bccd9` resolving the published 3.0.x snapshot through `configure-maven`;
 3. run all broker matrix entries without `continue-on-error`;
 4. remove the root `integration` profile whose only behavior is enabling reusable containers;
 5. omit creation of `~/.testcontainers.properties`;
@@ -642,7 +646,7 @@ Delete the root `integration` profile and the workflow's `Enable Testcontainers 
 
 ```bash
 actionlint .github/workflows/ci.yml
-rg -n 'MAVEN_SETTINGS_XML|continue-on-error|testcontainers.reuse|rocketmq|pulsar' .github/actions/install-ddd4j/action.yml .github/workflows/ci.yml
+rg -n 'MAVEN_SETTINGS_XML|continue-on-error|testcontainers.reuse|rocketmq|pulsar' .github/actions/configure-maven/action.yml .github/workflows/ci.yml
 ```
 
 Expected: settings secret and both brokers are present; `continue-on-error` and reuse configuration are absent; no secret value is printed.
@@ -650,7 +654,7 @@ Expected: settings secret and both brokers are present; `continue-on-error` and 
 - [x] **Step 5: Commit only if authorization exists**
 
 ```bash
-git add pom.xml .github/actions/install-ddd4j/action.yml .github/workflows/ci.yml
+git add pom.xml .github/actions/configure-maven/action.yml .github/workflows/ci.yml
 git commit -m "ci: gate disposable broker integration tests"
 ```
 
@@ -701,7 +705,7 @@ rg -n '<modules>|<module>' pom.xml ddd4j-quarkus-{auth,data,extensions,mq,sample
 git diff --check
 ```
 
-Expected for the current executable checkpoint: 4.0.x/3.0.x/3.38.2/2.0.5 with the documented temporary module aggregation; the subprojects acceptance item remains open.
+Expected for the current executable checkpoint: 4.0.x/3.0.x/3.38.2/2.0.5 with the retained Model 4.1.0 + `<modules>` aggregation; the `<subprojects>` acceptance is cancelled by user decision and is not an open gate.
 
 - [x] **Step 5: Commit only if authorization exists**
 
