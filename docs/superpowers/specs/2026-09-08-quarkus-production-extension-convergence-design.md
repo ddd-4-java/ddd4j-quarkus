@@ -97,10 +97,18 @@ flowchart LR
 - `MAVEN_SETTINGS_XML` 缺失时 fail-fast；凭据和 settings 内容不得输出。
 - Maven 4 对阿里云发布/拉取使用已验证的 Wagon transport，避免首次 metadata 404 被错误解释为致命 RFC 9457 payload。
 
+2026-09-09 已批准补充：将 3.3.x 已评审的 Snowflake workerId 修复移植到本分支。
+`ddd4j.quarkus.data.snowflake.worker-id` 为可选 Long 配置；缺省对 IP 派生值执行
+`Math.floorMod(value, 32)`，显式 `0..31` 原值使用，负值或大于 31 在创建策略时拒绝，
+不得对显式值取模。CDI producer 必须消费该配置；多节点部署须分配不重复的显式编号，
+缺省 IP 归一化不保证跨机器唯一。验收覆盖 IP 115→19、171 的有符号 byte→11、
+显式 0/31、非法 -1/32 和真实 CDI 配置生效。该补充不扩大到 P5-C 其他数据能力。
+4.0.x 仍保持 Java 21、ddd4j 3.0.x、Quarkus 3.38.2、Model 4.1.0 + modules。
+
 非目标：
 
 - 不在 P5-A 拆 runtime/deployment 模块。
-- 不修复 Data/Auth/MQ 业务缺口。
+- 除已批准的共享 Snowflake workerId 修复外，不修复 Data/Auth/MQ 业务缺口。
 - 不改 `feature/3.3.x`。
 - 不执行 push/deploy；发布需单独授权。
 

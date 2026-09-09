@@ -40,12 +40,31 @@ No push/deploy/tag/workflow dispatch was performed. GitHub Actions execution and
 
 ## Global Constraints
 
+### Approved Snowflake follow-up — 2026-09-09
+
+Shared contract: optional `ddd4j.quarkus.data.snowflake.worker-id`; absent IP-derived values
+normalize to `0..31`, explicit `0..31` values remain exact, invalid values fail at strategy
+creation without modulo. Reference reviewed 3.3.x commits `a5add959` and `72fdd21`.
+This is the sole approved Data exception to the original P5-A scope; P5-C remains pending.
+
+- [x] Capture behavior RED for IP 115/171, explicit 0/31, invalid -1/32 and producer wiring.
+- [x] Implement the same contract against ddd4j 3.0.x APIs without POM/CI changes.
+- [x] Run focused tests and full data-panache `-am clean verify` on the Java 21 baseline.
+- [ ] Commit implementation/tests/spec, then record evidence in a separate commit.
+
+Java 17 is not a supported 4.0.x gate: root POM requires Java 21 and upstream artifacts
+use class-file version 65. Do not lower the branch baseline for this fix.
+GitHub Actions run `34331450813` is a 3.3.x failure. The same source defect was present
+in 4.0.x and is reproduced locally here; no new 4.0.x hosted run has been observed.
+Both branches require their own post-fix hosted verification; historical P5-A local
+reactor success does not clear hosted gates.
+
 - Work only on `feature/4.0.x`; do not create or use a Git worktree and do not switch branches during P5-A.
 - Preserve every existing uncommitted POM, Web, and License candidate change; adjust overlapping files only with minimal patches.
 - Preserve `ddd4j-quarkus-mq/ddd4j-quarkus-mq-mqtt/ddd4j-mq-720a11be-fdbd-4905-83e5-008a70164f2e-tcplocalhost65400/`; never stage, delete, move, or edit it.
 - Use `revision=4.0.x.20260630-SNAPSHOT`, `ddd4j.version=3.0.x.20260630-SNAPSHOT`, Quarkus BOM/plugin `3.38.2`, Testcontainers `2.0.5`, Java 21, Maven Model 4.1.0, and temporary `modules/module` aggregation.
 - Do not introduce `subprojects/subproject`; it remains blocked until Quarkus WorkspaceLoader supports Maven Model 4.1 aggregation.
-- Do not split runtime/deployment artifacts, change Data/Auth/MQ production semantics, or touch `feature/3.3.x` in this plan.
+- Do not split runtime/deployment artifacts, change Data/Auth/MQ production semantics beyond the approved Snowflake follow-up, or touch `feature/3.3.x` in this plan.
 - Do not print `MAVEN_SETTINGS_XML`, Maven usernames, passwords, repository authorization headers, or decoded settings content.
 - Use Maven Wagon transport for authenticated Aliyun snapshot resolution: `-Dmaven.resolver.transport=wagon`.
 - Do not push or deploy without a new explicit authorization after local verification.
