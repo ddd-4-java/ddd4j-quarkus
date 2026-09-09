@@ -24,19 +24,11 @@
         <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-web-quarkus</artifactId>
-            <version>${ddd4j.version}</version>
-        </dependency>
-        <!-- 主仓 ddd4j-web-core（框架中立 Web 抽象：WebRequestContext/SynchronousWebRequestSession 等） -->
-        <dependency>
-            <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-web-core</artifactId>
-            <version>${ddd4j.version}</version>
         </dependency>
         <!-- 主仓 ddd4j-runtime-quarkus（Subject/CDI 桥接） -->
         <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-runtime-quarkus</artifactId>
-            <version>${ddd4j.version}</version>
         </dependency>
         <!-- RESTEasy Reactive（Quarkus 默认 REST 实现） -->
         <dependency>
