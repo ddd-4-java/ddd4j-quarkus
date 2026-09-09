@@ -14,11 +14,11 @@
 
 Tasks 1–4 已完成提交和各自审查，依据本次独立克隆中的 progress ledger 与提交记录：Task 1 `53457a1`；Web `9e6a4c2` 与 Quarkus BOM 顺序修正 `ace5097`；License `b2936f1`；CI `7c62a27`。
 
-Task 5 首轮 Java 17 qrcode 编译失败作为 RED 保留。Fix round 1 改用 ddd4j BOM 管理的 easy4j ZXing，Java 17 qrcode clean test 通过后，重新执行 Java 17/21 全量 clean verify，均为 62/62 SUCCESS、53 suites / 185 tests / 0 failures / 0 errors / 11 skipped。随后按新增坐标规则清理 Jackson 旧管理项和说明，并补验依赖树与受影响模块。远端最终版本解析、Web/License 定向测试和 actionlint/结构检查已有本轮独立证据。最终复审与 final-HEAD 全门禁仍待执行；准确日志对应关系见 [CAPABILITY-ALIGNMENT](../../CAPABILITY-ALIGNMENT.md)。
+Task 5 已完成，本线状态为 `feature/3.3.x P5-A 本地完成`。首轮 Java 17 qrcode 失败经 easy4j 坐标修复消除，Jackson 坐标清理和最终审查修正均已纳入代码 HEAD `597a5b7`。该 HEAD 的最终 Java 17/21 `clean verify -Denforcer.skip=true` 各为 62/62 SUCCESS、53 suites / 186 tests / 0 failures / 0 errors / 11 skipped。远端消费者、Web/License 定向验证、actionlint、分支合约与退役 groupId 零引用、diff/status 门禁均通过；准确日志对应关系见 [CAPABILITY-ALIGNMENT](../../CAPABILITY-ALIGNMENT.md)。push/deploy 与 GitHub-hosted Actions 等非目标仍未验收。
 
 ## Global Constraints
 
-最终审查单轮修正范围：补强 Web 资源方法内 request-id/Authorization 绑定证据；License 增加嵌套部分材料异常路径和真实 false 签发路径的清理验证；修正 ci.yml、根 POM、dependencies POM 的陈旧注释。本轮不更改生产过滤器、License 实现或依赖版本。定向与受影响模块的双 JDK 结果见能力证据；最终复审与 final-HEAD 全量门禁由最终阶段继续。
+最终审查单轮修正范围：补强 Web 资源方法内 request-id/Authorization 绑定证据；License 增加嵌套部分材料异常路径和真实 false 签发路径的清理验证；修正 ci.yml、根 POM、dependencies POM 的陈旧注释。本轮不更改生产过滤器、License 实现或依赖版本。定向、受影响模块及最终 HEAD 的双 JDK 全量门禁均已完成，结果见能力证据。
 
 - 目标分支仅为 `feature/3.3.x`；不修改 `master` 或 `feature/4.0.x`。
 - 保持 `revision=3.3.x.20260630-SNAPSHOT`、Quarkus BOM/插件 `3.37.4`、Java 基线 17。
@@ -434,7 +434,7 @@ git commit -m "ci: resolve published ddd4j 2.0 snapshot remotely"
 - Consumes: Tasks 1–4 commits and their reports.
 - Produces: final Java 17/21 evidence, exact XML totals, scoped documentation, and a push/deploy authorization checkpoint.
 
-Fix round 1 retains the first Java17 qrcode compiler failure as RED, uses the published Java17-compatible easy4j ZXing artifact already managed by imported ddd4j BOM, then requires a Java17 qrcode clean test plus fresh Java17 and Java21 full clean verify. The later coordinate-rule cleanup additionally requires qrcode/Jackson dependency trees, affected-module clean tests, and a zero-reference tracked-source scan. ci.yml remains outside this fix's file ownership. Keep historical failure logs separate from passing logs/XML; deferred final review and final-HEAD gates remain explicit.
+Fix round 1 retained the first Java17 qrcode compiler failure as RED and used the Java17-compatible easy4j ZXing artifact managed by imported ddd4j BOM. Its focused and dual-JDK full gates passed. The later coordinate-rule cleanup passed dependency trees, affected-module tests and the zero-reference tracked-source scan. ci.yml was outside that fix's ownership; its subsequent final-review comment correction was separately authorized. Historical logs remain separate; final code HEAD `597a5b7` has now passed both full completion gates.
 
 - [x] **Step 1: Repeat empty-cache remote resolution**
 
@@ -534,3 +534,5 @@ Report every local commit, exact status, remote resolution, both JDK reactor res
 ## Cross-task Review Gate
 
 After every task, dispatch an independent reviewer against that task's base/head range. Fix all Critical and Important findings, then use a fresh scoped re-reviewer. After Task 5, perform one final review across the complete implementation range and rerun the full completion gate on the final HEAD before claiming success.
+
+Completion record: final-review corrections are committed at `597a5b7`, whose Java17 and Java21 full gates both passed with 53 suites / 186 tests / 0 failures / 0 errors / 11 skipped and 62/62 reactor modules. The local P5-A scope is complete; publication and hosted execution are not included.

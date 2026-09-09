@@ -2,7 +2,20 @@
 
 本页只记录 `feature/3.3.x` 在普通独立克隆 `ddd4j-quarkus-33x-sync` 中于 2026-09-09 执行的本地门禁。首轮代码基线为 `7c62a27`；Fix round 1 在 `7c62cdd` 上修复 POM 并重新验证。中断前 Task 5 及 `feature/4.0.x` 的运行结果均未复用。规格事实源为 [P5-A design](superpowers/specs/2026-09-09-feature-33x-p5a-capability-sync-design.md)，实施步骤见 [plan](superpowers/plans/2026-09-09-feature-33x-p5a-capability-sync.md)。
 
-当前状态：**Fix round 1 双 JDK 全量门禁通过；最终审查修正的双 JDK 模块门禁通过，待复审与 final-HEAD 全量门禁**。首轮 Java 17 阻塞已由 QR 依赖坐标修复解决，原始失败证据保留在下文。
+当前状态：**feature/3.3.x P5-A 本地完成**。最终代码验收 HEAD 为 `597a5b7`，已包含坐标清理、Web/License 审查修正和 CI/BOM 注释修正，并通过双 JDK 完整门禁。以下首轮失败及 185 tests 记录均为历史证据，当前验收统计以本节的 186 tests 为准。
+
+## 最终代码 HEAD 597a5b7 验收
+
+两个 JDK 分别执行 `./mvnw -B clean verify -Denforcer.skip=true`，均返回 0，所有 62 个 reactor 模块成功。最终独立报告统计如下：
+
+| JDK | Reactor | suites | tests | failures | errors | skipped | 耗时 | 结束时间（+08:00） |
+|---|---|---|---|---|---|---|---|---|
+| 17 | 62/62 SUCCESS | 53 | 186 | 0 | 0 | 11 | 07:05 | 2026-09-09 16:18:25 |
+| 21 | 62/62 SUCCESS | 53 | 186 | 0 | 0 | 11 | 05:57 | 2026-09-09 16:24:56 |
+
+原始日志为 `/tmp/ddd4j-p5a-33-final-jdk17.log` 和 `/tmp/ddd4j-p5a-33-final-jdk21.log`；两份日志逐 suite 汇总均与上述统计一致。最终 HEAD 的 actionlint、分支合约扫描、退役 groupId 零引用、diff/status 检查通过。11 个 skip 按下方 XML 原始理由保留，不从 tests 中减去。
+
+最终审查新增的 License 清理测试已计入 186 tests；Web 4 tests、License 5 tests 均包含在本次全量结果中。本次后续提交仅更新文档，不修改已经验证的代码、POM 或 CI。GitHub-hosted Actions、Enforcer、push/deploy、Native、Dev Mode、云服务、P5-B–E、master 和生产验收仍不属于本地完成范围。
 
 ## 版本与远端消费者
 
@@ -36,7 +49,7 @@ Task 1 的版本选择记录说明 `20260730` 缺少 `io.ddd4j:ddd4j-dependencie
 
 该独立消费者验证 ddd4j 制品及其传递依赖的可下载性；其上游 BOM 自身可拉取 Quarkus 3.38.2，这不代表本仓运行时版本。本仓通过优先导入 Quarkus 3.37.4 BOM 固定版本，实际测试启动日志与构建插件日志是运行版本证据。
 
-## Web 与 License 行为
+## 首轮 Web 与 License 行为验证（历史）
 
 JDK 17 上重新执行两个模块门禁，退出码均为 0：
 
@@ -68,7 +81,7 @@ Java 17 定向 GREEN：Web `-Dtest=Ddd4jQuarkusWebConsumerTest` 为 1 suite / 2 
 
 Java 17（XML `17.0.20.1`）返回 0，4/4 模块 SUCCESS，22.865s，结束 `16:02:21+08:00`；Java 21（XML `21.0.12.1`）返回 0，4/4 模块 SUCCESS，16.582s，结束 `16:02:57+08:00`。每个 JDK 独立保存 4 suites / 9 tests / 0 failures / 0 errors / 0 skipped：Web 4、License 5。此处只统计这两模块 fresh XML，历史 full reactor 185 tests 不因新增用例被改写成未经执行的全量统计。
 
-新日志及按 JDK 保存的 XML/JSON 位于 `/tmp/ddd4j-p5a-33-final-fixes.orpSyP`。定向报告只选运行的测试类，分别位于 `web-focused-only`、`license-focused-only`；初始 `web-focused` 混入旧健康检查 XML，不作为新定向证据。`modules-jdk17` 与 `modules-jdk21` 均源自各自 clean test。actionlint、零退役 groupId、CI 源码修改模式扫描、目标 POM 结构扫描与 diff 检查均通过。真实 false 路径会记录预期的 `Invalid keystore format` 错误；日志不包含口令或真实私钥材料。最终复审及 final-HEAD 全量门禁由最终阶段继续。
+新日志及按 JDK 保存的 XML/JSON 位于 `/tmp/ddd4j-p5a-33-final-fixes.orpSyP`。定向报告只选运行的测试类，分别位于 `web-focused-only`、`license-focused-only`；初始 `web-focused` 混入旧健康检查 XML，不作为新定向证据。`modules-jdk17` 与 `modules-jdk21` 均源自各自 clean test。actionlint、零退役 groupId、CI 源码修改模式扫描、目标 POM 结构扫描与 diff 检查均通过。真实 false 路径会记录预期的 `Invalid keystore format` 错误；日志不包含口令或真实私钥材料。这些修正提交于 `597a5b7`，已由本页开头的最终 HEAD 双 JDK 全量门禁覆盖。
 
 ## 首轮 Java 17 全量门禁与发布依赖阻塞（修复前 RED）
 
@@ -82,9 +95,9 @@ Java 17 已完成模块的新 XML 为 **32 suites / 106 tests / 0 failures / 0 e
 
 ## 首轮 Java 21 全量门禁（修复前）
 
-`JAVA_HOME` 指向 Microsoft 21.0.12.1、对应 `bin` 在 PATH 首位，独立执行 `./mvnw -B clean verify -Denforcer.skip=true`，返回 0；耗时 08:29，结束于 `2026-09-09T14:59:41+08:00`，62/62 模块 SUCCESS。最终 XML 为 **53 suites / 185 tests / 0 failures / 0 errors / 11 skipped**；报告存于 `jdk21/xml/`，摘要 `jdk21/summary.json`，日志 `jdk21-clean-verify.log`。XML java.version 唯一值为 `21.0.12.1`；Java 17 新报告的唯一值为 `17.0.20.1`。
+`JAVA_HOME` 指向 Microsoft 21.0.12.1、对应 `bin` 在 PATH 首位，独立执行 `./mvnw -B clean verify -Denforcer.skip=true`，返回 0；耗时 08:29，结束于 `2026-09-09T14:59:41+08:00`，62/62 模块 SUCCESS。该轮历史 XML 为 **53 suites / 185 tests / 0 failures / 0 errors / 11 skipped**；报告存于 `jdk21/xml/`，摘要 `jdk21/summary.json`，日志 `jdk21-clean-verify.log`。XML java.version 唯一值为 `21.0.12.1`；Java 17 新报告的唯一值为 `17.0.20.1`。
 
-首轮 Java 21 的通过未替代当时失败的 Java 17 维护基线。Fix round 1 的双 JDK 新结果如下，最终复审与 final-HEAD 全门禁仍待执行。
+首轮 Java 21 的通过未替代当时失败的 Java 17 维护基线。Fix round 1 的历史修复结果如下，当前最终代码验收以本页开头的 `597a5b7` 双 JDK 门禁为准。
 
 ## Fix round 1：恢复 QR 依赖的 Java 17 合约
 
@@ -100,7 +113,7 @@ Fix round 1 的新日志与 XML 独立保存于 `/tmp/ddd4j-p5a-33-fix1.jQvV1w`�
 
 修复后的 Java 21 使用同一组 POM 重新执行完整 `clean verify -Denforcer.skip=true`，返回 0，62/62 SUCCESS，耗时 13:33，结束于 `2026-09-09T15:39:08+08:00`。独立 `jdk21/` XML 归档同为 53 suites / 185 tests / 0 failures / 0 errors / 11 skipped。
 
-双 JDK 全量完成后，按新增 groupId 规则删除 dependencies POM 中已无消费者的旧 Jackson 管理项；当前发布的 ddd4j-data-crypto POM 未声明 Jackson 扩展，导入的 ddd4j BOM 已管理 `io.github.easy4j:jackson-extension:2.0.x.20260630-SNAPSHOT`。Jackson 模块仅更新 description/Javadoc，继续使用自包含 Jackson 2 序列化实现，未新增运行时依赖。此最后清理由 qrcode/Jackson 依赖树和模块 clean test 补验，完整双 JDK 日志对应清理前状态；最终 HEAD 全门禁仍由最终审查阶段执行。
+双 JDK 全量完成后，按新增 groupId 规则删除 dependencies POM 中已无消费者的旧 Jackson 管理项；当前发布的 ddd4j-data-crypto POM 未声明 Jackson 扩展，导入的 ddd4j BOM 已管理 `io.github.easy4j:jackson-extension:2.0.x.20260630-SNAPSHOT`。Jackson 模块仅更新 description/Javadoc，继续使用自包含 Jackson 2 序列化实现，未新增运行时依赖。该清理当时以 qrcode/Jackson 依赖树和模块 clean test 补验，以上历史双 JDK 日志对应清理前状态；此后 `597a5b7` 的最终完整门禁已覆盖全部清理与审查修正。
 
 最后清理后的依赖树返回 0：qrcode 只含 easy4j ZXing；Jackson 模块未增加 Jackson extension 运行时依赖。qrcode/Jackson 的双 JDK `-am clean test` 补验各为 4/4 模块、2 suites / 6 tests / 0 failures / 0 errors / 0 skipped。Java 17 结束于 `15:40:48+08:00`（15.973s），Java 21 结束于 `15:43:34+08:00`（15.749s）；独立归档为 `final-modules-jdk17/`、`final-modules-jdk21/`。全仓已跟踪文件的退役 groupId 扫描为零匹配，结果保存在 `final-retired-group-scan.log`。
 

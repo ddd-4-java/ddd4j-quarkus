@@ -24,7 +24,7 @@
 | P2 plan | [plans/2026-08-07-p2-mq-testcontainers.md](plans/2026-08-07-p2-mq-testcontainers.md) | P2 实施步骤（已完成 ✅） |
 | P3 spec | [specs/2026-08-08-p3-auth-samples-ci-design.md](specs/2026-08-08-p3-auth-samples-ci-design.md) | Auth + samples + CI/CD |
 | P3 plan | [plans/2026-08-08-p3-auth-samples-ci.md](plans/2026-08-08-p3-auth-samples-ci.md) | P3 实施步骤（已完成 ✅） |
-| 3.3.x P5-A spec | [specs/2026-09-09-feature-33x-p5a-capability-sync-design.md](specs/2026-09-09-feature-33x-p5a-capability-sync-design.md) | Task 5 坐标修复后双 JDK 门禁通过；最终复审待执行 |
+| 3.3.x P5-A spec | [specs/2026-09-09-feature-33x-p5a-capability-sync-design.md](specs/2026-09-09-feature-33x-p5a-capability-sync-design.md) | feature/3.3.x P5-A 本地完成；代码 HEAD 597a5b7 双 JDK 最终门禁通过 |
 | 3.3.x P5-A plan | [plans/2026-09-09-feature-33x-p5a-capability-sync.md](plans/2026-09-09-feature-33x-p5a-capability-sync.md) | 普通独立克隆重新执行全部门禁；禁止 Git worktree |
 | 3.3.x P5-A evidence | [../CAPABILITY-ALIGNMENT.md](../CAPABILITY-ALIGNMENT.md) | 本线版本、消费者、Web/License、双 JDK 结果及 skip 原因 |
 
@@ -103,9 +103,9 @@
 ## 当前快照
 
 - 本页此前的 P0–P3 完成状态、318 tests 与 14 broker 通过记录属于历史快照，不能作为 3.3.x P5-A 本次门禁证据。
-- 当前 3.3.x P5-A：Task 5 的 Java 17 字节码阻塞已通过 easy4j ZXing 坐标修复消除，修复后双 JDK 全量门禁通过；最终复审和 final-HEAD 门禁仍待执行。
-- 最终审查单轮修正已补强 Web 绑定/清理与 License 部分材料/false 签发清理，并纠正 CI/BOM 注释；双 JDK 受影响模块均为 4 suites / 9 tests（Web 4、License 5），failures/errors/skipped 均为 0。下列 185 tests 为修正前的完整历史统计；最终复审及 final-HEAD 全量门禁待完成。
-- 本次空缓存消费者、Web 4 tests、License 4 tests 通过；修复后 Java 17/21 均为 62/62 模块、53 suites / 185 tests / 11 skipped，failures/errors 均为 0。首轮失败与最后坐标清理补验均独立保留，逐项 skip 见 [能力证据](../CAPABILITY-ALIGNMENT.md)。
+- 当前状态：`feature/3.3.x P5-A 本地完成`。代码 HEAD `597a5b7` 已完成最终 Java 17/21 `clean verify -Denforcer.skip=true`，各 62/62 模块、53 suites / 186 tests / 0 failures / 0 errors / 11 skipped。
+- 最终审查修正已补强 Web 绑定/清理与 License 部分材料/false 签发清理，并纠正 CI/BOM 注释；双 JDK 受影响模块均为 4 suites / 9 tests（Web 4、License 5），failures/errors/skipped 均为 0，已纳入最终 HEAD 全量结果。
+- 空缓存消费者、actionlint、分支合约扫描、退役 groupId 零引用、diff/status 检查均通过；首轮失败与历史补验独立保留，最终日志和逐项 skip 见 [能力证据](../CAPABILITY-ALIGNMENT.md)。
 - 自有第三方组件统一采用 `io.github.easy4j`，全仓已跟踪源码、POM、注释和文档中的退役 groupId 以零引用为门禁。
 - CI 静态结构为 `workflow-lint`、Java 17/21 `unit-and-contract`、13 broker `broker-integration`；GitHub-hosted Actions 未实际验证。
 - Native、Dev Mode、Enforcer、deploy、云服务、P5-B–E、master 和生产用户验收均不由此更新。

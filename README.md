@@ -34,11 +34,11 @@ P5A_CONSUMER_REPO="$(mktemp -d /tmp/ddd4j-quarkus-consumer.XXXXXX)"
 
 Maven settings 必须能访问已发布 ddd4j 快照仓库；消费者直接解析已发布制品。`-Denforcer.skip=true` 表示本阶段未验收 Enforcer。详细运行结果与限制见 [P5-A 能力证据](docs/CAPABILITY-ALIGNMENT.md)。
 
-2026-09-09 已将 QR 依赖切换到 BOM 管理的 `io.github.easy4j:zxing-extension`，修复 Java 17 字节码不兼容。修复后 Java 17/21 全量均为 62/62 模块成功，各 53 suites、185 tests、0 failures/errors、11 skipped；最后坐标清理的补验和历史失败见能力证据。最终复审与 final-HEAD 门禁仍待执行。
+2026-09-09 `feature/3.3.x P5-A 本地完成`。代码验收 HEAD `597a5b7` 的 Java 17/21 `clean verify -Denforcer.skip=true` 均为 62/62 模块成功，各 53 suites、186 tests、0 failures、0 errors、11 skipped；完整日志、skip 原因和历史修复见能力证据。GitHub-hosted Actions、Enforcer、push/deploy、Native、Dev Mode、云服务、P5-B–E 与 master 不属于本次本地完成声明。
 
 自有第三方组件统一使用 `io.github.easy4j`；源码、POM、注释和文档均不得保留退役发布组引用。版本优先沿用 ddd4j BOM 管理，不在叶模块重复固定。
 
-最终审查修正已补强 Web 清理前绑定及 License 部分材料/false 签发清理证据，并更正 CI/BOM 注释。受影响模块的 Java 17/21 clean test 均通过：Web 4 tests、License 5 tests，共 4 suites / 9 tests，failures/errors/skipped 均为 0。上文 185 tests 是修正前全量历史结果；最终复审及 final-HEAD 全量门禁待完成。
+最终审查修正已补强 Web 清理前绑定及 License 部分材料/false 签发清理证据，并更正 CI/BOM 注释。受影响模块的 Java 17/21 clean test 均通过：Web 4 tests、License 5 tests，共 4 suites / 9 tests，failures/errors/skipped 均为 0；随后已完成上述最终 HEAD 双 JDK 全量门禁。
 
 ## CI 前置条件：`MAVEN_SETTINGS_XML` 组织 secret
 

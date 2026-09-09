@@ -70,11 +70,11 @@ actionlint .github/workflows/ci.yml
    禁止在子模块写裸版本号；Quarkus 组件跟随 quarkus-bom，禁止覆盖版本。
 6. **自有第三方坐标**：统一使用 `io.github.easy4j`，已跟踪源码、POM、注释和文档中的退役 groupId 必须零引用。优先使用导入的 ddd4j BOM 管理版本；已有管理时删除重复本地条目，不新增无必要的运行时依赖。
 
-2026-09-09 Fix round 1 将 ZXing 切换为 BOM 管理的 easy4j 坐标并重新完成 Java 17/21 全量验证（各 62/62 模块、53 suites / 185 tests / 11 skipped，failures/errors 均为 0）。Jackson 继续使用自包含 Jackson 2 实现，旧管理项和说明清理后另做模块补验。最终复审与 final-HEAD 门禁尚待执行，日志边界见能力证据。
+2026-09-09 `feature/3.3.x P5-A 本地完成`：代码 HEAD `597a5b7` 的 Java 17/21 最终 `clean verify -Denforcer.skip=true` 均为 62/62 模块、53 suites / 186 tests / 0 failures / 0 errors / 11 skipped。ZXing 采用 BOM 管理的 easy4j 坐标；Jackson 继续使用自包含 Jackson 2 实现。原始日志和各次补验边界见能力证据。
 
 ## 提交规范
 
-最终审查修正补验：Web 与 License 在 Java 17/21 下各执行 `-am clean test`，均为 4 suites / 9 tests / 0 failures/errors/skipped（Web 4、License 5）。新增 License 用例分别覆盖部分材料准备异常与真实签发 false 返回，Web 先验证资源方法内绑定，再断言同线程清理。历史 185 tests 统计不作为新增测试后的全量结果；最终复审与 final-HEAD 全量门禁继续保留。
+最终审查修正补验：Web 与 License 在 Java 17/21 下各执行 `-am clean test`，均为 4 suites / 9 tests / 0 failures/errors/skipped（Web 4、License 5）。新增 License 用例分别覆盖部分材料准备异常与真实签发 false 返回，Web 先验证资源方法内绑定，再断言同线程清理；最终 HEAD 全量验证已包含这些修正。
 
 - 分支：维护目标为 `feature/3.3.x`；按新版 AGENTS.md，创建或切换分支须先获授权，禁止 Git worktree。本次在普通独立克隆 `ddd4j-quarkus-33x-sync` 执行。
 - 提交信息：参考 [Conventional Commits](https://www.conventionalcommits.org/)，
