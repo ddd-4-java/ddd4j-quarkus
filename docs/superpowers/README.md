@@ -24,6 +24,9 @@
 | P2 plan | [plans/2026-08-07-p2-mq-testcontainers.md](plans/2026-08-07-p2-mq-testcontainers.md) | P2 实施步骤（已完成 ✅） |
 | P3 spec | [specs/2026-08-08-p3-auth-samples-ci-design.md](specs/2026-08-08-p3-auth-samples-ci-design.md) | Auth + samples + CI/CD |
 | P3 plan | [plans/2026-08-08-p3-auth-samples-ci.md](plans/2026-08-08-p3-auth-samples-ci.md) | P3 实施步骤（已完成 ✅） |
+| 3.3.x P5-A spec | [specs/2026-09-09-feature-33x-p5a-capability-sync-design.md](specs/2026-09-09-feature-33x-p5a-capability-sync-design.md) | Tasks 1–4 已提交；Task 5 Java 17 发布依赖字节码阻塞 |
+| 3.3.x P5-A plan | [plans/2026-09-09-feature-33x-p5a-capability-sync.md](plans/2026-09-09-feature-33x-p5a-capability-sync.md) | 普通独立克隆重新执行全部门禁；禁止 Git worktree |
+| 3.3.x P5-A evidence | [../CAPABILITY-ALIGNMENT.md](../CAPABILITY-ALIGNMENT.md) | 本线版本、消费者、Web/License、双 JDK 结果及 skip 原因 |
 
 ## 规范骨架
 
@@ -99,11 +102,11 @@
 
 ## 当前快照
 
-- **阶段状态**：P0 / P1 / P2 / P3 全部完成
-- **测试总数**：318 个（0 失败）
-- **集成测试**：14 broker testcontainers 真实运行通过
-- **CI**：3 阶段（workflow-lint + JDK 17/21 build matrix + infrastructure-integration）
-- **生产用户**：cloud-das（com.bmgw），版本管理已整体移交 ddd4j-quarkus
+- 本页此前的 P0–P3 完成状态、318 tests 与 14 broker 通过记录属于历史快照，不能作为 3.3.x P5-A 本次门禁证据。
+- 当前 3.3.x P5-A：Tasks 1–4 已提交，Task 5 Java 17 clean verify 因远端 zxing-extension 的 Java 21 字节码失败；尚未本地完成。
+- 本次空缓存消费者、Web 4 tests、License 4 tests 通过；Java 21 为 62/62 模块、53 suites / 185 tests / 11 skipped，Java 17 部分 reactor 为 32 suites / 106 tests / 10 skipped；两者 XML failures/errors 均为 0，但 Java 17 编译失败。逐项 skip 见 [能力证据](../CAPABILITY-ALIGNMENT.md)。
+- CI 静态结构为 `workflow-lint`、Java 17/21 `unit-and-contract`、13 broker `broker-integration`；GitHub-hosted Actions 未实际验证。
+- Native、Dev Mode、Enforcer、deploy、云服务、P5-B–E、master 和生产用户验收均不由此更新。
 
 ## 已登记的待办（不在 P0-P3 范围）
 

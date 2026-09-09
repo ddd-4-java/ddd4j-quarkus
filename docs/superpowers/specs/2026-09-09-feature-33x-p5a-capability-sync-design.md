@@ -1,6 +1,6 @@
 # feature/3.3.x P5-A 能力同步设计
 
-> 状态：规格确认，待实施计划
+> 状态：进行中；Tasks 1–4 已提交，Task 5 被 Java 17 全量门禁阻塞
 >
 > 目标分支：`feature/3.3.x`
 >
@@ -73,12 +73,12 @@
 
 ## 5. 版本解析门禁
 
-当前 3.3.x 根 POM 同时出现：
+实施前的 3.3.x 根 POM 同时出现：
 
 - parent `io.ddd4j:ddd4j-parent:2.0.x.20260630-SNAPSHOT`
 - 属性 `ddd4j.version=2.0.x.20260730-SNAPSHOT`
 
-实施不得预设哪一个是正确最终版本。第一任务必须从全新 Maven 本地仓库验证以下制品的远端可消费性：
+Task 1 已按下列规则选择 `2.0.x.20260630-SNAPSHOT`，并统一 parent、属性与消费者；`20260730` 缺少 `io.ddd4j:ddd4j-dependencies:pom`。第一任务从全新 Maven 本地仓库验证以下制品的远端可消费性，Task 5 再次独立验证：
 
 - `io.ddd4j:ddd4j-parent`
 - `io.ddd4j:ddd4j-dependencies`
@@ -203,9 +203,9 @@ Quarkus test profile 必须在 CDI 创建 `LicenseVerify` 之前完成：
 
 ## 11. Git 与工作区约束
 
-- 本次经用户明确允许使用现有 `ddd4j-quarkus-wt-33x` worktree。
-- 不创建额外 worktree。
-- 实施前保护现有两个 MQTT UUID 运行目录；它们不得暂存或提交。
+- 新版 AGENTS.md 禁止使用 Git worktree；执行已迁移到普通独立克隆 `ddd4j-quarkus-33x-sync`，其 `.git` 是独立目录。
+- 不创建、访问或修改任何 Git worktree。中断前 Task 5 的运行证据不复用，所有门禁在独立克隆重新运行。
+- 保护 MQTT UUID 运行目录；它们不得暂存或提交。
 - 每个任务限定文件所有权、独立提交、独立审查。
 - 不重写已推送历史，不使用 force push。
 - GitHub 与 Codeup 推送属于实现完成后的独立发布步骤；执行后必须核对本地及两个远端 SHA。
@@ -224,6 +224,8 @@ Quarkus test profile 必须在 CDI 创建 `LicenseVerify` 之前完成：
 | master 被错误同步 | 本规格明确排除 master |
 
 ## 13. 完成定义
+
+2026-09-09 独立克隆重跑结果：远端消费者和 Web/License 定向测试通过；Java 17 full clean verify 在 qrcode 编译失败，发布的 `zxing-extension` 为 Java 21 字节码。当前未满足本节完成定义，不得标记“feature/3.3.x P5-A 本地完成”。原始统计、失败原因和范围见 [能力证据](../../CAPABILITY-ALIGNMENT.md)。最终独立审查和修复后 final-HEAD 门禁仍待执行。
 
 本变更完成必须同时满足：
 

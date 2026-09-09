@@ -10,12 +10,18 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-09-feature-33x-p5a-capability-sync-design.md`
 
+## Execution Status — 2026-09-09
+
+Tasks 1–4 已完成提交和各自审查，依据本次独立克隆中的 progress ledger 与提交记录：Task 1 `53457a1`；Web `9e6a4c2` 与 Quarkus BOM 顺序修正 `ace5097`；License `b2936f1`；CI `7c62a27`。
+
+Task 5 重新验证：空缓存最终版本解析、Web/License 定向测试、actionlint 与结构检查通过；Java 17 完整 clean verify 在第 38/62 个模块 qrcode 编译失败。远端发布的 `zxing-extension` 为 Java 21 class major 65，不满足 Java 17 的 61 基线。Java 21 clean verify 为 62/62 SUCCESS，53 suites / 185 tests / 0 failures / 0 errors / 11 skipped；Java 17 只完成 32 suites / 106 tests / 0 failures / 0 errors / 10 skipped。Task 5 未完成，最终独立审查与修复后的 final-HEAD 全门禁仍待执行；逐项证据见 [CAPABILITY-ALIGNMENT](../../CAPABILITY-ALIGNMENT.md)。未将失败门禁勾选通过。
+
 ## Global Constraints
 
 - 目标分支仅为 `feature/3.3.x`；不修改 `master` 或 `feature/4.0.x`。
 - 保持 `revision=3.3.x.20260630-SNAPSHOT`、Quarkus BOM/插件 `3.37.4`、Java 基线 17。
 - 保持 Maven Model `4.0.0` 与 `<modules>`；禁止引入 `<subprojects>`。
-- 使用已获用户许可的现有 worktree `ddd4j-quarkus-wt-33x`，不创建额外 worktree。
+- 根据新版 AGENTS.md，在普通独立克隆 `ddd4j-quarkus-33x-sync` 中执行；禁止创建、访问或修改 Git worktree。中断前 Task 5 的证据不复用，全部门禁重新运行。
 - 保护现有 MQTT UUID 运行目录，不暂存、不提交其中的 `.lck`。
 - 不复制 ddd4j 的生产 Web filter 或 License 实现。
 - 所有 ddd4j 版本结论必须来自全新 Maven 本地仓库，不得依赖现有 `~/.m2`。
@@ -37,7 +43,7 @@
 - Consumes: Aliyun snapshot repository configured by the user's Maven settings.
 - Produces: one verified `ddd4j.version` used by Tasks 2–5 and a standalone remote-consumer POM containing runtime, Web, and License coordinates.
 
-- [ ] **Step 1: Create the remote consumer with the current 20260730 candidate**
+- [x] **Step 1: Create the remote consumer with the current 20260730 candidate**
 
 Create `.github/maven/ddd4j-remote-consumer/pom.xml` with Model 4.0.0, packaging `pom`, and:
 
@@ -75,7 +81,7 @@ Create `.github/maven/ddd4j-remote-consumer/pom.xml` with Model 4.0.0, packaging
 </dependencies>
 ```
 
-- [ ] **Step 2: Test 20260730 from an empty Maven repository**
+- [x] **Step 2: Test 20260730 from an empty Maven repository**
 
 Run:
 
@@ -89,7 +95,7 @@ P5A_33_VERSION_REPO="$(mktemp -d /tmp/ddd4j-p5a-33-version.XXXXXX)"
 
 Expected: either exit 0 with all three JARs and imported dependencies present, or a recorded failure naming the missing 20260730 coordinate. A cached artifact outside `$P5A_33_VERSION_REPO` is not evidence.
 
-- [ ] **Step 3: Apply the deterministic fallback only if the candidate is incomplete**
+- [x] **Step 3: Apply the deterministic fallback only if the candidate is incomplete**
 
 If Step 2 fails because any 20260730 parent/BOM/runtime/Web/License coordinate is absent, change only the fixture property to:
 
@@ -99,7 +105,7 @@ If Step 2 fails because any 20260730 parent/BOM/runtime/Web/License coordinate i
 
 Then run Step 2 again with a newly created directory, not the failed repository. Expected: exit 0. If both versions fail, stop Task 1 and report the exact missing coordinates; do not edit the reactor POMs.
 
-- [ ] **Step 4: Normalize the reactor to the verified version**
+- [x] **Step 4: Normalize the reactor to the verified version**
 
 Set the root parent and `ddd4j.version` to the same verified value. In `ddd4j-quarkus-dependencies/pom.xml` and `ddd4j-quarkus-bom/pom.xml`, manage at least:
 
@@ -123,7 +129,7 @@ Set the root parent and `ddd4j.version` to the same verified value. In `ddd4j-qu
 
 Do not change `revision`, Quarkus versions, Model 4.0.0, wrapper distribution, or `<modules>`.
 
-- [ ] **Step 5: Verify model and effective versions**
+- [x] **Step 5: Verify model and effective versions**
 
 Run:
 
@@ -138,7 +144,7 @@ rg -n '<modelVersion>|<revision>|<ddd4j.version>|<quarkus-bom.version>|<maven-qu
 
 Expected: validation succeeds; all relevant ddd4j dependencies resolve to the verified version; Model 4.0.0 and Quarkus 3.37.4 remain unchanged.
 
-- [ ] **Step 6: Commit Task 1 files**
+- [x] **Step 6: Commit Task 1 files**
 
 ```bash
 git add pom.xml ddd4j-quarkus-dependencies/pom.xml ddd4j-quarkus-bom/pom.xml \
@@ -160,11 +166,11 @@ git commit -m "build: align Quarkus 3.3 with published ddd4j snapshot"
 - Consumes: Task 1 managed `ddd4j-web-quarkus` and `ddd4j-runtime-quarkus` plus `ThreadContext` constants available in ddd4j 2.0.x.
 - Produces: `GET /ddd4j/contract` behavior and a response probe proving cleanup on the service thread.
 
-- [ ] **Step 1: Write the propagation test**
+- [x] **Step 1: Write the propagation test**
 
 Create `Ddd4jQuarkusWebConsumerTest` with a first request that sends `X-Tenant-Id: tenant-consumer` and asserts status 200, a nonblank `X-Request-Id`, and JSON `tenantId=tenant-consumer`. Add a second request without tenant and assert `tenantId` is null as a secondary regression signal.
 
-- [ ] **Step 2: Write the deterministic cleanup test**
+- [x] **Step 2: Write the deterministic cleanup test**
 
 Add a request containing tenant, request ID, and Authorization. Assert the resource service-thread value equals the probe response header and that these headers are all `true`:
 
@@ -174,7 +180,7 @@ X-Ddd4j-Test-Post-Response-Request-Id-Cleared
 X-Ddd4j-Test-Post-Response-Authorization-Cleared
 ```
 
-- [ ] **Step 3: Run the tests before creating the resource**
+- [x] **Step 3: Run the tests before creating the resource**
 
 ```bash
 ./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-web -am \
@@ -183,13 +189,13 @@ X-Ddd4j-Test-Post-Response-Authorization-Cleared
 
 Expected: fail because `/ddd4j/contract` or its probe does not exist. Record the exact failure.
 
-- [ ] **Step 4: Create the contract resource and response probe**
+- [x] **Step 4: Create the contract resource and response probe**
 
 Create a JAX-RS resource returning tenant ID and current thread. Add a test-only `@ServerResponseFilter(priority = Priorities.AUTHENTICATION)` that records the current thread and uses `Objects.isNull(ThreadContext.get(...))` for tenant, request ID, and Authorization.
 
 Before selecting constants, compile against ddd4j 2.0.x. Use the actual 2.0.x symbols; do not add compatibility copies. Verify the published upstream filter priority is `Priorities.USER` or otherwise prove the probe executes after its cleanup under Quarkus 3.37.4 response-filter ordering.
 
-- [ ] **Step 5: Remove leaf dependency versions only when Task 1 manages them**
+- [x] **Step 5: Remove leaf dependency versions only when Task 1 manages them**
 
 The Web POM must consume managed dependencies:
 
@@ -206,7 +212,7 @@ The Web POM must consume managed dependencies:
 
 Retain `ddd4j-web-core` only if a fresh dependency tree proves code in this module directly requires it and it is not supplied by `ddd4j-web-quarkus`.
 
-- [ ] **Step 6: Verify and commit Web behavior**
+- [x] **Step 6: Verify and commit Web behavior**
 
 ```bash
 ./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-web -am \
@@ -233,7 +239,7 @@ Expected: both test runs exit 0, and the commit contains only the three Web file
 - Consumes: Task 1 managed `ddd4j-extension-license` and the ddd4j 2.0.x LicenseCreator API.
 - Produces: a signed license before CDI startup plus install, verify, permission, and cleanup assertions.
 
-- [ ] **Step 1: Strengthen the behavior assertion before fixing fixture ordering**
+- [x] **Step 1: Strengthen the behavior assertion before fixing fixture ordering**
 
 Change `licenseVerifyBeanAssembledWhenLicenseEnabled()` to assert:
 
@@ -243,7 +249,7 @@ assertThat(licenseVerify.isInstallSuccess()).isTrue();
 assertThat(licenseVerify.verify()).isTrue();
 ```
 
-- [ ] **Step 2: Run the focused test to establish RED**
+- [x] **Step 2: Run the focused test to establish RED**
 
 ```bash
 ./mvnw -B -Denforcer.skip=true \
@@ -253,7 +259,7 @@ assertThat(licenseVerify.verify()).isTrue();
 
 Expected: fail because the current `@BeforeAll` runs after Quarkus profile configuration/CDI startup and does not call `LicenseCreator.generateLicense()`.
 
-- [ ] **Step 3: Move fixture preparation before CDI construction**
+- [x] **Step 3: Move fixture preparation before CDI construction**
 
 Implement `LicenseEnabledProfile#prepareFixture()` so `getConfigOverrides()` and `testResources()` share one unique `Files.createTempDirectory("quarkus-license-end2end-")` directory. Generate both keystores, construct `LicenseCreatorParam`, and require:
 
@@ -265,7 +271,7 @@ if (!new LicenseCreator(param).generateLicense()) {
 
 Store the directory path in a test-specific system property only long enough to bridge Quarkus profile class-loader instances.
 
-- [ ] **Step 4: Add permission and cleanup guarantees**
+- [x] **Step 4: Add permission and cleanup guarantees**
 
 On POSIX filesystems set and assert:
 
@@ -276,7 +282,7 @@ files:     OWNER_READ, OWNER_WRITE
 
 Register a `QuarkusTestResourceLifecycleManager` that removes the directory after application shutdown. Implement recursive deletion with try-with-resources around `Files.walk`; preserve per-path cleanup failures and clear the system property. The fixture preparation catch path must also delete the directory when signing fails.
 
-- [ ] **Step 5: Normalize License dependencies from fresh evidence**
+- [x] **Step 5: Normalize License dependencies from fresh evidence**
 
 Remove the explicit version from `ddd4j-extension-license`. Run:
 
@@ -288,7 +294,7 @@ Remove the explicit version from `ddd4j-extension-license`. Run:
 
 Keep the direct versionless `truelicense-core` dependency only if the verified ddd4j 2.0.x published POM does not supply a usable transitive version. Record this ruling in the task report.
 
-- [ ] **Step 6: Verify and commit License behavior**
+- [x] **Step 6: Verify and commit License behavior**
 
 ```bash
 ./mvnw -B -Denforcer.skip=true \
@@ -321,7 +327,7 @@ Expected: focused and module tests pass; no password or key material is printed;
 - Consumes: base64 organization secret `MAVEN_SETTINGS_XML` and Task 1 remote-consumer POM.
 - Produces: secure Maven settings, an empty-cache ddd4j 2.0.x resolution gate, blocking workflow lint, and a clean Git status after MQTT tests.
 
-- [ ] **Step 1: Capture the existing CI anti-patterns**
+- [x] **Step 1: Capture the existing CI anti-patterns**
 
 ```bash
 rg -n 'actions/checkout|sed -i|Install ddd4j|Lint disabled|install-ddd4j' \
@@ -330,7 +336,7 @@ rg -n 'actions/checkout|sed -i|Install ddd4j|Lint disabled|install-ddd4j' \
 
 Expected: the old action checks out/edits ddd4j and workflow lint is a placeholder.
 
-- [ ] **Step 2: Create the secure Maven configuration action**
+- [x] **Step 2: Create the secure Maven configuration action**
 
 Create `.github/actions/configure-maven/action.yml` with one required input `maven-settings-xml`. The first step must:
 
@@ -344,7 +350,7 @@ Decode into the temporary file, validate `<id>2624322-snapshot-3EoOv3</id>`, `ch
 
 The second step must create `$RUNNER_TEMP/ddd4j-p5a-remote.XXXXXX` and run the Task 1 consumer with Wagon `dependency:go-offline`.
 
-- [ ] **Step 3: Prove success and failure settings paths locally**
+- [x] **Step 3: Prove success and failure settings paths locally**
 
 Using temporary HOME directories, exercise the shell body with:
 
@@ -354,7 +360,7 @@ Using temporary HOME directories, exercise the shell body with:
 
 Do not commit any temporary HOME or decoded settings file.
 
-- [ ] **Step 4: Update workflow Java setup and action usage**
+- [x] **Step 4: Update workflow Java setup and action usage**
 
 Replace the lint placeholder with checkout plus:
 
@@ -367,7 +373,7 @@ Replace the lint placeholder with checkout plus:
 
 In `unit-and-contract`, add `actions/setup-java@v4` using `${{ matrix.java }}` before the local composite action. In `broker-integration`, retain Java 17 setup and replace the old install action with the same configure action. Both calls pass only `${{ secrets.MAVEN_SETTINGS_XML }}`.
 
-- [ ] **Step 5: Ignore MQTT client lock directories**
+- [x] **Step 5: Ignore MQTT client lock directories**
 
 Add to the root `.gitignore`:
 
@@ -377,7 +383,7 @@ Add to the root `.gitignore`:
 
 Run `git check-ignore -v` against both existing UUID directories and confirm neither appears in `git status`.
 
-- [ ] **Step 6: Verify workflow semantics**
+- [x] **Step 6: Verify workflow semantics**
 
 ```bash
 actionlint .github/workflows/ci.yml
@@ -393,7 +399,7 @@ rg -n 'install-ddd4j|sed -i|Lint disabled|checkout.*ddd4j' .github || true
 
 Expected: no active source-mutating install reference.
 
-- [ ] **Step 7: Commit CI and ignore changes**
+- [x] **Step 7: Commit CI and ignore changes**
 
 ```bash
 git add .github/actions/configure-maven/action.yml .github/workflows/ci.yml \
@@ -419,7 +425,7 @@ git commit -m "ci: resolve published ddd4j 2.0 snapshot remotely"
 - Consumes: Tasks 1–4 commits and their reports.
 - Produces: final Java 17/21 evidence, exact XML totals, scoped documentation, and a push/deploy authorization checkpoint.
 
-- [ ] **Step 1: Repeat empty-cache remote resolution**
+- [x] **Step 1: Repeat empty-cache remote resolution**
 
 ```bash
 P5A_33_FINAL_REPO="$(mktemp -d /tmp/ddd4j-p5a-33-final.XXXXXX)"
@@ -430,7 +436,7 @@ P5A_33_FINAL_REPO="$(mktemp -d /tmp/ddd4j-p5a-33-final.XXXXXX)"
 
 Expected: exit 0 with runtime, Web, License and imported dependency artifacts in the new directory.
 
-- [ ] **Step 2: Run focused behavior gates**
+- [x] **Step 2: Run focused behavior gates**
 
 ```bash
 ./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-web -am test
@@ -449,7 +455,7 @@ JAVA_HOME="$(/usr/libexec/java_home -v 17)" PATH="$JAVA_HOME/bin:$PATH" \
 
 Expected: all reactor modules succeed. Save the log before running Java 21 because the next clean rebuild replaces reports.
 
-- [ ] **Step 4: Run the Java 21 compatibility reactor**
+- [x] **Step 4: Run the Java 21 compatibility reactor**
 
 ```bash
 JAVA_HOME="$(/usr/libexec/java_home -v 21)" PATH="$JAVA_HOME/bin:$PATH" \
@@ -458,7 +464,7 @@ JAVA_HOME="$(/usr/libexec/java_home -v 21)" PATH="$JAVA_HOME/bin:$PATH" \
 
 Expected: all reactor modules succeed under Java 21. If the host lacks either JDK, stop and report the missing runtime rather than treating the matrix as complete.
 
-- [ ] **Step 5: Count final XML and enumerate skips**
+- [x] **Step 5: Count final XML and enumerate skips**
 
 ```bash
 ruby -r rexml/document -e '
@@ -474,7 +480,7 @@ puts "suites=#{files.size} tests=#{totals["tests"]} failures=#{totals["failures"
 
 Read every XML with `skipped > 0` and record class, method, and original reason. Do not subtract skips or reuse 4.0.x totals.
 
-- [ ] **Step 6: Run final structural checks**
+- [x] **Step 6: Run final structural checks**
 
 ```bash
 actionlint .github/workflows/ci.yml
@@ -486,9 +492,9 @@ git diff --check
 git status --short --branch
 ```
 
-Expected: no Maven 4, ddd4j 3.0.x, source mutation, or lint-placeholder content; tracking worktree clean; MQTT UUID directories ignored.
+Expected: no Maven 4, ddd4j 3.0.x, source mutation, or lint-placeholder content; tracked working directory clean; MQTT UUID directories ignored.
 
-- [ ] **Step 7: Update documentation from literal 3.3.x evidence**
+- [x] **Step 7: Update documentation from literal 3.3.x evidence**
 
 Record the verified version, Java 17/21 results, exact XML totals, skip reasons, remote-consumer result, Web/License behavior and CI design. State explicitly:
 
@@ -498,7 +504,7 @@ Record the verified version, Java 17/21 results, exact XML totals, skip reasons,
 
 Only when Steps 1–6 pass, change the spec status to `feature/3.3.x P5-A 本地完成` and mark plan tasks complete.
 
-- [ ] **Step 8: Commit documentation**
+- [x] **Step 8: Commit documentation**
 
 ```bash
 git add README.md CONTRIBUTING.md docs/CAPABILITY-ALIGNMENT.md docs/superpowers/README.md \
@@ -508,7 +514,7 @@ git diff --cached --check
 git commit -m "docs: record feature 3.3.x P5-A evidence"
 ```
 
-- [ ] **Step 9: Prepare the authorization checkpoint**
+- [x] **Step 9: Prepare the authorization checkpoint**
 
 Report every local commit, exact status, remote resolution, both JDK reactor results, XML totals/skips, warnings and review findings. Do not push GitHub/Codeup or run Maven deploy until separately authorized.
 

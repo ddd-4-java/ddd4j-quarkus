@@ -19,8 +19,9 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
 ## 开发环境
 
 - JDK 17（编译基线）或 21（CI 矩阵）
-- Maven 3.9+（仓库自带 `./mvnw`）
+- 仓库自带 `./mvnw`（Maven 3.8.1 / Model 4.0.0）；不要改成 Maven 4 聚合格式
 - Docker（运行 `@QuarkusTest` 中的 Testcontainers 集成测试）
+- Maven settings 配置已发布的 `ddd4j 2.0.x.20260630-SNAPSHOT` 仓库；空缓存解析命令见 [README](README.md)
 
 ## 构建与测试
 
@@ -32,11 +33,21 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
 ./mvnw -B test-compile -DskipTests
 
 # 全量单元测试（@QuarkusTest；涉及 Testcontainers 的用例需要 Docker）
-./mvnw -B verify
+./mvnw -B clean verify -Denforcer.skip=true
 
-# 仅跑 testcontainers 集成测试（CI 的 infrastructure-integration job 使用）
-./mvnw -B verify -Pintegration -pl <mq 模块列表> -am
+# 仅跑 testcontainers 集成测试（CI 的 broker-integration job 使用）
+./mvnw -B verify -Pintegration -Denforcer.skip=true -pl <mq 模块列表> -am
 ```
+
+P5-A 门禁使用 `-Denforcer.skip=true`，因此不代表 Enforcer 通过。Java 17、21 各自执行一次 `clean verify`，下一次 clean 前应保存 Surefire/Failsafe XML、日志、实际 JDK 版本和退出码。按 XML 原值累计 skipped，逐项列出原始原因。Web/License 定向门禁为：
+
+```bash
+./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-web -am test
+./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-auth/ddd4j-quarkus-auth-license -am test
+actionlint .github/workflows/ci.yml
+```
+
+本次版本、能力和测试证据统一记录于 [CAPABILITY-ALIGNMENT](docs/CAPABILITY-ALIGNMENT.md)，不能引用其他维护线的统计代替本线验证。
 
 ### 容器复用
 
@@ -60,7 +71,7 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
 
 ## 提交规范
 
-- 分支：基于 `feature/3.3.x` 创建 `feature/<topic>` 分支，PR 合入 `feature/3.3.x`。
+- 分支：维护目标为 `feature/3.3.x`；按新版 AGENTS.md，创建或切换分支须先获授权，禁止 Git worktree。本次在普通独立克隆 `ddd4j-quarkus-33x-sync` 执行。
 - 提交信息：参考 [Conventional Commits](https://www.conventionalcommits.org/)，
   如 `feat(mq): align QuarkusMQListenerRegistrar with MQClient.init contract`。
 - 单 PR 控制改动量（≤ 500 行），便于审查。
@@ -69,7 +80,10 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
 
 `.github/workflows/ci.yml` 三阶段：
 
-1. `workflow-lint` — actionlint 校验 workflow 语法；
-2. `build` — JDK 17 / 21 矩阵执行 `./mvnw -B verify`；
-3. `infrastructure-integration` — 启用 Docker 复用后执行
-   `./mvnw -B verify -Pintegration`（13 broker testcontainers 集成测试）。
+1. `workflow-lint` — `reviewdog/action-actionlint@v1` 设置 `fail_level: error`、`filter_mode: nofilter`；
+2. `unit-and-contract` — 依赖 lint，JDK 17 / 21 矩阵执行 `./mvnw -B verify -Denforcer.skip=true`；
+3. `broker-integration` — 依赖 lint 和 unit/contract，以 Java 17、13 个独立 broker job 执行 `verify -Pintegration -Denforcer.skip=true`，并上传各自报告。
+
+两个 Maven job 都先 setup-java，再调用 `configure-maven`：组织 secret 解码到同目录临时文件，校验 server id 后以 `0600` 原子替换 settings；随后使用独立空 Maven 仓库验证发布制品。失败保留旧 settings 并清除临时凭据文件。
+
+这是工作流静态设计。GitHub-hosted Actions 需推送并实际运行后另行验收；本地 P5-A 不包含 Native、Dev Mode、Enforcer、deploy、云服务、P5-B–E 或 master 验收。push 和 deploy 均须分别授权。
