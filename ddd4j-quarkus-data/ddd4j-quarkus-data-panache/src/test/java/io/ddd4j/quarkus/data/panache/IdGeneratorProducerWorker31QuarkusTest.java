@@ -8,6 +8,7 @@ import io.quarkus.test.junit.QuarkusTestProfile;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -19,8 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  * 验证显式 worker-id=31 的 CDI 配置与生成 ID 节点位。
  */
 @QuarkusTest
-@QuarkusTestResource(IdGeneratorProducerWorker31QuarkusTest.FallbackIpTestResource.class)
+@QuarkusTestResource(value = IdGeneratorProducerWorker31QuarkusTest.FallbackIpTestResource.class,
+        restrictToAnnotatedClass = true)
 @TestProfile(IdGeneratorProducerWorker31QuarkusTest.WorkerProfile.class)
+@ResourceLock("IdKit.LAST_IP")
 class IdGeneratorProducerWorker31QuarkusTest {
 
     private static final byte FALLBACK_LAST_IP = (byte) 115;
