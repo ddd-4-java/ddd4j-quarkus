@@ -15,6 +15,27 @@ P5-A 本地完成，P5-B–E 待实施。2026-09-09 新空仓远端解析成功�
 [P5-A 完成证据](superpowers/specs/2026-09-08-quarkus-production-extension-convergence-design.md#9-p5-a-本地完成证据2026-09-09)。
 Maven 4 `subprojects` 仍为上游阻塞；本轮没有 push/deploy 或 GitHub Actions 运行证据。
 
+## Snowflake 共享修复补充（2026-09-09）
+
+3.3.x GitHub Actions run `34331450813` 因 IP 派生 workerId 越界失败；4.0.x 原有同样
+实现，本轮通过本地 RED 重现。该 run 不属于 4.0.x，当前没有本修复的 4.0.x hosted
+运行证据，两分支仍须各自重跑 Actions，历史 P5-A 全量成功不能替代这一门禁。
+
+4.0.x 修复提交 `fd94b18` 移植已评审的 3.3.x `a5add959` 契约：可选配置
+`ddd4j.quarkus.data.snowflake.worker-id`；缺省 IP 归一化至 `0..31`；显式合法编号
+原值使用，非法编号创建策略时拒绝。多节点部署须分配不重复的显式编号，缺省映射不保证
+跨机器唯一。配置影响编程式 `SnowflakeIdStrategy` 和 CDI producer，未改 ORM 独立生成器。
+
+Java `21.0.12.1` / Maven `4.0.0-rc-6` 下新增六项行为 RED 为 6 failures / 0 errors，
+GREEN 为 6 tests 全通过；完整 data-panache `-am clean verify` 为 3/3 模块成功、
+6 suites / 17 tests / 0 failures / 0 errors / 0 skipped（12.032 秒）。日志：
+`/private/tmp/ddd4j-40x-snowflake-module-final-j21.log`；完整报告见 Git 忽略的
+`.superpowers/sdd/2026-09-09-snowflake-worker-id/snowflake-40-report.md`。
+未重跑 62 模块、空仓消费、Native、Dev Mode 或 hosted Actions，未 push/deploy。
+Java 17 不是本分支支持基线：POM 为 Java 21，实际 `IdKit` 字节码 major=65，未降级验证。
+已有 effective-model、wrapper settings、只读 resources 与未配置 datasource 警告仍存在，
+Enforcer 和 dependency-check 未作为本轮通过门禁。
+
 ## 1. 模块映射总表
 
 | ddd4j-boot 模块 | ddd4j-quarkus 对应 | 状态 | 说明 |

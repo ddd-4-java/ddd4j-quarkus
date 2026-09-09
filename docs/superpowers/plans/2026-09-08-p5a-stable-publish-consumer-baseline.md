@@ -50,7 +50,12 @@ This is the sole approved Data exception to the original P5-A scope; P5-C remain
 - [x] Capture behavior RED for IP 115/171, explicit 0/31, invalid -1/32 and producer wiring.
 - [x] Implement the same contract against ddd4j 3.0.x APIs without POM/CI changes.
 - [x] Run focused tests and full data-panache `-am clean verify` on the Java 21 baseline.
-- [ ] Commit implementation/tests/spec, then record evidence in a separate commit.
+- [x] Commit implementation/tests/spec (`fd94b18`), then record evidence in a separate commit.
+
+Fresh Java 21 evidence: focused 6 tests pass; full data-panache `-am clean verify`
+passes 3/3 modules with 6 suites / 17 tests / 0 failures / 0 errors / 0 skipped.
+RED was 6 failures / 0 errors before implementing behavior. Logs and scope limits are
+recorded in `docs/CAPABILITY-ALIGNMENT.md` and the ignored Snowflake report.
 
 Java 17 is not a supported 4.0.x gate: root POM requires Java 21 and upstream artifacts
 use class-file version 65. Do not lower the branch baseline for this fix.
