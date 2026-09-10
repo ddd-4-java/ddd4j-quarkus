@@ -1,5 +1,9 @@
 name: Security gate
 
+# GitHub evaluates scheduled workflows only from the default branch. The
+# scheduled matrix below becomes active after this workflow is synchronized to
+# master; until then each maintenance branch remains covered by protected push
+# and controlled workflow_dispatch runs.
 on:
   workflow_dispatch:
   push:
@@ -7,87 +11,97 @@ on:
       - master
       - 'feature/**'
   pull_request:
+  schedule:
+    - cron: '23 3 * * 1'
 
 permissions:
   contents: read
 
 concurrency:
-  group: security-${{ github.ref }}
+  group: security-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  dependency-vulnerability-and-sbom:
-    name: Dependency vulnerabilities and aggregate SBOM
+  pull-request-contract:
+    name: Unprivileged security contract check
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Verify workflow structure without secrets
+        run: ruby scripts/verify-security-workflow.rb
+      - uses: reviewdog/action-actionlint@0226391db11971cf3c42df3c907fd647e8dc1673 # v1
+        with:
+          fail_level: error
+          filter_mode: nofilter
+      - name: Record deferred privileged scan
+        run: |
+          {
+            echo "### Privileged dependency scan deferred"
+            echo "This PR job intentionally has no Maven or NVD secrets."
+            echo "A protected push or controlled workflow dispatch must pass before release."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  privileged-current-line:
+    name: Privileged current-line dependency gate
+    if: >-
+      ${{ github.ref_protected &&
+          (github.event_name == 'workflow_dispatch' || github.event_name == 'push') }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    permissions:
+      contents: read
+      security-events: write
     steps:
-      - uses: actions/checkout@v4
-      - name: Verify security workflow contract
-        run: python3 scripts/verify-security-workflow.py
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Verify trusted workflow structure
+        run: ruby scripts/verify-security-workflow.rb
+      - name: Run privileged aggregate security scan
+        uses: ./.github/actions/security-scan
         with:
-          distribution: temurin
           java-version: '21'
-      - name: Configure Maven and verify ddd4j snapshot
-        uses: ./.github/actions/configure-maven
-        with:
+          artifact-suffix: current-4.0.x
           maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
-      - name: Restore Dependency-Check vulnerability database
-        uses: actions/cache/restore@v4
-        with:
-          path: ~/.m2/repository/org/owasp/dependency-check-data
-          key: dependency-check-12.2.2-${{ runner.os }}-${{ github.run_id }}
-          restore-keys: |
-            dependency-check-12.2.2-${{ runner.os }}-
-      - name: Require NVD API key
+          nvd-api-key: ${{ secrets.NVD_API_KEY }}
+
+  scheduled-maintenance-lines:
+    name: Weekly ${{ matrix.branch }} dependency gate
+    if: ${{ github.event_name == 'schedule' && github.ref_protected }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - branch: feature/3.3.x
+            java: '17'
+            suffix: scheduled-3.3.x
+          - branch: feature/4.0.x
+            java: '21'
+            suffix: scheduled-4.0.x
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Require protected maintenance branch
         env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          TARGET_BRANCH: ${{ matrix.branch }}
         run: |
-          if [ -z "$NVD_API_KEY" ]; then
-            echo "::error::NVD_API_KEY organization secret is missing"
-            exit 1
-          fi
-      - name: Update Dependency-Check vulnerability database
-        env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: >-
-          ./mvnw -B -U
-          org.owasp:dependency-check-maven:12.2.2:update-only
-          -Ddependency-check.skip=false
-          -DnvdApiKeyEnvironmentVariable=NVD_API_KEY
-          -DnvdMaxRetryCount=10
-          -DossindexAnalyzerEnabled=false
-      - name: Save updated Dependency-Check vulnerability database
-        uses: actions/cache/save@v4
+          encoded_branch="${TARGET_BRANCH//\//%2F}"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/branches/$encoded_branch" --jq .protected)" = true
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          path: ~/.m2/repository/org/owasp/dependency-check-data
-          key: dependency-check-12.2.2-${{ runner.os }}-${{ github.run_id }}
-      - name: Generate aggregate CycloneDX SBOM
-        run: >-
-          ./mvnw -B -U
-          org.cyclonedx:cyclonedx-maven-plugin:2.9.2:makeAggregateBom
-          -DoutputDirectory=target/sbom
-          -DoutputName=bom
-          -DoutputFormat=all
-          -DincludeBomSerialNumber=true
-          -Dcyclonedx.skipAttach=true
-      - name: Scan aggregate dependencies (fail on CVSS 7 or higher)
-        run: >-
-          ./mvnw -B -U
-          org.owasp:dependency-check-maven:12.2.2:aggregate
-          -Ddependency-check.skip=false
-          -DautoUpdate=false
-          -DfailBuildOnCVSS=7
-          -Dformats=HTML,JSON,SARIF
-          -DossindexAnalyzerEnabled=false
-          -DoutputDirectory=${{ github.workspace }}/target/dependency-check
-      - name: Upload vulnerability and SBOM reports
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+          ref: ${{ matrix.branch }}
+      - name: Verify trusted workflow structure
+        run: ruby scripts/verify-security-workflow.rb
+      - name: Run privileged aggregate security scan
+        uses: ./.github/actions/security-scan
         with:
-          name: security-reports
-          path: |
-            target/dependency-check/dependency-check-report.*
-            target/sbom/bom.*
-          if-no-files-found: warn
-          retention-days: 30
+          java-version: ${{ matrix.java }}
+          artifact-suffix: ${{ matrix.suffix }}
+          maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
+          nvd-api-key: ${{ secrets.NVD_API_KEY }}

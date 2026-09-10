@@ -1,0 +1,126 @@
+name: Privileged aggregate security scan
+description: Update vulnerability data, generate scoped SBOMs, and enforce the CVSS gate.
+
+inputs:
+  java-version:
+    description: Java version required by the maintenance line
+    required: true
+  artifact-suffix:
+    description: Unique suffix for reports produced by matrix jobs
+    required: true
+  maven-settings-xml:
+    description: Base64-encoded Maven settings.xml
+    required: true
+  nvd-api-key:
+    description: NVD API key used only by a trusted workflow job
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+      with:
+        distribution: temurin
+        java-version: ${{ inputs.java-version }}
+    - name: Configure Maven and verify ddd4j snapshot
+      uses: ./.github/actions/configure-maven
+      with:
+        maven-settings-xml: ${{ inputs.maven-settings-xml }}
+    - name: Require NVD API key
+      shell: bash
+      env:
+        NVD_API_KEY: ${{ inputs.nvd-api-key }}
+      run: |
+        if [ -z "$NVD_API_KEY" ]; then
+          echo "::error::NVD_API_KEY organization secret is missing"
+          exit 1
+        fi
+    - name: Compute UTC vulnerability cache date
+      id: dependency-check-cache-date
+      shell: bash
+      run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+    - name: Restore Dependency-Check vulnerability database
+      uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      with:
+        path: ~/.m2/repository/org/owasp/dependency-check-data
+        key: dependency-check-12.2.2-schema11-${{ runner.os }}-${{ steps.dependency-check-cache-date.outputs.date }}-${{ github.run_id }}
+        restore-keys: |
+          dependency-check-12.2.2-schema11-${{ runner.os }}-
+    - name: Update Dependency-Check vulnerability database
+      shell: bash
+      env:
+        NVD_API_KEY: ${{ inputs.nvd-api-key }}
+      run: >-
+        ./mvnw -gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml"
+          -Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home" -B -U
+        org.owasp:dependency-check-maven:12.2.2:update-only
+        -Ddependency-check.skip=false
+        -DfailOnError=true
+        -DnvdApiKeyEnvironmentVariable=NVD_API_KEY
+        -DnvdMaxRetryCount=10
+        -DossindexAnalyzerEnabled=false
+    - name: Save verified Dependency-Check vulnerability database
+      uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      with:
+        path: ~/.m2/repository/org/owasp/dependency-check-data
+        key: dependency-check-12.2.2-schema11-${{ runner.os }}-${{ steps.dependency-check-cache-date.outputs.date }}-${{ github.run_id }}
+    - name: Generate aggregate runtime SBOM
+      shell: bash
+      run: >-
+        ./mvnw -gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml"
+          -Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home" -B -U
+        org.cyclonedx:cyclonedx-maven-plugin:2.9.2:makeAggregateBom
+        -DoutputDirectory=target/sbom/runtime
+        -DoutputName=bom
+        -DoutputFormat=all
+        -DincludeBomSerialNumber=true
+        -DincludeTestScope=false
+        -DincludeProvidedScope=false
+        -DincludeSystemScope=false
+        -Dcyclonedx.skipAttach=true
+    - name: Generate aggregate build and test supply-chain SBOM
+      shell: bash
+      run: >-
+        ./mvnw -gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml"
+          -Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home" -B -U
+        org.cyclonedx:cyclonedx-maven-plugin:2.9.2:makeAggregateBom
+        -DoutputDirectory=target/sbom/build-test
+        -DoutputName=bom
+        -DoutputFormat=all
+        -DincludeBomSerialNumber=true
+        -DincludeTestScope=true
+        -DincludeProvidedScope=true
+        -DincludeSystemScope=true
+        -Dcyclonedx.skipAttach=true
+    - name: Scan aggregate dependencies (fail on CVSS 7 or higher)
+      shell: bash
+      run: >-
+        ./mvnw -gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml"
+          -Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home" -B -U
+        org.owasp:dependency-check-maven:12.2.2:aggregate
+        -Ddependency-check.skip=false
+        -DautoUpdate=false
+        -DfailOnError=true
+        -DfailBuildOnCVSS=7
+        -DskipTestScope=false
+        -DskipProvidedScope=false
+        -Dformats=HTML,JSON,SARIF
+        -DossindexAnalyzerEnabled=false
+        -DoutputDirectory=${{ github.workspace }}/target/dependency-check
+    - name: Upload SARIF to code scanning
+      if: ${{ always() && hashFiles('target/dependency-check/dependency-check-report.sarif') != '' }}
+      uses: github/codeql-action/upload-sarif@c20e34f438d671fc35777cc9820dd7adf8252874 # v3
+      with:
+        sarif_file: target/dependency-check/dependency-check-report.sarif
+        category: dependency-check-${{ inputs.artifact-suffix }}
+    - name: Upload vulnerability and SBOM reports
+      if: ${{ always() }}
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      with:
+        name: security-reports-${{ inputs.artifact-suffix }}
+        path: |
+          target/dependency-check/dependency-check-report.*
+          target/sbom/runtime/bom.*
+          target/sbom/build-test/bom.*
+        if-no-files-found: warn
+        retention-days: 30
