@@ -38,19 +38,19 @@
 - Consumes: Git history, current trees, P4/P5 reports, successful Actions runs.
 - Produces: truthful completed/open/cancelled task ledger used by later tasks.
 
-- [ ] **Step 1: Prove P1 deferred items**
+- [x] **Step 1: Prove P1 deferred items**
 
 Verify on both branches that `ddd4j-quarkus-extension-pf4j` is absent and both data-jpa/data-external contain `src/main` production sources. Record the commits that introduced/remediated them.
 
-- [ ] **Step 2: Prove P3 deferred items**
+- [x] **Step 2: Prove P3 deferred items**
 
 Verify pf4j deletion as complete. Record the proposed `ddd4j-quarkus-auth-testcontainers` module as cancelled/replaced by direct Quarkus runtime integration: it is absent from ddd4j-boot and both Quarkus branches, and the four auth backends have no common container dependency. Do not mark that cancelled proposal complete or keep it as an open P5-B0 deliverable. Route auth behavior to `docs/superpowers/plans/2026-09-10-p3-auth-samples-completion.md`; inspect sample-auth/sample-mq source and tests, marking them complete only when each retained sample has runnable behavior evidence, otherwise keep them open with the exact missing list.
 
-- [ ] **Step 3: Reconcile P4 steps**
+- [x] **Step 3: Reconcile P4 steps**
 
 Map Tasks 1–5 and 7–8 to current 4.0.x commits/tests. Mark only proven steps complete. Mark Task 6 as `取消：用户确认保持 Model 4.1.0 + <modules>` rather than completed. Keep Task 9/10 portions open until Tasks 2–5 below finish.
 
-- [ ] **Step 4: Commit status corrections**
+- [x] **Step 4: Commit status corrections**
 
 ```bash
 git add docs/superpowers/plans/2026-08-06-p1-extensions.md \
@@ -59,6 +59,11 @@ git add docs/superpowers/plans/2026-08-06-p1-extensions.md \
 git diff --cached --check
 git commit -m "docs: reconcile verified Superpowers task status"
 ```
+
+Task 1 evidence: commits `75fda3d` and `bd5a597` verified the P1 production-source
+gaps and PF4J deletion, cancelled the obsolete auth-testcontainers proposal, and
+separated P4's unretained historical RED/pre-edit steps from the later replacement
+gates. Independent review found no remaining Critical or Important status error.
 
 ---
 
@@ -73,7 +78,7 @@ git commit -m "docs: reconcile verified Superpowers task status"
 - Consumes: ddd4j 2.0.x BOM and Quarkus 3.37.4 dependency management.
 - Produces: Testcontainers 2.0.5-only effective tree and compile-ready harness.
 
-- [ ] **Step 1: Capture RED dependency evidence**
+- [x] **Step 1: Capture RED dependency evidence**
 
 ```bash
 ./mvnw -B -Denforcer.skip=true \
@@ -83,7 +88,7 @@ git commit -m "docs: reconcile verified Superpowers task status"
 
 Expected before change: effective Testcontainers `1.20.4` and old artifact IDs.
 
-- [ ] **Step 2: Put Testcontainers 2.0.5 BOM first**
+- [x] **Step 2: Put Testcontainers 2.0.5 BOM first**
 
 Set `<testcontainers-bom.version>2.0.5</testcontainers-bom.version>` and import this BOM before ddd4j dependencies. Replace old artifact names with:
 
@@ -96,17 +101,21 @@ testcontainers-pulsar
 testcontainers-rabbitmq
 ```
 
-- [ ] **Step 3: Verify effective dependency tree**
+- [x] **Step 3: Verify effective dependency tree**
 
 Run dependency tree and `test-compile` from Step 1. Expected: all Testcontainers artifacts are 2.0.5; compile failures identify source imports owned by Task 3.
 
-- [ ] **Step 4: Commit dependency migration**
+- [x] **Step 4: Commit dependency migration**
 
 ```bash
 git add ddd4j-quarkus-dependencies/pom.xml ddd4j-quarkus-mq
 git diff --cached --check
 git commit -m "build(3.3.x): manage Testcontainers 2.0.5 modules"
 ```
+
+Task 2 evidence: `bac1799` replaced the 1.20.4 dependency model with the 2.0.5
+BOM and dedicated 2.x artifacts. The current-source dependency tree and runtime
+classpaths contain only Testcontainers 2.0.5; independent review approved the change.
 
 ---
 
@@ -127,29 +136,36 @@ git commit -m "build(3.3.x): manage Testcontainers 2.0.5 modules"
 - Consumes: Task 2 managed modules.
 - Produces: deterministic lifecycle and the same 13-row behavior matrix as 4.0.x.
 
-- [ ] **Step 1: Add lifecycle/adapter contract tests before source migration**
+- [x] **Step 1: Add lifecycle/adapter contract tests before source migration**
 
 Tests must fail if owned containers are not stopped, reuse is forced, or a supposed official fixture returns only generic hand-built endpoints instead of its dedicated API.
 
-- [ ] **Step 2: Run focused RED tests**
+- [x] **Step 2: Run focused RED tests**
 
 Run harness tests plus ActiveMQ/Kafka/Pulsar/RabbitMQ/SQS modules. Accept only missing 2.x types or contract assertions as RED.
 
-- [ ] **Step 3: Port reviewed 4.0.x behavior**
+- [x] **Step 3: Port reviewed 4.0.x behavior**
 
 Use `ArtemisContainer`, `KafkaContainer`/the 2.0.5 compatible Kafka dedicated class, `LocalStackContainer`, `PulsarContainer`, `RabbitMQContainer`. Preserve the exact `ddd4j.mq.*` property keys and shared Harness ownership.
 
-- [ ] **Step 4: Verify every broker row independently**
+- [x] **Step 4: Verify every broker row independently**
 
 Run all 13 modules. Public broker round-trips must execute; method-scoped ONS/TDMQ/platform skips remain explicit. Repeat RocketMQ three times to check readiness stability.
 
-- [ ] **Step 5: Commit behavior migration**
+- [x] **Step 5: Commit behavior migration**
 
 ```bash
 git add ddd4j-quarkus-mq
 git diff --cached --check
 git commit -m "test(3.3.x): align Testcontainers 2 broker harness"
 ```
+
+Task 3 evidence: `8d88db7` and `c37c843` ported the owned-container lifecycle,
+dedicated adapters and bounded GenericContainer readiness contracts. All 13 broker
+rows ran with explicit method-scoped platform/commercial skips, and RocketMQ was
+repeated for readiness stability. Later NATS fixture commit `72953a4` provisions
+the required JetStream stream and retains existing messages on idempotent replay;
+its cross-branch review and focused real-container tests passed.
 
 ---
 
@@ -232,11 +248,18 @@ git diff --cached --check
 git commit -m "docs: record dual-branch Testcontainers 2 verification"
 ```
 
-Task 4 本地验证证据（2026-09-10）：3.3.x `c37c843` 的 Java 17/21 各为 62/62 模块、
-57 suites / 211 tests / 0 failures / 0 errors / 3 skips；4.0.x `702a1db` 的 Java 21 为
-62/62 模块、51 suites / 170 tests / 0 failures / 0 errors / 3 skips。结构、Testcontainers 2.0.5
-和 Easy4J 门禁通过。完整矩阵及限制见 [本地运行记录](../../P5-B0-LOCAL-VERIFICATION.md)。
+Task 4 最新本地验证证据（2026-09-10）：3.3.x `91ceb9b` 的 Java 17/21 各为 61/61 模块、
+61 suites / 224 tests / 0 failures / 0 errors / 3 skips；4.0.x `fce0e1e` 的 Java 21 为
+61/61 模块、61 suites / 228 tests / 0 failures / 0 errors / 3 skips。BOM 52 叶、
+Testcontainers 2.0.5、auth runner、NATS、严格 Javadoc（52 叶/53 归档）、security
+代码门禁、Quarkus 配置 warning=0 和 Easy4J 门禁通过。完整矩阵及限制见
+[本地运行记录](../../P5-B0-LOCAL-VERIFICATION.md)。
 Task 5–8 与 P5-B0 发布闭环仍未完成；本地门禁不替代 hosted CI 或发布消费。
+
+远端阻塞（不改变上述本地完成状态）：阿里云 ddd4j 2.0.x/3.0.x timestamped snapshot
+尚未包含已审核的 Disruptor/Kafka 修复，3.0.x 还缺 COLA BOM 修复；GitHub 当前缺少
+`NVD_API_KEY`，且 master/两条 feature 分支未启用保护。因此最新 HEAD 的 Actions、
+deploy、远端空缓存消费以及在线 security/SARIF/schedule 验收必须保持开放。
 
 ---
 

@@ -56,12 +56,15 @@ Dev Mode、3.3.x 或云服务已验收。
 
 ## P5-B0 Testcontainers 本地验证（2026-09-10）
 
-`702a1db` 的 Java 21 / Maven 4 完整 `clean verify -Denforcer.skip=true` 通过：
-62/62 模块、51 suites / 170 tests / 0 failures / 0 errors / 3 skips。
+`fce0e1e` 的 Java 21 / Maven 4 完整本地门禁通过：61/61 模块、61 suites /
+228 tests / 0 failures / 0 errors / 3 skips；3.3.x `91ceb9b` 在 Java 17/21 下
+各为 61 suites / 224 tests / 0 failures / 0 errors / 3 skips。
 源码 reactor 与测试 classpath 的 Testcontainers 全为 `2.0.5`；Easy4J Jackson/ZXing
 均从 ddd4j 3.0.x BOM 取得版本。双分支 13 broker 比较、skip 原因和原始证据见
-[P5-B0 本地验证](docs/P5-B0-LOCAL-VERIFICATION.md)。本地门禁已完成，目标 HEAD 的 CI、
-发布和发布后空缓存消费仍待执行；不能将本地通过视为 P5-B0 整体完成。
+[P5-B0 本地验证](docs/P5-B0-LOCAL-VERIFICATION.md)。本地还验证了 BOM 52 个叶子、
+auth runner、NATS、严格 Javadoc、security 代码门禁与 Quarkus 配置 warning=0。
+目标 HEAD 的 CI、发布和发布后空缓存消费仍待执行；不能将本地通过视为 P5-B0
+整体完成或生产就绪。
 
 ## 构建约定：为何用 `<modules>` 而非 Maven 4 的 `<subprojects>`
 

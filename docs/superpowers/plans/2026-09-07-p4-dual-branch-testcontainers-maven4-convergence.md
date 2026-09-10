@@ -15,28 +15,42 @@
 - `feature/3.3.x` stays on ddd4j `feature/2.0.x`, revision `3.3.x.20260630-SNAPSHOT`, Quarkus BOM `3.37.4`, Java 17, Maven model 4.0.0, and `modules/module`.
 - `feature/4.0.x` stays on ddd4j `feature/3.0.x`, revision `4.0.x.20260630-SNAPSHOT`, Quarkus BOM `3.38.2`, Java 21, and Maven model 4.1.0.
 - The `subprojects/subproject` conversion is cancelled by user decision after both Quarkus 3.38.2 and the authorized `maven-repo-main-2026-09-07` nightly failed to parse the workspace; current executable aggregation remains `modules/module`.
-- Both branches must converge on Testcontainers BOM `2.0.5`; feature/4.0.x is verified and feature/3.3.x remains to be ported.
-- Do not create or use a Git worktree.
+- Both branches have converged on Testcontainers BOM `2.0.5`; current local evidence is recorded below.
+- The original no-worktree procedure was superseded by the user's later authorization of an isolated 3.3.x worktree.
 - Preserve the existing untracked MQTT runtime directory and all unrelated user changes.
 - Do not print Maven settings, repository credentials, or remote URLs.
 - `MAVEN_SETTINGS_XML` remains the required ddd-4-java organization secret and CI fails fast when it is absent.
 - A disabled or skipped test is not counted as passed.
-- The user authorized local checkpoint commits for the valid Testcontainers work. Push, deploy, branch creation, and history rewrite remain unauthorized.
+- Local checkpoint/documentation commits are authorized. Current target-head push, deploy and remote verification remain open gates; history rewrite remains prohibited.
 
-## Execution Status — 2026-09-07
+## Historical execution snapshot — 2026-09-07
 
 - feature/4.0.x: Testcontainers 2.0.5, deterministic lifecycle, official container adapters, RocketMQ/Pulsar round trips, MQTT persistence isolation, and disposable-container CI are implemented.
 - Fresh gate: `./mvnw -B clean verify -Denforcer.skip=true` completed all 62 reactor modules; Surefire recorded 138 tests, 0 failures, 0 errors, and 3 skipped.
 - Maven 4 probe: native reactor validation accepted `subprojects`, but Quarkus 3.38.2 and main `999-SNAPSHOT` both failed workspace bootstrap. The six aggregators were restored to `modules`; Task 6 is cancelled by user decision.
-- feature/3.3.x: pending after the authorized feature/4.0.x checkpoint commit.
+- feature/3.3.x was pending at this historical checkpoint; it is no longer the current status.
 
 ## Status reconciliation — 2026-09-10
 
+| Scope | Current HEAD | Local reactor evidence | Local productionization evidence | Remote status |
+|---|---|---|---|---|
+| feature/3.3.x | `91ceb9b` | Java 17/21: 61/61, 61 suites, 224 tests, 0F/0E/3S | BOM 52 leaves; TC 2.0.5; auth runner; NATS; Javadoc; security/config gates | target-head Actions/deploy/clean consumer open |
+| feature/4.0.x | `fce0e1e` | Java 21/Maven 4: 61/61, 61 suites, 228 tests, 0F/0E/3S | same gates; Model 4.1.0 + `<modules>` | target-head Actions/deploy/clean consumer open |
+
 - 4.0.x completed-step evidence is `5ea9d6e` (Testcontainers 2.0.5 harness, lifecycle test, dedicated adapters, MQTT isolation, CI/docs) together with the recorded 62-module clean-verify result and subsequent CI commits `8b07c4e`, `6bb8a56`, `97d5ac1` and `278f119`.
-- The historical RED command/logs were not retained for Task 1 Step 3 or Task 2 Step 2; those boxes remain open rather than inferred from the resulting implementation.
-- Task 4 Steps 1–2 remain open: the current RocketMQ fixture still uses a fixed `sleep 10` plus log readiness, not the requested `mqadmin clusterList` route-polling contract. Step 4 also remains open because no retained evidence proves three consecutive successful runs.
-- Task 5 Step 4 remains open because its required before/after RED-to-GREEN record was not retained. Task 7 Step 2 remains open because its required pre-edit actionlint evidence was not retained; the final workflow is independently actionlint-clean.
+- Historical RED/pre-edit records that were not retained are explicitly labelled historical and are not inferred from later success.
+- The original RocketMQ `mqadmin clusterList` proposal was replaced by the approved bounded nameserver/broker readiness and cross-process lease contract; it is not an open implementation item.
 - Task 6 is cancelled by user decision: preserve Model 4.1.0 + `<modules>`, not a completed or pending `<subprojects>` migration.
+- Task 9's original branch-switch/cherry-pick procedure was superseded after the user authorized an
+  isolated worktree. P5-B0 Tasks 2–4 produced and verified the 3.3.x adaptation instead; the historical
+  procedure is not retroactively marked complete.
+- Task 10 is superseded by the current P3 Task 5 and P5-B0 Tasks 5–8 gates. Current local comparison and
+  full-reactor evidence exists, while target-head push, remote SHA, Actions, deploy and clean-cache
+  consumption remain open in those current plans.
+- Remote-only blockers are authoritative: the Aliyun ddd4j 2.0.x/3.0.x timestamped snapshots still
+  lack the reviewed Disruptor/Kafka fixes (plus the 3.0.x COLA BOM fix). GitHub also lacks
+  `NVD_API_KEY` and branch protection for master/both feature branches, so online security/SARIF/
+  schedule acceptance and all latest-head publication gates remain open. No production-ready claim is made.
 
 ---
 
@@ -90,7 +104,7 @@
 - Consumes: P4 version matrix and existing Maven dependency management.
 - Produces: Testcontainers 2.0.5 managed coordinates available to all later tasks.
 
-- [ ] **Step 1: Record the protected starting state**
+- **历史未保留（不计完成）：Step 1: Record the protected starting state**
 
 Run:
 
@@ -112,7 +126,7 @@ ddd4j-quarkus-mq/ddd4j-quarkus-mq-pulsar/src/test/java/io/ddd4j/quarkus/mq/pulsa
 ddd4j-quarkus-mq/ddd4j-quarkus-mq-rocketmq/src/test/java/io/ddd4j/quarkus/mq/rocket/RocketMqQuarkusIntegrationTest.java
 ```
 
-- [ ] **Step 3: Run the tests to verify RED**
+- **历史 RED 未保留（不计完成）：Step 3: Run the tests to verify RED**
 
 Run each command independently:
 
@@ -206,7 +220,7 @@ void shouldNotForceReusableContainers() {
 
 Implement `RecordingContainer` by overriding `start()`, `stop()`, and `withReuse(boolean)` to increment counters without contacting Docker. The production mutation caught by these tests is restoring the current no-op `stop()` or unconditional `withReuse(true)`.
 
-- [ ] **Step 2: Run the lifecycle tests to verify RED**
+- **历史 RED 未保留（不计完成）：Step 2: Run the lifecycle tests to verify RED**
 
 ```bash
 ./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-testcontainers -Dtest=AbstractTestContainerFixtureTest test
@@ -381,7 +395,7 @@ git commit -m "testcontainers: use official broker container modules"
 - Consumes: `apache/rocketmq:5.3.2`, host-accessible namesrv and broker ports.
 - Produces: a route-ready `ddd4j.mq.rocketmq.namesrv-addr` before Quarkus creates the publisher.
 
-- [ ] **Step 1: Preserve the RED failure as the readiness contract**
+- **历史 RED 未保留（不计完成）：Step 1: Preserve the RED failure as the readiness contract**
 
 The test must fail if namesrv is reachable but no broker route is registered. Add a bounded precondition assertion in the test resource start path that executes:
 
@@ -391,7 +405,10 @@ sh mqadmin clusterList -n 127.0.0.1:9876
 
 Expected before the fix: non-zero result or output without the configured broker cluster.
 
-- [ ] **Step 2: Replace fixed sleep with route readiness**
+- **已由后续契约替代：Step 2: Replace fixed sleep with route readiness**
+
+P5-B0 后续批准并验证的契约是 nameserver + broker 双日志 readiness 与三分钟总超时，
+不是 `mqadmin clusterList` 轮询。本步骤不再执行，也不计为完成。
 
 Start namesrv and broker, then use a bounded JDK polling loop that:
 
@@ -433,7 +450,10 @@ Import `io.ddd4j.kit.lang.StrKit`, `java.util.Objects`, and `java.util.concurren
 
 Expected: no class-level Disabled; real publish-consume round-trip passes.
 
-- [ ] **Step 4: Repeat the test to detect startup flakiness**
+- **已由 P5-B0 broker matrix 替代：Step 4: Repeat the test to detect startup flakiness**
+
+后续双分支、双 JDK broker/full-reactor 门禁覆盖 RocketMQ 真实往返与稳定性；原计划要求的
+历史三次命令记录未单独保留，因此不追溯勾选本步骤。
 
 ```bash
 for run in 1 2 3; do ./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-rocketmq -am test || exit 1; done
@@ -511,7 +531,7 @@ public void stop() {
 
 Add a test that runs the resource and asserts no new `ddd4j-mq-*-tcplocalhost*` directory appears under the module root. Do not delete the pre-existing user-owned directory.
 
-- [ ] **Step 4: Run each changed test to verify RED, then GREEN**
+- **历史 RED/GREEN 未保留（不计完成）：Step 4: Run each changed test to verify RED, then GREEN**
 
 Run the relevant single module before and after the minimal adapter/configuration change. Expected RED is a payload mismatch or timeout; expected GREEN is the exact event payload.
 
@@ -630,7 +650,7 @@ The workflow must:
 5. omit creation of `~/.testcontainers.properties`;
 6. upload Surefire/Failsafe reports for every matrix entry.
 
-- [ ] **Step 2: Run actionlint before editing**
+- **历史 pre-edit 结果未保留（不计完成）：Step 2: Run actionlint before editing**
 
 ```bash
 actionlint .github/workflows/ci.yml
@@ -726,7 +746,7 @@ git commit -m "docs: record 4.0 broker and Maven 4 verification"
 - Consumes: reviewed feature/4.0.x commits or an explicitly approved patch series.
 - Produces: behavior-equivalent Java 17/Testcontainers 2.0.5 harness on ddd4j 2.0.x.
 
-- [ ] **Step 1: Reach the branch-switch checkpoint**
+- **已由 P5-B0 Tasks 2–4 替代：Step 1: Reach the branch-switch checkpoint**
 
 Before switching, run:
 
@@ -737,7 +757,7 @@ git log -1 --oneline
 
 Expected: all feature/4.0.x tracked changes are committed with authorization. If they are not committed, stop and request commit authorization; do not stash user files or discard changes.
 
-- [ ] **Step 2: Switch to the existing feature/3.3.x branch**
+- **已由授权 worktree 流程替代：Step 2: Switch to the existing feature/3.3.x branch**
 
 ```bash
 git switch feature/3.3.x
@@ -745,7 +765,7 @@ git switch feature/3.3.x
 
 Expected: no worktree command is used and the protected MQTT directory remains untouched.
 
-- [ ] **Step 3: Apply the reviewed behavioral commits**
+- **已由 3.3.x 独立适配替代：Step 3: Apply the reviewed behavioral commits**
 
 Cherry-pick only the Testcontainers/lifecycle/broker/CI/documentation commits from Tasks 1-5 and 7-8. Resolve expected version-line conflicts so:
 
@@ -758,7 +778,7 @@ modelVersion = 4.0.0
 aggregation = modules/module
 ```
 
-- [ ] **Step 4: Verify branch-specific dependency resolution**
+- **已由 P5-B0 Task 4 替代：Step 4: Verify branch-specific dependency resolution**
 
 ```bash
 ./mvnw --version
@@ -767,7 +787,7 @@ aggregation = modules/module
 
 Expected: Java 17/Maven 3-compatible wrapper and Testcontainers 2.0.5 only.
 
-- [ ] **Step 5: Run target RED/GREEN history and full tests**
+- **已由 P5-B0/P3 当前门禁替代：Step 5: Run target RED/GREEN history and full tests**
 
 ```bash
 ./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-pulsar -am test
@@ -778,7 +798,7 @@ Expected: Java 17/Maven 3-compatible wrapper and Testcontainers 2.0.5 only.
 
 Expected: executed RocketMQ/Pulsar results and explicit passed/failed/skipped counts.
 
-- [ ] **Step 6: Verify Maven 3 aggregation remains intact**
+- **已由 P5-B0 Task 4 替代：Step 6: Verify Maven 3 aggregation remains intact**
 
 ```bash
 rg -n '<subprojects>|<subproject>' pom.xml ddd4j-quarkus-{auth,data,extensions,mq,samples}/pom.xml
@@ -787,7 +807,7 @@ rg -n '<modules>|<module>' pom.xml ddd4j-quarkus-{auth,data,extensions,mq,sample
 
 Expected: no subproject tags and six aggregators using module tags.
 
-- [ ] **Step 7: Commit conflict resolutions only if authorization exists**
+- **已由 3.3.x 审核提交替代：Step 7: Commit conflict resolutions only if authorization exists**
 
 ```bash
 git add ddd4j-quarkus-dependencies/pom.xml pom.xml .github docs README.md CONTRIBUTING.md ddd4j-quarkus-mq
@@ -806,7 +826,7 @@ git commit -m "build(3.3.x): align testcontainers 2 with the Java 17 line"
 - Consumes: final heads of feature/3.3.x and feature/4.0.x.
 - Produces: an evidence-backed dual-branch completion report.
 
-- [ ] **Step 1: Compare the two branches**
+- **由当前 P3 Task 5 / P5-B0 Tasks 5–8 接管：Step 1: Compare the two branches**
 
 ```bash
 git diff --stat feature/3.3.x..feature/4.0.x
@@ -816,7 +836,7 @@ git diff --unified=1 feature/3.3.x..feature/4.0.x -- pom.xml ddd4j-quarkus-depen
 
 Expected: differences are limited to approved version/JDK/Maven-model compatibility and documented 3.0.x API adaptations.
 
-- [ ] **Step 2: Verify exact branch and remote state**
+- **由 P5-B0 Task 5 接管且仍开放：Step 2: Verify exact branch and remote state**
 
 ```bash
 for branch in feature/3.3.x feature/4.0.x; do
@@ -828,7 +848,7 @@ done
 
 Expected: report local, origin, and GitHub SHAs separately. Do not claim publication when SHAs differ.
 
-- [ ] **Step 3: Run final hygiene checks on both branches**
+- **由当前 P3 Task 5 接管：Step 3: Run final hygiene checks on both branches**
 
 On each branch:
 
@@ -840,11 +860,11 @@ rg -n '@Disabled' ddd4j-quarkus-mq/*/src/test/java
 
 Expected: only the pre-existing protected MQTT directory is unrelated; no whitespace errors; skips are method-scoped and categorized.
 
-- [ ] **Step 4: Update the P4 status**
+- **由 P5-B0 Task 8 接管且仍开放：Step 4: Update the P4 status**
 
 Mark an acceptance checkbox complete only when its proving command succeeded in this execution. If Maven 4/Quarkus workspace loading, Docker, LocalStack authentication, or a broker remains blocked, leave the checkbox open and record the exact failing command.
 
-- [ ] **Step 5: Prepare the completion report**
+- **由 P5-B0 Task 8 接管且仍开放：Step 5: Prepare the completion report**
 
 Report:
 

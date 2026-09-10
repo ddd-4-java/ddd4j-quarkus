@@ -9,11 +9,12 @@
 `上游阻塞` 表示受外部实现限制。模块映射、CDI 注入和构建通过均不等于生产能力全量对齐。
 后续范围以 [P5 设计](superpowers/specs/2026-09-08-quarkus-production-extension-convergence-design.md) 为准。
 
-最新 P5-B0 本地验证：4.0.x `702a1db` 的 Java 21 完整 reactor 为 62/62 SUCCESS、
-51 suites / 170 tests / 0 failures / 0 errors / 3 skips；3.3.x `c37c843` 的 Java 17/21
-各为 57 suites / 211 tests / 0 failures / 0 errors / 3 skips。两线 Testcontainers 全部
+最新 P5-B0/P3 本地验证：4.0.x `fce0e1e` 的 Java 21 完整 reactor 为 61/61 SUCCESS、
+61 suites / 228 tests / 0 failures / 0 errors / 3 skips；3.3.x `91ceb9b` 的 Java 17/21
+各为 61 suites / 224 tests / 0 failures / 0 errors / 3 skips。两线 Testcontainers 全部
 2.0.5，13 broker 的行为与差异、skip 恢复条件和结构证据见 [P5-B0 本地验证](P5-B0-LOCAL-VERIFICATION.md)。
-该本地结果尚未包含目标 HEAD 的 hosted CI、Maven 发布和发布后空缓存消费。
+该本地结果还覆盖 BOM 52 个叶子、auth runner、NATS、严格 Javadoc、security 代码门禁
+和 Quarkus 配置 warning=0，但尚未包含目标 HEAD 的 hosted CI、Maven 发布和发布后空缓存消费。
 
 历史 P5-A 本地完成，P5-B–E 待实施。2026-09-09 新空仓远端解析成功，`clean verify`
 62/62 模块成功；最终 XML 为 47 Surefire suites、141 tests、0 failures、0 errors、

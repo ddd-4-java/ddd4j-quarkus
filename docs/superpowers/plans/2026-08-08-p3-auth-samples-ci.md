@@ -1,6 +1,6 @@
 # P3 — Auth / Samples / CI/CD 实施计划
 
-> 历史计划状态（2026-09-10）：原始 Producer、分层 sample、CI 基线已完成；旧提议的 `ddd4j-quarkus-auth-testcontainers` 已取消并由直接 Quarkus runtime 集成替代，不计为完成项。`sample-auth-*` / `sample-mq-*` 的行为闭环仍开放，继续由 [P3 auth/sample completion plan](2026-09-10-p3-auth-samples-completion.md) 跟踪。
+> 历史计划状态（2026-09-10）：原始 Producer、分层 sample、CI 基线已完成；旧提议的 `ddd4j-quarkus-auth-testcontainers` 已取消并由直接 Quarkus runtime 集成替代，不计为完成项。`sample-auth-*` / `sample-mq-*` 的行为闭环已由 [P3 auth/sample completion plan](2026-09-10-p3-auth-samples-completion.md) Tasks 2–5 的本地门禁关闭。当前证据 HEAD 为 3.3.x `91ceb9b`、4.0.x `fce0e1e`；最新 HEAD 的 push/Actions、发布及空缓存消费仍是独立开放门禁，不宣称生产就绪。
 
 > **For agentic workers:** REQUIRED SUB-KILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -162,14 +162,14 @@ Stage 6 — 全量验证 + 提交
 |---|---|---|---|
 | auth-testcontainers 新增 | 计划新增共享 fixture | 已取消（不计为完成） | ddd4j-boot 与两条 Quarkus 分支均无该模块；四个 auth 后端没有共同容器依赖，改由各模块/样例直接 Quarkus runtime 验证 |
 | sample-rich-model 完整化 | 计划 4 层完整 | 仅骨架 | 业务项目未触发 |
-| sample-mq-* 完整化 | 计划完整化 + 集成测试 | 仍开放 | 当前 sample 仅有启动/Bean 可注入测试；共享 mq-testcontainers 的 broker 覆盖不等于 sample 的订单发布、listener 消费和可观察副作用闭环 |
+| sample-mq-* 完整化 | 计划完整化 + 集成测试 | 已完成 | 两分支 Disruptor/Kafka/RabbitMQ sample 均验证 HTTP 创建、真实发布、listener 消费和可观察投影；证据见后续 P3 completion plan |
 
 ## 后续待办（非本次范围）
 
 - [取消] 新增 `ddd4j-quarkus-auth-testcontainers` 模块 + 4 个 auth 子模块集成测试
   - 取消原因：两条维护分支及 ddd4j-boot 均不存在该模块；Sa-Token、Shiro、Security、License 没有共同容器依赖。替代路径是各后端/样例使用真实 Quarkus runtime fixture；License/JWT 保留现有直接 runtime fixture。
-- [ ] 完整化 sample-auth-* / sample-mq-*
-  - 当前缺口（auth）：`sample-auth-satoken`、`sample-auth-security`、`sample-auth-shiro` 当前都只有 `AuthResource` 主源码、没有 `src/test`；Security sample 已废弃，应删除而不是制造绿色样例；Sa-Token/Shiro 需分别启动对应后端并验证 login/status/me/role/permission/logout 流程。
-  - 当前缺口：`sample-mq-disruptor`、`sample-mq-kafka`、`sample-mq-rabbitmq` 只有 `OrderResource` 可注入的启动测试；Kafka/RabbitMQ 未启动 broker，三个 sample 都没有创建订单到监听器可观测副作用的端到端断言。
+- [x] 完整化 sample-auth-* / sample-mq-*
+  - 完成证据：两分支 Sa-Token/Shiro 验证 login/status/me/role/permission/logout、双会话与异常清理；废弃 Security sample 已删除。
+  - 完成证据：两分支 Disruptor/Kafka/RabbitMQ 验证创建订单到 listener 投影的真实闭环。详见 [P3 auth/sample completion plan](2026-09-10-p3-auth-samples-completion.md)；push/Actions 与发布不属于本历史 backlog 的完成定义。
 - [x] 删除 ddd4j-quarkus-extension-pf4j（空壳）
   - 证据：`3f63a93` 删除模块、聚合条目与 BOM 条目；两条维护分支的树均已不存在该模块。

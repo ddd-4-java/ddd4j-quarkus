@@ -10,14 +10,15 @@
 
 **Spec:** `docs/superpowers/specs/2026-08-08-p3-auth-samples-ci-design.md`
 
-**Task status:** Tasks 1–3 completed on feature/4.0.x on 2026-09-10. The proposed shared
+**Task status:** Tasks 1–4 and the local portion of Task 5 completed on 2026-09-10. The proposed shared
 `ddd4j-quarkus-auth-testcontainers` module is cancelled as an obsolete
 abstraction, not completed. Auth behavior is routed to direct Quarkus runtime
 integration in the auth samples/modules. Task 2 now verifies Sa-Token/Shiro
 HTTP journeys and removes the deprecated Security sample on feature/4.0.x;
 Task 3 verifies the MQ samples with the reviewed upstream fixes installed into an
-isolated test repository. Feature/3.3.x parity, dual-branch gates, publication and CI
-remain open for Tasks 4–6.
+isolated test repository. Feature/3.3.x carries the same observable auth/MQ behavior;
+both branches passed their current full local gates. Push, target-head Actions,
+publication and clean-cache consumption remain open for Tasks 5–6.
 
 ## Global Constraints
 
@@ -128,18 +129,36 @@ remote publication and CI are not claimed and remain later gates.
 
 ### Task 4: Port reviewed sample behavior to feature/3.3.x
 
-- [ ] Port Tasks 1–3 behavior while keeping Java17/Quarkus3.37.4/ddd4j2/Maven3.
-- [ ] Run auth and MQ sample modules under Java17, then Java21 compatibility.
-- [ ] Compare public endpoints and observable assertions across branches.
-- [ ] Commit version-specific conflict resolutions only.
+- [x] Port Tasks 1–3 behavior while keeping Java17/Quarkus3.37.4/ddd4j2/Maven3.
+- [x] Run auth and MQ sample modules under Java17, then Java21 compatibility.
+- [x] Compare public endpoints and observable assertions across branches.
+- [x] Commit version-specific conflict resolutions only.
+
+Task 4 evidence: `079ebe2`, `4b7b775`, `db2a6a2` and `25f4a2c` port the reviewed
+journeys, broker-resource scoping and auth-isolation proof. The only intentional
+source divergence from 4.0.x is Java-17-compatible API/deserialization metadata.
+Independent range review approved `1bcf4d0..25f4a2c` with no Critical, Important or
+Minor finding.
 
 ### Task 5: Full dual-branch completion gate
 
-- [ ] 3.3.x: Java17 and Java21 full `clean verify`.
-- [ ] 4.0.x: Java21/Maven4 full `clean verify`.
-- [ ] Aggregate XML counts/skips and update P3/P5-B0 docs.
-- [ ] Mark sample backlog complete only from these results.
+- [x] 3.3.x: Java17 and Java21 full `clean verify`.
+- [x] 4.0.x: Java21/Maven4 full `clean verify`.
+- [x] Aggregate XML counts/skips and update P3/P5-B0 docs.
+- [x] Mark sample backlog complete only from these results.
 - [ ] Push both branches and require target-head GitHub Actions success.
+
+Task 5 local evidence: 3.3.x `91ceb9b` passed 61/61 modules under Java 17 and
+Java 21, each with 61 suites / 224 tests / 0 failures / 0 errors / 3 skips.
+4.0.x `fce0e1e` passed 61/61 modules under Java 21 / Maven 4 with 61 suites /
+228 tests / 0 failures / 0 errors / 3 skips. The unchanged skip categories and
+full command boundary are recorded in `docs/P5-B0-LOCAL-VERIFICATION.md`.
+
+Remote-only boundary: published ddd4j 2.0.x/3.0.x timestamped snapshots do not yet
+contain the reviewed Disruptor/Kafka fixes (and 3.0.x COLA BOM fix), so target-head
+push/Actions/deploy/clean-cache consumer remain open. GitHub security acceptance is
+also open while `NVD_API_KEY`, branch protection, online SARIF and schedule evidence
+are absent.
 
 ### Task 6: Return to P5-B0 publication
 

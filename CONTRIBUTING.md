@@ -58,11 +58,14 @@ ddd4j `3.0.x.20260630-SNAPSHOT`。该步骤只依赖配置好的远端 Maven set
 
 ### P5-B0 本地门禁（2026-09-10）
 
-`702a1db` 的 Java 21 / Maven 4 全量通过 62/62 模块、51 suites / 170 tests /
-0 failures / 0 errors / 3 skips。完整源码依赖树使用
+`fce0e1e` 的 Java 21 / Maven 4 全量通过 61/61 模块、61 suites / 228 tests /
+0 failures / 0 errors / 3 skips；3.3.x `91ceb9b` 在 Java 17/21 下各为 61 suites /
+224 tests / 0 failures / 0 errors / 3 skips。完整源码依赖树使用
 `org.apache.maven.plugins:maven-dependency-plugin:3.8.1:tree -Dincludes=org.testcontainers -Dverbose`，
 全部 Testcontainers 为 2.0.5；Jackson/ZXing 叶子无显式版本，实际从 ddd4j 3.0.x BOM
 解析 Easy4J 扩展。逐项 skip、13 broker 对比和限制见 [本地验证证据](docs/P5-B0-LOCAL-VERIFICATION.md)。
+该证据还包含 BOM 52 个叶子、auth runner、NATS、严格 Javadoc（52 个叶子、53 个归档）、
+security 代码门禁和 Quarkus 配置 warning=0；远端 Actions、发布及空缓存消费仍是独立门禁。
 CI、Enforcer、发布与发布后空缓存消费仍须各自取得证据。
 
 ### 容器生命周期
