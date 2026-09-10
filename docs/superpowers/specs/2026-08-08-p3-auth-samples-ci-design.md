@@ -82,7 +82,7 @@ ddd4j-quarkus-sample-api/                          # 🟡 占位（1 类）
 - 测试坐标：`io.quarkus:quarkus-junit`（Quarkus 3.31+ 官方）
 - JUnit 4：`junit:junit` test 依赖（devservices 引用 `org.junit.rules.TestRule`）
 - Secrets 注入：`MAVEN_USERNAME/MAVEN_PASSWORD` secrets → `~/.m2/settings.xml`（阿里云私有仓库）
-- Docker reuse：`withReuse(true)` + `~/.testcontainers.properties`
+- Docker reuse：早期方案已被 P4 取代；CI 默认禁止 reuse，fixture 自有自清理
 
 ## 4. 核心抽象
 

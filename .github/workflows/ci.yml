@@ -99,10 +99,6 @@ jobs:
         uses: ./.github/actions/configure-maven
         with:
           maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
-      - name: Enable Testcontainers reuse
-        run: |
-          mkdir -p ~/.testcontainers
-          echo "testcontainers.reuse.enable=true" > ~/.testcontainers.properties
       - name: Run broker integration tests (${{ matrix.broker }})
         run: ./mvnw -B verify -Pintegration -Denforcer.skip=true -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-${{ matrix.broker }} -am
       - name: Upload integration test reports (${{ matrix.broker }})

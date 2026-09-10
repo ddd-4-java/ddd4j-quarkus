@@ -140,7 +140,7 @@ ddd4j-quarkus/ddd4j-quarkus-mq/ddd4j-quarkus-mq-{broker}/src/test/resources/
 6. `await().atMost(10, SECONDS)` 异步断言
 7. 验证 manual ack / requeue / dead letter 三种场景
 
-**Docker reuse**：`~/.testcontainers.properties` 设置 `testcontainers.reuse.enable=true`，CI 拉镜像一次复用。
+**Docker reuse（已被 P4 基线取代）**：CI 默认禁止 reuse，fixture 确定性启停自己拥有的容器。
 
 ## 7. 风险与缓解
 
@@ -151,7 +151,7 @@ ddd4j-quarkus/ddd4j-quarkus-mq/ddd4j-quarkus-mq-{broker}/src/test/resources/
 | NATS 8222 monitoring 端口未监听超时 | 添加 `-m 8222` 参数 |
 | RabbitMQ TLS 端口超时（5671/15671） | `Wait.forListeningPorts(5672, 15672)` 显式列出 |
 | Testcontainers devservices 缺 junit4 `org.junit.rules.TestRule` | pom 添加 `junit:junit` test 依赖 |
-| Docker 镜像拉取慢（CI 冷启动） | `withReuse(true)` + 阿里云镜像加速 |
+| Docker 镜像拉取慢（CI 冷启动） | 固定镜像版本 + 镜像缓存；不使用实验性 reuse |
 | 阿里云 snapshot 仓库 metadata 陷阱 | 主仓依赖本地 install + offline build |
 
 ## 8. 验收标准
