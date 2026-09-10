@@ -1,6 +1,7 @@
 package io.ddd4j.quarkus.mq.testcontainers;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.activemq.ArtemisContainer;
 import org.testcontainers.containers.GenericContainer;
@@ -15,6 +16,8 @@ import org.testcontainers.rabbitmq.RabbitMQContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +31,9 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /** 验证共享夹具的所有权、失败回收和专用容器适配契约。 */
 class AbstractTestContainerFixtureTest {
+
+    @TempDir
+    Path tempDirectory;
 
     @Test
     void shouldStartAndStopOwnedContainerExactlyOnce() {
@@ -188,6 +194,55 @@ class AbstractTestContainerFixtureTest {
             first.close();
             second.get(5, TimeUnit.SECONDS).close();
         }
+    }
+
+    @Test
+    void shouldSerializeRocketMqLeaseAcrossJvmProcesses() throws Exception {
+        Process holder = startLeaseProbe("hold", tempDirectory.resolve("holder.ready"), 1_200L);
+        awaitReady(tempDirectory.resolve("holder.ready"));
+        Process waiter = startLeaseProbe("wait", tempDirectory.resolve("waiter.ready"), 0L);
+        Thread.sleep(250L);
+        assertThat(waiter.isAlive()).isTrue();
+        assertThat(holder.waitFor(5, TimeUnit.SECONDS)).isTrue();
+        assertThat(holder.exitValue()).isZero();
+        assertThat(waiter.waitFor(5, TimeUnit.SECONDS)).isTrue();
+        assertThat(waiter.exitValue()).isZero();
+    }
+
+    @Test
+    void shouldReleaseRocketMqLeaseWhenHolderFails() throws Exception {
+        Process failed = startLeaseProbe("fail", tempDirectory.resolve("failed.ready"), 0L);
+        awaitReady(tempDirectory.resolve("failed.ready"));
+        assertThat(failed.waitFor(5, TimeUnit.SECONDS)).isTrue();
+        assertThat(failed.exitValue()).isNotZero();
+        Process successor = startLeaseProbe("wait", tempDirectory.resolve("successor.ready"), 0L);
+        assertThat(successor.waitFor(5, TimeUnit.SECONDS)).isTrue();
+        assertThat(successor.exitValue()).isZero();
+    }
+
+    @Test
+    void shouldReleaseRocketMqLeaseWhenHolderTimesOut() throws Exception {
+        Process holder = startLeaseProbe("hold", tempDirectory.resolve("timeout.ready"), 30_000L);
+        awaitReady(tempDirectory.resolve("timeout.ready"));
+        Process waiter = startLeaseProbe("wait", tempDirectory.resolve("timeout-waiter.ready"), 0L);
+        Thread.sleep(250L);
+        assertThat(waiter.isAlive()).isTrue();
+        holder.destroyForcibly();
+        assertThat(holder.waitFor(5, TimeUnit.SECONDS)).isTrue();
+        assertThat(waiter.waitFor(5, TimeUnit.SECONDS)).isTrue();
+        assertThat(waiter.exitValue()).isZero();
+    }
+
+    private Process startLeaseProbe(String mode, Path readyFile, long holdMillis) throws Exception {
+        return new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin", "java").toString(),
+                "-cp", System.getProperty("java.class.path"), RocketMqPortLeaseProcessProbe.class.getName(),
+                mode, readyFile.toString(), String.valueOf(holdMillis)).redirectErrorStream(true).start();
+    }
+
+    private static void awaitReady(Path readyFile) throws Exception {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        while (!Files.exists(readyFile) && System.nanoTime() < deadline) Thread.sleep(25L);
+        assertThat(readyFile).exists();
     }
 
     /** 2.0.5 未公开组合等待配置 getter；只读实际配置，避免等待三分钟或启动额外 Docker 进程。 */
