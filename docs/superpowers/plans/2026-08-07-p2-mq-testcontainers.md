@@ -15,7 +15,7 @@
 - 共享 fixture：`ddd4j-quarkus-mq-testcontainers` 模块提供 14 broker fixtures
 - 集成测试：每个 broker 子模块（mq-core / testcontainers 除外）新增 1 个 `*QuarkusIntegrationTest`
 - 异步断言：`await().atMost(10, SECONDS)` from awaitility
-- Docker reuse：`~/.testcontainers.properties` 设置 `testcontainers.reuse.enable=true`
+- Docker reuse：该早期方案已被 P4 取代；CI 默认禁止 reuse
 
 ## 实施阶段总览
 
@@ -142,7 +142,7 @@ ddd4j.mq.kafka.consumer.group-id=test-consumer
 
 - [x] **Step 4.1: .testcontainers.properties（本地 + CI）**
   - 文件: `~/.testcontainers.properties`
-  - 内容: `testcontainers.reuse.enable=true`
+  - 内容: 已被后续 P4 基线取代，当前固定为 `testcontainers.reuse.enable=false`
   - 验证: 第二次启动容器复用，秒级
 
 - [x] **Step 4.2: CI integration job**

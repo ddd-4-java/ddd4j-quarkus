@@ -137,7 +137,7 @@ ddd4j-parent  (io.ddd4j:ddd4j-parent:3.0.x.20260630-SNAPSHOT)
 | Quarkus 编译时增强（BuildStep）开销大，14 broker 编译慢 | CI 耗时 | 拆分为 `quarkus-mq-{core,broker}` 两层；broker 模块用 `@BuildStep` 缓存 |
 | Quarkus 没有 servlet 容器，shiro/satoken-web 部分能力受限 | shiro 集成受阻 | 用 `ContainerRequestFilter` 替代 servlet filter；shiro 走 Vert.x Route 适配 |
 | Hibernate 6.6 vs Quarkus 3.38 需 7.4 | 升级复杂 | 在 `ddd4j-quarkus-dependencies` 统一升级 Hibernate 到 7.4.1.Final（仅引用 jakarta.persistence 稳定 API） |
-| Testcontainers Docker 镜像在 CI 拉取慢 | CI 超时 | 用 `withReuse(true)` 启用 Docker reuse + 阿里云镜像加速 |
+| Testcontainers Docker 镜像在 CI 拉取慢 | CI 超时 | 固定镜像版本 + CI 镜像缓存；禁止实验性 reuse |
 | ddd4j-quarkus 与 ddd4j-boot 在 application.properties 命名差异 | 用户困惑 | 在 README 明确"Quarkus 风格 vs Spring 风格"对照表 |
 | 框架模块隐式继承 parent 默认依赖（被全家桶污染） | 不必要依赖污染 | parent 链重构 + 按域 profiles；框架模块继承 dependencies 而非 parent，自声明依赖 |
 
