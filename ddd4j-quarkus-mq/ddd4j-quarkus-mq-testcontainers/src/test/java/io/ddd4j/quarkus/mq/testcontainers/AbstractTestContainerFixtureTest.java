@@ -182,14 +182,16 @@ class AbstractTestContainerFixtureTest {
     @Test
     void shouldSerializeRocketMqFixedPortLeases() throws Exception {
         try (RocketMqPortLease first = RocketMqPortLease.acquire()) {
+            CompletableFuture<Void> attempted = new CompletableFuture<>();
             CompletableFuture<RocketMqPortLease> second = CompletableFuture.supplyAsync(() -> {
+                attempted.complete(null);
                 try {
                     return RocketMqPortLease.acquire();
                 } catch (Exception exception) {
                     throw new IllegalStateException(exception);
                 }
             });
-            Thread.sleep(200L);
+            attempted.get(5, TimeUnit.SECONDS);
             assertThat(second).isNotDone();
             first.close();
             second.get(5, TimeUnit.SECONDS).close();
@@ -198,51 +200,92 @@ class AbstractTestContainerFixtureTest {
 
     @Test
     void shouldSerializeRocketMqLeaseAcrossJvmProcesses() throws Exception {
-        Process holder = startLeaseProbe("hold", tempDirectory.resolve("holder.ready"), 1_200L);
-        awaitReady(tempDirectory.resolve("holder.ready"));
-        Process waiter = startLeaseProbe("wait", tempDirectory.resolve("waiter.ready"), 0L);
-        Thread.sleep(250L);
-        assertThat(waiter.isAlive()).isTrue();
-        assertThat(holder.waitFor(5, TimeUnit.SECONDS)).isTrue();
-        assertThat(holder.exitValue()).isZero();
-        assertThat(waiter.waitFor(5, TimeUnit.SECONDS)).isTrue();
-        assertThat(waiter.exitValue()).isZero();
+        Process holder = null;
+        Process waiter = null;
+        Path holderAcquired = tempDirectory.resolve("holder.acquired");
+        Path waiterAttempted = tempDirectory.resolve("waiter.attempted");
+        Path waiterAcquired = tempDirectory.resolve("waiter.acquired");
+        try {
+            holder = startLeaseProbe("hold", tempDirectory.resolve("holder.attempted"), holderAcquired, 1_200L);
+            awaitMarker(holderAcquired);
+            waiter = startLeaseProbe("wait", waiterAttempted, waiterAcquired, 0L);
+            awaitMarker(waiterAttempted);
+            assertThat(waiterAcquired).doesNotExist();
+            assertThat(holder.waitFor(5, TimeUnit.SECONDS)).isTrue();
+            assertThat(holder.exitValue()).isZero();
+            assertThat(waiter.waitFor(5, TimeUnit.SECONDS)).isTrue();
+            assertThat(waiter.exitValue()).isZero();
+            assertThat(waiterAcquired).exists();
+        } finally {
+            terminate(waiter);
+            terminate(holder);
+        }
     }
 
     @Test
     void shouldReleaseRocketMqLeaseWhenHolderFails() throws Exception {
-        Process failed = startLeaseProbe("fail", tempDirectory.resolve("failed.ready"), 0L);
-        awaitReady(tempDirectory.resolve("failed.ready"));
-        assertThat(failed.waitFor(5, TimeUnit.SECONDS)).isTrue();
-        assertThat(failed.exitValue()).isNotZero();
-        Process successor = startLeaseProbe("wait", tempDirectory.resolve("successor.ready"), 0L);
-        assertThat(successor.waitFor(5, TimeUnit.SECONDS)).isTrue();
-        assertThat(successor.exitValue()).isZero();
+        Process failed = null;
+        Process successor = null;
+        try {
+            Path failedAcquired = tempDirectory.resolve("failed.acquired");
+            failed = startLeaseProbe("fail", tempDirectory.resolve("failed.attempted"), failedAcquired, 0L);
+            awaitMarker(failedAcquired);
+            assertThat(failed.waitFor(5, TimeUnit.SECONDS)).isTrue();
+            assertThat(failed.exitValue()).isNotZero();
+            Path successorAcquired = tempDirectory.resolve("successor.acquired");
+            successor = startLeaseProbe("wait", tempDirectory.resolve("successor.attempted"), successorAcquired, 0L);
+            assertThat(successor.waitFor(5, TimeUnit.SECONDS)).isTrue();
+            assertThat(successor.exitValue()).isZero();
+            assertThat(successorAcquired).exists();
+        } finally {
+            terminate(successor);
+            terminate(failed);
+        }
     }
 
     @Test
     void shouldReleaseRocketMqLeaseWhenHolderTimesOut() throws Exception {
-        Process holder = startLeaseProbe("hold", tempDirectory.resolve("timeout.ready"), 30_000L);
-        awaitReady(tempDirectory.resolve("timeout.ready"));
-        Process waiter = startLeaseProbe("wait", tempDirectory.resolve("timeout-waiter.ready"), 0L);
-        Thread.sleep(250L);
-        assertThat(waiter.isAlive()).isTrue();
-        holder.destroyForcibly();
-        assertThat(holder.waitFor(5, TimeUnit.SECONDS)).isTrue();
-        assertThat(waiter.waitFor(5, TimeUnit.SECONDS)).isTrue();
-        assertThat(waiter.exitValue()).isZero();
+        Process holder = null;
+        Process waiter = null;
+        Path waiterAttempted = tempDirectory.resolve("timeout-waiter.attempted");
+        Path waiterAcquired = tempDirectory.resolve("timeout-waiter.acquired");
+        try {
+            Path holderAcquired = tempDirectory.resolve("timeout.acquired");
+            holder = startLeaseProbe("hold", tempDirectory.resolve("timeout.attempted"), holderAcquired, 30_000L);
+            awaitMarker(holderAcquired);
+            waiter = startLeaseProbe("wait", waiterAttempted, waiterAcquired, 0L);
+            awaitMarker(waiterAttempted);
+            assertThat(waiterAcquired).doesNotExist();
+            holder.destroyForcibly();
+            assertThat(holder.waitFor(5, TimeUnit.SECONDS)).isTrue();
+            assertThat(waiter.waitFor(5, TimeUnit.SECONDS)).isTrue();
+            assertThat(waiter.exitValue()).isZero();
+            assertThat(waiterAcquired).exists();
+        } finally {
+            terminate(waiter);
+            terminate(holder);
+        }
     }
 
-    private Process startLeaseProbe(String mode, Path readyFile, long holdMillis) throws Exception {
+    private Process startLeaseProbe(String mode, Path attemptedFile, Path acquiredFile, long holdMillis) throws Exception {
         return new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin", "java").toString(),
                 "-cp", System.getProperty("java.class.path"), RocketMqPortLeaseProcessProbe.class.getName(),
-                mode, readyFile.toString(), String.valueOf(holdMillis)).redirectErrorStream(true).start();
+                mode, attemptedFile.toString(), acquiredFile.toString(), String.valueOf(holdMillis))
+                .redirectErrorStream(true).start();
     }
 
-    private static void awaitReady(Path readyFile) throws Exception {
+    private static void awaitMarker(Path marker) throws Exception {
         long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
-        while (!Files.exists(readyFile) && System.nanoTime() < deadline) Thread.sleep(25L);
-        assertThat(readyFile).exists();
+        while (!Files.exists(marker) && System.nanoTime() < deadline) Thread.onSpinWait();
+        assertThat(marker).exists();
+    }
+
+    private static void terminate(Process process) throws Exception {
+        if (process == null || !process.isAlive()) return;
+        process.destroyForcibly();
+        if (!process.waitFor(5, TimeUnit.SECONDS)) {
+            throw new IllegalStateException("Unable to terminate lease probe process " + process.pid());
+        }
     }
 
     /** 2.0.5 未公开组合等待配置 getter；只读实际配置，避免等待三分钟或启动额外 Docker 进程。 */
