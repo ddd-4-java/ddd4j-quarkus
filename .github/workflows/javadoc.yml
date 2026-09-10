@@ -28,8 +28,6 @@ jobs:
           maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
       - name: Build strict Javadoc artifacts
         run: >-
-          ./mvnw -gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml"
-          -Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home"
-          -B -DskipTests clean compile javadoc:jar
+          ./mvnw-quarkus -B -DskipTests clean compile javadoc:jar
       - name: Verify Javadoc archives
         run: ./scripts/verify-javadoc-jars.sh

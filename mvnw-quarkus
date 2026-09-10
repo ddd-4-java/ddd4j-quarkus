@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -eu
+
+REPOSITORY_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+MAVEN3_HOME="$REPOSITORY_ROOT/.mvn/maven3-home"
+GLOBAL_SETTINGS="$MAVEN3_HOME/conf/settings.xml"
+
+if [ ! -f "$GLOBAL_SETTINGS" ]; then
+    echo "Missing Quarkus Maven compatibility settings: $GLOBAL_SETTINGS" >&2
+    exit 2
+fi
+
+exec "$REPOSITORY_ROOT/mvnw" \
+    -gs "$GLOBAL_SETTINGS" \
+    "-Dddd4j.maven.home=$MAVEN3_HOME" \
+    "$@"

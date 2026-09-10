@@ -69,9 +69,7 @@ jobs:
       - name: Verify (unit + contract)
         run: |
           set -o pipefail
-          ./mvnw -gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml" \
-            -Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home" \
-            -B verify -DskipTests=false | tee quarkus-verify.log
+          ./mvnw-quarkus -B verify -DskipTests=false | tee quarkus-verify.log
       - name: Reject ignored Quarkus configuration
         run: python3 scripts/verify-quarkus-log.py --reject-settings-problems quarkus-verify.log
       - name: Require executed unit and contract tests
@@ -95,9 +93,7 @@ jobs:
       - name: Package runnable auth samples
         run: |
           set -o pipefail
-          ./mvnw -gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml" \
-            -Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home" \
-            -B package -DskipTests=false \
+          ./mvnw-quarkus -B package -DskipTests=false \
             -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-auth-satoken,ddd4j-quarkus-samples/ddd4j-quarkus-sample-auth-shiro -am \
             | tee auth-package.log
       - name: Verify auth runner jars
@@ -185,9 +181,7 @@ jobs:
         run: docker info
       - name: Run broker integration tests (${{ matrix.broker }})
         run: >-
-          ./mvnw -gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml"
-          -Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home"
-          -B verify -DskipTests=false
+          ./mvnw-quarkus -B verify -DskipTests=false
           -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-${{ matrix.broker }} -am
       - name: Require executed broker integration class (${{ matrix.broker }})
         run: >-

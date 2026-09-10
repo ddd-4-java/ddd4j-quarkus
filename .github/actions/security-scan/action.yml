@@ -51,8 +51,7 @@ runs:
       env:
         NVD_API_KEY: ${{ inputs.nvd-api-key }}
       run: >-
-        ./mvnw -gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml"
-          -Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home" -B -U
+        ./mvnw-quarkus -B -U
         org.owasp:dependency-check-maven:12.2.2:update-only
         -Ddependency-check.skip=false
         -DfailOnError=true
@@ -67,8 +66,7 @@ runs:
     - name: Generate aggregate runtime SBOM
       shell: bash
       run: >-
-        ./mvnw -gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml"
-          -Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home" -B -U
+        ./mvnw-quarkus -B -U
         org.cyclonedx:cyclonedx-maven-plugin:2.9.2:makeAggregateBom
         -DoutputDirectory=target/sbom/runtime
         -DoutputName=bom
@@ -81,8 +79,7 @@ runs:
     - name: Generate aggregate build and test supply-chain SBOM
       shell: bash
       run: >-
-        ./mvnw -gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml"
-          -Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home" -B -U
+        ./mvnw-quarkus -B -U
         org.cyclonedx:cyclonedx-maven-plugin:2.9.2:makeAggregateBom
         -DoutputDirectory=target/sbom/build-test
         -DoutputName=bom
@@ -95,8 +92,7 @@ runs:
     - name: Scan aggregate dependencies (fail on CVSS 7 or higher)
       shell: bash
       run: >-
-        ./mvnw -gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml"
-          -Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home" -B -U
+        ./mvnw-quarkus -B -U
         org.owasp:dependency-check-maven:12.2.2:aggregate
         -Ddependency-check.skip=false
         -DautoUpdate=false

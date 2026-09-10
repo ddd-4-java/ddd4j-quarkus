@@ -32,21 +32,12 @@ class CiTestGatesTest(unittest.TestCase):
             self.workflow,
         )
 
-    def test_every_ci_maven_command_uses_absolute_compatible_global_settings(self):
+    def test_every_ci_maven_command_uses_quarkus_entrypoint(self):
         commands = re.findall(r"(?ms)^\s*run:\s*(?:\|\s*)?(.*?)(?=^\s*- name:|^\s*- uses:|^\s{2}\w|\Z)", self.workflow)
-        maven_commands = [command for command in commands if "./mvnw" in command]
+        maven_commands = [command for command in commands if "mvnw" in command]
         self.assertTrue(maven_commands)
         for command in maven_commands:
-            self.assertIn(
-                '-gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml"',
-                command,
-                command,
-            )
-            self.assertIn(
-                '-Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home"',
-                command,
-                command,
-            )
+            self.assertIn("./mvnw-quarkus", command, command)
 
     def test_every_broker_declares_and_requires_its_integration_class(self):
         self.assertEqual(13, len(re.findall(r"^\s+test_class:", self.workflow, re.MULTILINE)))
