@@ -22,8 +22,13 @@ final class RocketMqPortLease implements AutoCloseable {
             channel = FileChannel.open(LOCK_FILE, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
             return new RocketMqPortLease(channel, channel.lock());
         } catch (IOException | RuntimeException failure) {
-            if (channel != null) channel.close();
-            JVM_LEASE.release();
+            try {
+                if (channel != null) channel.close();
+            } catch (IOException closeFailure) {
+                failure.addSuppressed(closeFailure);
+            } finally {
+                JVM_LEASE.release();
+            }
             throw failure;
         }
     }
