@@ -28,8 +28,34 @@ while IFS= read -r duplicate; do
   esac
 done <<< "$duplicate_files"
 
+current_pid=
+current_log=
+cleanup() {
+  if [[ -n "$current_pid" ]] && kill -0 "$current_pid" 2>/dev/null; then
+    kill -TERM "$current_pid" 2>/dev/null || true
+    for _ in $(seq 1 50); do
+      kill -0 "$current_pid" 2>/dev/null || break
+      sleep 0.1
+    done
+    if kill -0 "$current_pid" 2>/dev/null; then
+      kill -KILL "$current_pid" 2>/dev/null || true
+    fi
+    wait "$current_pid" 2>/dev/null || true
+  fi
+  [[ -z "$current_log" ]] || rm -f "$current_log"
+  current_pid=
+  current_log=
+}
+trap cleanup EXIT
+trap 'cleanup; exit 130' INT
+trap 'cleanup; exit 143' TERM
+
+request() {
+  curl --connect-timeout 2 --max-time 5 --fail --silent --show-error "$@"
+}
+
 smoke() {
-  local auth=$1 header=$2 port=$3 budget=$4
+  local auth=$1 header=$2 budget=$3
   local module="$repo_root/ddd4j-quarkus-samples/ddd4j-quarkus-sample-auth-$auth"
   local jar log pid ready=false alice bob size
   jar=$(find "$module/target" -maxdepth 1 -name '*-runner.jar' -print -quit)
@@ -37,33 +63,36 @@ smoke() {
   size=$(wc -c < "$jar" | tr -d ' ')
   (( size <= budget )) || { echo "$auth runner size $size exceeds budget $budget" >&2; exit 1; }
   log=$(mktemp "/tmp/ddd4j-quarkus-auth-$auth.XXXXXX.log")
-  java -Dquarkus.http.host=127.0.0.1 -Dquarkus.http.port="$port" -jar "$jar" >"$log" 2>&1 &
+  current_log=$log
+  java -Dquarkus.http.host=127.0.0.1 -Dquarkus.http.port=0 -jar "$jar" >"$log" 2>&1 &
   pid=$!
-  trap 'kill "$pid" 2>/dev/null || true; wait "$pid" 2>/dev/null || true; rm -f "$log"' RETURN
+  current_pid=$pid
+  local port=
   for _ in $(seq 1 120); do
-    if curl --fail --silent --show-error "http://127.0.0.1:$port/auth/status" >/tmp/ddd4j-auth-status.json 2>/dev/null; then ready=true; break; fi
     kill -0 "$pid" 2>/dev/null || { tail -100 "$log" >&2; return 1; }
+    port=$(sed -nE 's/.*Listening on: http:\/\/127\.0\.0\.1:([0-9]+).*/\1/p' "$log" | tail -1)
+    if [[ -n "$port" ]] && request "http://127.0.0.1:$port/auth/status" >/tmp/ddd4j-auth-status.json 2>/dev/null; then ready=true; break; fi
     sleep 0.25
   done
   $ready || { tail -100 "$log" >&2; return 1; }
   jq -e '.login == false' /tmp/ddd4j-auth-status.json >/dev/null
-  alice=$(curl -fsS -H 'Content-Type: text/plain' --data alice "http://127.0.0.1:$port/auth/login" | jq -er '.token')
-  bob=$(curl -fsS -H 'Content-Type: text/plain' --data bob "http://127.0.0.1:$port/auth/login" | jq -er '.token')
-  curl -fsS -H "$header: $alice" "http://127.0.0.1:$port/auth/status" | jq -e '.login == true' >/dev/null
-  curl -fsS -H "$header: $alice" "http://127.0.0.1:$port/auth/me" | jq -e '.authenticated == true and .loginId == "alice"' >/dev/null
-  curl -fsS -H "$header: $bob" "http://127.0.0.1:$port/auth/me" | jq -e '.authenticated == true and .loginId == "bob"' >/dev/null
-  curl -fsS -H "$header: $alice" "http://127.0.0.1:$port/auth/me" | jq -e '.loginId == "alice"' >/dev/null
-  curl -fsS -H "$header: $alice" "http://127.0.0.1:$port/auth/check/role?role=user" | jq -e '.has == true' >/dev/null
-  curl -fsS -H "$header: $alice" "http://127.0.0.1:$port/auth/check/permission?permission=profile%3Aread" | jq -e '.has == true' >/dev/null
-  curl -fsS -X POST -H "$header: $alice" "http://127.0.0.1:$port/auth/logout" | jq -e '.success == true' >/dev/null
-  curl -fsS -H "$header: $alice" "http://127.0.0.1:$port/auth/status" | jq -e '.login == false' >/dev/null
-  curl -fsS -X POST -H "$header: $bob" "http://127.0.0.1:$port/auth/logout" | jq -e '.success == true' >/dev/null
-  kill "$pid" 2>/dev/null || true
-  wait "$pid" 2>/dev/null || true
-  rm -f "$log"
-  trap - RETURN
+  alice=$(request -H 'Content-Type: text/plain' --data alice "http://127.0.0.1:$port/auth/login" | jq -er '.token')
+  bob=$(request -H 'Content-Type: text/plain' --data bob "http://127.0.0.1:$port/auth/login" | jq -er '.token')
+  request -H "$header: $alice" "http://127.0.0.1:$port/auth/status" | jq -e '.login == true' >/dev/null
+  request -H "$header: $alice" "http://127.0.0.1:$port/auth/me" | jq -e '.authenticated == true and .loginId == "alice"' >/dev/null
+  request -H "$header: $bob" "http://127.0.0.1:$port/auth/me" | jq -e '.authenticated == true and .loginId == "bob"' >/dev/null
+  request "http://127.0.0.1:$port/auth/me" | jq -e '.authenticated == false' >/dev/null
+  request -H "$header: $alice" "http://127.0.0.1:$port/auth/check/role?role=user" | jq -e '.has == true' >/dev/null
+  request -H "$header: $alice" "http://127.0.0.1:$port/auth/check/role?role=admin" | jq -e '.has == false' >/dev/null
+  request -H "$header: $alice" "http://127.0.0.1:$port/auth/check/permission?permission=profile%3Aread" | jq -e '.has == true' >/dev/null
+  request -H "$header: $alice" "http://127.0.0.1:$port/auth/check/permission?permission=admin%3Awrite" | jq -e '.has == false' >/dev/null
+  request -X POST -H "$header: $alice" "http://127.0.0.1:$port/auth/logout" | jq -e '.success == true' >/dev/null
+  request -H "$header: $alice" "http://127.0.0.1:$port/auth/status" | jq -e '.login == false' >/dev/null
+  request -H "$header: $bob" "http://127.0.0.1:$port/auth/status" | jq -e '.login == true' >/dev/null
+  request -X POST -H "$header: $bob" "http://127.0.0.1:$port/auth/logout" | jq -e '.success == true' >/dev/null
+  cleanup
   echo "auth runner verified: $auth ($size/$budget bytes)"
 }
 
-smoke satoken satoken 18081 52428800
-smoke shiro X-Session-Id 18082 57671680
+smoke satoken satoken 52428800
+smoke shiro X-Session-Id 57671680
