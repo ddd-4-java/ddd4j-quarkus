@@ -28,9 +28,10 @@ curl -X POST http://localhost:8080/orders \
 样例显式声明具名 topic exchange（默认 `ddd4j.mq.exchange`），通用路由与
 Rabbit 专用属性使用同一对象，客户端据此声明队列、绑定 routing key 和收发。
 禁止使用默认交换机作为绑定目标。应用关闭时 CDI 回收原生连接及其 channels。
+以下命令要求 PATH 中的 `mvn` 为 Maven 3.9.16；仓库旧 wrapper 不满足当前 Enforcer 门禁。
 
 ```bash
-./mvnw -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-rabbitmq quarkus:dev
+mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-rabbitmq quarkus:dev
 ```
 
 样例继承 `quarkus.build.skip=true`；普通 package 不代表生成可部署应用。
@@ -41,7 +42,7 @@ Rabbit 专用属性使用同一对象，客户端据此声明队列、绑定 rou
 从仓库根目录运行：
 
 ```bash
-./mvnw -DskipTests=false -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-rabbitmq clean verify
+mvn -DskipTests=false -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-rabbitmq clean verify
 ```
 
 需要可用的 Docker。测试通过薄生命周期适配器复用共享

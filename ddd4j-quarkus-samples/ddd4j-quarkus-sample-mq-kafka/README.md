@@ -22,9 +22,10 @@ curl -X POST http://localhost:8080/orders \
 框架 CDI 生产者，保留 listener，并由框架启动注册器初始化真实客户端。
 开发运行前启动 Kafka；可通过 `DDD4J_MQ_KAFKA_BOOTSTRAP_SERVERS` 指定地址。
 `KafkaMqConfig` 将连接地址及消费者组绑定到实际客户端。
+以下命令要求 PATH 中的 `mvn` 为 Maven 3.9.16；仓库旧 wrapper 不满足当前 Enforcer 门禁。
 
 ```bash
-./mvnw -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-kafka quarkus:dev
+mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-kafka quarkus:dev
 ```
 
 样例继承 `quarkus.build.skip=true`；普通 package 不代表生成可部署应用。
@@ -35,7 +36,7 @@ curl -X POST http://localhost:8080/orders \
 从仓库根目录运行：
 
 ```bash
-./mvnw -DskipTests=false -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-kafka clean verify
+mvn -DskipTests=false -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-kafka clean verify
 ```
 
 需要可用的 Docker。测试通过薄生命周期适配器复用共享

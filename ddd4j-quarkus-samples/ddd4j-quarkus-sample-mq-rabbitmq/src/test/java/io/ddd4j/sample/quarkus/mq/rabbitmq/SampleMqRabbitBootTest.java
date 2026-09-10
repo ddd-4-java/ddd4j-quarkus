@@ -18,7 +18,7 @@ import static org.awaitility.Awaitility.await;
 
 /** 验证 HTTP 创建订单经真实 MQ 消费后产生相同订单的投影。 */
 @QuarkusTest
-@QuarkusTestResource(SampleMqRabbitBootTest.BrokerResource.class)
+@QuarkusTestResource(value = SampleMqRabbitBootTest.BrokerResource.class, restrictToAnnotatedClass = true)
 class SampleMqRabbitBootTest {
     /** 仅适配共享 fixture 的生命周期与 broker 大小写，不复制容器启动。 */
     public static class BrokerResource implements QuarkusTestResourceLifecycleManager {

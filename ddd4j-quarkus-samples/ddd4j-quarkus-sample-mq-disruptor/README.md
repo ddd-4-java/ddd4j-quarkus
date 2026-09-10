@@ -21,9 +21,10 @@ curl -X POST http://localhost:8080/orders \
 依赖 `io.ddd4j.quarkus:ddd4j-quarkus-mq-disruptor`，通过显式依赖索引发现
 框架 CDI 生产者，保留 listener，并由框架启动注册器初始化真实客户端。
 Disruptor 无需外部服务；配置使用 1024 个槽位和 yielding 等待策略。
+以下命令要求 PATH 中的 `mvn` 为 Maven 3.9.16；仓库旧 wrapper 不满足当前 Enforcer 门禁。
 
 ```bash
-./mvnw -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-disruptor quarkus:dev
+mvn -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-disruptor quarkus:dev
 ```
 
 样例继承 `quarkus.build.skip=true`；普通 package 不代表生成可部署应用。
@@ -34,7 +35,7 @@ Disruptor 无需外部服务；配置使用 1024 个槽位和 yielding 等待策
 从仓库根目录运行：
 
 ```bash
-./mvnw -DskipTests=false -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-disruptor clean verify
+mvn -DskipTests=false -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-disruptor clean verify
 ```
 
 测试使用真实 Disruptor RingBuffer，无外部容器。
