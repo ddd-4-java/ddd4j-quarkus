@@ -1,5 +1,7 @@
 package io.ddd4j.sample.quarkus.mq.rabbitmq.order.domain.event;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.ddd4j.mq.event.MQEvent;
 import lombok.Getter;
 
@@ -52,7 +54,10 @@ public class OrderCreatedEvent extends MQEvent {
      * @param orderNo   订单编号
      * @param buyerName 买家名称
      */
-    public OrderCreatedEvent(String orderId, String orderNo, String buyerName) {
+    @JsonCreator
+    public OrderCreatedEvent(@JsonProperty("orderId") String orderId,
+                             @JsonProperty("orderNo") String orderNo,
+                             @JsonProperty("buyerName") String buyerName) {
         this.orderId = Objects.requireNonNull(orderId, "orderId must not be null");
         this.orderNo = Objects.requireNonNull(orderNo, "orderNo must not be null");
         this.buyerName = Objects.requireNonNull(buyerName, "buyerName must not be null");

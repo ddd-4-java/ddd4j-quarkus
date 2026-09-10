@@ -1,28 +1,47 @@
 package io.ddd4j.sample.quarkus.mq.disruptor;
 
-import io.ddd4j.sample.quarkus.mq.disruptor.web.OrderResource;
+import io.ddd4j.sample.quarkus.mq.disruptor.mq.ConsumedOrderProjection;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import java.time.Duration;
+import java.util.Map;
+import java.util.UUID;
+import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
-/**
- * sample-mq-disruptor 应用上下文启动测试。
- *
- * <p>Disruptor 为本地内存队列（无外部 broker），{@code ddd4j.mq.enabled}
- * 默认 false 时应用正常启动、REST 资源可注入。
- *
- * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
- */
+/** 验证 HTTP 创建订单经真实 MQ 消费后产生相同订单的投影。 */
 @QuarkusTest
 class SampleMqDisruptorBootTest {
-
     @Inject
-    OrderResource orderResource;
+    ConsumedOrderProjection projection;
+
+    @BeforeEach
+    void resetProjection() {
+        projection.clear();
+    }
 
     @Test
-    void applicationContextBootsAndResourceInjectable() {
-        assertThat(orderResource).isNotNull();
+    void httpOrderReachesConsumerWithSamePayload() {
+        String orderNo = "MQ-" + UUID.randomUUID();
+        var response = given().contentType("application/json")
+                .body(Map.of("orderNo", orderNo, "buyerId", "buyer-17", "buyerName", "MQ 买家"))
+                .when().post("/orders").then().statusCode(200).extract().jsonPath();
+        String orderId = response.getString("id");
+        assertThat(orderId).isNotBlank();
+        assertThat(response.getString("orderNo")).isEqualTo(orderNo);
+        assertThat(response.getString("buyerName")).isEqualTo("MQ 买家");
+        await().atMost(Duration.ofSeconds(30)).untilAsserted(() -> {
+            var consumed = projection.find(orderId);
+            assertThat(consumed).as("listener must project the HTTP-created order").isPresent();
+            var event = consumed.orElseThrow();
+            assertThat(event.getOrderId()).isEqualTo(orderId);
+            assertThat(event.getOrderNo()).isEqualTo(orderNo);
+            assertThat(event.getBuyerName()).isEqualTo("MQ 买家");
+            assertThat(event.getTopic()).isEqualTo("ORDER");
+            assertThat(event.getTag()).isEqualTo("CREATED");
+        });
     }
 }

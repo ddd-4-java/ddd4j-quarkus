@@ -3,6 +3,8 @@ package io.ddd4j.sample.quarkus.mq.kafka.mq;
 import io.ddd4j.mq.annotation.MQEventListener;
 import io.ddd4j.sample.quarkus.mq.kafka.order.domain.OrderCreatedEvent;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import io.quarkus.arc.Unremovable;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -15,7 +17,11 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @ApplicationScoped
+@Unremovable
 public class OrderCreatedMqListener {
+
+    @Inject
+    ConsumedOrderProjection projection;
 
     /**
      * 处理 OrderCreatedEvent（从 Kafka Topic 消费）。
@@ -24,6 +30,7 @@ public class OrderCreatedMqListener {
      */
     @MQEventListener(topic = "ORDER", tags = "CREATED")
     public void onOrderCreated(OrderCreatedEvent event) {
+        projection.record(event);
         log.info("==================================================");
         log.info("[Kafka MQ 消费者] 收到 OrderCreatedEvent！");
         log.info("  订单 ID  : {}", event.getOrderId());

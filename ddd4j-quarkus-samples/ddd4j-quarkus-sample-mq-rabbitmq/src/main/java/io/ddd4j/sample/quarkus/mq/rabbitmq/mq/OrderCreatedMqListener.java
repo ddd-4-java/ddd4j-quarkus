@@ -3,7 +3,9 @@ package io.ddd4j.sample.quarkus.mq.rabbitmq.mq;
 import io.ddd4j.mq.annotation.MQEventListener;
 import io.ddd4j.sample.quarkus.mq.rabbitmq.order.domain.event.OrderCreatedEvent;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.jboss.logging.Logger;
+import jakarta.inject.Inject;
+import io.quarkus.arc.Unremovable;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 订单创建事件 RabbitMQ 消费者。
@@ -33,10 +35,13 @@ import org.jboss.logging.Logger;
  *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  */
+@Slf4j
 @ApplicationScoped
+@Unremovable
 public class OrderCreatedMqListener {
 
-    private static final Logger log = Logger.getLogger(OrderCreatedMqListener.class);
+    @Inject
+    ConsumedOrderProjection projection;
 
     /**
      * 处理 OrderCreatedEvent（从 RabbitMQ Queue 消费）。
@@ -54,13 +59,14 @@ public class OrderCreatedMqListener {
      */
     @MQEventListener(topic = "ORDER", tags = "created")
     public void onOrderCreated(OrderCreatedEvent event) {
+        projection.record(event);
         log.info("==================================================");
         log.info("[RabbitMQ MQ 消费者] 收到 OrderCreatedEvent！");
-        log.infof("  订单 ID   : %s", event.getOrderId());
-        log.infof("  订单编号  : %s", event.getOrderNo());
-        log.infof("  买家名称  : %s", event.getBuyerName());
-        log.infof("  Topic     : %s", event.getTopic());
-        log.infof("  Tag       : %s", event.getTag());
+        log.info("  订单 ID   : {}", event.getOrderId());
+        log.info("  订单编号  : {}", event.getOrderNo());
+        log.info("  买家名称  : {}", event.getBuyerName());
+        log.info("  Topic     : {}", event.getTopic());
+        log.info("  Tag       : {}", event.getTag());
         log.info("==================================================");
     }
 }

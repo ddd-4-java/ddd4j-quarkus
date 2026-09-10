@@ -1,5 +1,7 @@
 # P3 — Auth / Samples / CI/CD 实施计划
 
+> 历史计划状态（2026-09-10）：原始 Producer、分层 sample、CI 基线已完成；旧提议的 `ddd4j-quarkus-auth-testcontainers` 已取消并由直接 Quarkus runtime 集成替代，不计为完成项。`sample-auth-*` / `sample-mq-*` 的行为闭环由 [P3 auth/sample completion plan](2026-09-10-p3-auth-samples-completion.md) 完成并验证。
+
 > **For agentic workers:** REQUIRED SUB-KILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 完成 5 个 auth 子模块 Producer 化、7 个 sample 分层完整化、CI 三阶段工作流、CONTRIBUTING.md
@@ -153,11 +155,13 @@ Stage 6 — 全量验证 + 提交
 
 | 项 | 旧 plan 描述 | 实际落地 | 偏差原因 |
 |---|---|---|---|
-| auth-testcontainers 新增 | 计划新增共享 fixture | 未落地 | 优先级让位给 mq-testcontainers |
-| sample-mq-* 完整化 | 计划完整化 + 集成测试 | 仅骨架 | mq 子模块已有 14 broker 集成测试覆盖 |
+| auth-testcontainers 新增 | 计划新增共享 fixture | 已取消（不计为完成） | ddd4j-boot 与两条 Quarkus 分支均无该模块；四个 auth 后端没有共同容器依赖，改由各模块/样例直接 Quarkus runtime 验证 |
+| sample-auth-* / sample-mq-* 完整化 | 计划完整化 + 集成测试 | 已由后续计划完成 | Sa-Token/Shiro 覆盖真实 HTTP 生命周期；三个 MQ sample 覆盖 HTTP 发布、真实 listener 消费与可观察投影 |
 
 ## 后续待办（非本次范围）
 
-- [ ] 新增 `ddd4j-quarkus-auth-testcontainers` 模块 + 4 个 auth 子模块集成测试
-- [ ] 完整化 sample-auth-* / sample-mq-*
+- [取消] 新增 `ddd4j-quarkus-auth-testcontainers` 模块 + 4 个 auth 子模块集成测试
+  - 取消原因：Sa-Token、Shiro、Security、License 没有共同容器依赖；以各后端真实 Quarkus runtime fixture 替代。
+- [x] 完整化 sample-auth-* / sample-mq-*
+  - 证据：见 [P3 auth/sample completion plan](2026-09-10-p3-auth-samples-completion.md) Task 2–4。
 - [ ] 删除 ddd4j-quarkus-extension-pf4j（空壳）

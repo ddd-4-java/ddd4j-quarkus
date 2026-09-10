@@ -14,6 +14,11 @@
     <description>ddd4j-quarkus Disruptor 本地 MQ 示例：业务发布 DomainEvent → MQ 投递 → @MQEventListener 消费（无外部依赖）</description>
 
     <dependencies>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- ddd4j 核心与注解 -->
         <dependency>
             <groupId>io.ddd4j</groupId>
@@ -46,21 +51,21 @@
         </dependency>
 
         <!--
-            ddd4j-mq-disruptor：LMAX Disruptor 进程内 RingBuffer 本地 MQ 实现。
+            Quarkus CDI 桥接，底层复用 ddd4j-mq-disruptor 的进程内 RingBuffer。
             完全本地、无任何外部 Broker 依赖，最适合作为 sample 演示。
-            切换 Kafka / RabbitMQ 时只需替换此依赖为 ddd4j-mq-kafka / ddd4j-mq-rabbitmq，
-            业务代码、@MQEventListener 调用方式完全无需修改。
+            切换 Kafka / RabbitMQ 时使用对应 Quarkus 桥接并配置连接；
+            业务发布与 @MQEventListener 调用方式保持一致。
         -->
         <dependency>
-            <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-mq-disruptor</artifactId>
-            <version>${ddd4j.version}</version>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-mq-disruptor</artifactId>
+            <version>${revision}</version>
         </dependency>
 
         <!-- Quarkus RESTEasy Reactive -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-rest</artifactId>
+            <artifactId>quarkus-rest-jackson</artifactId>
         </dependency>
     </dependencies>
 

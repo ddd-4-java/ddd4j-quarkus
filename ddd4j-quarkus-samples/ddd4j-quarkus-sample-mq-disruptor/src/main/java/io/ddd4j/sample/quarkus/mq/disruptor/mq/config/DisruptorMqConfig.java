@@ -2,7 +2,10 @@ package io.ddd4j.sample.quarkus.mq.disruptor.mq.config;
 
 import io.ddd4j.mq.disruptor.DisruptorMQProperties;
 import io.ddd4j.mq.disruptor.util.WaitStrategys;
-import io.quarkus.arc.DefaultBean;
+import jakarta.enterprise.inject.Typed;
+import io.ddd4j.mq.disruptor.DisruptorMQClient;
+import io.quarkus.runtime.ShutdownEvent;
+import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
@@ -18,8 +21,14 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class DisruptorMqConfig {
 
+    /** 显式注入并在应用退出时释放 broker 客户端，由框架注册器负责启动。 */
+    void shutdown(@Observes ShutdownEvent event,
+                  DisruptorMQClient client) throws Exception {
+        client.close();
+    }
+
     @Produces
-    @DefaultBean
+    @Typed(DisruptorMQProperties.class)
     @Singleton
     public DisruptorMQProperties disruptorMQProperties() {
         DisruptorMQProperties props = new DisruptorMQProperties();

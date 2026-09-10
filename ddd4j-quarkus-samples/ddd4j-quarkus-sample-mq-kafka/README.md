@@ -1,35 +1,11 @@
 # ddd4j-quarkus-sample-mq-kafka
 
-> ddd4j + Quarkus + **Kafka MQ** 示例：演示完整"业务发布 DomainEvent → Kafka 投递 → @MQEventListener 消费"链路。
+真实 Kafka broker订单示例：`POST /orders` 创建订单，应用服务调用
+`OrderCreatedEvent.publish()`，框架注册的 `@MQEventListener` 消费后更新
+`ConsumedOrderProjection`。投影使用应用级内存状态，仅用于演示异步消费结果，
+重启后丢失。
 
-## 特点
-
-- **分布式消息队列**：基于 Apache Kafka，支持高吞吐、持久化、消费者组
-- **CDI 自动装配**：Quarkus CDI 容器自动发现 Kafka 组件并注入
-- **业务零 MQ 耦合**：业务代码只依赖 `MQEventPublisher` 接口，与 Disruptor 示例完全一致
-
-## 前置条件
-
-```bash
-# 启动 Kafka（使用 Docker）
-docker run -d --name kafka -p 9092:9092 apache/kafka:latest
-
-# 或通过环境变量指定 Broker 地址
-export DDD4J_MQ_KAFKA_BOOTSTRAP_SERVERS=your-kafka-broker:9092
-```
-
-## 运行
-
-```bash
-# 开发模式
-mvn -pl ddd4j-quarkus/ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-kafka quarkus:dev
-
-# 或打包运行
-mvn -pl ddd4j-quarkus/ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-kafka package
-java -jar target/quarkus-app/quarkus-run.jar
-```
-
-## 测试
+## HTTP 接口
 
 ```bash
 curl -X POST http://localhost:8080/orders \
@@ -37,12 +13,32 @@ curl -X POST http://localhost:8080/orders \
   -d '{"orderNo":"ORD-001","buyerId":"B001","buyerName":"张三"}'
 ```
 
-## 切换 MQ
+返回订单 ID、订单编号、买家信息和状态。HTTP 成功表示发布调用返回；
+测试还会等待消费投影，并验证同一个订单 ID、编号、买家名称、topic 与 tag。
 
-仅需修改 `pom.xml` 中的依赖：
+## 配置与运行
 
-| MQ 类型 | 依赖 artifactId | 外部依赖 |
-|---------|-----------------|---------|
-| Disruptor | `ddd4j-mq-disruptor` | 无 |
-| Kafka（当前） | `ddd4j-mq-kafka` | Kafka Broker |
-| RabbitMQ | `ddd4j-mq-rabbitmq` | RabbitMQ Broker |
+依赖 `io.ddd4j.quarkus:ddd4j-quarkus-mq-kafka`，通过显式依赖索引发现
+框架 CDI 生产者，保留 listener，并由框架启动注册器初始化真实客户端。
+开发运行前启动 Kafka；可通过 `DDD4J_MQ_KAFKA_BOOTSTRAP_SERVERS` 指定地址。
+`KafkaMqConfig` 将连接地址及消费者组绑定到实际客户端。
+
+```bash
+./mvnw -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-kafka quarkus:dev
+```
+
+样例继承 `quarkus.build.skip=true`；普通 package 不代表生成可部署应用。
+当前测试证据是 Quarkus 测试运行时行为，不代表部署或生产验收。
+
+## 端到端测试
+
+从仓库根目录运行：
+
+```bash
+./mvnw -DskipTests=false -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-mq-kafka clean verify
+```
+
+需要可用的 Docker。测试通过薄生命周期适配器复用共享
+`KafkaQuarkusTestResource`，由夹具启动容器并注入动态端口；
+测试不复制容器实现，也不手动注册或调用 listener。
+每次测试清空消费投影，发送唯一订单，最多等待 30 秒断言异步消费结果。

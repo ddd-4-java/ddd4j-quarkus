@@ -30,7 +30,6 @@
         <module>ddd4j-quarkus-sample-api</module>
         <!-- Auth 鉴权示例：演示 SubjectKit 统一鉴权入口（JAX-RS 端点） -->
         <module>ddd4j-quarkus-sample-auth-satoken</module>
-        <module>ddd4j-quarkus-sample-auth-security</module>
         <module>ddd4j-quarkus-sample-auth-shiro</module>
         <!-- MQ 集成示例：业务发布 DomainEvent → MQ 投递 → @MQEventListener 消费，三套实现互为对照 -->
         <module>ddd4j-quarkus-sample-mq-disruptor</module>

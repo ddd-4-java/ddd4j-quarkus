@@ -14,6 +14,17 @@
     <description>ddd4j-quarkus Kafka MQ 示例：业务发布 DomainEvent → Kafka 投递 → @MQEventListener 消费</description>
 
     <dependencies>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-mq-testcontainers</artifactId>
+            <version>${revision}</version>
+            <scope>test</scope>
+        </dependency>
         <!-- ddd4j 核心与注解 -->
         <dependency>
             <groupId>io.ddd4j</groupId>
@@ -46,20 +57,20 @@
         </dependency>
 
         <!--
-            ddd4j-mq-kafka：基于 Apache Kafka 的分布式消息队列实现。
+            Quarkus CDI 桥接，底层复用 ddd4j-mq-kafka。
             需要运行中的 Kafka Broker（参见 application.properties 配置）。
-            切换 MQ 时只需替换此依赖，业务代码完全无需修改。
+            连接属性由示例 KafkaMqConfig 绑定，框架注册器负责启动客户端与消费者。
         -->
         <dependency>
-            <groupId>io.ddd4j</groupId>
-            <artifactId>ddd4j-mq-kafka</artifactId>
-            <version>${ddd4j.version}</version>
+            <groupId>io.ddd4j.quarkus</groupId>
+            <artifactId>ddd4j-quarkus-mq-kafka</artifactId>
+            <version>${revision}</version>
         </dependency>
 
         <!-- Quarkus RESTEasy Reactive -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-rest</artifactId>
+            <artifactId>quarkus-rest-jackson</artifactId>
         </dependency>
     </dependencies>
 

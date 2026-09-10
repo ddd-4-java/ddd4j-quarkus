@@ -1,5 +1,7 @@
 package io.ddd4j.sample.quarkus.mq.kafka.order.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.ddd4j.mq.event.MQEvent;
 import lombok.Getter;
 
@@ -21,7 +23,10 @@ public class OrderCreatedEvent extends MQEvent {
     private final String orderNo;
     private final String buyerName;
 
-    public OrderCreatedEvent(String orderId, String orderNo, String buyerName) {
+    @JsonCreator
+    public OrderCreatedEvent(@JsonProperty("orderId") String orderId,
+                             @JsonProperty("orderNo") String orderNo,
+                             @JsonProperty("buyerName") String buyerName) {
         this.orderId = Objects.requireNonNull(orderId, "orderId");
         this.orderNo = Objects.requireNonNull(orderNo, "orderNo");
         this.buyerName = Objects.requireNonNull(buyerName, "buyerName");

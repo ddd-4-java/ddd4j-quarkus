@@ -7,10 +7,12 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 鉴权示例资源：演示 SubjectKit 统一鉴权入口（sa-token 底层，JAX-RS 端点）。
@@ -62,7 +64,7 @@ public class AuthResource {
     @Path("/me")
     public Map<String, Object> me() {
         AuthPrincipal principal = SubjectKit.getPrincipal();
-        if (principal == null) {
+        if (Objects.isNull(principal)) {
             return Map.of("authenticated", false);
         }
         Map<String, Object> result = new HashMap<>();
@@ -78,7 +80,7 @@ public class AuthResource {
      */
     @GET
     @Path("/check/permission")
-    public Map<String, Object> checkPermission(String permission) {
+    public Map<String, Object> checkPermission(@QueryParam("permission") String permission) {
         boolean has = SubjectKit.hasPermission(permission);
         return Map.of("permission", permission, "has", has);
     }
@@ -88,7 +90,7 @@ public class AuthResource {
      */
     @GET
     @Path("/check/role")
-    public Map<String, Object> checkRole(String role) {
+    public Map<String, Object> checkRole(@QueryParam("role") String role) {
         boolean has = SubjectKit.hasRole(role);
         return Map.of("role", role, "has", has);
     }
