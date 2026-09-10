@@ -60,6 +60,12 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- NATS fixture 直接使用 JetStream 管理 API，沿用 ddd4j 兼容客户端版本。 -->
+            <dependency>
+                <groupId>io.nats</groupId>
+                <artifactId>jnats</artifactId>
+                <version>${jnats-compat.version}</version>
+            </dependency>
             <!--
                 1. Quarkus BOM 必须第一个 import。Maven 对重复管理项采用 first-import-wins，
                 因此必须先锁定本轨道的 3.37.4，避免上游 ddd4j 或任何 Quarkiverse BOM 把

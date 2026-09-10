@@ -1,9 +1,15 @@
 package io.ddd4j.quarkus.mq.testcontainers;
 
+import io.nats.client.Connection;
+import io.nats.client.JetStreamApiException;
+import io.nats.client.Nats;
+import io.nats.client.api.StorageType;
+import io.nats.client.api.StreamConfiguration;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
 
@@ -12,6 +18,7 @@ import java.util.Map;
  *
  * <p>镜像：{@code nats:2.10.22}（含 jetstream 支持）。
  * 暴露属性：{@code ddd4j.mq.nats.servers}。
+ * 返回连接配置前准备覆盖 {@code ORDER.CREATED} 的 JetStream stream；准备失败则启动失败。
  */
 public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
 
@@ -42,9 +49,23 @@ public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
 
     @Override
     protected Map<String, String> exposedProperties() {
+        String servers = String.format("nats://%s:%s",
+                container.getHost(), firstMappedPort(container, 4222));
+        try (Connection connection = Nats.connect(servers)) {
+            // 同配置的 stream 创建请求可幂等重放，保留已有消息，不降级为 core NATS。
+            connection.jetStreamManagement().addStream(StreamConfiguration.builder()
+                    .name("DDD4J_TEST_ORDERS")
+                    .subjects("ORDER.CREATED")
+                    .storageType(StorageType.Memory)
+                    .build());
+        } catch (InterruptedException failure) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("NATS JetStream stream 初始化被中断", failure);
+        } catch (IOException | JetStreamApiException failure) {
+            throw new IllegalStateException("无法准备 NATS JetStream ORDER.CREATED stream", failure);
+        }
         return Map.of(
-                "ddd4j.mq.nats.servers", String.format("nats://%s:%s",
-                        container.getHost(), firstMappedPort(container, 4222)),
+                "ddd4j.mq.nats.servers", servers,
                 "ddd4j.mq.broker", "NATS"
         );
     }

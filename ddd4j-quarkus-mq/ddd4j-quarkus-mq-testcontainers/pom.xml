@@ -36,6 +36,11 @@
     </description>
 
     <dependencies>
+        <!-- 真实 JetStream stream 初始化，由本仓 dependencies 统一管理版本。 -->
+        <dependency>
+            <groupId>io.nats</groupId>
+            <artifactId>jnats</artifactId>
+        </dependency>
         <!-- 核心 testcontainers API -->
         <dependency>
             <groupId>org.testcontainers</groupId>
