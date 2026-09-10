@@ -12,8 +12,8 @@ import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIf;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -80,9 +80,16 @@ class MicaMqttQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<Mi
      * mosquitto/EMQX 均复现），对齐 javalin Ddd4jMicaMqttMqIT 先例；CI linux 可移除。
      */
     @Test
-    @Disabled("mica-mqtt AIO 在 macOS arm64 的已知缺陷，对齐 javalin Ddd4jMicaMqttMqIT 先例；CI linux 可移除")
+    @DisabledIf("isMacArm64")
     void shouldPublishAndConsumeOrderCreatedEventEndToEnd() throws Exception {
         runOrderCreatedRoundTrip();
+    }
+
+    static boolean isMacArm64() {
+        String osName = System.getProperty("os.name", "");
+        String osArch = System.getProperty("os.arch", "");
+        return "Mac OS X".equalsIgnoreCase(osName)
+                && ("aarch64".equalsIgnoreCase(osArch) || "arm64".equalsIgnoreCase(osArch));
     }
 
     /**
