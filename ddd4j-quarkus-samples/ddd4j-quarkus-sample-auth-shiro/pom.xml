@@ -21,6 +21,13 @@
         <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-runtime-quarkus</artifactId>
+            <exclusions>
+                <!-- Quarkus 使用 Jakarta 注解，排除上游兼容保留的 javax Swagger 注解包。 -->
+                <exclusion>
+                    <groupId>io.swagger.core.v3</groupId>
+                    <artifactId>swagger-annotations</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.ddd4j.quarkus</groupId>

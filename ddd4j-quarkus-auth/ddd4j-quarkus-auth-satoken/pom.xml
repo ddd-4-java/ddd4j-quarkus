@@ -22,6 +22,22 @@
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-auth-satoken</artifactId>
             <version>${ddd4j.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>cn.hutool</groupId>
+                    <artifactId>hutool-all</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>cn.hutool</groupId>
+                    <artifactId>hutool-jwt</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- 避免 hutool-all 与拆分模块重复打包，并与平台 Hutool 版本保持一致。 -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-jwt</artifactId>
+            <version>${hutool.version}</version>
         </dependency>
         <!-- ddd4j core -->
         <dependency>
