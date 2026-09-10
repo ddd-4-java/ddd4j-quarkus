@@ -26,8 +26,8 @@ import java.util.Map;
  *   <li>{@link MQClient} Bean 被 CDI 正确解析，且 impl() = "nats"</li>
  *   <li>{@link MQProperties} Bean 存在且 broker = "NATS"</li>
  *   <li>{@link MQEventSerialization} Bean 存在且可注入</li>
- *   <li>端到端：{@code OrderCreatedEvent.publish()} → NATS 容器（JetStream 优先，
- *       无 stream 回落 core NATS）→ {@code @MQEventListener} 监听器收到事件
+ *   <li>端到端：{@code OrderCreatedEvent.publish()} → NATS JetStream 容器与当前测试独占 stream
+ *       → {@code @MQEventListener} 监听器收到事件
  *       （继承 {@link AbstractMqQuarkusIntegrationTest} round-trip 骨架）</li>
  * </ul>
  *

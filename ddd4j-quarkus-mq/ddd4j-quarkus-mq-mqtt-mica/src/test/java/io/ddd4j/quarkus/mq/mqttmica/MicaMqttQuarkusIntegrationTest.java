@@ -26,7 +26,7 @@ import java.util.Map;
  *   <li>{@link MQClient} Bean 被 CDI 正确解析，且 impl() = "mqtt-mica"</li>
  *   <li>{@link MQProperties} Bean 存在且 broker = "MQTT_MICA"</li>
  *   <li>{@link MQEventSerialization} Bean 存在且可注入</li>
- *   <li>round-trip：<b>@Disabled</b>（见方法 Javadoc），shouldInject* 保持可跑</li>
+ *   <li>round-trip：仅在已知不兼容的 macOS arm64 环境跳过，其余平台真实执行</li>
  * </ul>
  *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
@@ -77,7 +77,7 @@ class MicaMqttQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<Mi
     /**
      * round-trip：mica-mqtt 2.6.6 客户端（smart-socket AIO）在 macOS arm64 上首连被
      * broker 拒绝且 publish 静默丢失（核心库 ddd4j-mq-mqtt-mica 的 AIO 发送缺陷，
-     * mosquitto/EMQX 均复现），对齐 javalin Ddd4jMicaMqttMqIT 先例；CI linux 可移除。
+     * mosquitto/EMQX 均复现），对齐 javalin Ddd4jMicaMqttMqIT 先例；Linux CI 继续执行。
      */
     @Test
     @DisabledIf("isMacArm64")
@@ -86,8 +86,10 @@ class MicaMqttQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<Mi
     }
 
     static boolean isMacArm64() {
-        String osName = System.getProperty("os.name", "");
-        String osArch = System.getProperty("os.arch", "");
+        return isMacArm64(System.getProperty("os.name", ""), System.getProperty("os.arch", ""));
+    }
+
+    static boolean isMacArm64(String osName, String osArch) {
         return "Mac OS X".equalsIgnoreCase(osName)
                 && ("aarch64".equalsIgnoreCase(osArch) || "arm64".equalsIgnoreCase(osArch));
     }

@@ -30,6 +30,7 @@ done <<< "$duplicate_files"
 
 current_pid=
 current_log=
+current_status=
 cleanup() {
   if [[ -n "$current_pid" ]] && kill -0 "$current_pid" 2>/dev/null; then
     kill -TERM "$current_pid" 2>/dev/null || true
@@ -43,8 +44,10 @@ cleanup() {
     wait "$current_pid" 2>/dev/null || true
   fi
   [[ -z "$current_log" ]] || rm -f "$current_log"
+  [[ -z "$current_status" ]] || rm -f "$current_status"
   current_pid=
   current_log=
+  current_status=
 }
 trap cleanup EXIT
 trap 'cleanup; exit 130' INT
@@ -57,13 +60,15 @@ request() {
 smoke() {
   local auth=$1 header=$2 budget=$3
   local module="$repo_root/ddd4j-quarkus-samples/ddd4j-quarkus-sample-auth-$auth"
-  local jar log pid ready=false alice bob size
+  local jar log status pid ready=false alice bob size
   jar=$(find "$module/target" -maxdepth 1 -name '*-runner.jar' -print -quit)
   [[ -n "$jar" ]] || { echo "missing runner jar for $auth" >&2; exit 1; }
   size=$(wc -c < "$jar" | tr -d ' ')
   (( size <= budget )) || { echo "$auth runner size $size exceeds budget $budget" >&2; exit 1; }
   log=$(mktemp "/tmp/ddd4j-quarkus-auth-$auth.XXXXXX.log")
+  status=$(mktemp "/tmp/ddd4j-quarkus-auth-$auth.XXXXXX.status.json")
   current_log=$log
+  current_status=$status
   java -Dquarkus.http.host=127.0.0.1 -Dquarkus.http.port=0 -jar "$jar" >"$log" 2>&1 &
   pid=$!
   current_pid=$pid
@@ -71,11 +76,11 @@ smoke() {
   for _ in $(seq 1 120); do
     kill -0 "$pid" 2>/dev/null || { tail -100 "$log" >&2; return 1; }
     port=$(sed -nE 's/.*Listening on: http:\/\/127\.0\.0\.1:([0-9]+).*/\1/p' "$log" | tail -1)
-    if [[ -n "$port" ]] && request "http://127.0.0.1:$port/auth/status" >/tmp/ddd4j-auth-status.json 2>/dev/null; then ready=true; break; fi
+    if [[ -n "$port" ]] && request "http://127.0.0.1:$port/auth/status" >"$status" 2>/dev/null; then ready=true; break; fi
     sleep 0.25
   done
   $ready || { tail -100 "$log" >&2; return 1; }
-  jq -e '.login == false' /tmp/ddd4j-auth-status.json >/dev/null
+  jq -e '.login == false' "$status" >/dev/null
   alice=$(request -H 'Content-Type: text/plain' --data alice "http://127.0.0.1:$port/auth/login" | jq -er '.token')
   bob=$(request -H 'Content-Type: text/plain' --data bob "http://127.0.0.1:$port/auth/login" | jq -er '.token')
   request -H "$header: $alice" "http://127.0.0.1:$port/auth/status" | jq -e '.login == true' >/dev/null

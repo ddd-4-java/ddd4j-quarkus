@@ -84,6 +84,28 @@ class VerifyTestReportsTest(unittest.TestCase):
         self.assertNotEqual(0, result.returncode)
         self.assertIn("required test method was not executed", result.stderr)
 
+    def test_rejects_report_with_test_failure(self):
+        result = self.run_verifier(
+            """
+            <testsuite name="ExampleTest" tests="1" failures="1" errors="0" skipped="0">
+              <testcase classname="ExampleTest" name="fails"><failure message="boom"/></testcase>
+            </testsuite>
+            """
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("test reports contain failures or errors", result.stderr)
+
+    def test_rejects_report_with_test_error(self):
+        result = self.run_verifier(
+            """
+            <testsuite name="ExampleTest" tests="1" failures="0" errors="1" skipped="0">
+              <testcase classname="ExampleTest" name="errors"><error message="boom"/></testcase>
+            </testsuite>
+            """
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("test reports contain failures or errors", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
