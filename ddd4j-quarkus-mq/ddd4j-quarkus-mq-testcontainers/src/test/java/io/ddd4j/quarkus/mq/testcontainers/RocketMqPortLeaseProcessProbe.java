@@ -11,15 +11,17 @@ public final class RocketMqPortLeaseProcessProbe {
 
     public static void main(String[] args) throws Exception {
         String mode = args[0];
-        Path readyFile = Path.of(args[1]);
-        long holdMillis = Long.parseLong(args[2]);
+        Path attemptedFile = Path.of(args[1]);
+        Path acquiredFile = Path.of(args[2]);
+        long holdMillis = Long.parseLong(args[3]);
+        Files.writeString(attemptedFile, "attempted");
         if ("fail".equals(mode)) {
             RocketMqPortLease.acquire();
-            Files.writeString(readyFile, "acquired");
+            Files.writeString(acquiredFile, "acquired");
             throw new IllegalStateException("intentional holder failure");
         }
         try (RocketMqPortLease ignored = RocketMqPortLease.acquire()) {
-            Files.writeString(readyFile, "acquired");
+            Files.writeString(acquiredFile, "acquired");
             if ("hold".equals(mode)) {
                 Thread.sleep(holdMillis);
             }
