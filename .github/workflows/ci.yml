@@ -67,7 +67,9 @@ jobs:
       - name: Verify Quarkus BOM arbitration
         run: python3 ddd4j-quarkus-dependencies/src/test/python/verify_bom_arbitration.py
       - name: Verify (unit + contract)
-        run: ./mvnw -B verify
+        run: ./mvnw -B verify -DskipTests=false
+      - name: Require executed unit and contract tests
+        run: python3 scripts/verify-test-reports.py .
 
   auth-production:
     name: Auth runner production smoke (Java 21)
@@ -92,28 +94,74 @@ jobs:
             | tee auth-package.log
       - name: Verify auth runner jars
         run: ./scripts/verify-auth-runners.sh auth-package.log
+      - name: Require executed auth journey tests
+        run: >-
+          python3 scripts/verify-test-reports.py
+          --require-class io.ddd4j.quarkus.sample.auth.satoken.AuthJourneyTest
+          --require-class io.ddd4j.quarkus.sample.auth.shiro.AuthJourneyTest
+          ddd4j-quarkus-samples/ddd4j-quarkus-sample-auth-satoken
+          ddd4j-quarkus-samples/ddd4j-quarkus-sample-auth-shiro
 
   broker-integration:
-    name: Broker integration (${{ matrix.broker }})
+    name: Broker ${{ matrix.coverage }} (${{ matrix.broker }})
     runs-on: ubuntu-latest
     needs: [workflow-lint, unit-and-contract]
     strategy:
       fail-fast: false
       matrix:
-        broker:
-          - activemq
-          - disruptor
-          - kafka
-          - mqtt
-          - mqtt-mica
-          - nats
-          - ons
-          - pulsar
-          - rabbitmq
-          - redis-stream
-          - rocketmq
-          - sqs
-          - tdmq
+        include:
+          - broker: activemq
+            coverage: public-roundtrip
+            test_class: io.ddd4j.quarkus.mq.activemq.ActiveMqQuarkusIntegrationTest
+            required_test: io.ddd4j.quarkus.mq.activemq.ActiveMqQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd
+          - broker: disruptor
+            coverage: in-process-roundtrip
+            test_class: io.ddd4j.quarkus.mq.disruptor.DisruptorQuarkusIntegrationTest
+            required_test: io.ddd4j.quarkus.mq.disruptor.DisruptorQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd
+          - broker: kafka
+            coverage: public-roundtrip
+            test_class: io.ddd4j.quarkus.mq.kafka.KafkaQuarkusIntegrationTest
+            required_test: io.ddd4j.quarkus.mq.kafka.KafkaQuarkusIntegrationTest#shouldPublishAndConsumeEventEndToEnd
+          - broker: mqtt
+            coverage: public-roundtrip
+            test_class: io.ddd4j.quarkus.mq.mqtt.MqttQuarkusIntegrationTest
+            required_test: io.ddd4j.quarkus.mq.mqtt.MqttQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd
+          - broker: mqtt-mica
+            coverage: linux-roundtrip-mac-arm64-skip
+            test_class: io.ddd4j.quarkus.mq.mqttmica.MicaMqttQuarkusIntegrationTest
+            required_test: io.ddd4j.quarkus.mq.mqttmica.MicaMqttQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd
+          - broker: nats
+            coverage: public-roundtrip
+            test_class: io.ddd4j.quarkus.mq.nats.NatsQuarkusIntegrationTest
+            required_test: io.ddd4j.quarkus.mq.nats.NatsQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd
+          - broker: ons
+            coverage: commercial-config-only
+            test_class: io.ddd4j.quarkus.mq.ons.OnsQuarkusIntegrationTest
+            required_test: io.ddd4j.quarkus.mq.ons.OnsQuarkusIntegrationTest#shouldInjectMQClient
+          - broker: pulsar
+            coverage: public-roundtrip
+            test_class: io.ddd4j.quarkus.mq.pulsar.PulsarQuarkusIntegrationTest
+            required_test: io.ddd4j.quarkus.mq.pulsar.PulsarQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd
+          - broker: rabbitmq
+            coverage: public-roundtrip
+            test_class: io.ddd4j.quarkus.mq.rabbit.RabbitMqQuarkusIntegrationTest
+            required_test: io.ddd4j.quarkus.mq.rabbit.RabbitMqQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd
+          - broker: redis-stream
+            coverage: public-roundtrip
+            test_class: io.ddd4j.quarkus.mq.redisstream.RedisStreamQuarkusIntegrationTest
+            required_test: io.ddd4j.quarkus.mq.redisstream.RedisStreamQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd
+          - broker: rocketmq
+            coverage: public-roundtrip
+            test_class: io.ddd4j.quarkus.mq.rocket.RocketMqQuarkusIntegrationTest
+            required_test: io.ddd4j.quarkus.mq.rocket.RocketMqQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd
+          - broker: sqs
+            coverage: emulated-roundtrip
+            test_class: io.ddd4j.quarkus.mq.sqs.SqsQuarkusIntegrationTest
+            required_test: io.ddd4j.quarkus.mq.sqs.SqsQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd
+          - broker: tdmq
+            coverage: fallback-contract
+            test_class: io.ddd4j.quarkus.mq.tdmq.TdmqQuarkusIntegrationTest
+            required_test: io.ddd4j.quarkus.mq.tdmq.TdmqQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -128,7 +176,13 @@ jobs:
       - name: Require Docker for broker integration
         run: docker info
       - name: Run broker integration tests (${{ matrix.broker }})
-        run: ./mvnw -B verify -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-${{ matrix.broker }} -am
+        run: ./mvnw -B verify -DskipTests=false -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-${{ matrix.broker }} -am
+      - name: Require executed broker integration class (${{ matrix.broker }})
+        run: >-
+          python3 scripts/verify-test-reports.py
+          --require-class "${{ matrix.test_class }}"
+          --require-test "${{ matrix.required_test }}"
+          ddd4j-quarkus-mq/ddd4j-quarkus-mq-${{ matrix.broker }}
       - name: Upload integration test reports (${{ matrix.broker }})
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
@@ -136,6 +190,8 @@ jobs:
           name: integration-reports-${{ matrix.broker }}
           path: |
             **/target/failsafe-reports/*.txt
+            **/target/failsafe-reports/TEST-*.xml
             **/target/surefire-reports/*.txt
-          if-no-files-found: ignore
+            **/target/surefire-reports/TEST-*.xml
+          if-no-files-found: error
           retention-days: 14

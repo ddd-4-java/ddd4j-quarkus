@@ -7,7 +7,6 @@
         <groupId>io.ddd4j</groupId>
         <artifactId>ddd4j-parent</artifactId>
         <version>3.0.x.20260630-SNAPSHOT</version>
-        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <groupId>io.ddd4j.quarkus</groupId>

@@ -87,7 +87,7 @@
 | RocketMQ | apache/rocketmq:5.3.2 | FixedHostPortGenericContainer / nameserver + broker 日志，3 分钟总超时 | 同左 | 4/0；4/0；4/0 | 真实 broker 往返；WARMUP 与 CREATED tag 分离 |
 | NATS | nats:2.10.22 | GenericContainer / JetStream HTTP health，1 分钟 | 同左 | 4/0；4/0；4/0 | NATS core 往返；日志有 JetStream 无匹配 stream 后回退 |
 | MQTT | eclipse-mosquitto:2.0 | GenericContainer / Mosquitto running 日志，1 分钟 | 同左；另有持久化目录生命周期覆盖 | 4/0；4/0；4/0 | Paho/Mosquitto 往返 |
-| MQTT-Mica | eclipse-mosquitto:2.0 | GenericContainer / Mosquitto running 日志，1 分钟 | 同左 | 4/1；4/1；4/1 | 装配/序列化通过；平台往返 skip |
+| MQTT-Mica | eclipse-mosquitto:2.0 | GenericContainer / Mosquitto running 日志，1 分钟 | 同左 | 历史门禁 4/1；当前 Linux CI 要求往返执行 | 仅 macOS arm64 条件 skip；Linux round-trip 必须执行并由 XML 门禁确认测试类非全 skip |
 | Redis Stream | redis:7.4-alpine | GenericContainer / redis-cli PING/PONG，1 分钟 | 同左 | 4/0；4/0；4/0 | Stream 往返 |
 | ONS | apache/rocketmq:5.3.2 | GenericContainer / nameserver 日志，2 分钟 | 同左 | 4/1；4/1；4/1 | 协议占位/装配；商业往返 skip |
 | TDMQ | apachepulsar/pulsar:3.2.0 | GenericContainer / HTTP brokers/health，3 分钟 | PulsarContainer / HTTP clusters response，原生 30 秒 | 4/0；4/0；4/0 | fixture ready + SPI/内存 fallback 往返；非云端或 Pulsar-backed 往返 |
@@ -113,7 +113,7 @@ MQTT 3.3 保持已批准的忽略 Paho UUID 目录策略，4.0 保留原有
 |---|---|---|---|
 | 3.3/JDK17、3.3/JDK21 | io.ddd4j.quarkus.auth.security.SecurityQuarkusConfigTest#subjectProviderExposedAsCdiBeanAndRegisteredInSubjectKit | Module is deprecated since 3.3.1; see docs/MIGRATION-auth-security-to-satoken.md | 仅在重新支持旧 Security 模块且补齐契约时恢复；正常迁移目标为 Sa-Token |
 | 4.0/JDK21 | io.ddd4j.quarkus.auth.security.SecurityQuarkusConfigTest#subjectProviderExposedAsCdiBeanAndRegisteredInSubjectKit | Module is deprecated since 4.1.0; see docs/MIGRATION-auth-security-to-satoken.md | 同上；保留此分支 XML 的原始版本文字 |
-| 三次 | io.ddd4j.quarkus.mq.mqttmica.MicaMqttQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd | mica-mqtt AIO 在 macOS arm64 的已知缺陷，对齐 javalin Ddd4jMicaMqttMqIT 先例；CI linux 可移除 | 修复并验证 macOS arm64 AIO，或在适用 Linux 环境显式启用验证；当前注解仍是无条件方法 skip |
+| macOS arm64 | io.ddd4j.quarkus.mq.mqttmica.MicaMqttQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd | `@DisabledIf("isMacArm64")`：mica-mqtt AIO 的已知平台缺陷 | 修复并验证 macOS arm64 AIO 后移除条件；Linux CI 不再跳过且必须完成真实 round-trip |
 | 三次 | io.ddd4j.quarkus.mq.ons.OnsQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd | ONS 商业协议无 Testcontainers 镜像，对齐 javalin Ddd4jOnsMqIT 先例 | 使用已授权商业 endpoint/凭据/隔离资源，或支持实际商业协议的实现后恢复 |
 
 Docker 本次可用，LocalStack 构造阶段的 Docker assumption 未触发。没有其它 skip。

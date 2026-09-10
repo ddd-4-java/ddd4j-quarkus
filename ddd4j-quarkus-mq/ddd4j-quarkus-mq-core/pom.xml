@@ -7,7 +7,6 @@
         <groupId>io.ddd4j.quarkus</groupId>
         <artifactId>ddd4j-quarkus-mq</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>ddd4j-quarkus-mq-core</artifactId>
     <description>ddd4j-quarkus MQ 核心桥接：MQ 契约（contract/spi/publisher/consumer）+ CDI 支持，不绑定具体 broker。

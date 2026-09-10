@@ -1,0 +1,16 @@
+path	reason
+ddd4j-quarkus-auth/pom.xml	Maven defaults to ../pom.xml while the declared parent is the sibling ddd4j-quarkus-dependencies project
+ddd4j-quarkus-bom/pom.xml	Maven defaults to ../pom.xml while the declared parent is the external ddd4j-parent project
+ddd4j-quarkus-cache/pom.xml	Maven defaults to ../pom.xml while the declared parent is the sibling ddd4j-quarkus-dependencies project
+ddd4j-quarkus-data/pom.xml	Maven defaults to ../pom.xml while the declared parent is the sibling ddd4j-quarkus-dependencies project
+ddd4j-quarkus-ddd/pom.xml	Maven defaults to ../pom.xml while the declared parent is the sibling ddd4j-quarkus-dependencies project
+ddd4j-quarkus-dependencies/pom.xml	Maven defaults to ../pom.xml while the declared parent is the external ddd4j-parent project
+ddd4j-quarkus-extensions/pom.xml	Maven defaults to ../pom.xml while the declared parent is the sibling ddd4j-quarkus-dependencies project
+ddd4j-quarkus-mq/ddd4j-quarkus-mq-testcontainers/pom.xml	Test harness intentionally inherits the shared Quarkus parent instead of the containing MQ aggregator
+ddd4j-quarkus-mq/pom.xml	Maven defaults to ../pom.xml while the declared parent is the sibling ddd4j-quarkus-dependencies project
+ddd4j-quarkus-parent/pom.xml	Maven defaults to ../pom.xml while the declared parent is the sibling ddd4j-quarkus-dependencies project
+ddd4j-quarkus-samples/ddd4j-quarkus-sample-api/pom.xml	Sample intentionally inherits the shared Quarkus parent instead of the containing samples aggregator
+ddd4j-quarkus-samples/ddd4j-quarkus-sample-auth-satoken/pom.xml	Sample intentionally inherits the shared Quarkus parent instead of the containing samples aggregator
+ddd4j-quarkus-samples/ddd4j-quarkus-sample-auth-shiro/pom.xml	Sample intentionally inherits the shared Quarkus parent instead of the containing samples aggregator
+ddd4j-quarkus-samples/pom.xml	Samples intentionally inherits the sibling ddd4j-quarkus-parent project
+ddd4j-quarkus-web/pom.xml	Maven defaults to ../pom.xml while the declared parent is the sibling ddd4j-quarkus-dependencies project

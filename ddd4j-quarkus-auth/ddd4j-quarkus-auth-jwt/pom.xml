@@ -7,7 +7,6 @@
         <groupId>io.ddd4j.quarkus</groupId>
         <artifactId>ddd4j-quarkus-auth</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>ddd4j-quarkus-auth-jwt</artifactId>
