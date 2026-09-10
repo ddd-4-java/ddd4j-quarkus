@@ -65,7 +65,9 @@ jobs:
         with:
           maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
       - name: Verify Quarkus BOM arbitration
-        run: python3 ddd4j-quarkus-dependencies/src/test/python/verify_bom_arbitration.py
+        run: |
+          python3 -m unittest discover -s ddd4j-quarkus-dependencies/src/test/python -p 'test_*.py'
+          python3 ddd4j-quarkus-dependencies/src/test/python/verify_bom_arbitration.py
       - name: Verify (unit + contract)
         run: |
           set -o pipefail
