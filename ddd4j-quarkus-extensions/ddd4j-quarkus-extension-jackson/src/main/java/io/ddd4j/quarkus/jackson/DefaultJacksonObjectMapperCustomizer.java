@@ -38,7 +38,7 @@ import java.time.format.DateTimeFormatter;
  *   <li>注册 {@link NullTolerantBeanSerializerModifier}（null 默认序列化策略，6 个开关来自
  *       {@code ddd4j.jackson.default-null-*-serializer}；自包含实现——上游 jackson-extension
  *       3.0.x 已迁 Jackson 3 命名空间，与 Quarkus 的 Jackson 2 不兼容）</li>
- * </ul></p>
+ * </ul>
  *
  * <p><b>注意</b>：ObjectMapper 在 STATIC_INIT 阶段构建（早于 SmallRye ConfigMapping 注册），
  * 因此此处不注入 {@link JacksonConfig}（构造器/字段注入或 customize 内 Arc 获取都会抛

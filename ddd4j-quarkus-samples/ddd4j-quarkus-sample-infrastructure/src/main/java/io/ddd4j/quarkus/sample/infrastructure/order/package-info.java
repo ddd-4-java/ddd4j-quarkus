@@ -5,7 +5,7 @@
  * {@code ddd4j-quarkus-sample-domain}，但依赖方向保持单向
  * （基础设施 → 领域），领域层不感知任何技术实现。</p>
  *
- * <h3>主要职责</h3>
+ * <h2>主要职责</h2>
  * <ul>
  *   <li><b>持久化</b>：{@code persistence/entity/OrderEntity}（Panache 实体）+
  *       {@code persistence/OrderRepositoryImpl}（实现 {@code OrderRepository}）</li>

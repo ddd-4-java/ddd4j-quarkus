@@ -101,6 +101,7 @@
         <protobuf-java.version>4.35.0</protobuf-java.version>
         <rest-assured.version>6.0.1</rest-assured.version>
         <sshd.version>2.18.0</sshd.version>
+        <additionalparam></additionalparam>
     </properties>
 
     <dependencyManagement>
@@ -484,6 +485,25 @@
 
 
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <failOnError>true</failOnError>
+                    <failOnWarnings>false</failOnWarnings>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <configuration>
+                            <failOnError>true</failOnError>
+                            <failOnWarnings>false</failOnWarnings>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <!-- Quarkus 构建（模块显式声明时生效，如 mq-testcontainers） -->

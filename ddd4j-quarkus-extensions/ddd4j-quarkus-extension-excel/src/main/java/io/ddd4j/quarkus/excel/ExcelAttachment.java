@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
  * {@code io.ddd4j.boot.excel.web} 包）。封装 Web 下载时所需的 HTTP 响应头字段，
  * 统一处理中文文件名编码（RFC 5987）。
  *
- * <h3>典型用法</h3>
+ * <h2>典型用法</h2>
  * <pre>{@code
  * ExcelAttachment attachment = ExcelAttachment.xlsx("订单.xlsx");
  * Response response = Response.ok(bytes, attachment.contentTypeWithCharset())

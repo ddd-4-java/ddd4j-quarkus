@@ -7,11 +7,11 @@ import java.io.Serializable;
  *
  * <p>对标 cloud-das 的 {@code IdGenerator}（数据库自增场景）。
  * 使用此策略时，实体主键应标注：
- * <pre>
+ * <pre>{@code
  *   @Id
  *   @GeneratedValue(strategy = GenerationType.IDENTITY)
  *   public Long id;
- * </pre>
+ * }</pre>
  *
  * <p>本策略主要用于编程式生成场景下的占位（表示"由 DB 决定"），
  * 实际持久化由 ORM 的 {@code IDENTITY} 策略完成。

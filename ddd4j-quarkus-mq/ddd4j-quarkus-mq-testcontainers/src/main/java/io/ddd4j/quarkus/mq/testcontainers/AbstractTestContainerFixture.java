@@ -14,7 +14,8 @@ import java.util.Objects;
  * {@code AbstractTestContainerFixture} 的契约：提供 start/stop 生命周期，并允许子类
  * 暴露容器端口/凭据。
  *
- * <p>Quarkus 集成（{@code QuarkusTestResourceLifecycleManager}）放在 {@link QuarkusTestResourceLifecycleManagerWrapper}
+ * <p>Quarkus 集成（{@code QuarkusTestResourceLifecycleManager}）放在
+ * {@code QuarkusTestResourceLifecycleManagerWrapper}
  * 中（test scope），让本 fixture 可以在 main scope 使用，便于其他模块依赖本工具类。
  *
  * <p>夹具拥有自己启动的容器，负责幂等启动、停止与部分启动失败后的回收；不强制启用复用。

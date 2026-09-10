@@ -42,7 +42,7 @@ import java.util.Objects;
  * HTTP 200 + {@code R.ok(data)}；业务异常（{@link IllegalArgumentException}）
  * 由 {@link OrderExceptionMapper} 统一映射为 400。</p>
  *
- * <h3>端点</h3>
+ * <h2>端点</h2>
  * <ul>
  *   <li>{@code POST /api/orders} - 创建订单</li>
  *   <li>{@code GET /api/orders/{id}} - 查询订单</li>

@@ -18,7 +18,7 @@ import java.util.List;
  * Web 框架类型，由调用方提供 {@link InputStream} 与文件名 / 大小元数据
  * （RESTEasy Reactive 的 {@code FileUpload} 可直接适配）。
  *
- * <h3>静态调用（下载）</h3>
+ * <h2>静态调用（下载）</h2>
  * <pre>{@code
  * // 一行下载：资源方法直接返回 Response
  * @GET @Path("/download")

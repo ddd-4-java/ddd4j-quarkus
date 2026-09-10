@@ -40,6 +40,8 @@
         <quarkus-bom.version>3.38.2</quarkus-bom.version>
         <quarkus.build.skip>false</quarkus.build.skip>
         <maven-quarkus-plugin.version>3.38.2</maven-quarkus-plugin.version>
+        <!-- Re-enable the standard JDK doclint inherited from the platform parent. -->
+        <additionalparam></additionalparam>
     </properties>
 
     <!--
@@ -185,6 +187,23 @@
                         <goals>
                             <goal>clean</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <failOnError>true</failOnError>
+                    <failOnWarnings>false</failOnWarnings>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <configuration>
+                            <failOnError>true</failOnError>
+                            <failOnWarnings>false</failOnWarnings>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

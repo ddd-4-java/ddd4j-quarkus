@@ -9,7 +9,7 @@ import org.jboss.logging.Logger;
 /**
  * JWT 版 {@link SubjectProvider}：从 CDI 容器获取当前请求作用域的 {@link JwtSubject}。
  *
- * <p>由于 {@link SubjectKit#getSubject()} 是静态调用（框架无关），无法直接依赖 CDI 注入，
+ * <p>由于 {@link io.ddd4j.core.util.SubjectKit#getSubject()} 是静态调用（框架无关），无法直接依赖 CDI 注入，
  * 本 Provider 作为静态门面与 CDI 请求作用域之间的桥梁：
  * <pre>
  *   SubjectKit.getSubject()  → SubjectProvider.getSubject()  → Arc.container().instance(JwtSubject)
