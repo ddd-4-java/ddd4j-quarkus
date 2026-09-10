@@ -164,7 +164,7 @@ Fix round 1 的新日志与 XML 独立保存于 `/tmp/ddd4j-p5a-33-fix1.jQvV1w`�
 
 ## 证据边界
 
-本次日志的非阻塞警告包括：Hibernate GenericGenerator/数据库生成配置弃用，部分模块忽略 datasource/hibernate-orm/flyway 配置，无 JDBC datasource，Quarkus Maven plugin 未启用 extensions。NATS 容器内部检查缺少 `/bin/sh`，且 JetStream 无匹配 stream 时回退 core NATS；TDMQ 未注入 BrokerPublisher/BrokerSubscriber 时使用测试内存 broker。对应日志和测试结果不构成 JetStream、TDMQ 云服务或所有 broker 生产能力验收。
+本次日志的非阻塞警告包括：Hibernate GenericGenerator/数据库生成配置弃用，部分模块忽略 datasource/hibernate-orm/flyway 配置，无 JDBC datasource，Quarkus Maven plugin 未启用 extensions。NATS 集成测试使用自有、唯一、可清理的 run-scoped JetStream stream，不再依赖 core NATS fallback；TDMQ 未注入 BrokerPublisher/BrokerSubscriber 时使用测试内存 broker。对应日志和测试结果不构成磁盘型 JetStream 持久化、TDMQ 云服务或所有 broker 生产能力验收。
 
 GitHub-hosted Actions 尚未推送并实际执行验证。Enforcer（本阶段显式 skip）、Native、Dev Mode、deploy、云服务、P5-B–E、master 和生产验收均不在本次完成声明内。GitHub/Codeup push 与 Maven deploy 需要分别授权，未执行。独立克隆的 `origin` 是本机源仓库，不能将其 tracking 状态解释为 GitHub/Codeup 同步证据。
 

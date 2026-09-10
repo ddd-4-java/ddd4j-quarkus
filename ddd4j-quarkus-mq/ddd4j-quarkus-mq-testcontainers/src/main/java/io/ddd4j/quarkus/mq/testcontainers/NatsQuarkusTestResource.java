@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * NATS testcontainers fixture for Quarkus tests.
@@ -30,6 +31,19 @@ public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
     private final String streamName;
     private final List<String> subjects;
     private String servers;
+
+    /**
+     * 创建一个带随机后缀的 run-scoped stream fixture。
+     *
+     * @param streamNamePrefix stream 名称前缀
+     * @param subjects stream 覆盖的 subjects
+     * @return stream 名称在并发测试运行间唯一的 fixture
+     */
+    public static NatsQuarkusTestResource withRunScopedStream(String streamNamePrefix, List<String> subjects) {
+        String prefix = Objects.requireNonNull(streamNamePrefix, "streamNamePrefix");
+        return new NatsQuarkusTestResource(
+                prefix + UUID.randomUUID().toString().replace("-", ""), subjects);
+    }
 
     /** 启用 JetStream，但不创建任何业务 stream。 */
     public NatsQuarkusTestResource() {
@@ -101,17 +115,35 @@ public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
         }
     }
 
+    /** 仅供同包契约测试观测 run-scoped stream 名称。 */
+    String streamName() {
+        return streamName;
+    }
+
+    private void deleteOwnedStream() {
+        try (Connection connection = Nats.connect(servers)) {
+            connection.jetStreamManagement().deleteStream(streamName);
+        } catch (InterruptedException failure) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("NATS JetStream stream 清理被中断: " + streamName, failure);
+        } catch (JetStreamApiException failure) {
+            // 404 表示 stream 已由测试或容器回收路径删除，幂等清理视为成功。
+            if (failure.getErrorCode() != 404) {
+                throw new IllegalStateException("无法清理 NATS JetStream stream: " + streamName, failure);
+            }
+        } catch (IOException failure) {
+            throw new IllegalStateException("无法清理 NATS JetStream stream: " + streamName, failure);
+        }
+    }
+
     @Override
     public synchronized void stop() {
         RuntimeException cleanupFailure = null;
         if (Objects.nonNull(streamName) && Objects.nonNull(servers)) {
-            try (Connection connection = Nats.connect(servers)) {
-                connection.jetStreamManagement().deleteStream(streamName);
-            } catch (InterruptedException failure) {
-                Thread.currentThread().interrupt();
-                cleanupFailure = new IllegalStateException("NATS JetStream stream 清理被中断: " + streamName, failure);
-            } catch (IOException | JetStreamApiException failure) {
-                cleanupFailure = new IllegalStateException("无法清理 NATS JetStream stream: " + streamName, failure);
+            try {
+                deleteOwnedStream();
+            } catch (RuntimeException failure) {
+                cleanupFailure = failure;
             }
         }
         servers = null;

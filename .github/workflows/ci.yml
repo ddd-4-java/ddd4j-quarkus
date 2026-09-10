@@ -64,8 +64,10 @@ jobs:
         uses: ./.github/actions/configure-maven
         with:
           maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
+      - name: Verify Quarkus BOM arbitration
+        run: python3 ddd4j-quarkus-dependencies/src/test/python/verify_bom_arbitration.py
       - name: Verify (unit + contract)
-        run: ./mvnw -B verify -Denforcer.skip=true
+        run: ./mvnw -B verify
 
   broker-integration:
     name: Broker integration (${{ matrix.broker }})
@@ -99,8 +101,10 @@ jobs:
         uses: ./.github/actions/configure-maven
         with:
           maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
+      - name: Require Docker for broker integration
+        run: docker info
       - name: Run broker integration tests (${{ matrix.broker }})
-        run: ./mvnw -B verify -Pintegration -Denforcer.skip=true -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-${{ matrix.broker }} -am
+        run: ./mvnw -B verify -Pintegration -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-${{ matrix.broker }} -am
       - name: Upload integration test reports (${{ matrix.broker }})
         if: ${{ always() }}
         uses: actions/upload-artifact@v4

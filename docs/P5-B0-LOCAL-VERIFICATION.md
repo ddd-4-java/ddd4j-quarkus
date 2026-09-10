@@ -85,7 +85,7 @@
 | Pulsar | apachepulsar/pulsar:3.2.0 | PulsarContainer / HTTP clusters response | 同左 | 4/0；4/0；4/0 | Pulsar 往返，类级 skip 已移除 |
 | SQS | localstack/localstack:3.8.0 | LocalStackContainer / dedicated ready log | 同左 | 4/0；4/0；4/0 | 本地 AWS 模拟的队列往返 |
 | RocketMQ | apache/rocketmq:5.3.2 | FixedHostPortGenericContainer / nameserver + broker 日志，3 分钟总超时 | 同左 | 4/0；4/0；4/0 | 真实 broker 往返；WARMUP 与 CREATED tag 分离 |
-| NATS | nats:2.10.22 | GenericContainer / JetStream HTTP health，1 分钟 | 同左 | 4/0；4/0；4/0 | NATS core 往返；日志有 JetStream 无匹配 stream 后回退 |
+| NATS | nats:2.10.22 | GenericContainer / JetStream HTTP health + run-scoped `ORDER.CREATED` stream，1 分钟 | 同左 | 4/0；4/0；4/0 | JetStream 往返；默认 fixture 不创建业务拓扑，具体测试拥有并清理唯一 stream |
 | MQTT | eclipse-mosquitto:2.0 | GenericContainer / Mosquitto running 日志，1 分钟 | 同左；另有持久化目录生命周期覆盖 | 4/0；4/0；4/0 | Paho/Mosquitto 往返 |
 | MQTT-Mica | eclipse-mosquitto:2.0 | GenericContainer / Mosquitto running 日志，1 分钟 | 同左 | 4/1；4/1；4/1 | 装配/序列化通过；平台往返 skip |
 | Redis Stream | redis:7.4-alpine | GenericContainer / redis-cli PING/PONG，1 分钟 | 同左 | 4/0；4/0；4/0 | Stream 往返 |
@@ -124,7 +124,7 @@ Docker 本次可用，LocalStack 构造阶段的 Docker assumption 未触发。�
 - 4.0 仍为 Model 4.1.0 + modules 的可执行兼容模式。Quarkus 内嵌 settings reader 对 Maven 4
   分发包 settings 的 `repositories` 标签报 warning；还有 effective-model、只读 resources、
   未配置 datasource/忽略配置、弃用 API/Javadoc 等警告。3.3 也有弃用 API、SLF4J 多 provider、
-  NATS fallback 等警告；本次未修改其配置。
+  等警告；NATS 已改为显式 run-scoped JetStream 拓扑，不再依赖 core NATS fallback。
 - 所有公开 Docker broker 往返的通过，不表示 ONS、腾讯云 TDMQ、AWS 云服务或 JetStream 持久订阅验收。
 - 本次没有 push/deploy，没有目标 HEAD 的 GitHub Actions 或 GitHub/Codeup SHA 同步证明，
   没有发布后的独立空缓存消费。后续按 Task 5 → 6 → 7 顺序继续；P5-B0 整体尚未完成。
