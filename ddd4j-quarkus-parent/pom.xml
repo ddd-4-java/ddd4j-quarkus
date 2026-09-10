@@ -21,6 +21,7 @@
         <!-- Quarkus build goal 开关（默认 false，业务项目正常构建 uber-jar）。
              示例项目（ddd4j-quarkus-samples）覆盖为 true 跳过 Hibernate 增强步骤。 -->
         <quarkus.build.skip>false</quarkus.build.skip>
+        <ddd4j.maven.home>${maven.home}</ddd4j.maven.home>
         <additionalparam></additionalparam>
 
         <!--
@@ -356,7 +357,7 @@
                     <configuration>
                         <systemPropertyVariables>
                             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                            <maven.home>${maven.home}</maven.home>
+                            <maven.home>${ddd4j.maven.home}</maven.home>
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>
@@ -369,7 +370,7 @@
                         <classesDirectory>${project.build.outputDirectory}</classesDirectory>
                         <systemPropertyVariables>
                             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                            <maven.home>${maven.home}</maven.home>
+                            <maven.home>${ddd4j.maven.home}</maven.home>
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>

@@ -9,12 +9,12 @@ SCRIPT = Path(__file__).parents[1] / "verify-quarkus-log.py"
 
 class VerifyQuarkusLogTest(unittest.TestCase):
 
-    def run_verifier(self, content: str) -> subprocess.CompletedProcess[str]:
+    def run_verifier(self, content: str, *args: str) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory() as directory:
             log = Path(directory) / "verify.log"
             log.write_text(content, encoding="utf-8")
             return subprocess.run(
-                ["python3", str(SCRIPT), str(log)],
+                ["python3", str(SCRIPT), *args, str(log)],
                 text=True,
                 capture_output=True,
                 check=False,
@@ -31,6 +31,14 @@ class VerifyQuarkusLogTest(unittest.TestCase):
         result = self.run_verifier("[INFO] BUILD SUCCESS\n")
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn("Quarkus log verified", result.stdout)
+
+    def test_optionally_rejects_maven_settings_reader_problems(self):
+        result = self.run_verifier(
+            "WARN Settings problem encountered at apache-maven/conf/settings.xml\n",
+            "--reject-settings-problems",
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("Maven settings reader problem", result.stderr)
 
 
 if __name__ == "__main__":

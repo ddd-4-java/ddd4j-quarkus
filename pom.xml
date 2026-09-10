@@ -39,6 +39,7 @@
         -->
         <quarkus-bom.version>3.38.2</quarkus-bom.version>
         <quarkus.build.skip>false</quarkus.build.skip>
+        <ddd4j.maven.home>${maven.home}</ddd4j.maven.home>
         <maven-quarkus-plugin.version>3.38.2</maven-quarkus-plugin.version>
         <!-- Re-enable the standard JDK doclint inherited from the platform parent. -->
         <additionalparam></additionalparam>
@@ -245,7 +246,7 @@
                     <configuration>
                         <systemPropertyVariables>
                             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                            <maven.home>${maven.home}</maven.home>
+                            <maven.home>${ddd4j.maven.home}</maven.home>
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>
@@ -257,7 +258,7 @@
                         <classesDirectory>${project.build.outputDirectory}</classesDirectory>
                         <systemPropertyVariables>
                             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                            <maven.home>${maven.home}</maven.home>
+                            <maven.home>${ddd4j.maven.home}</maven.home>
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>

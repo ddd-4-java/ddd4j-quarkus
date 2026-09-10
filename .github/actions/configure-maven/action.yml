@@ -50,7 +50,9 @@ runs:
       shell: bash
       run: |
         P5A_CI_REPO="$(mktemp -d "$RUNNER_TEMP/ddd4j-p5a-remote.XXXXXX")"
-        ./mvnw -B -U -f .github/maven/ddd4j-remote-consumer/pom.xml \
+        ./mvnw -gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml" \
+          -Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home" \
+          -B -U -f .github/maven/ddd4j-remote-consumer/pom.xml \
           -Dmaven.repo.local="$P5A_CI_REPO" \
           -Dmaven.resolver.transport=wagon \
           dependency:go-offline

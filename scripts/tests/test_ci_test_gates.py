@@ -27,7 +27,26 @@ class CiTestGatesTest(unittest.TestCase):
 
     def test_full_reactor_log_rejects_unrecognized_quarkus_configuration(self):
         self.assertIn("tee quarkus-verify.log", self.workflow)
-        self.assertIn("python3 scripts/verify-quarkus-log.py quarkus-verify.log", self.workflow)
+        self.assertIn(
+            "python3 scripts/verify-quarkus-log.py --reject-settings-problems quarkus-verify.log",
+            self.workflow,
+        )
+
+    def test_every_ci_maven_command_uses_absolute_compatible_global_settings(self):
+        commands = re.findall(r"(?ms)^\s*run:\s*(?:\|\s*)?(.*?)(?=^\s*- name:|^\s*- uses:|^\s{2}\w|\Z)", self.workflow)
+        maven_commands = [command for command in commands if "./mvnw" in command]
+        self.assertTrue(maven_commands)
+        for command in maven_commands:
+            self.assertIn(
+                '-gs "$GITHUB_WORKSPACE/.mvn/maven3-home/conf/settings.xml"',
+                command,
+                command,
+            )
+            self.assertIn(
+                '-Dddd4j.maven.home="$GITHUB_WORKSPACE/.mvn/maven3-home"',
+                command,
+                command,
+            )
 
     def test_every_broker_declares_and_requires_its_integration_class(self):
         self.assertEqual(13, len(re.findall(r"^\s+test_class:", self.workflow, re.MULTILINE)))
