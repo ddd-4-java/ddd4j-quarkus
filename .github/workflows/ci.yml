@@ -67,7 +67,11 @@ jobs:
       - name: Verify Quarkus BOM arbitration
         run: python3 ddd4j-quarkus-dependencies/src/test/python/verify_bom_arbitration.py
       - name: Verify (unit + contract)
-        run: ./mvnw -B verify -DskipTests=false
+        run: |
+          set -o pipefail
+          ./mvnw -B verify -DskipTests=false | tee quarkus-verify.log
+      - name: Reject ignored Quarkus configuration
+        run: python3 scripts/verify-quarkus-log.py quarkus-verify.log
       - name: Require executed unit and contract tests
         run: python3 scripts/verify-test-reports.py .
 
