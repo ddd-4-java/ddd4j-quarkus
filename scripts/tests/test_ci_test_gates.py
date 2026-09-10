@@ -25,6 +25,10 @@ class CiTestGatesTest(unittest.TestCase):
     def test_all_test_jobs_verify_non_empty_reports(self):
         self.assertEqual(3, self.workflow.count("scripts/verify-test-reports.py"))
 
+    def test_full_reactor_log_rejects_unrecognized_quarkus_configuration(self):
+        self.assertIn("tee quarkus-verify.log", self.workflow)
+        self.assertIn("python3 scripts/verify-quarkus-log.py quarkus-verify.log", self.workflow)
+
     def test_every_broker_declares_and_requires_its_integration_class(self):
         self.assertEqual(13, len(re.findall(r"^\s+test_class:", self.workflow, re.MULTILINE)))
         self.assertEqual(13, len(re.findall(r"^\s+required_test:", self.workflow, re.MULTILINE)))
