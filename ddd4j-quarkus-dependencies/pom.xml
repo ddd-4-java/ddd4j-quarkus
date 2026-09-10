@@ -63,6 +63,12 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- NATS fixture 直接使用 JetStream 管理 API，沿用 ddd4j 兼容客户端版本。 -->
+            <dependency>
+                <groupId>io.nats</groupId>
+                <artifactId>jnats</artifactId>
+                <version>${jnats-compat.version}</version>
+            </dependency>
             <!--
                 Testcontainers 2.0.5 必须先于 ddd4j-dependencies 导入。
                 Maven 的 BOM 冲突采用 first declaration wins；ddd4j 3.0.x 当前管理
