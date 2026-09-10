@@ -103,6 +103,21 @@
                 <groupId>io.quarkus.platform</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
             </plugin>
+            <!-- 测试期间通过反射读取 Testcontainers 内部字段（WaitAllStrategy.strategies /
+                 LogMessageWaitStrategy.regEx / HttpWaitStrategy.path 等），Java 16+ 强封装
+                 默认拒绝 setAccessible；必须显式 add opens 对应模块包。 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        @{argLine}
+                        --add-opens org.testcontainers/org.testcontainers.containers=ALL-UNNAMED
+                        --add-opens org.testcontainers/org.testcontainers.containers.wait.strategy=ALL-UNNAMED
+                        --add-opens org.testcontainers.pulsar/org.testcontainers.pulsar=ALL-UNNAMED
+                    </argLine>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
