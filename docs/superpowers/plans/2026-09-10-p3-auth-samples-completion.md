@@ -10,12 +10,14 @@
 
 **Spec:** `docs/superpowers/specs/2026-08-08-p3-auth-samples-ci-design.md`
 
-**Task status:** Tasks 1–2 completed on feature/4.0.x on 2026-09-10. The proposed shared
+**Task status:** Tasks 1–3 completed on feature/4.0.x on 2026-09-10. The proposed shared
 `ddd4j-quarkus-auth-testcontainers` module is cancelled as an obsolete
 abstraction, not completed. Auth behavior is routed to direct Quarkus runtime
 integration in the auth samples/modules. Task 2 now verifies Sa-Token/Shiro
 HTTP journeys and removes the deprecated Security sample on feature/4.0.x;
-MQ sample behavior and feature/3.3.x parity remain open for Tasks 3–4.
+Task 3 verifies the MQ samples with the reviewed upstream fixes installed into an
+isolated test repository. Feature/3.3.x parity, dual-branch gates, publication and CI
+remain open for Tasks 4–6.
 
 ## Global Constraints
 
@@ -87,11 +89,27 @@ separate gates.
 - Create: one projection/state class per sample when no observable consumer state exists.
 - Modify: three sample MQ tests and POM/test resources.
 
-- [ ] Write failing tests that POST `/orders`, capture returned order/event identity, and await the listener projection containing the same order data.
-- [ ] For Kafka/RabbitMQ, use shared `KafkaQuarkusTestResource`/`RabbitMqQuarkusTestResource`; Disruptor remains in-process.
-- [ ] Implement minimal application-scoped projection updated only by the real `@MQEventListener` method.
-- [ ] Run each module independently and the samples reactor; record real broker logs.
-- [ ] Commit: `test(samples): verify Quarkus MQ end-to-end flows`.
+- [x] Write failing tests that POST `/orders`, capture returned order/event identity, and await the listener projection containing the same order data.
+- [x] For Kafka/RabbitMQ, use shared `KafkaQuarkusTestResource`/`RabbitMqQuarkusTestResource`; Disruptor remains in-process.
+- [x] Implement minimal application-scoped projection updated only by the real `@MQEventListener` method.
+- [x] Run each module independently and the samples reactor; record real broker logs.
+- [x] Commit: `test(samples): verify Quarkus MQ end-to-end flows`.
+
+Task 3 evidence: sample implementation is committed as `109b394`; no sample
+namespace or consumer-group workaround was added. Final validation used a
+new empty Maven repository, the remote baseline, and only the approved upstream
+dependency BOM and Disruptor/Kafka replacements from ddd4j HEAD `30d503f`
+(Disruptor `7beff6e`, Kafka `c55d0786`, COLA BOM `18040e2`).
+All three independent Java 21 / Maven 4 `clean verify` runs passed. The final
+`-DskipTests=false -pl ddd4j-quarkus-samples -am clean verify` passed 28 modules,
+29 suites and 115 tests with zero failures/errors/skips at 2026-09-10 08:36:17 +08:00;
+samples themselves account for 50 tests. Logs confirm Kafka group
+`quarkus-kafka-sample-onOrderCreated`, consumer LeaveGroup and owned-resource
+shutdown, plus RabbitMQ real delivery and connection closure. The source changes
+remain scoped to the samples. Full commands, hashes and exact XML paths are in
+`.superpowers/sdd/2026-09-10-p3-auth-samples-completion/task-3-report.md`.
+This is runtime verification with locally installed reviewed upstream fixes;
+remote publication and CI are not claimed and remain later gates.
 
 ### Task 4: Port reviewed sample behavior to feature/3.3.x
 
