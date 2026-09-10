@@ -15,7 +15,7 @@ import java.util.Objects;
 /**
  * 订单 JAX-RS 资源：演示 ddd4j + Quarkus + Disruptor MQ 集成。
  *
- * <h3>端点</h3>
+ * <h2>端点</h2>
  * <ul>
  *   <li>{@code POST /orders} - 创建订单（触发 OrderCreatedEvent → Disruptor MQ → @MQEventListener）</li>
  * </ul>

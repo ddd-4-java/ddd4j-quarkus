@@ -22,6 +22,7 @@
         <!-- Quarkus build goal 开关（默认 false，业务项目正常构建 uber-jar）。
              示例项目（ddd4j-quarkus-samples）覆盖为 true 跳过 Hibernate 增强步骤。 -->
         <quarkus.build.skip>false</quarkus.build.skip>
+        <additionalparam></additionalparam>
 
         <!--
             Maven 插件版本由 ddd4j 仓库根 pom 统一管理（maven-compiler / enforcer / surefire /
@@ -286,6 +287,25 @@
     </profiles>
 
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <failOnError>true</failOnError>
+                    <failOnWarnings>false</failOnWarnings>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <configuration>
+                            <failOnError>true</failOnError>
+                            <failOnWarnings>false</failOnWarnings>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <!--

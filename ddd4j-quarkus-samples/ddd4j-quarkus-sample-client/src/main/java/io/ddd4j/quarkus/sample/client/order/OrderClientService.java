@@ -12,7 +12,7 @@ import java.util.Objects;
  *
  * <p>分层调用链：{@code Client 契约（本接口）→ Adapter 实现 → ApplicationService → Domain}。</p>
  *
- * <h3>使用示例：</h3>
+ * <h2>使用示例：</h2>
  * <pre>{@code
  * // 适配层注入实现
  * @Inject

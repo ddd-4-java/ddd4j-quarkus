@@ -41,7 +41,7 @@ public class Ddd4jJwtQuarkusConfig {
      * 产出 {@link SubjectProvider}：每请求创建 {@link JwtSubject} 并写回全局注册中心。
      *
      * <p>使用 {@code @ApplicationScoped} 保证只注册一次到 {@link SubjectKit}，
-     * 内部通过 {@link Arc} 容器按需获取当前请求的 {@link JwtSubject}。
+     * 内部通过 {@link io.quarkus.arc.Arc} 容器按需获取当前请求的 {@link JwtSubject}。
      */
     @Produces
     @Singleton

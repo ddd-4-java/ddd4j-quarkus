@@ -37,7 +37,7 @@ import java.util.function.Function;
  *
  * <p>工厂类必须是 {@code Function<String, EntityId>} 的实现，且提供 public 无参构造器。
  *
- * <h3>GraalVM native-image 注意事项</h3>
+ * <h2>GraalVM native-image 注意事项</h2>
  * <p>工厂类名来自运行时配置（无法在 build 时枚举），本类通过 {@code Class.forName} +
  * {@code getConstructor().newInstance()} 反射实例化。工厂类由业务方提供，native 反射
  * 注册责任在业务方：构建 native image 前在 {@code application.properties} 加

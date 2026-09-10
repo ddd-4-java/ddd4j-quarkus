@@ -29,7 +29,7 @@ import java.util.Objects;
  * 适配组装：active record 实体（{@link PanacheStoredEventEntity}）承载列映射与静态
  * 查询原语，并发检查、异常翻译、序列化均在本层完成。
  *
- * <h3>序列化器装配</h3>
+ * <h2>序列化器装配</h2>
  * <p>{@link EventPayloadSerializer} 是纯类（无任何容器注解，跨运行时共享），Quarkus
  * 集成方需自行注册其 Bean，例如声明 {@code @ApplicationScoped} 生产者：
  * {@code @Produces EventPayloadSerializer eventPayloadSerializer(ObjectMapper mapper)}

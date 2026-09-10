@@ -29,8 +29,8 @@ import java.util.Optional;
  * 活跃的 {@link MQClient#init(List, MQProperties, MQEventSerialization, MQEventStorer)}
  * 完成生产者初始化和消费者注册。
  *
- * <h3>核心流程（与 ddd4j-mq-spring 对齐）</h3>
- * <pre>
+ * <h2>核心流程（与 ddd4j-mq-spring 对齐）</h2>
+ * <pre>{@code
  *   @Observes StartupEvent
  *       ↓
  *   扫描 @MQEventListener → List&lt;MQListener&gt;
@@ -40,12 +40,12 @@ import java.util.Optional;
  *   MQClient.init(listeners, properties, serialization, storer)
  *       ↓
  *   生产者注册到 BaseContext + 消费者启动
- * </pre>
+ * }</pre>
  *
  * <p>关键设计决策：不重写 consume 管道，完全复用 {@link MQClient#consume(MQListener, io.ddd4j.mq.event.MQEvent, io.ddd4j.mq.message.Acknowledgment)}
  * 的内置逻辑（策略匹配 → 租户注入 → 持久化 → 反射调用 → 异常解包）。
  *
- * <h3>GraalVM native-image 注意事项</h3>
+ * <h2>GraalVM native-image 注意事项</h2>
  * <p>本类运行时经 {@code getDeclaredMethods()} 扫描业务 Bean 中标注
  * {@link MQEventListener} 的方法，{@code MQClient#consume} 再经 {@code Method#invoke}
  * 反射调用。被扫描的监听器类由业务方提供，native 反射注册责任在业务方：构建

@@ -6,7 +6,7 @@
  * 本模块对齐 ddd4j-boot 的 {@code ddd4j-boot-sample-domain}，采用
  * ddd4j-core 的充血模型基类 {@link io.ddd4j.core.ddd.model.AggregateRoot}。
  *
- * <h3>主要职责</h3>
+ * <h2>主要职责</h2>
  * <ul>
  *   <li><b>聚合根（Aggregate Root）</b>：{@code model/aggregate/Order}，
  *       维护聚合的一致性边界并封装业务规则（支付 / 发货 / 取消）</li>
@@ -17,7 +17,7 @@
  *       继承 {@link io.ddd4j.core.ddd.event.DomainEvent}，通过 {@code publish()} 发布</li>
  * </ul>
  *
- * <h3>设计原则</h3>
+ * <h2>设计原则</h2>
  * <ul>
  *   <li>领域层技术无关：不引入 JPA / Panache / Quarkus 等任何框架注解</li>
  *   <li>业务逻辑内聚在聚合根，状态流转由 {@code OrderStatus} 约束</li>

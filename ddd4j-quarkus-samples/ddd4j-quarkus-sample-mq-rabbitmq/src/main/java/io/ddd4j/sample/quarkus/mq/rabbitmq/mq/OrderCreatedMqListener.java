@@ -46,7 +46,7 @@ public class OrderCreatedMqListener {
     /**
      * 处理 OrderCreatedEvent（从 RabbitMQ Queue 消费）。
      *
-     * <p>方法参数必须是具体的事件类型，ddd4j 会通过 {@link io.ddd4j.mq.serialization.JsonMQMessageSerialization}
+     * <p>方法参数必须是具体的事件类型，ddd4j 会通过 {@code MQEventSerialization}
      * 将 RabbitMQ 消息体反序列化为 OrderCreatedEvent 实例后传入本方法。
      *
      * <p>异常处理策略：
