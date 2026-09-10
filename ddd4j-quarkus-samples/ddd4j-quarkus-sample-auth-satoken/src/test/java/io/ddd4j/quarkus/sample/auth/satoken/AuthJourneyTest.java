@@ -54,4 +54,43 @@ class AuthJourneyTest {
         given().header("satoken", token).queryParam("permission", "profile:read")
                 .get("/auth/check/permission").then().statusCode(200).body("has", equalTo(false));
     }
+
+    @Test
+    void interleavedSessionsAndExceptionalRequestShouldRemainIsolated() {
+        String aliceToken = login("alice");
+        String bobToken = login("bob");
+        try {
+            assertCurrentUser(aliceToken, "alice");
+            assertCurrentUser(bobToken, "bob");
+            assertCurrentUser(aliceToken, "alice");
+
+            given().header("satoken", aliceToken).get("/auth/fail")
+                    .then().statusCode(500);
+
+            given().get("/auth/me")
+                    .then().statusCode(200).body("authenticated", equalTo(false));
+            assertCurrentUser(bobToken, "bob");
+            assertCurrentUser(aliceToken, "alice");
+        } finally {
+            logout(aliceToken);
+            logout(bobToken);
+        }
+    }
+
+    private static String login(String userId) {
+        return given().contentType("text/plain").body(userId).post("/auth/login")
+                .then().statusCode(200).body("principal.loginId", equalTo(userId))
+                .extract().path("token");
+    }
+
+    private static void assertCurrentUser(String token, String userId) {
+        given().header("satoken", token).get("/auth/me")
+                .then().statusCode(200).body("authenticated", equalTo(true))
+                .body("loginId", equalTo(userId)).body("userId", equalTo(userId));
+    }
+
+    private static void logout(String token) {
+        given().header("satoken", token).post("/auth/logout")
+                .then().statusCode(200).body("success", equalTo(true));
+    }
 }

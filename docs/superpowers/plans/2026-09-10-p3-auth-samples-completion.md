@@ -82,6 +82,18 @@ deprecated coordinate remains unchanged. Existing nonfatal Javadoc/model
 diagnostics are not cleared by this result, and packaging/publication/CI remain
 separate gates.
 
+Follow-up review Minor closed on 2026-09-10: both retained auth journeys now
+interleave independent Alice and Bob sessions, force a real HTTP 500 while
+Alice is attached, then prove anonymous, Bob, and Alice requests retain their
+own authentication state. The tests first failed with `/auth/fail` returning
+404; the minimal sample endpoint then made the exceptional cleanup path
+observable. Both focused modules passed 2 tests each. A fresh isolated-repository
+samples `clean verify -DskipTests=false` passed all 14 samples modules and 52
+tests across 12 suites, with 0 failures/errors/skips. The isolated repository
+contained the reviewed ddd4j 3.0 Disruptor, Kafka, and COLA BOM fixes; the shared
+`~/.m2` repository was not modified. Detailed evidence is appended to the Task
+2 report.
+
 ### Task 3: Complete feature/4.0.x MQ samples
 
 **Files:**

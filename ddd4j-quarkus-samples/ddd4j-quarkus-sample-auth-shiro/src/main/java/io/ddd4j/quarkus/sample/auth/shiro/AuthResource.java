@@ -100,4 +100,13 @@ public class AuthResource {
         return Map.of("login", SubjectKit.isLogin());
     }
 
+    /**
+     * 主动触发异常，用于演示 Shiro SubjectThreadState 在失败路径也会恢复。
+     */
+    @GET
+    @Path("/fail")
+    public void fail() {
+        throw new IllegalStateException("sample auth request failed");
+    }
+
 }
