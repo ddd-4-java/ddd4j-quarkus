@@ -3,6 +3,8 @@ package io.ddd4j.quarkus.sample.auth.satoken;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.blankOrNullString;
 import static org.hamcrest.Matchers.equalTo;
@@ -38,6 +40,7 @@ class AuthJourneyTest {
             given().header("satoken", token).queryParam("permission", "admin:write")
                     .get("/auth/check/permission").then().statusCode(200).body("has", equalTo(false));
 
+            // 相邻请求不携带令牌或携带伪造令牌时，不得继承线程上的上一位用户。
             given().get("/auth/status").then().statusCode(200).body("login", equalTo(false));
             given().get("/auth/me").then().statusCode(200).body("authenticated", equalTo(false));
             given().header("satoken", "invalid-token").get("/auth/me")
@@ -52,5 +55,49 @@ class AuthJourneyTest {
                 .then().statusCode(200).body("authenticated", equalTo(false));
         given().header("satoken", token).queryParam("permission", "profile:read")
                 .get("/auth/check/permission").then().statusCode(200).body("has", equalTo(false));
+    }
+
+    @Test
+    void interleavedSessionsAndExceptionalRequestShouldRemainIsolated() {
+        String aliceToken = login("alice");
+        String bobToken = login("bob");
+        try {
+            assertCurrentUser(aliceToken, "alice");
+            assertCurrentUser(bobToken, "bob");
+            assertCurrentUser(aliceToken, "alice");
+
+            String requestId = UUID.randomUUID().toString();
+            given().header("satoken", aliceToken).queryParam("requestId", requestId)
+                    .queryParam("expectedLoginId", "alice")
+                    .get("/auth/test/isolation/fail")
+                    .then().statusCode(500);
+
+            given().queryParam("requestId", requestId).get("/auth/test/isolation/observation")
+                    .then().statusCode(200).body("observedLoginId", equalTo("alice"))
+                    .body("requestEnded", equalTo(true))
+                    .body("currentRequestAuthenticated", equalTo(false));
+            assertCurrentUser(bobToken, "bob");
+            assertCurrentUser(aliceToken, "alice");
+        } finally {
+            logout(aliceToken);
+            logout(bobToken);
+        }
+    }
+
+    private static String login(String userId) {
+        return given().contentType("text/plain").body(userId).post("/auth/login")
+                .then().statusCode(200).body("principal.loginId", equalTo(userId))
+                .extract().path("token");
+    }
+
+    private static void assertCurrentUser(String token, String userId) {
+        given().header("satoken", token).get("/auth/me")
+                .then().statusCode(200).body("authenticated", equalTo(true))
+                .body("loginId", equalTo(userId)).body("userId", equalTo(userId));
+    }
+
+    private static void logout(String token) {
+        given().header("satoken", token).post("/auth/logout")
+                .then().statusCode(200).body("success", equalTo(true));
     }
 }

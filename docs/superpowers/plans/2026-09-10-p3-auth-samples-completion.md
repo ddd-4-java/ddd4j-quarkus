@@ -134,6 +134,18 @@ is explicit Jackson creator/property metadata on the three immutable order event
 required by the ddd4j 2.0 deserializer. Exact commands, hashes and broker log anchors
 are in `.superpowers/sdd/2026-09-10-p3-auth-samples-completion/task-4-report.md`.
 
+Final auth-isolation parity follow-up: feature/3.3.x now matches the reviewed
+feature/4.0.x `48783d5` behavior. Sa-Token interleaves Alice/Bob sessions, verifies
+Alice is attached inside a test-source-only failing resource, observes the same
+Vert.x request's end handler, and proves the following anonymous request remains
+unauthenticated. Shiro invokes `SampleShiroRuntime.invoke` on the test thread and
+proves `ThreadContext` is empty immediately after the exceptional `Subject.execute`
+boundary. No intentional-failure endpoint exists under `src/main`. The RED run saw
+the test-only probe return 404; isolated Java 17 and Java 21 / Maven 3.9.16
+`clean verify -DskipTests=false` runs each passed 4 tests across the two sample
+suites with zero failures/errors/skips. Java 17 uses the equivalent `Thread.getId()`
+API because `Thread.threadId()` is unavailable on the branch baseline.
+
 ### Task 5: Full dual-branch completion gate
 
 - [ ] 3.3.x: Java17 and Java21 full `clean verify`.
