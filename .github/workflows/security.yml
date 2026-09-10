@@ -1,0 +1,93 @@
+name: Security gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - 'feature/**'
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-vulnerability-and-sbom:
+    name: Dependency vulnerabilities and aggregate SBOM
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify security workflow contract
+        run: python3 scripts/verify-security-workflow.py
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Configure Maven and verify ddd4j snapshot
+        uses: ./.github/actions/configure-maven
+        with:
+          maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
+      - name: Restore Dependency-Check vulnerability database
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: dependency-check-12.2.2-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            dependency-check-12.2.2-${{ runner.os }}-
+      - name: Require NVD API key
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          if [ -z "$NVD_API_KEY" ]; then
+            echo "::error::NVD_API_KEY organization secret is missing"
+            exit 1
+          fi
+      - name: Update Dependency-Check vulnerability database
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: >-
+          ./mvnw -B -U
+          org.owasp:dependency-check-maven:12.2.2:update-only
+          -Ddependency-check.skip=false
+          -DnvdApiKeyEnvironmentVariable=NVD_API_KEY
+          -DnvdMaxRetryCount=10
+          -DossindexAnalyzerEnabled=false
+      - name: Save updated Dependency-Check vulnerability database
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: dependency-check-12.2.2-${{ runner.os }}-${{ github.run_id }}
+      - name: Generate aggregate CycloneDX SBOM
+        run: >-
+          ./mvnw -B -U
+          org.cyclonedx:cyclonedx-maven-plugin:2.9.2:makeAggregateBom
+          -DoutputDirectory=target/sbom
+          -DoutputName=bom
+          -DoutputFormat=all
+          -DincludeBomSerialNumber=true
+          -Dcyclonedx.skipAttach=true
+      - name: Scan aggregate dependencies (fail on CVSS 7 or higher)
+        run: >-
+          ./mvnw -B -U
+          org.owasp:dependency-check-maven:12.2.2:aggregate
+          -Ddependency-check.skip=false
+          -DautoUpdate=false
+          -DfailBuildOnCVSS=7
+          -Dformats=HTML,JSON,SARIF
+          -DossindexAnalyzerEnabled=false
+          -DoutputDirectory=${{ github.workspace }}/target/dependency-check
+      - name: Upload vulnerability and SBOM reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            target/dependency-check/dependency-check-report.*
+            target/sbom/bom.*
+          if-no-files-found: warn
+          retention-days: 30
