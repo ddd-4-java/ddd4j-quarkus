@@ -143,6 +143,14 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- Quarkus COLA adapter owns this optional ecosystem addition. -->
+            <dependency>
+                <groupId>com.alibaba.cola</groupId>
+                <artifactId>cola-components-bom</artifactId>
+                <version>${cola.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- 1.1 本仓 ddd4j-quarkus-bom（独立 POM，无循环）：统一管理全部
                  ddd4j-quarkus-* 模块版本（${revision}），供框架模块与 samples 解析 -->
             <dependency>
@@ -337,6 +345,52 @@
                 <groupId>org.hibernate.orm</groupId>
                 <artifactId>hibernate-core</artifactId>
                 <version>7.4.5.Final</version>
+            </dependency>
+            <!-- Published ddd4j BOM contains literal Testcontainers versions; keep only used modules aligned. -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>${testcontainers-bom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-activemq</artifactId>
+                <version>${testcontainers-bom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-junit-jupiter</artifactId>
+                <version>${testcontainers-bom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-kafka</artifactId>
+                <version>${testcontainers-bom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-localstack</artifactId>
+                <version>${testcontainers-bom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-mysql</artifactId>
+                <version>${testcontainers-bom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-pulsar</artifactId>
+                <version>${testcontainers-bom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-postgresql</artifactId>
+                <version>${testcontainers-bom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-rabbitmq</artifactId>
+                <version>${testcontainers-bom.version}</version>
             </dependency>
             <!-- 4. ddd4j 平台核心模块坐标（纯 Java，零 Spring 依赖）。
                  显式声明 io.ddd4j:* 全部常用模块版本，避免 ddd4j-quarkus 子模块

@@ -16,6 +16,8 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.lang.reflect.Field;
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -192,6 +194,23 @@ class AbstractTestContainerFixtureTest {
                 .isEqualTo(WaitAllStrategy.Mode.WITH_OUTER_TIMEOUT);
         assertThat(strategyField(strategy, WaitAllStrategy.class, "timeout"))
                 .isEqualTo(Duration.ofMinutes(3));
+    }
+
+    @Test
+    void shouldSerializeRocketMqFixedPortLeases() throws Exception {
+        try (RocketMqPortLease first = RocketMqPortLease.acquire()) {
+            CompletableFuture<RocketMqPortLease> second = CompletableFuture.supplyAsync(() -> {
+                try {
+                    return RocketMqPortLease.acquire();
+                } catch (Exception exception) {
+                    throw new IllegalStateException(exception);
+                }
+            });
+            Thread.sleep(200L);
+            assertThat(second).isNotDone();
+            first.close();
+            second.get(5, TimeUnit.SECONDS).close();
+        }
     }
 
     /** 2.0.5 未公开组合等待配置 getter；只读实际配置，避免等待三分钟或启动额外 Docker 进程。 */

@@ -1,113 +1,101 @@
 #!/usr/bin/env python3
-"""Verify that the Quarkus platform BOM owns its ecosystem versions."""
-
+"""Verify Quarkus BOM ownership in every reactor leaf effective model."""
 from __future__ import annotations
-
-import subprocess
-import sys
-import tempfile
+import subprocess, sys, tempfile
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+
+Coordinate = tuple[str, str, str, str]
+
+def parse(path: Path) -> ET.Element:
+    root = ET.parse(path).getroot()
+    for node in root.iter(): node.tag = node.tag.rsplit("}", 1)[-1]
+    return root
 
 def value(node: ET.Element, name: str, default: str = "") -> str:
     child = node.find(name)
     return default if child is None or child.text is None else child.text.strip()
 
+def coordinate(node: ET.Element) -> Coordinate:
+    return value(node, "groupId"), value(node, "artifactId"), value(node, "type", "jar"), value(node, "classifier")
 
-def coordinate(node: ET.Element) -> tuple[str, str, str, str]:
-    return (
-        value(node, "groupId"),
-        value(node, "artifactId"),
-        value(node, "type", "jar"),
-        value(node, "classifier"),
-    )
-
-
-def managed_versions(path: Path) -> dict[tuple[str, str, str, str], str]:
-    root = ET.parse(path).getroot()
-    for node in root.iter():
-        node.tag = node.tag.rsplit("}", 1)[-1]
-    result: dict[tuple[str, str, str, str], str] = {}
-    nodes = root.findall("dependencyManagement/dependencies/dependency")
+def versions(nodes: list[ET.Element]) -> dict[Coordinate, str]:
+    result: dict[Coordinate, str] = {}
     for node in nodes:
-        key = coordinate(node)
-        version = value(node, "version")
-        if all(key[:2]) and version and key not in result:
-            result[key] = version
+        key, version = coordinate(node), value(node, "version")
+        if all(key[:2]) and version and key not in result: result[key] = version
     return result
 
+def managed_versions(path: Path) -> dict[Coordinate, str]:
+    return versions(parse(path).findall("dependencyManagement/dependencies/dependency"))
+
+def reactor_leaves(repository: Path) -> list[Path]:
+    visited: set[Path] = set(); leaves: list[Path] = []
+    def visit(pom: Path) -> None:
+        pom = pom.resolve()
+        if pom in visited: return
+        visited.add(pom)
+        modules = [node.text.strip() for node in parse(pom).findall("modules/module") if node.text]
+        if not modules:
+            if value(parse(pom), "packaging", "jar") != "pom": leaves.append(pom)
+            return
+        for module in modules:
+            child = pom.parent / module / "pom.xml"
+            if not child.is_file(): raise RuntimeError(f"Missing reactor module POM: {child}")
+            visit(child)
+    visit(repository / "pom.xml")
+    return leaves
+
+def maven_args(repository: Path) -> list[str]:
+    # Maven reads both .mvn/maven.config and MAVEN_ARGS itself. Keeping the child
+    # command unmodified preserves the caller's settings and local-repository contract.
+    return []
+
+def run_maven(repository: Path, args: list[str], *goals: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run([str(repository / "mvnw"), *args, *goals], cwd=repository, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+def effective_model(repository: Path, args: list[str], pair: tuple[Path, Path]) -> str | None:
+    pom, output = pair
+    try:
+        run_maven(repository, args, "-q", "-N", "-f", str(pom), "help:effective-pom", f"-Doutput={output}")
+        return None
+    except subprocess.CalledProcessError as failure:
+        detail = " | ".join(failure.stdout.strip().splitlines()[-3:])
+        return f"{pom.relative_to(repository)}: effective model failed: {detail}"
 
 def main() -> int:
-    module = Path(__file__).resolve().parents[3]
-    repository = module.parent
-    pom = module / "pom.xml"
-    root = ET.parse(pom).getroot()
-    for node in root.iter():
-        node.tag = node.tag.rsplit("}", 1)[-1]
-    properties = root.find("properties")
-    assert properties is not None
+    module = Path(__file__).resolve().parents[3]; repository = module.parent; pom = module / "pom.xml"
+    root = parse(pom); properties = root.find("properties"); assert properties is not None
     quarkus_version = value(properties, "quarkus-bom.version")
-
-    imports = [
-        (value(node, "groupId"), value(node, "artifactId"))
-        for node in root.findall("dependencyManagement/dependencies/dependency")
-        if value(node, "type", "jar") == "pom" and value(node, "scope") == "import"
-    ]
-    expected_first = ("io.quarkus.platform", "quarkus-bom")
-    if not imports or imports[0] != expected_first:
-        print(f"Quarkus BOM must be the first imported BOM; found {imports[:3]}", file=sys.stderr)
-        return 1
-
-    quarkus_pom = (
-        Path.home()
-        / ".m2/repository/io/quarkus/platform/quarkus-bom"
-        / quarkus_version
-        / f"quarkus-bom-{quarkus_version}.pom"
-    )
-    with tempfile.TemporaryDirectory(prefix="ddd4j-quarkus-bom-") as temp_dir:
-        effective_pom = Path(temp_dir) / "effective-pom.xml"
-        command = [
-            str(repository / "mvnw"),
-            "-q",
-            "-f",
-            str(pom),
-            "help:effective-pom",
-            "-Dverbose",
-            f"-Doutput={effective_pom}",
-        ]
-        subprocess.run(command, cwd=repository, check=True)
-        effective = managed_versions(effective_pom)
-
+    imports = [(value(node, "groupId"), value(node, "artifactId")) for node in root.findall("dependencyManagement/dependencies/dependency") if value(node, "type", "jar") == "pom" and value(node, "scope") == "import"]
+    if not imports or imports[0] != ("io.quarkus.platform", "quarkus-bom"):
+        print(f"Quarkus BOM must be the first imported BOM; found {imports[:3]}", file=sys.stderr); return 1
+    args = maven_args(repository)
+    evaluated = run_maven(repository, args, "-q", "-N", "-f", str(pom), "help:evaluate", "-Dexpression=settings.localRepository", "-DforceStdout").stdout.strip().splitlines()
+    local_repository = Path(evaluated[-1].split()[-1])
+    quarkus_pom = local_repository / "io/quarkus/platform/quarkus-bom" / quarkus_version / f"quarkus-bom-{quarkus_version}.pom"
+    if not quarkus_pom.is_file(): run_maven(repository, args, "-q", "-N", "-f", str(pom), "dependency:get", f"-Dartifact=io.quarkus.platform:quarkus-bom:{quarkus_version}:pom")
     if not quarkus_pom.is_file():
-        print(f"Maven did not cache the Quarkus BOM: {quarkus_pom}", file=sys.stderr)
-        return 1
-
-    platform = managed_versions(quarkus_pom)
-    conflicts = []
-    for key, expected in platform.items():
-        actual = effective.get(key)
-        if actual is not None and actual != expected:
-            conflicts.append((key, expected, actual))
-
-    if conflicts:
-        print("Unexpected Quarkus platform version conflicts:", file=sys.stderr)
-        for key, expected, actual in conflicts:
-            print(f"  {':'.join(key)} expected={expected} actual={actual}", file=sys.stderr)
-        return 1
-
-    assertions = {
-        ("io.quarkus", "quarkus-core", "jar", ""): quarkus_version,
-        ("org.testcontainers", "testcontainers", "jar", ""): "2.0.5",
-    }
-    for key, expected in assertions.items():
-        actual = effective.get(key)
-        if actual != expected:
-            print(f"Version assertion failed for {':'.join(key)}: {actual} != {expected}", file=sys.stderr)
-            return 1
-
-    print(f"BOM arbitration verified: Quarkus {quarkus_version}, Testcontainers 2.0.5")
+        print(f"Maven did not cache the Quarkus BOM in {local_repository}", file=sys.stderr); return 1
+    platform = managed_versions(quarkus_pom); failures: list[str] = []; leaves = reactor_leaves(repository)
+    with tempfile.TemporaryDirectory(prefix="ddd4j-quarkus-bom-") as temp_dir:
+        outputs = [Path(temp_dir) / f"effective-{index}.xml" for index in range(len(leaves))]
+        with ThreadPoolExecutor(max_workers=min(4, len(leaves))) as executor:
+            failures.extend(filter(None, executor.map(lambda pair: effective_model(repository, args, pair), zip(leaves, outputs))))
+        for leaf, effective_pom in zip(leaves, outputs):
+            if not effective_pom.is_file(): continue
+            effective_root = parse(effective_pom)
+            managed = versions(effective_root.findall("dependencyManagement/dependencies/dependency"))
+            missing = sorted(set(platform) - set(managed))
+            conflicts = sorted((key, expected, managed[key]) for key, expected in platform.items() if key in managed and managed[key] != expected)
+            direct = versions(effective_root.findall("dependencies/dependency"))
+            direct_conflicts = sorted((key, platform[key], actual) for key, actual in direct.items() if key in platform and actual != platform[key])
+            if missing: failures.append(f"{leaf.relative_to(repository)}: missing {len(missing)} platform coordinates; first={':'.join(missing[0])}")
+            failures.extend(f"{leaf.relative_to(repository)}: {':'.join(key)} expected={expected} actual={actual}" for key, expected, actual in [*conflicts, *direct_conflicts])
+    if failures:
+        print("BOM arbitration failures:\n" + "\n".join(f"  {failure}" for failure in failures), file=sys.stderr); return 1
+    print(f"BOM arbitration verified in {len(leaves)} reactor leaves: Quarkus {quarkus_version}, Testcontainers 2.0.5")
     return 0
 
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+if __name__ == "__main__": raise SystemExit(main())
