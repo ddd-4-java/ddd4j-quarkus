@@ -8,6 +8,7 @@ from pathlib import Path
 
 UNRECOGNIZED_CONFIGURATION = "Unrecognized configuration key"
 SETTINGS_READER_PROBLEM = "Settings problem encountered"
+DEPRECATED_CONFIGURATION = "config property is deprecated"
 
 
 def main() -> int:
@@ -25,14 +26,25 @@ def main() -> int:
         if not log.is_file():
             failures.append(f"missing build log: {log}")
             continue
-        matches = [
+        unrecognized_matches = [
             f"{line_number}: {line.strip()}"
             for line_number, line in enumerate(log.read_text(encoding="utf-8", errors="replace").splitlines(), 1)
             if UNRECOGNIZED_CONFIGURATION in line
         ]
-        if matches:
+        if unrecognized_matches:
             failures.append(
-                f"{log}: unrecognized Quarkus configuration detected\n  " + "\n  ".join(matches)
+                f"{log}: unrecognized Quarkus configuration detected\n  "
+                + "\n  ".join(unrecognized_matches)
+            )
+        deprecated_matches = [
+            f"{line_number}: {line.strip()}"
+            for line_number, line in enumerate(log.read_text(encoding="utf-8", errors="replace").splitlines(), 1)
+            if DEPRECATED_CONFIGURATION in line
+        ]
+        if deprecated_matches:
+            failures.append(
+                f"{log}: deprecated Quarkus configuration detected\n  "
+                + "\n  ".join(deprecated_matches)
             )
         if args.reject_settings_problems:
             settings_matches = [
@@ -53,7 +65,8 @@ def main() -> int:
         return 1
     print(
         f"Quarkus log verified: files={len(args.logs)} "
-        f"unrecognized_configuration=0 settings_reader_problems=0"
+        "unrecognized_configuration=0 deprecated_configuration=0 "
+        "settings_reader_problems=0"
     )
     return 0
 

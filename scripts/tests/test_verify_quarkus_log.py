@@ -27,6 +27,14 @@ class VerifyQuarkusLogTest(unittest.TestCase):
         self.assertNotEqual(0, result.returncode)
         self.assertIn("unrecognized Quarkus configuration", result.stderr)
 
+    def test_rejects_deprecated_quarkus_configuration(self):
+        result = self.run_verifier(
+            'WARN The "quarkus.hibernate-orm.database.generation" config property is deprecated '
+            'and should not be used anymore.\n'
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("deprecated Quarkus configuration", result.stderr)
+
     def test_accepts_clean_log(self):
         result = self.run_verifier("[INFO] BUILD SUCCESS\n")
         self.assertEqual(0, result.returncode, result.stderr)
