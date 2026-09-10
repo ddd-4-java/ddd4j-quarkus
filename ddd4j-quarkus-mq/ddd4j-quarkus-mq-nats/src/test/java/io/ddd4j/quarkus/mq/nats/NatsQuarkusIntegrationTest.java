@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * nats MQ 集成测试。
@@ -90,9 +89,8 @@ class NatsQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<NatsPr
      */
     public static class NatsTestResource implements QuarkusTestResourceLifecycleManager {
 
-        private final NatsQuarkusTestResource fixture = new NatsQuarkusTestResource(
-                "DDD4J_NATS_IT_" + UUID.randomUUID().toString().replace("-", ""),
-                List.of("ORDER.CREATED"));
+        private final NatsQuarkusTestResource fixture = NatsQuarkusTestResource.withRunScopedStream(
+                "DDD4J_NATS_IT_", List.of("ORDER.CREATED"));
 
         @Override
         public Map<String, String> start() {
