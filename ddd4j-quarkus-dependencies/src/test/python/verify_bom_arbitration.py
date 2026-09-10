@@ -18,6 +18,20 @@ def value(node: ET.Element, name: str, default: str = "") -> str:
 def coordinate(node: ET.Element) -> Coordinate:
     return value(node, "groupId"), value(node, "artifactId"), value(node, "type", "jar"), value(node, "classifier")
 
+def project_key(project: ET.Element) -> tuple[str, str]:
+    parent = project.find("parent")
+    group_id = value(project, "groupId") or (value(parent, "groupId") if parent is not None else "")
+    return group_id, value(project, "artifactId")
+
+def index_projects(projects: list[ET.Element]) -> dict[tuple[str, str], ET.Element]:
+    result: dict[tuple[str, str], ET.Element] = {}
+    for project in projects:
+        key = project_key(project)
+        if key in result:
+            raise ValueError(f"Duplicate reactor project coordinate: {key[0]}:{key[1]}")
+        result[key] = project
+    return result
+
 def versions(nodes: list[ET.Element]) -> dict[Coordinate, str]:
     result: dict[Coordinate, str] = {}
     for node in nodes:
@@ -70,10 +84,13 @@ def main() -> int:
         if not quarkus_pom.is_file(): print(f"Maven did not cache the Quarkus BOM in {local_repository}", file=sys.stderr); return 1
         platform = managed_versions(quarkus_pom)
         aggregate = parse(effective_pom)
-        projects = {value(project, "artifactId"): project for project in aggregate.findall("project")}
+        try:
+            projects = index_projects(aggregate.findall("project"))
+        except ValueError as failure:
+            print(str(failure), file=sys.stderr); return 1
         expected_revision = value(properties, "revision")
         for leaf in leaves:
-            artifact_id = value(parse(leaf), "artifactId"); effective_root = projects.get(artifact_id)
+            key = project_key(parse(leaf)); effective_root = projects.get(key)
             if effective_root is None:
                 failures.append(f"{leaf.relative_to(repository)}: current reactor effective model is missing"); continue
             if value(effective_root, "version") != expected_revision:
