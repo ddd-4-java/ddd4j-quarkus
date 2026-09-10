@@ -8,6 +8,7 @@ import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
 import java.time.Duration;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -40,6 +41,43 @@ public class RocketMqQuarkusTestResource extends AbstractTestContainerFixture {
     private static final String BROKER_CONF = "/home/rocketmq/rocketmq-5.3.2/conf/broker.conf";
 
     private GenericContainer<?> container;
+    private RocketMqPortLease portLease;
+
+    @Override
+    public synchronized Map<String, String> start() {
+        if (portLease != null) {
+            return super.start();
+        }
+        try {
+            portLease = RocketMqPortLease.acquire();
+            return super.start();
+        } catch (IOException exception) {
+            throw new IllegalStateException("Unable to acquire the RocketMQ test port lease", exception);
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted while waiting for the RocketMQ test port lease", exception);
+        } catch (RuntimeException | Error failure) {
+            releasePortLease(failure);
+            throw failure;
+        }
+    }
+
+    @Override
+    public synchronized void stop() {
+        RuntimeException failure = null;
+        try { super.stop(); } catch (RuntimeException exception) { failure = exception; }
+        finally { releasePortLease(failure); }
+        if (failure != null) throw failure;
+    }
+
+    private void releasePortLease(Throwable failure) {
+        if (portLease == null) return;
+        try { portLease.close(); }
+        catch (IOException exception) {
+            if (failure != null) failure.addSuppressed(exception);
+            else throw new IllegalStateException("Unable to release the RocketMQ test port lease", exception);
+        } finally { portLease = null; }
+    }
 
     @Override
     protected GenericContainer<?> container() {
