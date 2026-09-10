@@ -1,18 +1,32 @@
 package io.ddd4j.quarkus.sample.auth.shiro;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import jakarta.interceptor.InvocationContext;
+import org.apache.shiro.subject.ExecutionException;
+import org.apache.shiro.util.ThreadContext;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Proxy;
+import java.util.concurrent.atomic.AtomicLong;
+
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.blankOrNullString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.blankOrNullString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * 验证真实 HTTP 登录、跨请求会话恢复、授权与注销，防止只启动成功却无法使用的示例。
  */
 @QuarkusTest
 class AuthJourneyTest {
+
+    @Inject
+    SampleShiroRuntime runtime;
 
     @Test
     void loginShouldRestoreOnlyItsOwnSessionAndLogoutShouldRevokeToken() {
@@ -64,11 +78,7 @@ class AuthJourneyTest {
             assertCurrentUser(bobToken, "bob");
             assertCurrentUser(aliceToken, "alice");
 
-            given().header("X-Session-Id", aliceToken).get("/auth/fail")
-                    .then().statusCode(500);
-
-            given().get("/auth/me")
-                    .then().statusCode(200).body("authenticated", equalTo(false));
+            assertExceptionalInvocationRestoresThreadState(aliceToken);
             assertCurrentUser(bobToken, "bob");
             assertCurrentUser(aliceToken, "alice");
         } finally {
@@ -92,5 +102,29 @@ class AuthJourneyTest {
     private static void logout(String token) {
         given().header("X-Session-Id", token).post("/auth/logout")
                 .then().statusCode(200).body("success", equalTo(true));
+    }
+
+    private void assertExceptionalInvocationRestoresThreadState(String aliceToken) {
+        assertNull(ThreadContext.getSubject());
+        long testThreadId = Thread.currentThread().threadId();
+        AtomicLong invocationThreadId = new AtomicLong();
+        InvocationContext invocation = (InvocationContext) Proxy.newProxyInstance(
+                InvocationContext.class.getClassLoader(),
+                new Class<?>[]{InvocationContext.class},
+                (proxy, method, arguments) -> {
+                    if ("proceed".equals(method.getName())) {
+                        invocationThreadId.set(Thread.currentThread().threadId());
+                        assertEquals("alice", ThreadContext.getSubject().getPrincipal());
+                        throw new IllegalStateException("sample auth request failed");
+                    }
+                    return null;
+                });
+
+        ExecutionException exception = assertThrows(
+                ExecutionException.class, () -> runtime.invoke(invocation, aliceToken));
+        IllegalStateException cause = assertInstanceOf(IllegalStateException.class, exception.getCause());
+        assertEquals("sample auth request failed", cause.getMessage());
+        assertEquals(testThreadId, invocationThreadId.get());
+        assertNull(ThreadContext.getSubject());
     }
 }

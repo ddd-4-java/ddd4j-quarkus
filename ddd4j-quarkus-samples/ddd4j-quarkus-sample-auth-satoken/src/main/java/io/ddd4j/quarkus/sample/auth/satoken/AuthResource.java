@@ -104,13 +104,4 @@ public class AuthResource {
         return Map.of("login", SubjectKit.isLogin());
     }
 
-    /**
-     * 主动触发异常，用于演示请求失败后认证上下文仍会被隔离清理。
-     */
-    @GET
-    @Path("/fail")
-    public void fail() {
-        throw new IllegalStateException("sample auth request failed");
-    }
-
 }

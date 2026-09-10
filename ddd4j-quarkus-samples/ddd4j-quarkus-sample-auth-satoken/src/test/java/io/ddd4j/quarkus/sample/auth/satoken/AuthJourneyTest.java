@@ -3,10 +3,12 @@ package io.ddd4j.quarkus.sample.auth.satoken;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.blankOrNullString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.blankOrNullString;
 
 /**
  * 验证真实 HTTP 登录、跨请求会话恢复、授权与注销，防止只启动成功却无法使用的示例。
@@ -64,11 +66,16 @@ class AuthJourneyTest {
             assertCurrentUser(bobToken, "bob");
             assertCurrentUser(aliceToken, "alice");
 
-            given().header("satoken", aliceToken).get("/auth/fail")
+            String requestId = UUID.randomUUID().toString();
+            given().header("satoken", aliceToken).queryParam("requestId", requestId)
+                    .queryParam("expectedLoginId", "alice")
+                    .get("/auth/test/isolation/fail")
                     .then().statusCode(500);
 
-            given().get("/auth/me")
-                    .then().statusCode(200).body("authenticated", equalTo(false));
+            given().queryParam("requestId", requestId).get("/auth/test/isolation/observation")
+                    .then().statusCode(200).body("observedLoginId", equalTo("alice"))
+                    .body("requestEnded", equalTo(true))
+                    .body("currentRequestAuthenticated", equalTo(false));
             assertCurrentUser(bobToken, "bob");
             assertCurrentUser(aliceToken, "alice");
         } finally {

@@ -83,16 +83,19 @@ diagnostics are not cleared by this result, and packaging/publication/CI remain
 separate gates.
 
 Follow-up review Minor closed on 2026-09-10: both retained auth journeys now
-interleave independent Alice and Bob sessions, force a real HTTP 500 while
-Alice is attached, then prove anonymous, Bob, and Alice requests retain their
-own authentication state. The tests first failed with `/auth/fail` returning
-404; the minimal sample endpoint then made the exceptional cleanup path
-observable. Both focused modules passed 2 tests each. A fresh isolated-repository
-samples `clean verify -DskipTests=false` passed all 14 samples modules and 52
-tests across 12 suites, with 0 failures/errors/skips. The isolated repository
-contained the reviewed ddd4j 3.0 Disruptor, Kafka, and COLA BOM fixes; the shared
-`~/.m2` repository was not modified. Detailed evidence is appended to the Task
-2 report.
+interleave independent Alice and Bob sessions. Sa-Token uses a resource that
+exists only in the test source set; it asserts Alice before throwing and
+records the same Vert.x request's end handler, while a following anonymous probe
+reads both observations. Shiro invokes `SampleShiroRuntime.invoke` directly on
+the test thread, asserts Alice inside `Subject.execute`, then proves the same
+thread's `ThreadContext` is empty immediately after the exception boundary. No
+intentional-failure endpoint is compiled into the public sample artifact. The Sa-Token test
+first failed with the test-only probe route returning 404. Both focused modules
+passed 2 tests each. A fresh isolated-repository samples
+`clean verify -DskipTests=false` passed all 14 samples modules and 52 tests
+across 12 suites, with 0 failures/errors/skips. The isolated repository contained
+the reviewed ddd4j 3.0 Disruptor, Kafka, and COLA BOM fixes; the shared `~/.m2`
+repository was not modified. Detailed evidence is appended to the Task 2 report.
 
 ### Task 3: Complete feature/4.0.x MQ samples
 
