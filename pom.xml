@@ -10,7 +10,6 @@
         <groupId>io.ddd4j</groupId>
         <artifactId>ddd4j-parent</artifactId>
         <version>3.0.x.20260630-SNAPSHOT</version>
-        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <groupId>io.ddd4j.quarkus</groupId>
@@ -166,6 +165,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
+                <version>${maven-flatten-plugin.version}</version>
                 <configuration>
                     <skip>true</skip>
                     <flattenMode>resolveCiFriendliesOnly</flattenMode>
