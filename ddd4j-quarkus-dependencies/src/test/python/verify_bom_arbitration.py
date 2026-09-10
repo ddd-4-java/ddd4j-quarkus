@@ -3,7 +3,6 @@
 from __future__ import annotations
 import subprocess, sys, tempfile
 import xml.etree.ElementTree as ET
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 Coordinate = tuple[str, str, str, str]
@@ -55,15 +54,6 @@ def maven_args(repository: Path) -> list[str]:
 def run_maven(repository: Path, args: list[str], *goals: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run([str(repository / "mvnw"), *args, *goals], cwd=repository, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-def effective_model(repository: Path, args: list[str], pair: tuple[Path, Path]) -> str | None:
-    pom, output = pair
-    try:
-        run_maven(repository, args, "-q", "-N", "-f", str(pom), "help:effective-pom", f"-Doutput={output}")
-        return None
-    except subprocess.CalledProcessError as failure:
-        detail = " | ".join(failure.stdout.strip().splitlines()[-3:])
-        return f"{pom.relative_to(repository)}: effective model failed: {detail}"
-
 def main() -> int:
     module = Path(__file__).resolve().parents[3]; repository = module.parent; pom = module / "pom.xml"
     root = parse(pom); properties = root.find("properties"); assert properties is not None
@@ -72,20 +62,28 @@ def main() -> int:
     if not imports or imports[0] != ("io.quarkus.platform", "quarkus-bom"):
         print(f"Quarkus BOM must be the first imported BOM; found {imports[:3]}", file=sys.stderr); return 1
     args = maven_args(repository)
-    evaluated = run_maven(repository, args, "-q", "-N", "-f", str(pom), "help:evaluate", "-Dexpression=settings.localRepository", "-DforceStdout").stdout.strip().splitlines()
-    local_repository = Path(evaluated[-1].split()[-1])
-    quarkus_pom = local_repository / "io/quarkus/platform/quarkus-bom" / quarkus_version / f"quarkus-bom-{quarkus_version}.pom"
-    if not quarkus_pom.is_file(): run_maven(repository, args, "-q", "-N", "-f", str(pom), "dependency:get", f"-Dartifact=io.quarkus.platform:quarkus-bom:{quarkus_version}:pom")
-    if not quarkus_pom.is_file():
-        print(f"Maven did not cache the Quarkus BOM in {local_repository}", file=sys.stderr); return 1
-    platform = managed_versions(quarkus_pom); failures: list[str] = []; leaves = reactor_leaves(repository)
+    failures: list[str] = []; leaves = reactor_leaves(repository)
     with tempfile.TemporaryDirectory(prefix="ddd4j-quarkus-bom-") as temp_dir:
-        outputs = [Path(temp_dir) / f"effective-{index}.xml" for index in range(len(leaves))]
-        with ThreadPoolExecutor(max_workers=min(4, len(leaves))) as executor:
-            failures.extend(filter(None, executor.map(lambda pair: effective_model(repository, args, pair), zip(leaves, outputs))))
-        for leaf, effective_pom in zip(leaves, outputs):
-            if not effective_pom.is_file(): continue
-            effective_root = parse(effective_pom)
+        effective_pom = Path(temp_dir) / "reactor-effective-poms.xml"
+        run_maven(repository, args, "-q", "-f", str(repository / "pom.xml"), "help:effective-pom", f"-Doutput={effective_pom}")
+        evaluated = run_maven(repository, args, "-q", "-N", "-f", str(pom), "help:evaluate", "-Dexpression=settings.localRepository", "-DforceStdout").stdout.strip().splitlines()
+        local_repository = Path(evaluated[-1].split()[-1])
+        quarkus_pom = local_repository / "io/quarkus/platform/quarkus-bom" / quarkus_version / f"quarkus-bom-{quarkus_version}.pom"
+        if not quarkus_pom.is_file():
+            print(f"Maven did not cache the Quarkus BOM in {local_repository}", file=sys.stderr); return 1
+        platform = managed_versions(quarkus_pom)
+        aggregate = parse(effective_pom)
+        projects = {value(project, "artifactId"): project for project in aggregate.findall("project")}
+        expected_revision = value(properties, "revision")
+        for leaf in leaves:
+            artifact_id = value(parse(leaf), "artifactId")
+            effective_root = projects.get(artifact_id)
+            if effective_root is None:
+                failures.append(f"{leaf.relative_to(repository)}: current reactor effective model is missing")
+                continue
+            if value(effective_root, "version") != expected_revision:
+                failures.append(f"{leaf.relative_to(repository)}: expected reactor revision {expected_revision}, actual={value(effective_root, 'version')}")
+                continue
             managed = versions(effective_root.findall("dependencyManagement/dependencies/dependency"))
             missing = sorted(set(platform) - set(managed))
             conflicts = sorted((key, expected, managed[key]) for key, expected in platform.items() if key in managed and managed[key] != expected)
