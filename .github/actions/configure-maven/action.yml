@@ -49,8 +49,10 @@ runs:
     - name: Verify remote ddd4j snapshot
       shell: bash
       run: |
-        P5A_CI_REPO="$(mktemp -d "$RUNNER_TEMP/ddd4j-p5a-remote.XXXXXX")"
+        DDD4J_QUARKUS_CI_REPO="$RUNNER_TEMP/ddd4j-quarkus-maven-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}"
+        install -d -m 700 "$DDD4J_QUARKUS_CI_REPO"
+        printf 'DDD4J_QUARKUS_CI_REPO=%s\n' "$DDD4J_QUARKUS_CI_REPO" >> "$GITHUB_ENV"
         ./mvnw -B -U -f .github/maven/ddd4j-remote-consumer/pom.xml \
-          -Dmaven.repo.local="$P5A_CI_REPO" \
+          -Dmaven.repo.local="$DDD4J_QUARKUS_CI_REPO" \
           -Dmaven.resolver.transport=wagon \
           dependency:go-offline

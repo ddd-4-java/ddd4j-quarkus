@@ -21,12 +21,11 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-          cache: maven
       - name: Configure Maven and verify ddd4j snapshot
         uses: ./.github/actions/configure-maven
         with:
           maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
       - name: Build strict Javadoc artifacts
-        run: ./mvnw -B -DskipTests clean compile javadoc:jar
+        run: ./mvnw -B -U -Dmaven.repo.local="$DDD4J_QUARKUS_CI_REPO" -DskipTests clean compile javadoc:jar
       - name: Verify Javadoc archives
         run: ./scripts/verify-javadoc-jars.sh

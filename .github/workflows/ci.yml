@@ -59,7 +59,6 @@ jobs:
         with:
           distribution: temurin
           java-version: ${{ matrix.java }}
-          cache: maven
       - name: Configure Maven and verify ddd4j snapshot
         uses: ./.github/actions/configure-maven
         with:
@@ -71,7 +70,7 @@ jobs:
       - name: Verify (unit + contract)
         run: |
           set -o pipefail
-          ./mvnw -B verify -DskipTests=false | tee quarkus-verify.log
+          ./mvnw -B -U -Dmaven.repo.local="$DDD4J_QUARKUS_CI_REPO" verify -DskipTests=false | tee quarkus-verify.log
       - name: Reject ignored Quarkus configuration
         run: python3 scripts/verify-quarkus-log.py quarkus-verify.log
       - name: Require executed unit and contract tests
@@ -91,7 +90,6 @@ jobs:
         with:
           distribution: temurin
           java-version: ${{ matrix.java }}
-          cache: maven
       - name: Configure Maven and verify ddd4j snapshot
         uses: ./.github/actions/configure-maven
         with:
@@ -99,7 +97,7 @@ jobs:
       - name: Package runnable auth samples
         run: |
           set -o pipefail
-          ./mvnw -B package -DskipTests=false \
+          ./mvnw -B -U -Dmaven.repo.local="$DDD4J_QUARKUS_CI_REPO" package -DskipTests=false \
             -pl ddd4j-quarkus-samples/ddd4j-quarkus-sample-auth-satoken,ddd4j-quarkus-samples/ddd4j-quarkus-sample-auth-shiro -am \
             | tee auth-package.log
       - name: Verify auth runner jars
@@ -178,7 +176,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-          cache: maven
       - name: Configure Maven and verify ddd4j snapshot
         uses: ./.github/actions/configure-maven
         with:
@@ -186,7 +183,7 @@ jobs:
       - name: Require Docker for broker integration
         run: docker info
       - name: Run broker integration tests (${{ matrix.broker }})
-        run: ./mvnw -B verify -DskipTests=false -Pintegration -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-${{ matrix.broker }} -am
+        run: ./mvnw -B -U -Dmaven.repo.local="$DDD4J_QUARKUS_CI_REPO" verify -DskipTests=false -Pintegration -pl ddd4j-quarkus-mq/ddd4j-quarkus-mq-${{ matrix.broker }} -am
       - name: Require executed broker integration class (${{ matrix.broker }})
         run: >-
           python3 scripts/verify-test-reports.py
