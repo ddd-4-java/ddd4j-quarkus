@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Verify Quarkus BOM ownership in every reactor leaf effective model."""
 from __future__ import annotations
-import subprocess, sys, tempfile
+import os, subprocess, sys, tempfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -61,8 +61,9 @@ def reactor_leaves(repository: Path) -> list[Path]:
     return leaves
 
 def maven_args(repository: Path) -> list[str]:
-    # Maven reads both .mvn/maven.config and MAVEN_ARGS itself. Keeping the child
-    # command unmodified preserves the caller's settings and local-repository contract.
+    ci_repository = os.environ.get("DDD4J_QUARKUS_CI_REPO")
+    if ci_repository:
+        return ["-U", f"-Dmaven.repo.local={ci_repository}"]
     return []
 
 def run_maven(repository: Path, args: list[str], *goals: str) -> subprocess.CompletedProcess[str]:

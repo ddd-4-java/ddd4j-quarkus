@@ -52,6 +52,7 @@ runs:
         NVD_API_KEY: ${{ inputs.nvd-api-key }}
       run: >-
         ./mvnw-quarkus -B -U
+        -Dmaven.repo.local="$DDD4J_QUARKUS_CI_REPO"
         org.owasp:dependency-check-maven:12.2.2:update-only
         -Ddependency-check.skip=false
         -DfailOnError=true
@@ -67,6 +68,7 @@ runs:
       shell: bash
       run: >-
         ./mvnw-quarkus -B -U
+        -Dmaven.repo.local="$DDD4J_QUARKUS_CI_REPO"
         org.cyclonedx:cyclonedx-maven-plugin:2.9.2:makeAggregateBom
         -DoutputDirectory=target/sbom/runtime
         -DoutputName=bom
@@ -80,6 +82,7 @@ runs:
       shell: bash
       run: >-
         ./mvnw-quarkus -B -U
+        -Dmaven.repo.local="$DDD4J_QUARKUS_CI_REPO"
         org.cyclonedx:cyclonedx-maven-plugin:2.9.2:makeAggregateBom
         -DoutputDirectory=target/sbom/build-test
         -DoutputName=bom
@@ -93,6 +96,7 @@ runs:
       shell: bash
       run: >-
         ./mvnw-quarkus -B -U
+        -Dmaven.repo.local="$DDD4J_QUARKUS_CI_REPO"
         org.owasp:dependency-check-maven:12.2.2:aggregate
         -Ddependency-check.skip=false
         -DautoUpdate=false
