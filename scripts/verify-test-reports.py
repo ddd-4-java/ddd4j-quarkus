@@ -65,6 +65,13 @@ def main() -> int:
         print("zero executed tests across Surefire and Failsafe reports", file=sys.stderr)
         return 1
 
+    if failures > 0 or errors > 0:
+        print(
+            f"test reports contain failures or errors: failures={failures} errors={errors}",
+            file=sys.stderr,
+        )
+        return 1
+
     for required_class in args.require_class:
         if executed_by_class.get(required_class, 0) <= 0:
             print(
