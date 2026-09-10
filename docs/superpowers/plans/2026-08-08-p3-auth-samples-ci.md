@@ -1,6 +1,6 @@
 # P3 — Auth / Samples / CI/CD 实施计划
 
-> 历史计划状态（2026-09-10）：原始 Producer、分层 sample、CI 基线已完成；旧提议的 `ddd4j-quarkus-auth-testcontainers` 已取消并由直接 Quarkus runtime 集成替代，不计为完成项。`sample-auth-*` / `sample-mq-*` 的行为闭环由 [P3 auth/sample completion plan](2026-09-10-p3-auth-samples-completion.md) 完成并验证。
+> 历史计划状态（2026-09-10）：原始 Producer、分层 sample、CI 基线已完成；旧提议的 `ddd4j-quarkus-auth-testcontainers` 已取消并由直接 Quarkus runtime 集成替代，不计为完成项。`sample-auth-*` / `sample-mq-*` 的本地行为闭环由 [P3 auth/sample completion plan](2026-09-10-p3-auth-samples-completion.md) 完成并验证。当前证据 HEAD 为 3.3.x `91ceb9b`、4.0.x `fce0e1e`；最新 HEAD 的 push/Actions、发布及空缓存消费仍开放，不宣称生产就绪。
 
 > **For agentic workers:** REQUIRED SUB-KILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

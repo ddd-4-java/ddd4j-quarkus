@@ -57,11 +57,14 @@ actionlint .github/workflows/ci.yml
 
 ### P5-B0 本地门禁（2026-09-10）
 
-`c37c843` 的 Java 17/21 完整 `clean verify -Denforcer.skip=true` 各通过 62/62 模块、
-57 suites / 211 tests / 0 failures / 0 errors / 3 skips。源码 reactor 的版本检查使用
+`91ceb9b` 的 Java 17/21 最终本地门禁各通过 61/61 模块、61 suites /
+224 tests / 0 failures / 0 errors / 3 skips；4.0.x `fce0e1e` 为 61 suites /
+228 tests / 0 failures / 0 errors / 3 skips。源码 reactor 的版本检查使用
 `org.apache.maven.plugins:maven-dependency-plugin:3.8.1:tree -Dincludes=org.testcontainers -Dverbose`；
 旧版 2.8 standalone tree 会读到陈旧制品描述，不作为源码版本证据。运行记录与逐项 skip 见
-[P5-B0 本地验证](docs/P5-B0-LOCAL-VERIFICATION.md)。Enforcer、CI、发布与空缓存消费仍须各自验收。
+[P5-B0 本地验证](docs/P5-B0-LOCAL-VERIFICATION.md)。本地还验证了 BOM 52 个叶子、
+auth runner、NATS、严格 Javadoc（52 个叶子、53 个归档）、security 代码门禁和
+Quarkus 配置 warning=0。最新 HEAD 的 CI、发布与空缓存消费仍须各自验收。
 
 ## 编码约定
 

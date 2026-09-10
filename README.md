@@ -42,11 +42,14 @@ Maven settings 必须能访问已发布 ddd4j 快照仓库；消费者直接解�
 
 ## P5-B0 Testcontainers 本地验证（2026-09-10）
 
-`feature/3.3.x` 的 `c37c843` 已完成 Java 17/21 全量门禁：各 62/62 模块成功、
-57 suites / 211 tests / 0 failures / 0 errors / 3 skips。Testcontainers 源码依赖树和
+`feature/3.3.x` 的 `91ceb9b` 已完成 Java 17/21 本地全量门禁：各 61/61 模块成功、
+61 suites / 224 tests / 0 failures / 0 errors / 3 skips；4.0.x `fce0e1e` 为
+61 suites / 228 tests / 0 failures / 0 errors / 3 skips。Testcontainers 源码依赖树和
 实际测试 classpath 均为 `2.0.5`；13 broker 的镜像、readiness、往返与 skip 边界见
 [双分支本地验证证据](docs/P5-B0-LOCAL-VERIFICATION.md)。这些结果覆盖此前迁移与 Snowflake 修复，
-仍不代表目标提交的 GitHub Actions、Enforcer、Maven 发布或发布后空缓存消费完成。
+并包含 BOM 52 叶、auth runner、NATS、严格 Javadoc、security 代码和配置 warning
+门禁；仍不代表目标提交的 GitHub Actions、Maven 发布或发布后空缓存消费完成，
+也不构成生产就绪声明。
 
 ## CI 前置条件：`MAVEN_SETTINGS_XML` 组织 secret
 

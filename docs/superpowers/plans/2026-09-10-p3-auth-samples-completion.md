@@ -148,11 +148,24 @@ API because `Thread.threadId()` is unavailable on the branch baseline.
 
 ### Task 5: Full dual-branch completion gate
 
-- [ ] 3.3.x: Java17 and Java21 full `clean verify`.
-- [ ] 4.0.x: Java21/Maven4 full `clean verify`.
-- [ ] Aggregate XML counts/skips and update P3/P5-B0 docs.
-- [ ] Mark sample backlog complete only from these results.
+- [x] 3.3.x: Java17 and Java21 full `clean verify`.
+- [x] 4.0.x: Java21/Maven4 full `clean verify`.
+- [x] Aggregate XML counts/skips and update P3/P5-B0 docs.
+- [x] Mark sample backlog complete only from these results.
 - [ ] Push both branches and require target-head GitHub Actions success.
+
+Task 5 local evidence: 3.3.x `91ceb9b` passed 61/61 modules under Java 17 and
+Java 21, each with 61 suites / 224 tests / 0 failures / 0 errors / 3 skips.
+4.0.x `fce0e1e` passed 61/61 modules under Java 21 / Maven 4 with 61 suites /
+228 tests / 0 failures / 0 errors / 3 skips. BOM 52-leaf, Testcontainers 2.0.5,
+auth runner, NATS, Javadoc, security-code and config-warning gates are recorded
+in `docs/P5-B0-LOCAL-VERIFICATION.md`.
+
+Remote-only boundary: the Aliyun ddd4j 2.0.x/3.0.x timestamped snapshots still
+lack the reviewed Disruptor/Kafka fixes (plus the 3.0.x COLA BOM fix). GitHub also
+lacks `NVD_API_KEY` and branch protection for master/both feature branches; online
+security/SARIF/schedule, latest-head Actions, deploy and clean-cache consumption
+remain open.
 
 ### Task 6: Return to P5-B0 publication
 

@@ -2,10 +2,13 @@
 
 ## P5-B0 当前本地证据（2026-09-10）
 
-最新已验证源码为 `c37c843`：Java 17/21 完整 reactor 各 62/62 SUCCESS、57 suites、
-211 tests、0 failures、0 errors、3 skips；Testcontainers 全部 `2.0.5`。13 broker 共
+最新已验证源码为 `91ceb9b`：Java 17/21 完整 reactor 各 61/61 SUCCESS、61 suites、
+224 tests、0 failures、0 errors、3 skips；4.0.x `fce0e1e` 为 61 suites / 228 tests /
+0 failures / 0 errors / 3 skips。Testcontainers 全部 `2.0.5`。13 broker 共
 52 tests，仅保留 Mica 与 ONS 的两个方法 skip；Security 废弃方法是第三项全仓 skip。
 完整命令、原始 XML、逐项恢复条件及双分支差异见 [P5-B0 本地验证](P5-B0-LOCAL-VERIFICATION.md)。
+本地还覆盖 BOM 52 叶、auth runner、NATS、严格 Javadoc、security 代码门禁和
+Quarkus 配置 warning=0；最新 HEAD 的 hosted CI、发布与空缓存消费尚未完成。
 以下 P5-A 记录保留为历史证据，不能将旧 Pulsar/RocketMQ skips 套用到本次结果。
 
 本页只记录 `feature/3.3.x` 在普通独立克隆 `ddd4j-quarkus-33x-sync` 中于 2026-09-09 执行的本地门禁。首轮代码基线为 `7c62a27`；Fix round 1 在 `7c62cdd` 上修复 POM 并重新验证。中断前 Task 5 及 `feature/4.0.x` 的运行结果均未复用。规格事实源为 [P5-A design](superpowers/specs/2026-09-09-feature-33x-p5a-capability-sync-design.md)，实施步骤见 [plan](superpowers/plans/2026-09-09-feature-33x-p5a-capability-sync.md)。

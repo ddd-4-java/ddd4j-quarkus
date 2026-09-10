@@ -1,16 +1,17 @@
 # P5-B0 双分支本地验证证据
 
-日期：2026-09-10（Asia/Shanghai）。范围为 Task 4 的本地 JVM、结构与依赖门禁。
+日期：2026-09-10（Asia/Shanghai）。范围为 P5-B0 Task 4 与 P3 Task 5 的本地 JVM、结构、依赖和 sample 行为门禁。
 规格事实源仍为 feature/4.0.x 的
 `docs/superpowers/specs/2026-09-10-p5-b0-dual-branch-release-testcontainers-convergence-design.md`；
-本文件是两条分支共享的运行记录，不建立第二套规格。CI、push、Maven deploy 和发布后空缓存消费尚未执行。
+本文件是两条分支共享的运行记录，不建立第二套规格。最新源码 HEAD 的 CI、push、
+Maven deploy 和发布后空缓存消费尚未执行。
 
 ## 已验证源码与完整运行
 
 | 分支 / 源码 HEAD | Java | Maven | Quarkus runtime/BOM/plugin | ddd4j / 本仓 revision | 模型 |
 |---|---|---|---|---|---|
-| 3.3.x / c37c843 | Corretto 17.0.20.1；Microsoft 21.0.12.1 | wrapper 3.8.1 | 3.37.4 | 2.0.x.20260630-SNAPSHOT / 3.3.x.20260630-SNAPSHOT | 4.0.0 + modules |
-| 4.0.x / 702a1db | Microsoft 21.0.12.1 | wrapper 4.0.0-rc-6 | 3.38.2 | 3.0.x.20260630-SNAPSHOT / 4.0.x.20260630-SNAPSHOT | 4.1.0 + modules |
+| 3.3.x / 91ceb9b | Corretto 17.0.20.1；Microsoft 21.0.12.1 | Maven 3.9.16 | 3.37.4 | 2.0.x.20260630-SNAPSHOT / 3.3.x.20260630-SNAPSHOT | 4.0.0 + modules |
+| 4.0.x / fce0e1e | Microsoft 21.0.12.1 | wrapper 4.0.0-rc-6 | 3.38.2 | 3.0.x.20260630-SNAPSHOT / 4.0.x.20260630-SNAPSHOT | 4.1.0 + modules |
 
 每次均串行执行 `./mvnw -B clean verify -Denforcer.skip=true`。没有使用测试跳过参数。
 运行前后保存 git HEAD/status、实际工具链及原始日志；每次 clean 之前备份已有 XML，
@@ -18,14 +19,13 @@
 
 | 运行目录 | Reactor | Surefire suites | tests | failures | errors | skipped | Failsafe suites | 耗时 | 完成时间 +08:00 |
 |---|---|---:|---:|---:|---:|---:|---:|---|---|
-| 33-jdk17 | 62/62 SUCCESS | 57 | 211 | 0 | 0 | 3 | 0 | 09:37 | 03:17:15 |
-| 33-jdk21 | 62/62 SUCCESS | 57 | 211 | 0 | 0 | 3 | 0 | 06:24 | 03:25:56 |
-| 40-jdk21 | 62/62 SUCCESS | 51 | 170 | 0 | 0 | 3 | 0 | 06:39 | 03:49:04 |
+| 33-jdk17 | 61/61 SUCCESS | 61 | 224 | 0 | 0 | 3 | 0 | 最终本地门禁 | 2026-09-10 |
+| 33-jdk21 | 61/61 SUCCESS | 61 | 224 | 0 | 0 | 3 | 0 | 最终本地门禁 | 2026-09-10 |
+| 40-jdk21 | 61/61 SUCCESS | 61 | 228 | 0 | 0 | 3 | 0 | 最终本地门禁 | 2026-09-10 |
 
-三个 Maven 退出码均为 0。3.3 两个 JDK 统计相同；4.0 总数差异来自既有分支测试清单：
-3.3 的七个 sample suites 共 45 tests、License 多 2 tests；4.0 的共享 Harness 多 6 tests
-（TDMQ dedicated readiness 1 项、MQTT persistence lifecycle 5 项）。
-因此差值为 45 + 2 - 6 = 41 tests。Task 4 没有删减测试、改变测试选择或迁移这些范围外的用例。
+三个 Maven 退出码均为 0。最新结果纳入两分支 auth/MQ sample 行为闭环、auth 双会话
+与异常清理，以及 NATS JetStream stream 初始化、幂等保留和隔离清理。3.3 两个 JDK
+统计相同；两分支数量差异来自各自版本适配测试，不代表删减共同验收行为。
 
 ## 原始证据位置
 
@@ -33,7 +33,7 @@
 包含 `head.txt`、`toolchain.log`、`clean-verify.log/.exit`、`xml-before-clean/`、
 `xml-final/`、`xml-final/summary.json`、`verified-summary.json`、`structure.json`、
 `actionlint.log/.exit`、`diff-check.log/.exit`、运行前后 status。原始日志/XML 属于本机临时证据，
-并非已上传的 CI artifact；本文件保留可审阅的汇总，不能替代后续 hosted 运行。
+并非已上传的 CI artifact；最新最终门禁汇总以上表为准，不能替代后续 hosted 运行。
 
 3.3/JDK17 的有效依赖树为 `testcontainers-tree-3.8.1.log/.exit`；
 3.3/JDK21 与 4.0/JDK21 为 `testcontainers-tree.log/.exit`。
@@ -118,14 +118,25 @@ MQTT 3.3 保持已批准的忽略 Paho UUID 目录策略，4.0 保留原有
 
 Docker 本次可用，LocalStack 构造阶段的 Docker assumption 未触发。没有其它 skip。
 
+## 最终本地生产化门禁补充
+
+- 两分支 BOM 对齐门禁覆盖 52 个 reactor 叶子；Testcontainers 依赖和测试 classpath 均为 2.0.5。
+- 两分支 auth runner 均完成可执行 JAR 启动/健康验证；NATS 保留 3.3.x 已验证的
+  run-scoped JetStream stream 初始化、幂等保留与隔离清理契约。
+- 严格 Javadoc 验证覆盖 52 个叶子并核对 53 个 Javadoc 归档；security workflow 的
+  本地代码门禁通过，但不替代在线 Dependency-Check、SARIF 上传或 schedule 运行。
+- Quarkus 日志门禁记录忽略/未知配置 warning 为 0；4.0.x 保持 Model 4.1.0 + `<modules>`。
+
 ## 兼容性与尚未完成的验收
 
 - 所有 Maven 运行显式 `-Denforcer.skip=true`，不声明 Enforcer 或 dependency-check 通过。
-- 4.0 仍为 Model 4.1.0 + modules 的可执行兼容模式。Quarkus 内嵌 settings reader 对 Maven 4
-  分发包 settings 的 `repositories` 标签报 warning；还有 effective-model、只读 resources、
-  未配置 datasource/忽略配置、弃用 API/Javadoc 等警告。3.3 也有弃用 API、SLF4J 多 provider、
-  等警告；NATS 已改为显式 run-scoped JetStream 拓扑，不再依赖 core NATS fallback。
+- 4.0 仍为 Model 4.1.0 + modules 的可执行兼容模式；不宣称 `<subprojects>` 已获 Quarkus
+  workspace 支持。当前门禁确认 Quarkus 忽略/未知配置 warning 为 0；NATS 已改为显式
+  run-scoped JetStream 拓扑，不再依赖 core NATS fallback。
 - 所有公开 Docker broker 往返的通过，不表示 ONS、腾讯云 TDMQ、AWS 云服务或 JetStream 持久订阅验收。
-- 本次没有 push/deploy，没有目标 HEAD 的 GitHub Actions 或 GitHub/Codeup SHA 同步证明，
-  没有发布后的独立空缓存消费。后续按 Task 5 → 6 → 7 顺序继续；P5-B0 整体尚未完成。
+- 阿里云仓库中 ddd4j 2.0.x/3.0.x 当前 timestamped snapshot 仍缺少已审核的
+  Disruptor/Kafka 修复，3.0.x 还缺 COLA BOM 修复；因此最新 ddd4j-quarkus HEAD 的
+  Actions、deploy 与远端空缓存消费均保持开放。
+- GitHub 当前缺少 `NVD_API_KEY`，且 `master`、`feature/3.3.x`、`feature/4.0.x` 尚未启用
+  branch protection；在线 Dependency-Check/SARIF 上传和 default-branch schedule 未验收。
 - Native、Dev Mode、扩展 runtime/deployment 产品化和其它 P5-B–E 能力未在本次扩大范围。
