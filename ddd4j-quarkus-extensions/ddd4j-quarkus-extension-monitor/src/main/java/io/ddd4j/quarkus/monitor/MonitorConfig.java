@@ -100,12 +100,12 @@ public interface MonitorConfig {
         /**
          * 钉钉机器人 Webhook access_token。
          */
-                Optional<String> token();
+        Optional<String> token();
 
         /**
          * 钉钉机器人加签密钥。
          */
-                Optional<String> secret();
+        Optional<String> secret();
     }
 
     /**
@@ -122,7 +122,7 @@ public interface MonitorConfig {
         /**
          * 企业微信机器人 Webhook key。
          */
-                Optional<String> key();
+        Optional<String> key();
     }
 
     /**
@@ -139,12 +139,12 @@ public interface MonitorConfig {
         /**
          * 飞书机器人 webhook 完整地址（含 hook token）。
          */
-                Optional<String> webhookUrl();
+        Optional<String> webhookUrl();
 
         /**
          * 加签密钥（"不勾选签名校验"时留空）。
          */
-                Optional<String> secret();
+        Optional<String> secret();
     }
 
     /**
@@ -155,16 +155,16 @@ public interface MonitorConfig {
         /**
          * 项目名称。
          */
-                Optional<String> project();
+        Optional<String> project();
 
         /**
          * 当前环境。
          */
-                Optional<String> env();
+        Optional<String> env();
 
         /**
          * 应用名称。
          */
-                Optional<String> name();
+        Optional<String> name();
     }
 }

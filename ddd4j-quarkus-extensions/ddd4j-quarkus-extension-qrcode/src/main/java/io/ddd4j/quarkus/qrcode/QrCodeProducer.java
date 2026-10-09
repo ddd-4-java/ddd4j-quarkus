@@ -11,7 +11,9 @@ import jakarta.enterprise.inject.Disposes;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 
-/** CDI producer for the framework-neutral QR code service. */
+/**
+ * CDI producer for the framework-neutral QR code service.
+ */
 @ApplicationScoped
 @IfBuildProperty(name = "ddd4j.qrcode.enabled", stringValue = "true", enableIfMissing = true)
 public class QrCodeProducer {

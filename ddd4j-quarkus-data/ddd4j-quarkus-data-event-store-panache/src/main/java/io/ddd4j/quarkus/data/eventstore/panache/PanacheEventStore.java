@@ -135,7 +135,7 @@ public class PanacheEventStore implements EventStore {
      *
      * @param entity 持久化实体
      * @return 重建的持久化事件快照
-     * @throws NullPointerException entity 未持久化（position 为 null）
+     * @throws NullPointerException  entity 未持久化（position 为 null）
      * @throws IllegalStateException eventType 类不存在（事件类被重命名/删除后旧流不可读）
      */
     private StoredEvent toStoredEvent(PanacheStoredEventEntity entity) {
@@ -179,7 +179,9 @@ public class PanacheEventStore implements EventStore {
      */
     private record StringAggregateRootId(String value) implements AggregateRootId {
 
-        /** 字符串聚合根标识的固定类型。 */
+        /**
+         * 字符串聚合根标识的固定类型。
+         */
         private static final StringEntityType TYPE = new StringEntityType("String");
 
         @Override

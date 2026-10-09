@@ -11,7 +11,9 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-sample-mq-disruptor</artifactId>
-    <description>ddd4j-quarkus Disruptor 本地 MQ 示例：业务发布 DomainEvent → MQ 投递 → @MQEventListener 消费（无外部依赖）</description>
+    <description>ddd4j-quarkus Disruptor 本地 MQ 示例：业务发布 DomainEvent → MQ 投递 → @MQEventListener
+        消费（无外部依赖）
+    </description>
 
     <dependencies>
         <dependency>

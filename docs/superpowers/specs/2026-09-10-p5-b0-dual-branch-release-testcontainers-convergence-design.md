@@ -16,12 +16,13 @@ ddd4j 三条基础快照已经发布到阿里云私有 Maven 仓库：
 
 ddd4j-quarkus 当前维护两条框架线：
 
-| ddd4j-quarkus 分支 | revision | ddd4j | Quarkus | Java | Maven 模型 |
-|---|---|---|---|---|---|
-| `feature/3.3.x` | `3.3.x.20260630-SNAPSHOT` | `2.0.x.20260630-SNAPSHOT` | `3.37.4` | 17，兼容验证 21 | Maven 3 / Model 4.0.0 / `<modules>` |
-| `feature/4.0.x` | `4.0.x.20260630-SNAPSHOT` | `3.0.x.20260630-SNAPSHOT` | `3.38.2` | 21 | Maven 4 / Model 4.1.0 / 暂存 `<modules>` |
+| ddd4j-quarkus 分支 | revision                  | ddd4j                     | Quarkus  | Java            | Maven 模型                               |
+|--------------------|---------------------------|---------------------------|----------|-----------------|------------------------------------------|
+| `feature/3.3.x`    | `3.3.x.20260630-SNAPSHOT` | `2.0.x.20260630-SNAPSHOT` | `3.37.4` | 17，兼容验证 21 | Maven 3 / Model 4.0.0 / `<modules>`      |
+| `feature/4.0.x`    | `4.0.x.20260630-SNAPSHOT` | `3.0.x.20260630-SNAPSHOT` | `3.38.2` | 21              | Maven 4 / Model 4.1.0 / 暂存 `<modules>` |
 
-P5-A 已建立空缓存上游消费、Web 请求生命周期、License 真实验签、CI 安全解析与 Snowflake workerId 合约。两个分支的 Snowflake 修复已通过本地测试和 GitHub Actions。
+P5-A 已建立空缓存上游消费、Web 请求生命周期、License 真实验签、CI 安全解析与 Snowflake workerId 合约。两个分支的 Snowflake
+修复已通过本地测试和 GitHub Actions。
 
 本阶段先关闭 Testcontainers 与发布验证差距，再进入 P5-B 扩展产品化。
 
@@ -55,7 +56,8 @@ P5-A 已建立空缓存上游消费、Web 请求生命周期、License 真实验
 </modules>
 ```
 
-原因：Quarkus `3.38.2` 的 WorkspaceLoader 不能可靠解析 Model 4.1.0 的 `<subprojects>` 聚合结构，强制切换会使 `@QuarkusTest` 启动失败。该状态记录为“上游阻塞下的 Maven 4 可执行兼容模式”，不称为 Maven 4 完整模型验收。
+原因：Quarkus `3.38.2` 的 WorkspaceLoader 不能可靠解析 Model 4.1.0 的 `<subprojects>` 聚合结构，强制切换会使
+`@QuarkusTest` 启动失败。该状态记录为“上游阻塞下的 Maven 4 可执行兼容模式”，不称为 Maven 4 完整模型验收。
 
 P5-B0 的结构门禁必须确认：
 
@@ -73,7 +75,8 @@ P5-B0 的结构门禁必须确认：
 <testcontainers-bom.version>2.0.5</testcontainers-bom.version>
 ```
 
-Testcontainers BOM 必须在可能管理旧 Testcontainers 版本的 ddd4j BOM 之前导入，保证 Maven first-declaration-wins 下实际解析为 `2.0.5`。
+Testcontainers BOM 必须在可能管理旧 Testcontainers 版本的 ddd4j BOM 之前导入，保证 Maven first-declaration-wins 下实际解析为
+`2.0.5`。
 
 具体模块不声明 Testcontainers 数字版本；版本只来自 BOM。
 
@@ -81,13 +84,13 @@ Testcontainers BOM 必须在可能管理旧 Testcontainers 版本的 ddd4j BOM �
 
 以下 broker 使用 Testcontainers 2.x Java 专用 artifact 与 Container 类：
 
-| 能力 | Maven artifact | Java Container |
-|---|---|---|
-| ActiveMQ Artemis | `testcontainers-activemq` | `ArtemisContainer` |
-| Kafka | `testcontainers-kafka` | `KafkaContainer` |
-| AWS/SQS | `testcontainers-localstack` | `LocalStackContainer` |
-| Pulsar | `testcontainers-pulsar` | `PulsarContainer` |
-| RabbitMQ | `testcontainers-rabbitmq` | `RabbitMQContainer` |
+| 能力             | Maven artifact              | Java Container        |
+|------------------|-----------------------------|-----------------------|
+| ActiveMQ Artemis | `testcontainers-activemq`   | `ArtemisContainer`    |
+| Kafka            | `testcontainers-kafka`      | `KafkaContainer`      |
+| AWS/SQS          | `testcontainers-localstack` | `LocalStackContainer` |
+| Pulsar           | `testcontainers-pulsar`     | `PulsarContainer`     |
+| RabbitMQ         | `testcontainers-rabbitmq`   | `RabbitMQContainer`   |
 
 JUnit 5 集成使用：
 
@@ -121,21 +124,21 @@ JUnit 5 集成使用：
 
 两个分支使用相同的 13 broker 行，并为每行记录四种证据：
 
-| Broker | Fixture 类型 | 启动证据 | 行为证据 | 允许的边界 |
-|---|---|---|---|---|
-| ActiveMQ | 专用 | 容器 ready | publish/consume round-trip | Artemis CORE，不称为 Classic OpenWire |
-| Kafka | 专用 | bootstrap ready | round-trip | 固定镜像模式 |
-| RabbitMQ | 专用 | broker ready | round-trip | 管理端镜像仅用于 readiness |
-| Pulsar | 专用 | admin/broker ready | round-trip 或明确 skip | 3.3.x 现有启动竞态需重新验证 |
-| SQS | 专用 LocalStack | SQS endpoint ready | queue round-trip | 本地 AWS 模拟，不是 AWS 云验收 |
-| RocketMQ | Generic | namesrv + broker ready | round-trip 或明确 skip | 单容器双进程必须有双 readiness |
-| NATS | Generic | server ready | round-trip | 不宣称 Java 官方模块 |
-| MQTT | Generic | Mosquitto ready | round-trip | Paho UUID 锁目录必须被忽略/清理 |
-| MQTT-Mica | Generic | endpoint ready | round-trip 或平台 skip | skip 必须记录 OS/架构原因 |
-| Redis Stream | Generic | Redis PING ready | round-trip | 启用所需事件配置 |
-| ONS | Generic/占位 | 协议端点占位 | 装配验证，真实 round-trip skip | 商业协议无本地真实服务 |
-| TDMQ | Generic/占位 | fixture ready | SPI/内存 fallback | 不称为腾讯云验收 |
-| Disruptor | 无容器 | 进程内初始化 | round-trip | 明确标记为内存实现 |
+| Broker       | Fixture 类型    | 启动证据               | 行为证据                       | 允许的边界                            |
+|--------------|-----------------|------------------------|--------------------------------|---------------------------------------|
+| ActiveMQ     | 专用            | 容器 ready             | publish/consume round-trip     | Artemis CORE，不称为 Classic OpenWire |
+| Kafka        | 专用            | bootstrap ready        | round-trip                     | 固定镜像模式                          |
+| RabbitMQ     | 专用            | broker ready           | round-trip                     | 管理端镜像仅用于 readiness            |
+| Pulsar       | 专用            | admin/broker ready     | round-trip 或明确 skip         | 3.3.x 现有启动竞态需重新验证          |
+| SQS          | 专用 LocalStack | SQS endpoint ready     | queue round-trip               | 本地 AWS 模拟，不是 AWS 云验收        |
+| RocketMQ     | Generic         | namesrv + broker ready | round-trip 或明确 skip         | 单容器双进程必须有双 readiness        |
+| NATS         | Generic         | server ready           | round-trip                     | 不宣称 Java 官方模块                  |
+| MQTT         | Generic         | Mosquitto ready        | round-trip                     | Paho UUID 锁目录必须被忽略/清理       |
+| MQTT-Mica    | Generic         | endpoint ready         | round-trip 或平台 skip         | skip 必须记录 OS/架构原因             |
+| Redis Stream | Generic         | Redis PING ready       | round-trip                     | 启用所需事件配置                      |
+| ONS          | Generic/占位    | 协议端点占位           | 装配验证，真实 round-trip skip | 商业协议无本地真实服务                |
+| TDMQ         | Generic/占位    | fixture ready          | SPI/内存 fallback              | 不称为腾讯云验收                      |
+| Disruptor    | 无容器          | 进程内初始化           | round-trip                     | 明确标记为内存实现                    |
 
 矩阵中的每个 skip 必须包含测试类、测试方法、原始原因和恢复条件，不能只统计数量。
 
@@ -191,7 +194,10 @@ if git grep -n -E 'io[.]github[.]hiwepy'; then
 fi
 ```
 
-4.0.x 的 ddd4j 3.0.x BOM 必须管理 Easy4J 的 `jackson-extension` 与 `zxing-extension`，版本为 `3.0.x.20260630-SNAPSHOT`。Jackson 和 QR-code 叶子都必须省略 `<version>`，并以 Maven 4 dependency tree 分别证明两个实际解析坐标。`ddd4j-data-crypto` 已不再消费 Easy4J Jackson extension；它通过 `ddd4j-core` 获得 `tools.jackson`。该预检查只证明坐标治理，不替代本节或 Task 4 的完整门禁。
+4.0.x 的 ddd4j 3.0.x BOM 必须管理 Easy4J 的 `jackson-extension` 与 `zxing-extension`，版本为 `3.0.x.20260630-SNAPSHOT`
+。Jackson 和 QR-code 叶子都必须省略 `<version>`，并以 Maven 4 dependency tree 分别证明两个实际解析坐标。`ddd4j-data-crypto`
+已不再消费 Easy4J Jackson extension；它通过 `ddd4j-core` 获得 `tools.jackson`。该预检查只证明坐标治理，不替代本节或 Task 4
+的完整门禁。
 
 ## 9. 发布顺序
 

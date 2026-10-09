@@ -7,7 +7,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.Semaphore;
 
-/** 串行化占用 RocketMQ 固定宿主机端口的测试进程。 */
+/**
+ * 串行化占用 RocketMQ 固定宿主机端口的测试进程。
+ */
 final class RocketMqPortLease implements AutoCloseable {
 
     private static final Semaphore JVM_LEASE = new Semaphore(1, true);

@@ -8,19 +8,25 @@ import io.ddd4j.quarkus.mq.testcontainers.KafkaQuarkusTestResource;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.time.Duration;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.UUID;
+
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-/** 验证 HTTP 创建订单经真实 MQ 消费后产生相同订单的投影。 */
+/**
+ * 验证 HTTP 创建订单经真实 MQ 消费后产生相同订单的投影。
+ */
 @QuarkusTest
 @QuarkusTestResource(SampleMqKafkaBootTest.BrokerResource.class)
 class SampleMqKafkaBootTest {
-    /** 仅适配共享 fixture 的生命周期与 broker 大小写，不复制容器启动。 */
+    /**
+     * 仅适配共享 fixture 的生命周期与 broker 大小写，不复制容器启动。
+     */
     public static class BrokerResource implements QuarkusTestResourceLifecycleManager {
         private final KafkaQuarkusTestResource fixture = new KafkaQuarkusTestResource();
 

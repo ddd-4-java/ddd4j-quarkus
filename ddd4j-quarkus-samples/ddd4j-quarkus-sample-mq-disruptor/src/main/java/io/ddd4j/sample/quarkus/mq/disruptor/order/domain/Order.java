@@ -47,10 +47,27 @@ public class Order {
         );
     }
 
-    public String getId() { return id; }
-    public String getOrderNo() { return orderNo; }
-    public String getBuyerId() { return buyerId; }
-    public String getBuyerName() { return buyerName; }
-    public String getStatus() { return status; }
-    public BigDecimal getTotalAmount() { return totalAmount; }
+    public String getId() {
+        return id;
+    }
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public String getBuyerId() {
+        return buyerId;
+    }
+
+    public String getBuyerName() {
+        return buyerName;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
 }

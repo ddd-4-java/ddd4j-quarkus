@@ -81,7 +81,9 @@ class IdGeneratorProducerWorker31QuarkusTest {
         }
     }
 
-    /** 测试配置覆盖，保留 snowflake 策略的真实 CDI 装配。 */
+    /**
+     * 测试配置覆盖，保留 snowflake 策略的真实 CDI 装配。
+     */
     public static class WorkerProfile implements QuarkusTestProfile {
         @Override
         public Map<String, String> getConfigOverrides() {

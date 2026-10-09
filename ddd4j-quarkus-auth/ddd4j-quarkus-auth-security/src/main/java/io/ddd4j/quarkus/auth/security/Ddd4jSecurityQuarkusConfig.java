@@ -16,19 +16,19 @@ import jakarta.inject.Singleton;
  *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  * @deprecated Since 4.1.0. This module is deprecated for removal.
- *             Spring Security requires Spring ecosystem; Quarkus recommends
- *             <code>ddd4j-quarkus-auth-satoken</code> instead.
+ * Spring Security requires Spring ecosystem; Quarkus recommends
+ * <code>ddd4j-quarkus-auth-satoken</code> instead.
  *
- *             <p>Migration path:
- *             <ol>
- *               <li>Replace dependency <code>io.ddd4j.quarkus:ddd4j-quarkus-auth-security</code>
- *                   with <code>io.ddd4j.quarkus:ddd4j-quarkus-auth-satoken</code>.</li>
- *               <li>Replace {@code SecuritySubjectProvider} usage with satoken
- *                   {@code SaTokenSubjectProvider} (or implement your own {@link SubjectProvider}).</li>
- *               <li>Remove any spring-security-core imports from your project.</li>
- *             </ol>
+ * <p>Migration path:
+ * <ol>
+ *   <li>Replace dependency <code>io.ddd4j.quarkus:ddd4j-quarkus-auth-security</code>
+ *       with <code>io.ddd4j.quarkus:ddd4j-quarkus-auth-satoken</code>.</li>
+ *   <li>Replace {@code SecuritySubjectProvider} usage with satoken
+ *       {@code SaTokenSubjectProvider} (or implement your own {@link SubjectProvider}).</li>
+ *   <li>Remove any spring-security-core imports from your project.</li>
+ * </ol>
  *
- *             <p>See <code>docs/MIGRATION-auth-security-to-satoken.md</code> for details.
+ * <p>See <code>docs/MIGRATION-auth-security-to-satoken.md</code> for details.
  */
 @Deprecated(since = "4.1.0", forRemoval = true)
 @ApplicationScoped

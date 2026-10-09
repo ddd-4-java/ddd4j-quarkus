@@ -10,7 +10,9 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-extension-cola</artifactId>
-    <description>ddd4j-quarkus COLA 扩展适配：基于 com.alibaba.cola 组件 + ddd4j-core 统一响应契约的异常处理/响应包装（自包含，不依赖上游 ddd4j-ddd-cola——其已在主仓 3.0.x 移除）。</description>
+    <description>ddd4j-quarkus COLA 扩展适配：基于 com.alibaba.cola 组件 + ddd4j-core 统一响应契约的异常处理/响应包装（自包含，不依赖上游
+        ddd4j-ddd-cola——其已在主仓 3.0.x 移除）。
+    </description>
 
     <dependencies>
         <!-- ddd4j-ddd-cola（2.0.x 上游）已在主仓 3.0.x 移除；本模块源码仅用

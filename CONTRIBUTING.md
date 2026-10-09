@@ -5,16 +5,16 @@ ddd4j-quarkus 是 ddd4j 的 Quarkus 适配仓库，能力基线对齐 ddd4j-boot
 
 ## 仓库结构
 
-| 模块 | 说明 |
-| --- | --- |
-| `ddd4j-quarkus-bom` / `ddd4j-quarkus-dependencies` | 版本与依赖统一管理（quarkus-bom 3.38.2） |
-| `ddd4j-quarkus-ddd` / `ddd4j-quarkus-cache` / `ddd4j-quarkus-web` | 核心适配；标准 runtime/deployment/IT 产品化属于 P5-B |
-| `ddd4j-quarkus-data` | 数据访问（panache / jpa / external） |
-| `ddd4j-quarkus-mq` | MQ 适配（core + 13 broker + testcontainers fixtures） |
-| `ddd4j-quarkus-auth` | 认证授权（jwt / satoken / shiro / **[security (deprecated, use satoken)]** / license） |
-| `ddd4j-quarkus-extensions` | 业务扩展（akka / cola / excel / jackson / monitor / qlexpress / dubbo） |
-| `ddd4j-quarkus-parent` | 业务项目父 POM（默认依赖 + profiles） |
-| `ddd4j-quarkus-samples` | 分层架构示例（domain / app / infrastructure / adapter / client / common / layered 等） |
+| 模块                                                              | 说明                                                                                   |
+|-------------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| `ddd4j-quarkus-bom` / `ddd4j-quarkus-dependencies`                | 版本与依赖统一管理（quarkus-bom 3.38.2）                                               |
+| `ddd4j-quarkus-ddd` / `ddd4j-quarkus-cache` / `ddd4j-quarkus-web` | 核心适配；标准 runtime/deployment/IT 产品化属于 P5-B                                   |
+| `ddd4j-quarkus-data`                                              | 数据访问（panache / jpa / external）                                                   |
+| `ddd4j-quarkus-mq`                                                | MQ 适配（core + 13 broker + testcontainers fixtures）                                  |
+| `ddd4j-quarkus-auth`                                              | 认证授权（jwt / satoken / shiro / **[security (deprecated, use satoken)]** / license） |
+| `ddd4j-quarkus-extensions`                                        | 业务扩展（akka / cola / excel / jackson / monitor / qlexpress / dubbo）                |
+| `ddd4j-quarkus-parent`                                            | 业务项目父 POM（默认依赖 + profiles）                                                  |
+| `ddd4j-quarkus-samples`                                           | 分层架构示例（domain / app / infrastructure / adapter / client / common / layered 等） |
 
 ## 开发环境
 

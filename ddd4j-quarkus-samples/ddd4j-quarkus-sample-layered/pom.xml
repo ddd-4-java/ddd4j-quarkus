@@ -10,7 +10,9 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-sample-layered</artifactId>
-    <description>DDD 分层架构 Quarkus 示例骨架：对齐 ddd4j-boot-sample-layered，聚合 client/app/domain/adapter/infrastructure/common 全部分层，ORM 侧使用 Panache 替代 MyBatis。</description>
+    <description>DDD 分层架构 Quarkus 示例骨架：对齐 ddd4j-boot-sample-layered，聚合
+        client/app/domain/adapter/infrastructure/common 全部分层，ORM 侧使用 Panache 替代 MyBatis。
+    </description>
 
     <dependencies>
         <!-- 聚合全部分层：adapter 依赖 app/client，app 依赖 domain/client，此处显式声明便于演示分层依赖关系。

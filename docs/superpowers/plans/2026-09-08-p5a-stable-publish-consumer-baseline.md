@@ -1,12 +1,18 @@
 # P5-A Stable Publish and Consumer Baseline Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
+> executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Make `feature/4.0.x` build and test against remotely available ddd4j `3.0.x.20260630-SNAPSHOT` artifacts without mutating a ddd4j checkout, while proving Web and License consumer behavior and making GitHub Actions truthful.
+**Goal:** Make `feature/4.0.x` build and test against remotely available ddd4j `3.0.x.20260630-SNAPSHOT` artifacts
+without mutating a ddd4j checkout, while proving Web and License consumer behavior and making GitHub Actions truthful.
 
-**Architecture:** Keep P5-A within the existing module topology. Centralize the exact upstream version in the root/BOM/dependencies chain, add a minimal remote-consumer Maven fixture for empty-cache resolution, finish Web and License behavior contracts, and replace the source-mutating CI action with a settings-and-remote-resolution action. Runtime/deployment splitting is deferred to P5-B.
+**Architecture:** Keep P5-A within the existing module topology. Centralize the exact upstream version in the
+root/BOM/dependencies chain, add a minimal remote-consumer Maven fixture for empty-cache resolution, finish Web and
+License behavior contracts, and replace the source-mutating CI action with a settings-and-remote-resolution action.
+Runtime/deployment splitting is deferred to P5-B.
 
-**Tech Stack:** Java 21, Maven 4.0.0-rc-6, Maven Model 4.1.0, Quarkus 3.38.2, ddd4j 3.0.x.20260630-SNAPSHOT, Testcontainers 2.0.5, JUnit Jupiter, RestAssured, GitHub Actions, actionlint
+**Tech Stack:** Java 21, Maven 4.0.0-rc-6, Maven Model 4.1.0, Quarkus 3.38.2, ddd4j 3.0.x.20260630-SNAPSHOT,
+Testcontainers 2.0.5, JUnit Jupiter, RestAssured, GitHub Actions, actionlint
 
 **Spec:** `docs/superpowers/specs/2026-09-08-quarkus-production-extension-convergence-design.md`
 
@@ -14,29 +20,46 @@
 
 **Status:** P5-A 本地完成，P5-B–E 待实施。下列勾选对应本地实施/验收，GitHub Actions 远端 gate 未完成。
 
-| Task | Local evidence |
-|---|---|
-| 1 | `e405c32` + `a303675`：版本与 BOM、独立远端消费者、过期注释收敛；最终空仓命令再次 exit 0 |
-| 2 | `5e51f13` + `6d07329`：Web consumer 与同线程响应后清理探针；最终模块 4 tests，0 failures/errors/skips |
-| 3 | `6bd01bc` + `584f529`：真实 License 安装/验签及每次运行独立、权限受限、应用关闭后清理的临时夹具；最终模块 3 tests，0 failures/errors/skips |
-| 4 | `10bccd9` + `278f119`：已发布依赖消费 CI、真实 lint、经临时文件校验后原子替换 settings；最终 actionlint exit 0 |
-| 5 | 新空仓 go-offline、Web、License、clean verify、XML 汇总、结构扫描、六份文档与本地提交检查 |
+| Task | Local evidence                                                                                                                             |
+|------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| 1    | `e405c32` + `a303675`：版本与 BOM、独立远端消费者、过期注释收敛；最终空仓命令再次 exit 0                                                   |
+| 2    | `5e51f13` + `6d07329`：Web consumer 与同线程响应后清理探针；最终模块 4 tests，0 failures/errors/skips                                      |
+| 3    | `6bd01bc` + `584f529`：真实 License 安装/验签及每次运行独立、权限受限、应用关闭后清理的临时夹具；最终模块 3 tests，0 failures/errors/skips |
+| 4    | `10bccd9` + `278f119`：已发布依赖消费 CI、真实 lint、经临时文件校验后原子替换 settings；最终 actionlint exit 0                             |
+| 5    | 新空仓 go-offline、Web、License、clean verify、XML 汇总、结构扫描、六份文档与本地提交检查                                                  |
 
 Final commands and observations:
 
-- `./mvnw -B -U -f .github/maven/ddd4j-remote-consumer/pom.xml -Dmaven.repo.local=/tmp/ddd4j-p5a-final.xcqRbQ -Dmaven.resolver.transport=wagon dependency:go-offline`: exit 0, 1:39; repository was freshly created with `mktemp`. Required runtime/web/license POM/JAR timestamps: `3.0.x.20260630-20260908.152610-5`.
+-
+`./mvnw -B -U -f .github/maven/ddd4j-remote-consumer/pom.xml -Dmaven.repo.local=/tmp/ddd4j-p5a-final.xcqRbQ -Dmaven.resolver.transport=wagon dependency:go-offline`:
+exit 0, 1:39; repository was freshly created with `mktemp`. Required runtime/web/license POM/JAR timestamps:
+`3.0.x.20260630-20260908.152610-5`.
 - `./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-web -am test`: exit 0, 4 tests, 8.307 s.
 - `./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-auth/ddd4j-quarkus-auth-license -am test`: exit 0, 3 tests, 8.147 s.
-- `./mvnw -B clean verify -Denforcer.skip=true`: exit 0, 62/62 reactor modules, 9:57; finished 2026-09-09 02:09:38 +08:00.
-- Final XML: 47 Surefire suites, 0 Failsafe suites, **141 tests / 0 failures / 0 errors / 3 skipped**. The total includes all skips.
-- Skip methods: `MicaMqttQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd` (macOS arm64 AIO known defect), `OnsQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd` (commercial protocol without Testcontainers image), `SecurityQuarkusConfigTest#subjectProviderExposedAsCdiBeanAndRegisteredInSubjectKit` (deprecated module). Full package names and literal XML reasons are in spec section 9.
-- `actionlint .github/workflows/ci.yml` and `git diff --check`: exit 0. Stale upstream/source-mutation/lint-placeholder scan: no matches. The subprojects text scan matches only the existing root POM:47 comment; XML parsing finds zero actual elements in all six specified aggregation POMs.
+- `./mvnw -B clean verify -Denforcer.skip=true`: exit 0, 62/62 reactor modules, 9:57; finished 2026-09-09 02:09:38 +08:
+  00.
+- Final XML: 47 Surefire suites, 0 Failsafe suites, **141 tests / 0 failures / 0 errors / 3 skipped**. The total
+  includes all skips.
+- Skip methods: `MicaMqttQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd` (macOS arm64 AIO known
+  defect), `OnsQuarkusIntegrationTest#shouldPublishAndConsumeOrderCreatedEventEndToEnd` (commercial protocol without
+  Testcontainers image), `SecurityQuarkusConfigTest#subjectProviderExposedAsCdiBeanAndRegisteredInSubjectKit`
+  (deprecated module). Full package names and literal XML reasons are in spec section 9.
+- `actionlint .github/workflows/ci.yml` and `git diff --check`: exit 0. Stale upstream/source-mutation/lint-placeholder
+  scan: no matches. The subprojects text scan matches only the existing root POM:47 comment; XML parsing finds zero
+  actual elements in all six specified aggregation POMs.
 
-Execution refinements retained after review: a second HTTP request alone is not a deterministic cleanup proof, so Task 2 added a same-thread post-response probe; Task 3 isolated fixtures and their shutdown cleanup; Task 4 validates settings before atomic replacement. The relevant RED/GREEN and review evidence remains in the local Task 1–4 reports and commits.
+Execution refinements retained after review: a second HTTP request alone is not a deterministic cleanup proof, so Task 2
+added a same-thread post-response probe; Task 3 isolated fixtures and their shutdown cleanup; Task 4 validates settings
+before atomic replacement. The relevant RED/GREEN and review evidence remains in the local Task 1–4 reports and commits.
 
-The remote fixture proves upstream closure download; the full reactor uses the configured developer repository and is not an empty-cache whole-reactor proof. Enforcer was skipped. Existing effective-model, release-metadata RFC9457, wrapper settings parsing, read-only resources parameter and unrecognized test-configuration warnings remain. TDMQ memory fallback is not cloud-service acceptance.
+The remote fixture proves upstream closure download; the full reactor uses the configured developer repository and is
+not an empty-cache whole-reactor proof. Enforcer was skipped. Existing effective-model, release-metadata RFC9457,
+wrapper settings parsing, read-only resources parameter and unrecognized test-configuration warnings remain. TDMQ memory
+fallback is not cloud-service acceptance.
 
-No push/deploy/tag/workflow dispatch was performed. GitHub Actions execution and organization-secret availability remain unverified; authorization for push/deploy is a separate next checkpoint. P5-B–E and 3.3.x/Native/Dev Mode remain pending; Maven 4 `subprojects` remains upstream-blocked. The unrelated MQTT directory is preserved untracked.
+No push/deploy/tag/workflow dispatch was performed. GitHub Actions execution and organization-secret availability remain
+unverified; authorization for push/deploy is a separate next checkpoint. P5-B–E and 3.3.x/Native/Dev Mode remain
+pending; Maven 4 `subprojects` remains upstream-blocked. The unrelated MQTT directory is preserved untracked.
 
 ## Global Constraints
 
@@ -65,12 +88,18 @@ Both branches require their own post-fix hosted verification; historical P5-A lo
 reactor success does not clear hosted gates.
 
 - Work only on `feature/4.0.x`; do not create or use a Git worktree and do not switch branches during P5-A.
-- Preserve every existing uncommitted POM, Web, and License candidate change; adjust overlapping files only with minimal patches.
-- Preserve `ddd4j-quarkus-mq/ddd4j-quarkus-mq-mqtt/ddd4j-mq-720a11be-fdbd-4905-83e5-008a70164f2e-tcplocalhost65400/`; never stage, delete, move, or edit it.
-- Use `revision=4.0.x.20260630-SNAPSHOT`, `ddd4j.version=3.0.x.20260630-SNAPSHOT`, Quarkus BOM/plugin `3.38.2`, Testcontainers `2.0.5`, Java 21, Maven Model 4.1.0, and temporary `modules/module` aggregation.
-- Do not introduce `subprojects/subproject`; it remains blocked until Quarkus WorkspaceLoader supports Maven Model 4.1 aggregation.
-- Do not split runtime/deployment artifacts, change Data/Auth/MQ production semantics beyond the approved Snowflake follow-up, or touch `feature/3.3.x` in this plan.
-- Do not print `MAVEN_SETTINGS_XML`, Maven usernames, passwords, repository authorization headers, or decoded settings content.
+- Preserve every existing uncommitted POM, Web, and License candidate change; adjust overlapping files only with minimal
+  patches.
+- Preserve `ddd4j-quarkus-mq/ddd4j-quarkus-mq-mqtt/ddd4j-mq-720a11be-fdbd-4905-83e5-008a70164f2e-tcplocalhost65400/`;
+  never stage, delete, move, or edit it.
+- Use `revision=4.0.x.20260630-SNAPSHOT`, `ddd4j.version=3.0.x.20260630-SNAPSHOT`, Quarkus BOM/plugin `3.38.2`,
+  Testcontainers `2.0.5`, Java 21, Maven Model 4.1.0, and temporary `modules/module` aggregation.
+- Do not introduce `subprojects/subproject`; it remains blocked until Quarkus WorkspaceLoader supports Maven Model 4.1
+  aggregation.
+- Do not split runtime/deployment artifacts, change Data/Auth/MQ production semantics beyond the approved Snowflake
+  follow-up, or touch `feature/3.3.x` in this plan.
+- Do not print `MAVEN_SETTINGS_XML`, Maven usernames, passwords, repository authorization headers, or decoded settings
+  content.
 - Use Maven Wagon transport for authenticated Aliyun snapshot resolution: `-Dmaven.resolver.transport=wagon`.
 - Do not push or deploy without a new explicit authorization after local verification.
 - A build, deploy exit code, injected Bean, HTTP 200, or skipped test is not sufficient acceptance evidence by itself.
@@ -82,30 +111,38 @@ reactor success does not clear hosted gates.
 ### Version and remote-consumer contract
 
 - `pom.xml`: authoritative 4.0.x upstream ddd4j version and Quarkus line.
-- `ddd4j-quarkus-dependencies/pom.xml`: imported ddd4j BOM, Quarkus BOM, Testcontainers BOM, and managed upstream runtime/web/license coordinates.
+- `ddd4j-quarkus-dependencies/pom.xml`: imported ddd4j BOM, Quarkus BOM, Testcontainers BOM, and managed upstream
+  runtime/web/license coordinates.
 - `ddd4j-quarkus-bom/pom.xml`: public dependency-management surface for ddd4j and ddd4j-quarkus artifacts.
-- `.github/maven/ddd4j-remote-consumer/pom.xml`: minimal standalone POM that resolves required upstream artifacts from an empty Maven repository.
+- `.github/maven/ddd4j-remote-consumer/pom.xml`: minimal standalone POM that resolves required upstream artifacts from
+  an empty Maven repository.
 
 ### Web behavior contract
 
 - `ddd4j-quarkus-web/pom.xml`: consumes managed `ddd4j-web-quarkus` and `ddd4j-runtime-quarkus` coordinates.
-- `ddd4j-quarkus-web/src/test/java/io/ddd4j/quarkus/web/Ddd4jQuarkusWebConsumerTest.java`: tenant/request-id and post-request cleanup contract.
-- `ddd4j-quarkus-web/src/test/java/io/ddd4j/quarkus/web/Ddd4jQuarkusWebContractResource.java`: observes current ThreadContext only; contains no test setup behavior.
+- `ddd4j-quarkus-web/src/test/java/io/ddd4j/quarkus/web/Ddd4jQuarkusWebConsumerTest.java`: tenant/request-id and
+  post-request cleanup contract.
+- `ddd4j-quarkus-web/src/test/java/io/ddd4j/quarkus/web/Ddd4jQuarkusWebContractResource.java`: observes current
+  ThreadContext only; contains no test setup behavior.
 
 ### License behavior contract
 
 - `ddd4j-quarkus-auth/ddd4j-quarkus-auth-license/pom.xml`: consumes the BOM-managed license artifact.
-- `ddd4j-quarkus-auth/ddd4j-quarkus-auth-license/src/test/java/io/ddd4j/quarkus/auth/license/LicenseEnabledEndToEndQuarkusTest.java`: prepares a signed license before CDI startup and verifies install/signature behavior.
+-
+`ddd4j-quarkus-auth/ddd4j-quarkus-auth-license/src/test/java/io/ddd4j/quarkus/auth/license/LicenseEnabledEndToEndQuarkusTest.java`:
+prepares a signed license before CDI startup and verifies install/signature behavior.
 
 ### CI
 
-- Create `.github/actions/configure-maven/action.yml`: decode the organization secret safely and prove remote ddd4j resolution.
+- Create `.github/actions/configure-maven/action.yml`: decode the organization secret safely and prove remote ddd4j
+  resolution.
 - Delete `.github/actions/install-ddd4j/action.yml`: remove checkout/build/source-mutation behavior.
 - `.github/workflows/ci.yml`: execute real actionlint, configure Maven, run the root gate and broker matrix.
 
 ### Documentation
 
-- `README.md`, `CONTRIBUTING.md`, `docs/CAPABILITY-ALIGNMENT.md`, `docs/superpowers/README.md`: record only the evidence observed in P5-A.
+- `README.md`, `CONTRIBUTING.md`, `docs/CAPABILITY-ALIGNMENT.md`, `docs/superpowers/README.md`: record only the evidence
+  observed in P5-A.
 - P5 spec and this plan: update status/checkmarks only after the proving command succeeds.
 
 ---
@@ -113,14 +150,17 @@ reactor success does not clear hosted gates.
 ### Task 1: Lock the upstream version and prove empty-cache resolution
 
 **Files:**
+
 - Modify: `pom.xml`
 - Modify: `ddd4j-quarkus-dependencies/pom.xml`
 - Modify: `ddd4j-quarkus-bom/pom.xml`
 - Create: `.github/maven/ddd4j-remote-consumer/pom.xml`
 
 **Interfaces:**
+
 - Consumes: Aliyun Maven settings with server id `2624322-snapshot-3EoOv3`.
-- Produces: a standalone resolution contract for `ddd4j-runtime-quarkus`, `ddd4j-web-quarkus`, and `ddd4j-extension-license` at `3.0.x.20260630-SNAPSHOT`.
+- Produces: a standalone resolution contract for `ddd4j-runtime-quarkus`, `ddd4j-web-quarkus`, and
+  `ddd4j-extension-license` at `3.0.x.20260630-SNAPSHOT`.
 
 - [x] **Step 1: Capture the protected baseline**
 
@@ -133,7 +173,8 @@ git diff -- pom.xml ddd4j-quarkus-dependencies/pom.xml ddd4j-quarkus-bom/pom.xml
 ./mvnw --version
 ```
 
-Expected: branch `feature/4.0.x`, Maven `4.0.0-rc-6`, Java 21, existing candidate diffs visible, and the protected MQTT directory untracked.
+Expected: branch `feature/4.0.x`, Maven `4.0.0-rc-6`, Java 21, existing candidate diffs visible, and the protected MQTT
+directory untracked.
 
 - [x] **Step 2: Add the standalone remote-consumer POM**
 
@@ -186,7 +227,8 @@ Create `.github/maven/ddd4j-remote-consumer/pom.xml` with this complete content:
 </project>
 ```
 
-This fixture intentionally uses Model 4.0.0 so the test isolates repository consumption from the P5-E Maven Model 4.1 aggregation issue.
+This fixture intentionally uses Model 4.0.0 so the test isolates repository consumption from the P5-E Maven Model 4.1
+aggregation issue.
 
 - [x] **Step 3: Run the empty-cache contract before changing remaining POM entries**
 
@@ -200,7 +242,9 @@ P5A_REMOTE_REPO="$(mktemp -d /tmp/ddd4j-p5a-remote.XXXXXX)"
   dependency:go-offline
 ```
 
-Expected: dependencies are downloaded from configured remotes into the new directory and the build succeeds. If an artifact is absent, preserve the exact missing coordinate and stop this task; do not fall back to the developer repository.
+Expected: dependencies are downloaded from configured remotes into the new directory and the build succeeds. If an
+artifact is absent, preserve the exact missing coordinate and stop this task; do not fall back to the developer
+repository.
 
 - [x] **Step 4: Normalize the three dependency-management surfaces**
 
@@ -232,7 +276,8 @@ In `ddd4j-quarkus-dependencies/pom.xml`, retain Testcontainers BOM `2.0.5` befor
 </dependency>
 ```
 
-Mirror the same three upstream coordinates in `ddd4j-quarkus-bom/pom.xml`. Remove stale comments that still claim `3.0.x.20260730-SNAPSHOT` is the active line.
+Mirror the same three upstream coordinates in `ddd4j-quarkus-bom/pom.xml`. Remove stale comments that still claim
+`3.0.x.20260730-SNAPSHOT` is the active line.
 
 - [x] **Step 5: Verify effective versions and resolution**
 
@@ -261,13 +306,17 @@ git commit -m "build: align Quarkus 4 with published ddd4j snapshot"
 ### Task 2: Complete the Web consumer and cleanup contract
 
 **Files:**
+
 - Modify: `ddd4j-quarkus-web/pom.xml`
 - Modify: `ddd4j-quarkus-web/src/test/java/io/ddd4j/quarkus/web/Ddd4jQuarkusWebConsumerTest.java`
-- Create: `ddd4j-quarkus-web/src/test/java/io/ddd4j/quarkus/web/Ddd4jQuarkusWebContractResource.java` (already present as an untracked candidate; preserve and review it)
+- Create: `ddd4j-quarkus-web/src/test/java/io/ddd4j/quarkus/web/Ddd4jQuarkusWebContractResource.java` (already present
+  as an untracked candidate; preserve and review it)
 
 **Interfaces:**
+
 - Consumes: `io.ddd4j:ddd4j-web-quarkus` request filter and `ThreadContext` propagation.
-- Produces: `GET /ddd4j/contract`, returning JSON field `tenantId`, plus assertions for `X-Request-Id` and request-scope cleanup.
+- Produces: `GET /ddd4j/contract`, returning JSON field `tenantId`, plus assertions for `X-Request-Id` and request-scope
+  cleanup.
 
 - [x] **Step 1: Run the existing candidate contract unchanged**
 
@@ -278,7 +327,8 @@ Run:
   -Dtest=Ddd4jQuarkusWebConsumerTest test
 ```
 
-Expected: record the actual result. The candidate may already be GREEN because it was authored before this plan; do not revert it merely to manufacture RED.
+Expected: record the actual result. The candidate may already be GREEN because it was authored before this plan; do not
+revert it merely to manufacture RED.
 
 - [x] **Step 2: Add the missing cleanup assertion first**
 
@@ -304,7 +354,8 @@ The first request remains unchanged and must continue asserting tenant propagati
 
 Run the Task 2 Step 1 command again.
 
-Expected: if tenant state leaks, the second request fails with the previous value `tenant-consumer`; if it already passes, record that the upstream filter already supplies cleanup and treat the new assertion as a regression lock.
+Expected: if tenant state leaks, the second request fails with the previous value `tenant-consumer`; if it already
+passes, record that the upstream filter already supplies cleanup and treat the new assertion as a regression lock.
 
 - [x] **Step 4: Apply only the minimal consumer wiring correction if required**
 
@@ -321,7 +372,8 @@ The `ddd4j-quarkus-web/pom.xml` dependencies must be versionless and managed by 
 </dependency>
 ```
 
-Do not copy the filter from ddd4j into this repository. If the filter is not discovered, add the required dependency indexing/configuration in the consumer module rather than creating a second implementation.
+Do not copy the filter from ddd4j into this repository. If the filter is not discovered, add the required dependency
+indexing/configuration in the consumer module rather than creating a second implementation.
 
 - [x] **Step 5: Verify Web behavior**
 
@@ -348,12 +400,16 @@ git commit -m "test(web): verify upstream Quarkus request lifecycle"
 ### Task 3: Finish the real License Quarkus lifecycle contract
 
 **Files:**
+
 - Modify: `ddd4j-quarkus-auth/ddd4j-quarkus-auth-license/pom.xml`
-- Modify: `ddd4j-quarkus-auth/ddd4j-quarkus-auth-license/src/test/java/io/ddd4j/quarkus/auth/license/LicenseEnabledEndToEndQuarkusTest.java`
+- Modify:
+  `ddd4j-quarkus-auth/ddd4j-quarkus-auth-license/src/test/java/io/ddd4j/quarkus/auth/license/LicenseEnabledEndToEndQuarkusTest.java`
 
 **Interfaces:**
+
 - Consumes: BOM-managed `io.ddd4j:ddd4j-extension-license` and Quarkus test profile configuration.
-- Produces: a signed temporary license available before `LicenseVerify` CDI construction, followed by install and verify assertions.
+- Produces: a signed temporary license available before `LicenseVerify` CDI construction, followed by install and verify
+  assertions.
 
 - [x] **Step 1: Run the candidate License test unchanged**
 
@@ -363,7 +419,8 @@ git commit -m "test(web): verify upstream Quarkus request lifecycle"
   -Dtest=LicenseEnabledEndToEndQuarkusTest test
 ```
 
-Expected: record whether `generateLicense`, `isInstallSuccess`, and `verify` succeed. Do not weaken assertions if the test fails.
+Expected: record whether `generateLicense`, `isInstallSuccess`, and `verify` succeed. Do not weaken assertions if the
+test fails.
 
 - [x] **Step 2: Verify startup ordering in the candidate test**
 
@@ -394,7 +451,8 @@ rg -n 'java.io.tmpdir|license-path|store-pass|key-pass|System\.out|printStackTra
   ddd4j-quarkus-auth/ddd4j-quarkus-auth-license/src/test/java
 ```
 
-Expected: generated files are under `java.io.tmpdir`; passwords are test constants only; no key material or password is printed.
+Expected: generated files are under `java.io.tmpdir`; passwords are test constants only; no key material or password is
+printed.
 
 - [x] **Step 4: Normalize the License dependency**
 
@@ -407,7 +465,8 @@ The module POM must contain only the managed upstream dependency:
 </dependency>
 ```
 
-Do not reintroduce a direct `truelicense-core` dependency unless a fresh dependency tree proves the upstream consumer POM is incomplete at `3.0.x.20260630-SNAPSHOT`.
+Do not reintroduce a direct `truelicense-core` dependency unless a fresh dependency tree proves the upstream consumer
+POM is incomplete at `3.0.x.20260630-SNAPSHOT`.
 
 - [x] **Step 5: Verify the complete License module**
 
@@ -432,14 +491,17 @@ git commit -m "test(auth): verify Quarkus license installation"
 ### Task 4: Replace source-mutating CI setup with remote resolution
 
 **Files:**
+
 - Create: `.github/actions/configure-maven/action.yml`
 - Delete: `.github/actions/install-ddd4j/action.yml`
 - Modify: `.github/workflows/ci.yml`
 - Test: `.github/maven/ddd4j-remote-consumer/pom.xml`
 
 **Interfaces:**
+
 - Consumes: base64 `MAVEN_SETTINGS_XML` input.
-- Produces: `$HOME/.m2/settings.xml` with mode 0600 and a verified empty-cache ddd4j dependency set; it never checks out or edits ddd4j source.
+- Produces: `$HOME/.m2/settings.xml` with mode 0600 and a verified empty-cache ddd4j dependency set; it never checks out
+  or edits ddd4j source.
 
 - [x] **Step 1: Capture the semantic CI RED checks**
 
@@ -518,7 +580,8 @@ In both Maven jobs, replace `./.github/actions/install-ddd4j` with:
     maven-settings-xml: ${{ secrets.MAVEN_SETTINGS_XML }}
 ```
 
-Remove stale comments about checking out, installing, or mutating ddd4j. Keep Java 21, all 13 broker entries, `fail-fast: false`, report upload, and the existing blocking job dependency.
+Remove stale comments about checking out, installing, or mutating ddd4j. Keep Java 21, all 13 broker entries,
+`fail-fast: false`, report upload, and the existing blocking job dependency.
 
 - [x] **Step 4: Delete the old action after references are gone**
 
@@ -542,7 +605,8 @@ rg -n 'username|password|Authorization|curl -u|continue-on-error|testcontainers.
   .github/actions/configure-maven/action.yml .github/workflows/ci.yml || true
 ```
 
-Expected: actionlint exits 0; required secret and critical brokers exist; forbidden credential parsing, continue-on-error, and reuse configuration are absent.
+Expected: actionlint exits 0; required secret and critical brokers exist; forbidden credential parsing,
+continue-on-error, and reuse configuration are absent.
 
 - [x] **Step 6: Commit only CI files**
 
@@ -558,6 +622,7 @@ git commit -m "ci: verify published ddd4j snapshot without source mutation"
 ### Task 5: Run the P5-A completion gate and correct current documentation
 
 **Files:**
+
 - Modify: `README.md`
 - Modify: `CONTRIBUTING.md`
 - Modify: `docs/CAPABILITY-ALIGNMENT.md`
@@ -566,6 +631,7 @@ git commit -m "ci: verify published ddd4j snapshot without source mutation"
 - Modify: `docs/superpowers/plans/2026-09-08-p5a-stable-publish-consumer-baseline.md`
 
 **Interfaces:**
+
 - Consumes: fresh remote-resolution, Web, License, full reactor, and actionlint results.
 - Produces: an evidence-backed P5-A status that does not claim P5-B–E completion.
 
@@ -591,7 +657,8 @@ Run separately:
   -pl ddd4j-quarkus-auth/ddd4j-quarkus-auth-license -am test
 ```
 
-Expected: both commands exit 0; Web executes propagation and cleanup; License executes real installation and verification.
+Expected: both commands exit 0; Web executes propagation and cleanup; License executes real installation and
+verification.
 
 - [x] **Step 3: Run the complete reactor from clean output**
 
@@ -599,7 +666,8 @@ Expected: both commands exit 0; Web executes propagation and cleanup; License ex
 ./mvnw -B clean verify -Denforcer.skip=true
 ```
 
-Expected: all reactor modules succeed. Preserve warnings separately; `-Denforcer.skip=true` means Enforcer is not an accepted gate.
+Expected: all reactor modules succeed. Preserve warnings separately; `-Denforcer.skip=true` means Enforcer is not an
+accepted gate.
 
 - [x] **Step 4: Count Surefire/Failsafe results from XML**
 
@@ -617,7 +685,8 @@ puts "suites=#{files.size} tests=#{totals["tests"]} failures=#{totals["failures"
 '
 ```
 
-Expected: failures and errors are zero. Report skipped tests by class and reason; do not subtract them silently from totals.
+Expected: failures and errors are zero. Report skipped tests by class and reason; do not subtract them silently from
+totals.
 
 - [x] **Step 5: Run final structural and workflow checks**
 
@@ -631,7 +700,8 @@ git diff --check
 git status --short --branch
 ```
 
-Expected: stale upstream version and source mutation are absent; no subproject tags were introduced; only the protected MQTT directory may remain unrelated.
+Expected: stale upstream version and source mutation are absent; no subproject tags were introduced; only the protected
+MQTT directory may remain unrelated.
 
 - [x] **Step 6: Update documentation from literal observed evidence**
 
@@ -659,4 +729,6 @@ git commit -m "docs: record P5-A consumer baseline evidence"
 
 - [x] **Step 8: Prepare the authorization checkpoint**
 
-Report local commits, exact staged/unstaged files, tests, skips, remote-resolution evidence, and known warnings. Ask separately for push/deploy authorization. Do not create a tag, push a branch, dispatch a workflow, or run Maven deploy during this task.
+Report local commits, exact staged/unstaged files, tests, skips, remote-resolution evidence, and known warnings. Ask
+separately for push/deploy authorization. Do not create a tag, push a branch, dispatch a workflow, or run Maven deploy
+during this task.

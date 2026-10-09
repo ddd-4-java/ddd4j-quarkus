@@ -47,7 +47,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LicenseEnabledEndToEndQuarkusTest {
 
     private static final String SUBJECT = "quarkus-test";
-    /** 8 字符密码，避开 JKS 内部 8 字节对齐问题（短密码会触发 "Input length must be multiple of 8"） */
+    /**
+     * 8 字符密码，避开 JKS 内部 8 字节对齐问题（短密码会触发 "Input length must be multiple of 8"）
+     */
     private static final String STORE_PASS = "storepass";
     private static final String KEY_PASS = "storepass";
     private static final String PRIVATE_ALIAS = "privateKey";
@@ -275,6 +277,7 @@ class LicenseEnabledEndToEndQuarkusTest {
                 directory.resolve("publicCerts.keystore"), directory.resolve("privateKeys.keystore"));
     }
 
-    private record LicenseFixture(Path directory, Path licensePath, Path publicKeysStorePath, Path privateKeysStorePath) {
+    private record LicenseFixture(Path directory, Path licensePath, Path publicKeysStorePath,
+                                  Path privateKeysStorePath) {
     }
 }

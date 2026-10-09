@@ -1,10 +1,12 @@
 # P3 Auth and MQ Samples Completion Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
+> executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 关闭 P3 中真实未完成的 auth/sample backlog，使保留的 Quarkus auth 与 MQ samples 都具备可运行端到端行为证据。
 
-**Architecture:** 不创建没有外部容器依赖的 auth-testcontainers 空壳；认证后端在各模块/样例中用真实 Quarkus runtime 验证。MQ samples 通过共享 Testcontainers Harness 启动 Kafka/RabbitMQ，并让 listener 更新可注入的内存投影，从 HTTP 创建订单一直断言到消费副作用。
+**Architecture:** 不创建没有外部容器依赖的 auth-testcontainers 空壳；认证后端在各模块/样例中用真实 Quarkus runtime 验证。MQ
+samples 通过共享 Testcontainers Harness 启动 Kafka/RabbitMQ，并让 listener 更新可注入的内存投影，从 HTTP 创建订单一直断言到消费副作用。
 
 **Tech Stack:** Quarkus 3.37.4/3.38.2、Java 17/21、JUnit 5、REST Assured、Testcontainers 2.0.5、Awaitility。
 
@@ -36,6 +38,7 @@ publication and clean-cache consumption remain open for Tasks 5–6.
 ### Task 1: Correct the obsolete auth-testcontainers task
 
 **Files:**
+
 - Modify: `docs/superpowers/specs/2026-08-08-p3-auth-samples-ci-design.md`
 - Modify: `docs/superpowers/plans/2026-08-08-p3-auth-samples-ci.md`
 - Modify: `docs/superpowers/plans/2026-09-10-p5-b0-dual-branch-release-testcontainers-convergence.md`
@@ -57,13 +60,15 @@ observable order-publication-to-listener-consumption assertions.
 ### Task 2: Complete feature/4.0.x auth samples
 
 **Files:**
+
 - Test: `ddd4j-quarkus-samples/ddd4j-quarkus-sample-auth-satoken/src/test/**`
 - Test: `ddd4j-quarkus-samples/ddd4j-quarkus-sample-auth-shiro/src/test/**`
 - Delete: `ddd4j-quarkus-samples/ddd4j-quarkus-sample-auth-security/**`
 - Modify: `ddd4j-quarkus-samples/pom.xml`
 - Modify: `ddd4j-quarkus-bom/pom.xml`
 
-- [x] Add HTTP lifecycle tests for Sa-Token and Shiro: unauthenticated status/me, login returns nonblank token, authenticated status/me, role/permission result, logout and post-logout state.
+- [x] Add HTTP lifecycle tests for Sa-Token and Shiro: unauthenticated status/me, login returns nonblank token,
+  authenticated status/me, role/permission result, logout and post-logout state.
 - [x] Run tests before required sample wiring/config to record RED.
 - [x] Add minimal sample wiring/config; use real backend Subject through `SubjectKit`.
 - [x] Remove deprecated Security sample from reactor/BOM and document replacement by Sa-Token/Shiro.
@@ -74,8 +79,8 @@ Task 2 evidence: both initial HTTP journeys failed on `/auth/status` returning
 500 from the default CDI Subject provider. Both independent sample
 `clean verify` runs now pass. The final Java 21 / Maven 4 samples reactor
 `-DskipTests=false -pl ddd4j-quarkus-samples -am clean verify` passed all 26
-selected modules, with 107 tests across 27 suites, 0 failures/errors/skips
-(50 tests in samples). The explicit flag overrides the upstream dependencies
+selected modules, with 107 tests across 27 suites, 0 failures/errors/skips (50 tests in samples). The explicit flag
+overrides the upstream dependencies
 BOM's skipped-test default. Evidence is recorded in
 `.superpowers/sdd/2026-09-10-p3-auth-samples-completion/task-2-report.md`.
 The BOM had no Security sample coordinate to remove; the library's existing
@@ -101,12 +106,15 @@ repository was not modified. Detailed evidence is appended to the Task 2 report.
 ### Task 3: Complete feature/4.0.x MQ samples
 
 **Files:**
+
 - Modify: three sample MQ listener/application files.
 - Create: one projection/state class per sample when no observable consumer state exists.
 - Modify: three sample MQ tests and POM/test resources.
 
-- [x] Write failing tests that POST `/orders`, capture returned order/event identity, and await the listener projection containing the same order data.
-- [x] For Kafka/RabbitMQ, use shared `KafkaQuarkusTestResource`/`RabbitMqQuarkusTestResource`; Disruptor remains in-process.
+- [x] Write failing tests that POST `/orders`, capture returned order/event identity, and await the listener projection
+  containing the same order data.
+- [x] For Kafka/RabbitMQ, use shared `KafkaQuarkusTestResource`/`RabbitMqQuarkusTestResource`; Disruptor remains
+  in-process.
 - [x] Implement minimal application-scoped projection updated only by the real `@MQEventListener` method.
 - [x] Run each module independently and the samples reactor; record real broker logs.
 - [x] Commit: `test(samples): verify Quarkus MQ end-to-end flows`.

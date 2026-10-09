@@ -24,5 +24,6 @@
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-annotation</artifactId>
             <version>${ddd4j.version}</version>
-        </dependency></dependencies>
+        </dependency>
+    </dependencies>
 </project>

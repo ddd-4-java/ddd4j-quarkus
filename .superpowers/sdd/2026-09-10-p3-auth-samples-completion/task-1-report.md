@@ -22,15 +22,15 @@ Sa-Token、Shiro、Security、License 也没有共同的容器依赖。认证行
 ## 文档变更
 
 - `docs/superpowers/specs/2026-08-08-p3-auth-samples-ci-design.md`
-  - 校正 auth 背景、测试策略和风险缓解；删除“后续新增共同 auth 容器”的路线。
-  - 增加直接 runtime 替代路径及 P3 completion plan 链接。
+    - 校正 auth 背景、测试策略和风险缓解；删除“后续新增共同 auth 容器”的路线。
+    - 增加直接 runtime 替代路径及 P3 completion plan 链接。
 - `docs/superpowers/plans/2026-08-08-p3-auth-samples-ci.md`
-  - 将 auth-testcontainers 记录为“已取消（不计为完成）”。
-  - 保留 sample-auth/sample-mq 的精确开放缺口。
+    - 将 auth-testcontainers 记录为“已取消（不计为完成）”。
+    - 保留 sample-auth/sample-mq 的精确开放缺口。
 - `docs/superpowers/plans/2026-09-10-p3-auth-samples-completion.md`
-  - Task 1 勾选完成并记录验证结论；Tasks 2–4 仍未完成。
+    - Task 1 勾选完成并记录验证结论；Tasks 2–4 仍未完成。
 - `docs/superpowers/plans/2026-09-10-p5-b0-dual-branch-release-testcontainers-convergence.md`
-  - P5-B0 不再把 auth-testcontainers 作为开放交付物，认证行为路由至 P3 completion plan。
+    - P5-B0 不再把 auth-testcontainers 作为开放交付物，认证行为路由至 P3 completion plan。
 
 ## 验证证据
 
