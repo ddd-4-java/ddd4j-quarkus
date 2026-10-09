@@ -25,6 +25,12 @@ import jakarta.inject.Singleton;
 public class AkkaCdiProducer {
 
     /**
+     * 无参构造函数。
+     */
+    public AkkaCdiProducer() {
+    }
+
+    /**
      * 装配 ActorSystem。
      *
      * @param config Akka 配置

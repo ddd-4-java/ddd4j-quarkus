@@ -61,18 +61,34 @@ public final class OrderItem {
         this.price = price;
     }
 
+    /**
+     * 获取Product标识。
+     * @return Product标识
+     */
     public String getProductId() {
         return productId;
     }
 
+    /**
+     * 获取Sku标识。
+     * @return Sku标识
+     */
     public String getSkuId() {
         return skuId;
     }
 
+    /**
+     * 获取 getQuantity。
+     * @return 获取Quantity
+     */
     public Integer getQuantity() {
         return quantity;
     }
 
+    /**
+     * 获取价格。
+     * @return 价格
+     */
     public BigDecimal getPrice() {
         return price;
     }

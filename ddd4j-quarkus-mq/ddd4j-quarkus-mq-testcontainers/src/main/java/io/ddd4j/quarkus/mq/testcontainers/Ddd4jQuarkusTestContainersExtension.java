@@ -33,6 +33,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class Ddd4jQuarkusTestContainersExtension implements ExecutionCondition {
 
+    /**
+     * 无参构造函数。
+     */
+    public Ddd4jQuarkusTestContainersExtension() {
+    }
+
     private static final String DISABLE_REASON = "Docker daemon not reachable";
 
     /** JVM 级缓存：探测有副作用与耗时，一次即可。 */

@@ -29,6 +29,10 @@ public class OrderResource {
 
     private final OrderApplicationService applicationService;
 
+    /**
+     * 构造 OrderResource 实例。
+     * @param applicationService  应用服务
+     */
     @Inject
     public OrderResource(OrderApplicationService applicationService) {
         this.applicationService = Objects.requireNonNull(applicationService, "applicationService must not be null");
@@ -39,6 +43,8 @@ public class OrderResource {
      *
      * <p>创建后会自动发布 OrderCreatedEvent 到 Disruptor RingBuffer，
      * 由 @MQEventListener 消费。
+     * @param request  请求
+     * @return 创建
      */
     @POST
     public Response create(CreateOrderRequest request) {
@@ -48,6 +54,9 @@ public class OrderResource {
 
     /**
      * 创建订单请求 DTO。
+     * @param buyerId  买家标识
+     * @param buyerName  买家名称
+     * @param orderNo  订单编号
      */
     public record CreateOrderRequest(String orderNo, String buyerId, String buyerName) {
     }

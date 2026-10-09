@@ -30,6 +30,13 @@ public class RuleService {
     private final QLExpressEngine engine;
     private final Event<RuleChangedEvent> eventPublisher;
 
+    /**
+     * 构造 RuleService 实例。
+     * @param repository  仓储
+     * @param cache  缓存
+     * @param engine  参数
+     * @param eventPublisher  事件Publisher
+     */
     public RuleService(RuleRepository repository, RuleCache cache, QLExpressEngine engine,
                        Event<RuleChangedEvent> eventPublisher) {
         this.repository = Objects.requireNonNull(repository, "repository 不能为空");

@@ -46,7 +46,7 @@ Maven deploy 和发布后空缓存消费尚未执行。
 三次 actionlint 均退出 0；完整源码 reactor 的 62 个 POM 分别保持本线模型，
 各有 6 个使用 `modules/module` 的聚合 POM，所有已跟踪 POM 均无活动
 `subprojects/subproject`。独立远端 consumer 的 Model 4.0.0 不属于 4.0.x 的 62 模块 reactor。
-已跟踪文件的退役坐标扫描零匹配，命令为 `git grep -n -E 'io[.]github[.]hiwepy'`，
+已跟踪文件的退役坐标扫描零匹配，命令为 `git grep -n -E 'io[.]github[.]redacted-legacy-family'`，
 预期退出码 1；工具错误不能当作零匹配。三次源码/POM未改，运行后 diff 检查通过。
 
 每个 JDK 使用同一完整源码 reactor 命令，不使用已发布 Quarkus 模块替代源码：

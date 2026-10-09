@@ -37,6 +37,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LayeredSampleConfig {
 
     /**
+     * 无参构造函数。
+     */
+    public LayeredSampleConfig() {
+    }
+
+    /**
      * 装配订单仓储（内存实现）。
      *
      * <p>约定：{@link Order#create(String, String, String)} 创建聚合根时

@@ -28,30 +28,35 @@ public interface ExcelConfig {
 
     /**
      * 是否启用 ddd4j-quarkus-excel 自动装配（总开关，默认 true）。
+     * @return 是否启用
      */
     @WithDefault("true")
     boolean enabled();
 
     /**
      * 监听器批量入库阈值，默认 1000 行。
+     * @return 批次大小
      */
     @WithDefault("1000")
     int batchSize();
 
     /**
      * Web 上传单文件大小上限（MB），默认 50。
+     * @return 最大上传MB
      */
     @WithDefault("50")
     int maxUploadMB();
 
     /**
      * 字符编码，默认 UTF-8（影响 CSV 与文件名编码）。
+     * @return 方法返回结果
      */
     @WithDefault("UTF-8")
     String charset();
 
     /**
      * 样式相关配置。
+     * @return 方法返回结果
      */
     Style style();
 
@@ -62,18 +67,21 @@ public interface ExcelConfig {
 
         /**
          * 是否为单元格启用默认细边框。
+         * @return 是否默认Border
          */
         @WithDefault("true")
         boolean defaultBorder();
 
         /**
          * 是否自动适配列宽（基于内容长度）。
+         * @return 是否自动大小列
          */
         @WithDefault("true")
         boolean autoSizeColumn();
 
         /**
          * 表头行高（单位：1/20 磅，即 short）。例如 600 表示 30 磅；默认 600。
+         * @return 报文头行Height
          */
         @WithDefault("600")
         short headerRowHeight();

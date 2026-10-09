@@ -25,6 +25,17 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class RedisStreamMQCdiProducer {
 
+    /**
+     * 无参构造函数，供 CDI 容器实例化本生产者 Bean。
+     */
+    public RedisStreamMQCdiProducer() {
+    }
+
+    /**
+     * 产出 {@link RedisStreamMQProperties} 默认 Bean。
+     *
+     * @return {@link RedisStreamMQProperties} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean
@@ -32,6 +43,12 @@ public class RedisStreamMQCdiProducer {
         return new RedisStreamMQProperties();
     }
 
+    /**
+     * 依据 {@code RedisStreamMQProperties} 构建并产出 {@link RedisStreamMQClient} 默认 Bean。
+     *
+     * @param properties MQ 客户端配置
+     * @return {@link RedisStreamMQClient} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean

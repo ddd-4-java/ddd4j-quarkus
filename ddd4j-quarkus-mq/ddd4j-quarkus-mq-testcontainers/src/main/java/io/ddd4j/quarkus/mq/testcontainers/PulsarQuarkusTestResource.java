@@ -18,6 +18,12 @@ import java.util.Map;
  */
 public class PulsarQuarkusTestResource extends AbstractTestContainerFixture {
 
+    /**
+     * 无参构造函数。
+     */
+    public PulsarQuarkusTestResource() {
+    }
+
     private static final DockerImageName IMAGE = DockerImageName.parse("apachepulsar/pulsar:3.2.0");
     private PulsarContainer container;
 

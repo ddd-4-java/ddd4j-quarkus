@@ -14,6 +14,12 @@ import java.util.Map;
  */
 public class RabbitMqQuarkusTestResource extends AbstractTestContainerFixture {
 
+    /**
+     * 无参构造函数。
+     */
+    public RabbitMqQuarkusTestResource() {
+    }
+
     private static final DockerImageName IMAGE = DockerImageName.parse("rabbitmq:3.13-management-alpine");
 
     private RabbitMQContainer container;

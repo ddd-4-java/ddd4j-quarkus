@@ -66,22 +66,42 @@ public class OrderCreatedEvent extends DomainEvent<StringEntityId> {
         this.totalAmount = totalAmount;
     }
 
+    /**
+     * 获取订单标识。
+     * @return 订单标识
+     */
     public Long getOrderId() {
         return orderId;
     }
 
+    /**
+     * 获取订单编号。
+     * @return 订单编号
+     */
     public String getOrderNo() {
         return orderNo;
     }
 
+    /**
+     * 获取买家标识。
+     * @return 买家标识
+     */
     public String getBuyerId() {
         return buyerId;
     }
 
+    /**
+     * 获取买家名称。
+     * @return 买家名称
+     */
     public String getBuyerName() {
         return buyerName;
     }
 
+    /**
+     * 获取总数金额。
+     * @return 总数金额
+     */
     public BigDecimal getTotalAmount() {
         return totalAmount;
     }

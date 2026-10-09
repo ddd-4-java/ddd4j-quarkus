@@ -35,6 +35,12 @@ import jakarta.inject.Singleton;
 public class Ddd4jMonitorCdiProducer {
 
     /**
+     * 无参构造函数。
+     */
+    public Ddd4jMonitorCdiProducer() {
+    }
+
+    /**
      * 暴露主仓统一配置模型 {@link BaseMonitorProperties}（业务侧可注入后按需修改）。
      *
      * @param config Quarkus 配置映射

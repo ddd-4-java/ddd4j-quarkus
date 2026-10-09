@@ -72,6 +72,12 @@ import java.util.Map;
 @MappedSuperclass
 public abstract class TenantAwareEntityBase extends PanacheEntityBase {
 
+    /**
+     * 无参构造函数。
+     */
+    public TenantAwareEntityBase() {
+    }
+
     private static final Logger logger = Logger.getLogger(TenantAwareEntityBase.class);
 
     /**
@@ -158,6 +164,13 @@ public abstract class TenantAwareEntityBase extends PanacheEntityBase {
 
     /**
      * 使用 Panache {@link Parameters} 的分页重载。
+     * @param <T>  类型参数
+     * @param page  分页
+     * @param pageSize  分页大小
+     * @param params  参数
+     * @param query  查询
+     * @param sort  排序
+     * @return 目标分页
      */
     public static <T extends TenantAwareEntityBase> Page<T> toPage(String query, Parameters params, Sort sort, long page, long pageSize) {
         return toPage(query, params.map(), sort, page, pageSize);

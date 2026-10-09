@@ -25,6 +25,17 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class MqttMQCdiProducer {
 
+    /**
+     * 无参构造函数，供 CDI 容器实例化本生产者 Bean。
+     */
+    public MqttMQCdiProducer() {
+    }
+
+    /**
+     * 产出 {@link MqttMQProperties} 默认 Bean。
+     *
+     * @return {@link MqttMQProperties} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean
@@ -32,6 +43,12 @@ public class MqttMQCdiProducer {
         return new MqttMQProperties();
     }
 
+    /**
+     * 依据 {@code MqttMQProperties} 构建并产出 {@link MqttMQClient} 默认 Bean。
+     *
+     * @param properties MQ 客户端配置
+     * @return {@link MqttMQClient} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean

@@ -16,12 +16,26 @@ import jakarta.enterprise.inject.Produces;
  */
 public class Ddd4jCryptoCdiProducer {
 
+    /**
+     * 无参构造函数。
+     */
+    public Ddd4jCryptoCdiProducer() {
+    }
+
+    /**
+     * 加密配置项。
+     * @return 加密配置项
+     */
     @Produces
     @ApplicationScoped
     public CryptoProperties cryptoProperties() {
         return new CryptoProperties();
     }
 
+    /**
+     * 默认加密策略。
+     * @return 默认加密策略
+     */
     @Produces
     @ApplicationScoped
     public CryptoStrategy defaultCryptoStrategy() {

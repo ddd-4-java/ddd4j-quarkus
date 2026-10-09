@@ -33,27 +33,32 @@ public interface DubboConfig {
     /**
      * 是否启用 ddd4j-dubbo 装配（总开关，默认 true；
      * 对应 boot 的 {@code ddd4j.dubbo.enabled} 条件属性）。
+     * @return 是否启用
      */
     @WithDefault("true")
     boolean enabled();
 
     /**
      * 应用名（对应 {@code dubbo.application.name}）。
+     * @return 应用
      */
     Application application();
 
     /**
      * 注册中心（对应 {@code dubbo.registry.address}）。
+     * @return 注册表
      */
     Registry registry();
 
     /**
      * 服务协议（对应 {@code dubbo.protocol.name / dubbo.protocol.port}）。
+     * @return 方法返回结果
      */
     Protocol protocol();
 
     /**
      * 服务扫描（对应 {@code dubbo.scan.base-packages}）。
+     * @return 方法返回结果
      */
     Scan scan();
 
@@ -64,6 +69,7 @@ public interface DubboConfig {
 
         /**
          * 应用名称（可空）。
+         * @return 名称
          */
         Optional<String> name();
     }
@@ -75,6 +81,7 @@ public interface DubboConfig {
 
         /**
          * 注册中心地址，如 {@code nacos://127.0.0.1:8848}（可空）。
+         * @return 地址
          */
         Optional<String> address();
     }
@@ -86,12 +93,14 @@ public interface DubboConfig {
 
         /**
          * 协议名称（默认 {@code dubbo}）。
+         * @return 名称字符串内容
          */
         @WithDefault("dubbo")
         String name();
 
         /**
          * 协议端口（默认 20880）。
+         * @return 端口
          */
         @WithDefault("20880")
         int port();
@@ -104,6 +113,7 @@ public interface DubboConfig {
 
         /**
          * Dubbo Service 扫描包（逗号分隔，可空）。
+         * @return 基础Packages
          */
         Optional<String> basePackages();
     }

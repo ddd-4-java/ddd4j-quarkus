@@ -21,6 +21,12 @@ import java.io.Serializable;
  */
 public class AutoIncrementIdStrategy implements IdGenerationStrategy<Long> {
 
+    /**
+     * 无参构造函数。
+     */
+    public AutoIncrementIdStrategy() {
+    }
+
     @Override
     public Long generate() {
         // 返回 null 表示由数据库自增列填充

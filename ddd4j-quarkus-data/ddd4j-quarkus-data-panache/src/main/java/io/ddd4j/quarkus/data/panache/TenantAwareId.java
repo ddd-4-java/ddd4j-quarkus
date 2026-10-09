@@ -11,17 +11,37 @@ import java.util.Objects;
  */
 public class TenantAwareId implements Serializable {
 
+    /**
+     * 标识。
+     */
     private Long id;
+    /**
+     * 租户标识。
+     */
     private String tenantId;
 
+    /**
+     * 构造 TenantAwareId 实例。
+     */
     public TenantAwareId() {
     }
 
+    /**
+     * 构造 TenantAwareId 实例。
+     * @param id  标识
+     * @param tenantId  租户标识
+     */
     public TenantAwareId(Long id, String tenantId) {
         this.id = id;
         this.tenantId = tenantId;
     }
 
+    /**
+     * 执行 of 操作。
+     * @param id  标识
+     * @param tenantId  租户标识
+     * @return 方法返回结果
+     */
     public static TenantAwareId of(Long id, String tenantId) {
         return new TenantAwareId(id, tenantId);
     }

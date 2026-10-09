@@ -32,6 +32,12 @@ import java.util.Optional;
  */
 public class OrderRepositoryImpl implements OrderRepository {
 
+    /**
+     * 无参构造函数。
+     */
+    public OrderRepositoryImpl() {
+    }
+
     @Override
     @Transactional
     public Order save(Order aggregate) {

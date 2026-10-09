@@ -42,6 +42,24 @@
             <artifactId>quarkus-junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Testcontainers 核心（Redis 容器 IT 用 GenericContainer，版本由 testcontainers-bom 统一管理） -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- @Testcontainers 注解 + JUnit 5 扩展：disabledWithoutDocker 无 Docker 自动跳过 -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Lettuce 客户端（ddd4j-cache LettuceCache 容器 IT 用，版本由 ddd4j-dependencies 管理） -->
+        <dependency>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

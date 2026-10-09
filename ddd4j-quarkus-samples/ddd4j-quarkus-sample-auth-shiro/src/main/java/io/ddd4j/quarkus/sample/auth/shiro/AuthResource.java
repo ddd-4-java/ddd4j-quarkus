@@ -30,6 +30,12 @@ import java.util.Objects;
 @Produces(MediaType.APPLICATION_JSON)
 public class AuthResource {
 
+    /**
+     * 无参构造函数。
+     */
+    public AuthResource() {
+    }
+
     @Inject
     SampleShiroRuntime runtime;
 
@@ -41,6 +47,11 @@ public class AuthResource {
         return runtime.invoke(invocation, headers.getHeaderString("X-Session-Id"));
     }
 
+    /**
+     * 执行 login 操作。
+     * @param userId  用户标识
+     * @return 方法返回结果
+     */
     @POST
     @Path("/login")
     public Map<String, Object> login(String userId) {
@@ -59,6 +70,10 @@ public class AuthResource {
         return result;
     }
 
+    /**
+     * 执行 logout 操作。
+     * @return 方法返回结果
+     */
     @POST
     @Path("/logout")
     public Map<String, Object> logout() {
@@ -66,6 +81,10 @@ public class AuthResource {
         return Map.of("success", true);
     }
 
+    /**
+     * 执行 me 操作。
+     * @return 方法返回结果
+     */
     @GET
     @Path("/me")
     public Map<String, Object> me() {
@@ -80,6 +99,11 @@ public class AuthResource {
         return result;
     }
 
+    /**
+     * 检查权限。
+     * @param permission  权限
+     * @return 检查权限映射
+     */
     @GET
     @Path("/check/permission")
     public Map<String, Object> checkPermission(@QueryParam("permission") String permission) {
@@ -87,6 +111,11 @@ public class AuthResource {
         return Map.of("permission", permission, "has", has);
     }
 
+    /**
+     * 检查角色。
+     * @param role  角色
+     * @return 检查角色映射
+     */
     @GET
     @Path("/check/role")
     public Map<String, Object> checkRole(@QueryParam("role") String role) {
@@ -94,6 +123,10 @@ public class AuthResource {
         return Map.of("role", role, "has", has);
     }
 
+    /**
+     * 状态。
+     * @return 状态映射
+     */
     @GET
     @Path("/status")
     public Map<String, Object> status() {

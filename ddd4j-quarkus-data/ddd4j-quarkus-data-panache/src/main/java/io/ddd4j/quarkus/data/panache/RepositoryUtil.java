@@ -26,6 +26,12 @@ import java.util.Map;
 public class RepositoryUtil {
 
     /**
+     * 无参构造函数。
+     */
+    public RepositoryUtil() {
+    }
+
+    /**
      * 将形如 {@code +field}、{@code -field} 或 {@code field} 的排序列表转为 Panache {@link Sort}。
      *
      * @param sorting 列名列表，前缀 {@code +} 升序、{@code -} 降序，无前缀默认升序

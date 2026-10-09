@@ -25,6 +25,17 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class PulsarMQCdiProducer {
 
+    /**
+     * 无参构造函数，供 CDI 容器实例化本生产者 Bean。
+     */
+    public PulsarMQCdiProducer() {
+    }
+
+    /**
+     * 产出 {@link PulsarProperties} 默认 Bean。
+     *
+     * @return {@link PulsarProperties} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean
@@ -32,6 +43,12 @@ public class PulsarMQCdiProducer {
         return new PulsarProperties();
     }
 
+    /**
+     * 依据 {@code PulsarProperties} 构建并产出 {@link PulsarMQClient} 默认 Bean。
+     *
+     * @param properties MQ 客户端配置
+     * @return {@link PulsarMQClient} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean

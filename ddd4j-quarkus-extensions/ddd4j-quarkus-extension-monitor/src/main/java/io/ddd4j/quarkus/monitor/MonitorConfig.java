@@ -39,12 +39,16 @@ public interface MonitorConfig {
 
     /**
      * 是否启用 ddd4j-monitor 装配（总开关，默认 true）。
+     *
+     * @return 总开关取值
      */
     @WithDefault("true")
     boolean enabled();
 
     /**
      * 日志 / 告警相关配置（对齐 {@code BaseMonitorProperties.Log}）。
+     *
+     * @return 日志告警配置
      */
     Log log();
 
@@ -55,33 +59,45 @@ public interface MonitorConfig {
 
         /**
          * 是否启用监控模块总开关。
+         *
+         * @return 启用开关取值
          */
         @WithDefault("true")
         boolean enable();
 
         /**
          * 机器人发送速度上限（条/秒）。{@code 0} 表示不限速（对应 boot 的 null）。
+         *
+         * @return 每秒许可数
          */
         @WithDefault("0")
         double rateLimiterPermitsPerSecond();
 
         /**
          * 钉钉机器人配置（对齐 {@code DingTalkProperties}）。
+         *
+         * @return 钉钉机器人配置
          */
         DingTalk dingtalk();
 
         /**
          * 企业微信机器人配置（对齐 {@code WeComProperties}，was {@code qiwei}）。
+         *
+         * @return 企业微信机器人配置
          */
         WeCom wecom();
 
         /**
          * 飞书机器人配置（对齐 {@code FeishuProperties}）。
+         *
+         * @return 飞书机器人配置
          */
         Feishu feishu();
 
         /**
          * 应用基本信息（用于告警内容上下文）。
+         *
+         * @return 应用基本信息配置
          */
         App app();
     }
@@ -93,17 +109,23 @@ public interface MonitorConfig {
 
         /**
          * 是否启用。
+         *
+         * @return 启用开关取值
          */
         @WithDefault("true")
         boolean enable();
 
         /**
          * 钉钉机器人 Webhook access_token。
+         *
+         * @return access_token，未配置时为空
          */
                 Optional<String> token();
 
         /**
          * 钉钉机器人加签密钥。
+         *
+         * @return 加签密钥，未配置时为空
          */
                 Optional<String> secret();
     }
@@ -115,12 +137,16 @@ public interface MonitorConfig {
 
         /**
          * 是否启用。
+         *
+         * @return 启用开关取值
          */
         @WithDefault("true")
         boolean enable();
 
         /**
          * 企业微信机器人 Webhook key。
+         *
+         * @return webhook key，未配置时为空
          */
                 Optional<String> key();
     }
@@ -132,17 +158,23 @@ public interface MonitorConfig {
 
         /**
          * 是否启用。
+         *
+         * @return 启用开关取值
          */
         @WithDefault("true")
         boolean enable();
 
         /**
          * 飞书机器人 webhook 完整地址（含 hook token）。
+         *
+         * @return webhook 地址，未配置时为空
          */
                 Optional<String> webhookUrl();
 
         /**
          * 加签密钥（"不勾选签名校验"时留空）。
+         *
+         * @return 加签密钥，未配置时为空
          */
                 Optional<String> secret();
     }
@@ -154,16 +186,22 @@ public interface MonitorConfig {
 
         /**
          * 项目名称。
+         *
+         * @return 项目名称，未配置时为空
          */
                 Optional<String> project();
 
         /**
          * 当前环境。
+         *
+         * @return 环境标识，未配置时为空
          */
                 Optional<String> env();
 
         /**
          * 应用名称。
+         *
+         * @return 应用名称，未配置时为空
          */
                 Optional<String> name();
     }

@@ -15,6 +15,12 @@ import java.util.Objects;
 @ApplicationScoped
 public class QuarkusFileValidator {
 
+    /**
+     * 无参构造函数。
+     */
+    public QuarkusFileValidator() {
+    }
+
     @Inject
     FileValidationService validationService;
 

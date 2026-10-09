@@ -19,6 +19,12 @@ import java.util.Map;
  */
 public class ActiveMqQuarkusTestResource extends AbstractTestContainerFixture {
 
+    /**
+     * 无参构造函数。
+     */
+    public ActiveMqQuarkusTestResource() {
+    }
+
     private static final DockerImageName IMAGE = DockerImageName.parse("apache/activemq-artemis:2.33.0-alpine");
     private static final String USERNAME = "artemis";
     private static final String PASSWORD = "artemis";

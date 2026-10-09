@@ -23,6 +23,12 @@ import java.util.Objects;
  */
 public class MqttQuarkusTestResource extends AbstractTestContainerFixture {
 
+    /**
+     * 无参构造函数。
+     */
+    public MqttQuarkusTestResource() {
+    }
+
     private static final DockerImageName IMAGE = DockerImageName.parse("eclipse-mosquitto:2.0");
     private static final int MQTT_PORT = 1883;
 

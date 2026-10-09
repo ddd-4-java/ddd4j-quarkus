@@ -51,6 +51,12 @@ import java.util.List;
            columnNames = {"aggregate_type", "aggregate_id", "version"}))
 public class PanacheStoredEventEntity extends PanacheEntityBase {
 
+    /**
+     * 无参构造函数。
+     */
+    public PanacheStoredEventEntity() {
+    }
+
     /** 全局流位置：数据库自增主键，事件存储的追加顺序号。 */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

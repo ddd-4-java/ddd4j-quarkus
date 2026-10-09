@@ -15,6 +15,12 @@ import java.util.Objects;
  */
 public class FileUploadListConstraintValidator implements ConstraintValidator<ValidFileUpload, List<FileUpload>> {
 
+    /**
+     * 无参构造函数。
+     */
+    public FileUploadListConstraintValidator() {
+    }
+
     @Inject
     QuarkusFileValidator fileValidator;
 

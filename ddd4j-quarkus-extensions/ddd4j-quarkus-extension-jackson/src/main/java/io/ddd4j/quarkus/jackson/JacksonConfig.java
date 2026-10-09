@@ -29,42 +29,49 @@ public interface JacksonConfig {
 
     /**
      * 是否启用 ddd4j-jackson 定制（总开关，默认 true）。
+     * @return 是否启用
      */
     @WithDefault("true")
     boolean enabled();
 
     /**
      * null 数组默认序列化为 {@code []}（默认 true）。
+     * @return 是否默认空值数组Serializer
      */
     @WithDefault("true")
     boolean defaultNullArraySerializer();
 
     /**
      * null 数字默认序列化为 {@code 0}（默认 false）。
+     * @return 是否默认空值NumberSerializer
      */
     @WithDefault("false")
     boolean defaultNullNumberSerializer();
 
     /**
      * null 字符串默认序列化为 {@code ""}（默认 true）。
+     * @return 是否默认空值StringSerializer
      */
     @WithDefault("true")
     boolean defaultNullStringSerializer();
 
     /**
      * null 日期默认序列化为空串（默认 true）。
+     * @return 是否默认空值日期Serializer
      */
     @WithDefault("true")
     boolean defaultNullDateSerializer();
 
     /**
      * null 布尔默认序列化为 {@code false}（默认 false）。
+     * @return 是否默认空值BooleanSerializer
      */
     @WithDefault("false")
     boolean defaultNullBooleanSerializer();
 
     /**
      * null JSON 对象默认序列化为 {@code {}}（默认 true）。
+     * @return 是否默认空值JSONObjectSerializer
      */
     @WithDefault("true")
     boolean defaultNullJsonObjectSerializer();
@@ -72,6 +79,7 @@ public interface JacksonConfig {
     /**
      * LocalDateTime 序列化格式（默认 {@code yyyy-MM-dd HH:mm:ss}，
      * 对应 boot 的 {@code DateFormats.DATE_LONGFORMAT}）。
+     * @return 日期时间Pattern字符串内容
      */
     @WithDefault("yyyy-MM-dd HH:mm:ss")
     String dateTimePattern();
@@ -79,6 +87,7 @@ public interface JacksonConfig {
     /**
      * LocalDate 序列化格式（默认 {@code yyyy-MM-dd}，
      * 对应 boot 的 {@code DatePattern.NORM_DATE_PATTERN}）。
+     * @return 日期Pattern字符串内容
      */
     @WithDefault("yyyy-MM-dd")
     String datePattern();
@@ -86,6 +95,7 @@ public interface JacksonConfig {
     /**
      * LocalTime 序列化格式（默认 {@code HH:mm:ss}，
      * 对应 boot 的 {@code DatePattern.NORM_TIME_PATTERN}）。
+     * @return 时间Pattern字符串内容
      */
     @WithDefault("HH:mm:ss")
     String timePattern();

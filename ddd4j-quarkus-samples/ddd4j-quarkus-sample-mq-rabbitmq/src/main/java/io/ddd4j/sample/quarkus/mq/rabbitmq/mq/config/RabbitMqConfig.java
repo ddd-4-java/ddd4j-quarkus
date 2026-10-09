@@ -30,12 +30,22 @@ import java.util.concurrent.TimeoutException;
 @ApplicationScoped
 public class RabbitMqConfig {
 
+    /**
+     * 无参构造函数。
+     */
+    public RabbitMqConfig() {
+    }
+
     /** 显式保留客户端供启动注册器发现；原生连接由 CDI disposer 回收。 */
     void shutdown(@Observes ShutdownEvent event, RabbitMQClient client) throws Exception {
         client.close();
     }
 
-    /** 将连接、交换机和通用路由配置绑定到同一个属性对象。 */
+    /**
+     * 将连接、交换机和通用路由配置绑定到同一个属性对象。
+     * @param config  配置
+     * @return 方法返回结果
+     */
     @Produces
     @Singleton
     @Typed(RabbitMQProperties.class)
@@ -60,6 +70,8 @@ public class RabbitMqConfig {
 
     /**
      * 框架通用属性生产者未绑定 exchange，使用同一 RabbitMQProperties 替代以保持路由一致。
+     * @param properties  配置项
+     * @return 路由配置项
      */
     @Produces
     @Alternative
@@ -69,7 +81,13 @@ public class RabbitMqConfig {
         return properties;
     }
 
-    /** 在注册消费者之前声明交换机；失败时立即关闭已建立的连接。 */
+    /**
+     * 在注册消费者之前声明交换机；失败时立即关闭已建立的连接。
+     * @param properties  配置项
+     * @return Rabbit连接
+     * @throws java.io.IOException  发生输入输出异常时抛出
+     * @throws java.util.concurrent.TimeoutException  发生TimeoutException异常时抛出
+     */
     @Produces
     @Singleton
     public Connection rabbitConnection(RabbitMQProperties properties) throws IOException, TimeoutException {
@@ -91,14 +109,22 @@ public class RabbitMqConfig {
         }
     }
 
-    /** 客户端复用已声明交换机的连接，仍由框架注册真实 listener。 */
+    /**
+     * 客户端复用已声明交换机的连接，仍由框架注册真实 listener。
+     * @param connection  连接
+     * @return RabbitMQ客户端
+     */
     @Produces
     @Singleton
     public RabbitMQClient rabbitMQClient(Connection connection) {
         return new RabbitMQClient(connection);
     }
 
-    /** CDI 销毁应用时关闭生产者和消费者共用的原生连接及其 channels。 */
+    /**
+     * CDI 销毁应用时关闭生产者和消费者共用的原生连接及其 channels。
+     * @param connection  连接
+     * @throws java.io.IOException  发生输入输出异常时抛出
+     */
     public void closeConnection(@Disposes Connection connection) throws IOException {
         connection.close();
         log.info("RabbitMQ connection closed: {}", !connection.isOpen());

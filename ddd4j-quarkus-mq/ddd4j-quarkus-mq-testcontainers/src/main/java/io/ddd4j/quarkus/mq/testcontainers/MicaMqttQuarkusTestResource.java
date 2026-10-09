@@ -19,6 +19,12 @@ import java.util.Map;
  */
 public class MicaMqttQuarkusTestResource extends AbstractTestContainerFixture {
 
+    /**
+     * 无参构造函数。
+     */
+    public MicaMqttQuarkusTestResource() {
+    }
+
     private static final DockerImageName IMAGE = DockerImageName.parse("eclipse-mosquitto:2.0");
     private static final int MQTT_PORT = 1883;
 

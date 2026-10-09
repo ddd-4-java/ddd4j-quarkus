@@ -13,6 +13,12 @@ import java.util.Map;
 @Provider
 public class QrCodeExceptionMapper implements ExceptionMapper<QrCodeException> {
 
+    /**
+     * 无参构造函数。
+     */
+    public QrCodeExceptionMapper() {
+    }
+
     @Override
     public Response toResponse(QrCodeException exception) {
         Map<String, String> body = new LinkedHashMap<>();

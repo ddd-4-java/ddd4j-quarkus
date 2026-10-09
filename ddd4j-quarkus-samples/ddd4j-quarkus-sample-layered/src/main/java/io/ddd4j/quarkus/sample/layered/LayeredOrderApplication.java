@@ -30,6 +30,12 @@ import io.quarkus.runtime.annotations.QuarkusMain;
 public class LayeredOrderApplication {
 
     /**
+     * 无参构造函数。
+     */
+    public LayeredOrderApplication() {
+    }
+
+    /**
      * Quarkus 启动入口。
      *
      * @param args 启动参数（如 {@code -Dquarkus.http.port=8080}）

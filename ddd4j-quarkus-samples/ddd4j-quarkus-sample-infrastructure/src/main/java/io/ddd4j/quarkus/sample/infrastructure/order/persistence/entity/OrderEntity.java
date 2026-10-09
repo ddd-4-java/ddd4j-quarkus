@@ -27,6 +27,12 @@ import java.time.LocalDateTime;
 public class OrderEntity extends PanacheEntityBase {
 
     /**
+     * 无参构造函数。
+     */
+    public OrderEntity() {
+    }
+
+    /**
      * 主键（数据库自增）
      */
     @Id

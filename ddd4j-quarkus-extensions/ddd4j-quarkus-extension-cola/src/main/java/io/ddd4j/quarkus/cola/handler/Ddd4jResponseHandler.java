@@ -25,6 +25,12 @@ import org.slf4j.LoggerFactory;
  */
 public class Ddd4jResponseHandler implements ResponseHandlerI {
 
+    /**
+     * 无参构造函数。
+     */
+    public Ddd4jResponseHandler() {
+    }
+
     private static final Logger log = LoggerFactory.getLogger(Ddd4jResponseHandler.class);
 
     @Override

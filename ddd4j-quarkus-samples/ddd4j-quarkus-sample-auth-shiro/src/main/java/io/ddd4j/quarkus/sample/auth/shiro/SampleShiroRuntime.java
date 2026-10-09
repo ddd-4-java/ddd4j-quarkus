@@ -16,6 +16,12 @@ import org.apache.shiro.subject.Subject;
 @ApplicationScoped
 public class SampleShiroRuntime {
 
+    /**
+     * 无参构造函数。
+     */
+    public SampleShiroRuntime() {
+    }
+
     private DefaultSecurityManager securityManager;
 
     @PostConstruct

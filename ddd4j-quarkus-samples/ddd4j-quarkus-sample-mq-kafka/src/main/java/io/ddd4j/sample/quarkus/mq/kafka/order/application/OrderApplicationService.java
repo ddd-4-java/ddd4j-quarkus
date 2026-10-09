@@ -15,7 +15,17 @@ import java.util.Objects;
 public class OrderApplicationService {
 
     /**
+     * 无参构造函数。
+     */
+    public OrderApplicationService() {
+    }
+
+    /**
      * 创建订单并发布 OrderCreatedEvent。
+     * @param buyerId  买家标识
+     * @param buyerName  买家名称
+     * @param orderNo  订单编号
+     * @return 创建订单
      */
     public Order createOrder(String orderNo, String buyerId, String buyerName) {
         Objects.requireNonNull(orderNo, "orderNo must not be null");

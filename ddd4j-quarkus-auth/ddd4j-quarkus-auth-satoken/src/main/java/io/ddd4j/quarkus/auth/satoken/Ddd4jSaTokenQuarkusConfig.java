@@ -35,6 +35,12 @@ import java.util.Map;
 public class Ddd4jSaTokenQuarkusConfig {
 
     /**
+     * 无参构造函数。
+     */
+    public Ddd4jSaTokenQuarkusConfig() {
+    }
+
+    /**
      * 启动时注册 ddd4j Sa-Token 扩展注解处理器。
      */
     void onStart(@Observes StartupEvent event) {
@@ -44,6 +50,7 @@ public class Ddd4jSaTokenQuarkusConfig {
 
     /**
      * 提供 SubjectProvider CDI Bean（@Produces 使方法成为 producer），同时写回 SubjectKit。
+     * @return 主题Provider
      */
     @Produces
     @Singleton
@@ -55,6 +62,7 @@ public class Ddd4jSaTokenQuarkusConfig {
 
     /**
      * 多账号混合登录注解处理器。
+     * @return SaMix检查Login处理器
      */
     @Produces
     @Singleton
@@ -64,6 +72,7 @@ public class Ddd4jSaTokenQuarkusConfig {
 
     /**
      * 内部服务 API Key 注解处理器。
+     * @return SaInternal检查处理器
      */
     @Produces
     @Singleton
@@ -77,6 +86,12 @@ public class Ddd4jSaTokenQuarkusConfig {
     @Provider
     @Singleton
     public static class SaTokenExceptionMapper implements ExceptionMapper<SaTokenException> {
+
+        /**
+         * 无参构造函数。
+         */
+        public SaTokenExceptionMapper() {
+        }
 
         @Override
         public Response toResponse(SaTokenException ex) {

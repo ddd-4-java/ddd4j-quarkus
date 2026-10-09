@@ -23,6 +23,17 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class RabbitMQCdiProducer {
 
+    /**
+     * 无参构造函数，供 CDI 容器实例化本生产者 Bean。
+     */
+    public RabbitMQCdiProducer() {
+    }
+
+    /**
+     * 产出 {@link RabbitMQProperties} 默认 Bean。
+     *
+     * @return {@link RabbitMQProperties} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean
@@ -30,6 +41,12 @@ public class RabbitMQCdiProducer {
         return new RabbitMQProperties();
     }
 
+    /**
+     * 依据 {@code RabbitMQProperties} 构建并产出 {@link RabbitMQClient} 默认 Bean。
+     *
+     * @param properties MQ 客户端配置
+     * @return {@link RabbitMQClient} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean

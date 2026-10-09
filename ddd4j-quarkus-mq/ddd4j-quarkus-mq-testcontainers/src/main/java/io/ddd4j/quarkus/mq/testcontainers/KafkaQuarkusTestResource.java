@@ -14,6 +14,12 @@ import java.util.Map;
  */
 public class KafkaQuarkusTestResource extends AbstractTestContainerFixture {
 
+    /**
+     * 无参构造函数。
+     */
+    public KafkaQuarkusTestResource() {
+    }
+
     private static final DockerImageName IMAGE = DockerImageName.parse("confluentinc/cp-kafka:7.7.2");
     private ConfluentKafkaContainer container;
 

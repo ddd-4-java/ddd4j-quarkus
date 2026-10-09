@@ -31,6 +31,12 @@ import java.util.Objects;
 @ApplicationScoped
 public class SampleSaTokenRuntime implements SaTokenContext {
 
+    /**
+     * 无参构造函数。
+     */
+    public SampleSaTokenRuntime() {
+    }
+
     private static final String CONTEXT_KEY = "sample.sa-token.context";
 
     @Inject

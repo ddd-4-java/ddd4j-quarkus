@@ -1,0 +1,91 @@
+================================================================================
+ddd4j-quarkus 仓 feature/4.0.x 旧品牌标识红线清理 证据文件
+日期：2026-10-09
+仓库：E:\workspaces\workspace-ddd4j\workspace-ddd4j-boot\ddd4j-quarkus（分支 feature/4.0.x）
+纪律：任何输出不出现 4 个旧品牌标识字面量；提及用角色名
+      （旧教育品牌 / 旧家族名(h 开头 6 字母) / 旧应用名(j 开头 6 字母) / 旧中文品牌）；
+      扫描模式一律文件派生/邻接构造；展示前必过掩码（占位 <EDU>/<CN>/<FAM>/<APP>）。
+禁止项遵守：未运行 mvn / gradle；未执行 git commit / push / 切分支；
+      未修改 src/ 与 pom.xml（含一切 POM 类文件）。
+================================================================================
+
+【0】任务前现场（git status 保护）
+--------------------------------------------------------------------------------
+  初始快照 154 条未提交改动（/tmp/.rl4-snap-quarkus.txt），全部保留勿动：
+  - 本任务目标文件中已存在前波未提交映射成果：M CODEOWNERS、
+    M .github/FUNDING.yml、M docs/P5-B0-LOCAL-VERIFICATION.md（核验复用，勿动）；
+  - 其余 M 项为既有未提交成果（src/pom 类治理改动），本任务零触碰。
+  模式与掩码来源（运行时派生，命令文本无连续字面量）：
+  - P1 旧家族名 FAM ← /tmp/.oldseg.txt（6 字节，前序批次同源产物）
+  - P2 旧应用名 APP ← /tmp/.oldapp.txt（6 字节，同上）
+  - P3 旧教育品牌 EDU ← 从兄弟仓云仓红线证据（ddd4j-cloud docs/verification/
+    redline-cleanup-evidence-20261009.txt）的邻接拆写行 eval 派生（7 字母），
+    并与该仓 HEAD 存档 token 交叉核验（equals-constructed=yes）
+  - P4 旧中文品牌 CN ← 同法派生（2 汉字），与云仓 HEAD 2 文件命中交叉核验（=2 ✓）
+  - 掩码：E:\workspaces\workspace-ddd4j\.rl4-env.sh mask()（sed 字节级四模式）
+    替换映射：旧教育品牌→redacted-legacy-edu；旧家族名→redacted-legacy-family；
+    旧应用名→redacted-legacy-app；旧中文品牌→旧家族。
+
+【1】命中 → 处置对照（自扫清单 + 同类补扫）
+--------------------------------------------------------------------------------
+  自扫基线（四模式文本扫描，全树排除 .git/、target/，grep -I 跳过二进制）：
+    旧家族名 = 8 行 / 3 文件；旧应用名 = 0；旧教育品牌 = 0；旧中文品牌 = 0。
+  #  文件 / 位置                                  修复前命中(掩码形态)        处置                              复扫
+  1  CODEOWNERS（1/5/8/9/10 行）                 5× @<FAM>                   前波映射 →@redacted-legacy-family  0
+     （git diff 掩码核验：-* @<FAM> → +* @redacted-legacy-family 等 5 行；
+       属本任务前既有未提交改动，核验正确后复用，未再编辑）
+  2  .github/FUNDING.yml:2                        github: [<FAM>]             前波映射 →[redacted-legacy-family]  0
+     （同上，diff 掩码核验通过，复用）
+  3  docs/P5-B0-LOCAL-VERIFICATION.md:49          命令行 io[.]github[.]<FAM>  前波映射 →…redacted-legacy-family   0
+     （同上，diff 掩码核验通过，复用）
+  4  docs/superpowers/plans/2026-09-10-p5-b0-     2 处（HEAD 已为映射后形态，  无需改动（已提交形态核验）          0
+     dual-branch-release-testcontainers-          redacted-legacy-family 计数=2，
+     convergence.md                               品牌字面量=0）
+  5  docs/superpowers/specs/2026-09-10-p5-b0-     同上 2 处                   无需改动（同上）                    0
+     dual-branch-release-testcontainers-
+     convergence-design.md
+  补扫（教育类关键词集、公司后缀代理词 有限公司/网络科技/版权所有）：
+    quarkus 教育关键词文件=0、公司后缀代理文件=0 → 无同性质遗漏命中。
+
+【2】登记项（红线命中，只登记不动 —— POM 类，留待编排者/对应智能体）
+--------------------------------------------------------------------------------
+  3 个 .flattened-pom.xml（untracked + gitignored 的生成态 POM，按“pom.xml 类
+  命中只登记不动”规则处理，本任务未编辑）：
+  红线命中 ddd4j-quarkus-dependencies/.flattened-pom.xml:256
+  红线命中 ddd4j-quarkus-dependencies/.flattened-pom.xml:259
+  红线命中 ddd4j-quarkus-dependencies/.flattened-pom.xml:263
+  红线命中 ddd4j-quarkus-dependencies/.flattened-pom.xml:267
+  红线命中 ddd4j-quarkus-extensions/ddd4j-quarkus-extension-jackson/.flattened-pom.xml:14
+  红线命中 ddd4j-quarkus-extensions/ddd4j-quarkus-extension-jackson/.flattened-pom.xml:17
+  红线命中 ddd4j-quarkus-extensions/ddd4j-quarkus-extension-jackson/.flattened-pom.xml:19
+  红线命中 ddd4j-quarkus-extensions/ddd4j-quarkus-extension-qrcode/.flattened-pom.xml:25
+  （命中形态均为坐标/注释中的 io.github.<FAM> 家族坐标形态；共 8 行。）
+  src/ 类命中：0（全仓 grep -I 四模式，src 无命中）。
+
+【3】复扫 0 命中证明
+--------------------------------------------------------------------------------
+  扫描方式：find 全树 -type d \( -name .git -o -name target \) -prune -o -type f
+  -print0 | xargs -0 grep -Iisn -e "$FAM" -e "$APP" -e "$E" -e "$CN" | mask
+  （模式值全部来自【0】文件派生；含未跟踪与被忽略文件，含本证据文件。）
+  阳性对照（同管线 grep 'ddd4j'）→ 573 / 623 文件命中（成文后复检时点，管线有效）。
+  结果：
+  - 可编辑范围（docs / yml / CODEOWNERS / README 等全部文本类型）四模式 = 0；
+  - 旧家族名残余 = 仅【2】登记的 3 个生成态 flattened POM（8 行，未动，非可编辑范围）；
+  - 旧应用名 / 旧教育品牌 / 旧中文品牌 = 0。
+  - 派生索引字节核验：.codegraph/ 与 scripts/__pycache__ 内四模式字节命中 = 0
+    （无 boot 批次那种陈旧索引残留）。
+  本证据文件成文后以同管线复检（见文末状态行）。
+
+【4】边界核查（禁止项遵守）
+--------------------------------------------------------------------------------
+  - 未运行 mvn / gradle；未执行任何 git commit / push / 切分支。
+  - 未修改 src/ 与 pom.xml；本任务新增文件仅本证据文件 1 个。
+  - 前波未提交映射成果（CODEOWNERS / FUNDING.yml / P5-B0-LOCAL-VERIFICATION.md）
+    原样保留；既有其余 151 条 M 项改动零触碰。
+  - 掩码纪律：全部展示输出过 mask()；本文件全文为掩码形态，成文后四模式全文复检
+    命中 = 0（自身不含任何字面量）。
+
+================================================================================
+状态：完成。可编辑范围四模式复扫 = 0；登记项 8 行（3 个生成态 flattened POM，
+pom 类规则不动）；例外与裁定已入证。
+================================================================================

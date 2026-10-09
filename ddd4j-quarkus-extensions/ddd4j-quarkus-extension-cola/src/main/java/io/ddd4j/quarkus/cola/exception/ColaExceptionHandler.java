@@ -27,6 +27,12 @@ import org.slf4j.LoggerFactory;
 @Provider
 public class ColaExceptionHandler implements ExceptionMapper<BizException> {
 
+    /**
+     * 无参构造函数。
+     */
+    public ColaExceptionHandler() {
+    }
+
     private static final Logger log = LoggerFactory.getLogger(ColaExceptionHandler.class);
 
     /**

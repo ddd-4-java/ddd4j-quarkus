@@ -30,6 +30,12 @@ public class Order {
 
     /**
      * 全量构造器（用于从仓储加载聚合）。
+     * @param buyerId  买家标识
+     * @param buyerName  买家名称
+     * @param id  标识
+     * @param orderNo  订单编号
+     * @param status  状态
+     * @param totalAmount  总数金额
      */
     public Order(String id, String orderNo, String buyerId, String buyerName, OrderStatus status, BigDecimal totalAmount) {
         this.id = id;
@@ -71,10 +77,34 @@ public class Order {
         this.status = OrderStatus.PAID;
     }
 
+    /**
+     * 获取标识。
+     * @return 标识
+     */
     public String getId() { return id; }
+    /**
+     * 获取订单编号。
+     * @return 订单编号
+     */
     public String getOrderNo() { return orderNo; }
+    /**
+     * 获取买家标识。
+     * @return 买家标识
+     */
     public String getBuyerId() { return buyerId; }
+    /**
+     * 获取买家名称。
+     * @return 买家名称
+     */
     public String getBuyerName() { return buyerName; }
+    /**
+     * 获取状态。
+     * @return 状态
+     */
     public OrderStatus getStatus() { return status; }
+    /**
+     * 获取总数金额。
+     * @return 总数金额
+     */
     public BigDecimal getTotalAmount() { return totalAmount; }
 }

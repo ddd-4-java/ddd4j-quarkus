@@ -60,6 +60,18 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <!-- 注解处理器生成物（target/generated-sources）不参与 Javadoc 门禁：
+                         生成代码每次编译都会被覆盖，其内容由生成器决定，不在此手工补注释 -->
+                    <sourceFileExcludes>
+                        <sourceFileExclude>**/generated-sources/**</sourceFileExclude>
+                        <sourceFileExclude>**/*MapperImpl.java</sourceFileExclude>
+                    </sourceFileExcludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

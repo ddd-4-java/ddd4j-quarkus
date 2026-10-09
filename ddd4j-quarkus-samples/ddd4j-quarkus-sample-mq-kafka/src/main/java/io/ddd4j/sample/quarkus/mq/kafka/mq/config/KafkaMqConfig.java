@@ -14,12 +14,22 @@ import org.eclipse.microprofile.config.Config;
 @ApplicationScoped
 public class KafkaMqConfig {
 
+    /**
+     * 无参构造函数。
+     */
+    public KafkaMqConfig() {
+    }
+
     /** 显式注入并在应用退出时释放 broker 客户端，由框架注册器负责启动。 */
     void shutdown(@Observes ShutdownEvent event,
                   KafkaMQClient client) throws Exception {
         client.close();
     }
-    /** 创建 broker 专用属性；MQ 通用属性继续由框架提供。 */
+    /**
+     * 创建 broker 专用属性；MQ 通用属性继续由框架提供。
+     * @param config  配置
+     * @return 方法返回结果
+     */
     @Produces
     @Singleton
     @Typed(KafkaMQProperties.class)

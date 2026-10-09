@@ -21,6 +21,12 @@ import io.quarkus.runtime.annotations.Recorder;
 public class CacheRecorder {
 
     /**
+     * 无参构造函数。
+     */
+    public CacheRecorder() {
+    }
+
+    /**
      * Configure the default local cache implementation used by {@link CacheKit}.
      *
      * <p>Returns a {@link RuntimeValue} (Quarkus convention for static-init produced handles)

@@ -41,6 +41,12 @@ import jakarta.inject.Singleton;
 public class ColaCdiProducer {
 
     /**
+     * 无参构造函数。
+     */
+    public ColaCdiProducer() {
+    }
+
+    /**
      * 注册 ddd4j 风格的 COLA ResponseHandler。
      *
      * <p>让 COLA catchlog 的异常处理输出 ddd4j 的 {@code ApiRestResponse} 格式，

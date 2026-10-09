@@ -27,6 +27,12 @@ import org.slf4j.LoggerFactory;
 @Provider
 public class ColaSysExceptionHandler implements ExceptionMapper<SysException> {
 
+    /**
+     * 无参构造函数。
+     */
+    public ColaSysExceptionHandler() {
+    }
+
     private static final Logger log = LoggerFactory.getLogger(ColaSysExceptionHandler.class);
 
     /**

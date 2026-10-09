@@ -14,6 +14,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class InMemoryRuleCache implements RuleCache {
 
+    /**
+     * 无参构造函数。
+     */
+    public InMemoryRuleCache() {
+    }
+
     private final ConcurrentHashMap<String, RuleDefinition> cache = new ConcurrentHashMap<>();
 
     @Override

@@ -43,6 +43,12 @@ import java.util.Optional;
 public class IdGeneratorProducer {
 
     /**
+     * 无参构造函数。
+     */
+    public IdGeneratorProducer() {
+    }
+
+    /**
      * ID 策略配置项名。
      */
     public static final String ID_STRATEGY_CONFIG = "ddd4j.quarkus.data.id-strategy";

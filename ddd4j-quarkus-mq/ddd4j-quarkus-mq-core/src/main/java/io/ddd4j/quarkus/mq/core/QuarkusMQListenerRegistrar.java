@@ -63,6 +63,12 @@ import java.util.Optional;
 @RegisterForReflection(methods = true)
 public class QuarkusMQListenerRegistrar {
 
+    /**
+     * 无参构造函数。
+     */
+    public QuarkusMQListenerRegistrar() {
+    }
+
     private static final Logger log = Logger.getLogger(QuarkusMQListenerRegistrar.class);
 
     @Inject

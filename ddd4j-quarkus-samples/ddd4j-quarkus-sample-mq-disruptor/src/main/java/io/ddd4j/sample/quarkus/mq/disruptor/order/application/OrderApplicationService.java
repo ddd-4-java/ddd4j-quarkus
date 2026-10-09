@@ -23,6 +23,12 @@ import java.util.Objects;
 public class OrderApplicationService {
 
     /**
+     * 无参构造函数。
+     */
+    public OrderApplicationService() {
+    }
+
+    /**
      * 创建订单并发布 OrderCreatedEvent。
      *
      * @param orderNo   订单编号

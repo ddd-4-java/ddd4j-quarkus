@@ -22,6 +22,7 @@ public final class CacheKitRuleCache implements RuleCache {
     private final String biz;
 
     /**
+     * 缓存Kit规则缓存。
      * @param biz CacheKit 业务标识（对应 {@code ddd4j.qlexpress.rules.cache-name}）
      */
     public CacheKitRuleCache(String biz) {

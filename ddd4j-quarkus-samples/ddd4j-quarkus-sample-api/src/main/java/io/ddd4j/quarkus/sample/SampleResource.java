@@ -13,6 +13,13 @@ import jakarta.ws.rs.core.MediaType;
 public class SampleResource {
 
     /**
+     * 无参构造函数。
+     */
+    public SampleResource() {
+    }
+
+    /**
+     * 执行 hello 操作。
      * @return 统一响应
      */
     @GET
