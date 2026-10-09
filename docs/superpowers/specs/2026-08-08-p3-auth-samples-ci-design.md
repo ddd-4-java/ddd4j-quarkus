@@ -14,7 +14,8 @@
 
 ### 1.2 Samples 骨架未完整化
 
-14 个 sample 子模块中，`layered`、`adapter`、`app`、`domain`、`client`、`common`、`infrastructure` 7 个为骨架（pom + 占位类），需要补齐 domain/app/infrastructure/adapter 四层实现。
+14 个 sample 子模块中，`layered`、`adapter`、`app`、`domain`、`client`、`common`、`infrastructure` 7 个为骨架（pom + 占位类），需要补齐
+domain/app/infrastructure/adapter 四层实现。
 
 ### 1.3 CI 工作流缺失
 
@@ -42,7 +43,8 @@ ddd4j-quarkus/ddd4j-quarkus-auth/
 └── ddd4j-quarkus-auth-license/          # 🟡 Producer only（Ddd4jLicenseQuarkusConfig） + 显式声明 truelicense-core
 ```
 
-**注**：`ddd4j-quarkus-auth-testcontainers`（旧 plan 计划新增的共享 fixture 模块）未落地。4 个 auth 子模块（satoken/shiro/security/license）当前没有 testcontainers 集成测试。
+**注**：`ddd4j-quarkus-auth-testcontainers`（旧 plan 计划新增的共享 fixture 模块）未落地。4 个 auth
+子模块（satoken/shiro/security/license）当前没有 testcontainers 集成测试。
 
 ### 3.2 Samples 分层
 
@@ -81,6 +83,7 @@ ddd4j-quarkus-sample-api/                          # 🟡 占位（1 类）
 ```
 
 **关键配置**：
+
 - 测试坐标：`io.quarkus:quarkus-junit`（Quarkus 3.31+ 官方）
 - JUnit 4：`junit:junit` test 依赖（devservices 引用 `org.junit.rules.TestRule`）
 - Secrets 注入：`MAVEN_USERNAME/MAVEN_PASSWORD` secrets → `~/.m2/settings.xml`（阿里云私有仓库）
@@ -133,24 +136,24 @@ ddd4j-quarkus/
 
 ## 6. 测试策略
 
-| 模块 | 测试类型 | 测试目标 |
-|---|---|---|
-| auth-jwt | `@QuarkusTest` + `@InjectMock` | 启动 + Provider 注入 + JWT 解析 |
-| auth-{satoken,shiro,security,license} | （缺失） | 建议后续补充 testcontainers 集成测试 |
-| sample-layered | `@QuarkusTest` | 分层架构端到端验证 |
-| sample-app | JUnit `@Test` | Application Service 单元测试 |
-| sample-domain | JUnit `@Test` | 实体行为测试 |
+| 模块                                  | 测试类型                       | 测试目标                             |
+|---------------------------------------|--------------------------------|--------------------------------------|
+| auth-jwt                              | `@QuarkusTest` + `@InjectMock` | 启动 + Provider 注入 + JWT 解析      |
+| auth-{satoken,shiro,security,license} | （缺失）                       | 建议后续补充 testcontainers 集成测试 |
+| sample-layered                        | `@QuarkusTest`                 | 分层架构端到端验证                   |
+| sample-app                            | JUnit `@Test`                  | Application Service 单元测试         |
+| sample-domain                         | JUnit `@Test`                  | 实体行为测试                         |
 
 ## 7. 风险与缓解
 
-| 风险 | 缓解 |
-|---|---|
+| 风险                                                                         | 缓解                                                            |
+|------------------------------------------------------------------------------|-----------------------------------------------------------------|
 | 4 个 auth 子模块（satoken/shiro/security/license）无 testcontainers 集成测试 | 后续 plan 补充 `ddd4j-quarkus-auth-testcontainers` 共享 fixture |
-| samples/mq-{disruptor,kafka,rabbitmq} 无测试 | 后续 plan 补充端到端集成测试 |
-| samples/rich-model 无测试 | 后续 plan 补充血充血模型单元测试 |
-| ddd4j-extension-pf4j 空壳未删除 | 登记为 P4 待办 |
-| GitHub Actions secrets 不能用于 `if:` 条件 | 通过 env 传递 |
-| 阿里云私有仓库需 credentials | ci.yml 注入 `MAVEN_USERNAME/MAVEN_PASSWORD` secrets |
+| samples/mq-{disruptor,kafka,rabbitmq} 无测试                                 | 后续 plan 补充端到端集成测试                                    |
+| samples/rich-model 无测试                                                    | 后续 plan 补充血充血模型单元测试                                |
+| ddd4j-extension-pf4j 空壳未删除                                              | 登记为 P4 待办                                                  |
+| GitHub Actions secrets 不能用于 `if:` 条件                                   | 通过 env 传递                                                   |
+| 阿里云私有仓库需 credentials                                                 | ci.yml 注入 `MAVEN_USERNAME/MAVEN_PASSWORD` secrets             |
 
 ## 8. 验收标准
 
