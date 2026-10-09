@@ -39,7 +39,9 @@ import java.util.function.BooleanSupplier;
  */
 public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
 
-    /** 统一业务事件 topic/tag（对齐 sample 的 OrderCreatedEvent 模式）。 */
+    /**
+     * 统一业务事件 topic/tag（对齐 sample 的 OrderCreatedEvent 模式）。
+     */
     protected static final String TOPIC = "ORDER";
     protected static final String TAG = "CREATED";
 
@@ -66,15 +68,21 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
      */
     protected abstract void applyContainerProperties(P properties);
 
-    /** init 之前的 broker 准备钩子（在连接信息填充之后、init 之前调用）。 */
+    /**
+     * init 之前的 broker 准备钩子（在连接信息填充之后、init 之前调用）。
+     */
     protected void preInit() throws Exception {
     }
 
-    /** init 之前改写监听器钩子（如 SQS 把 topic 改写为 queue URL），默认不动。 */
+    /**
+     * init 之前改写监听器钩子（如 SQS 把 topic 改写为 queue URL），默认不动。
+     */
     protected void adaptListener(MQListener listener) throws Exception {
     }
 
-    /** consumer 注册完成后的稳定等待（订阅异步生效，避免 publish 早于 subscribe）。 */
+    /**
+     * consumer 注册完成后的稳定等待（订阅异步生效，避免 publish 早于 subscribe）。
+     */
     protected long settleMillis() {
         return 3_000L;
     }
@@ -100,14 +108,18 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
         return TAG;
     }
 
-    /** round-trip 事件工厂；SQS 等需要覆盖 topic（queue URL）的 broker 覆写本方法。 */
+    /**
+     * round-trip 事件工厂；SQS 等需要覆盖 topic（queue URL）的 broker 覆写本方法。
+     */
     protected OrderCreatedEvent newOrderCreatedEvent() {
         return new OrderCreatedEvent("IT-" + System.nanoTime(), "buyer-it", "99.90");
     }
 
     // ========================= 工具 =========================
 
-    /** 读取 QuarkusTestResource 注入的 config 值。 */
+    /**
+     * 读取 QuarkusTestResource 注入的 config 值。
+     */
     protected static String config(String key) {
         return ConfigProvider.getConfig().getValue(key, String.class);
     }
@@ -262,13 +274,17 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
             return received;
         }
 
-        /** 是否已收到指定 orderId 的事件（过滤复用容器中残留的陈旧消息）。 */
+        /**
+         * 是否已收到指定 orderId 的事件（过滤复用容器中残留的陈旧消息）。
+         */
         public boolean matches(String orderId) {
             OrderCreatedEvent event = received;
             return event != null && orderId.equals(event.getOrderId());
         }
 
-        /** 阻塞等待首个事件（供不用 {@link #await} 的子类使用）。 */
+        /**
+         * 阻塞等待首个事件（供不用 {@link #await} 的子类使用）。
+         */
         public boolean awaitEvent(long timeoutMillis) throws InterruptedException {
             return latch.await(timeoutMillis, java.util.concurrent.TimeUnit.MILLISECONDS);
         }

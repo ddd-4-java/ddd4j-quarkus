@@ -46,50 +46,70 @@ import java.util.List;
  */
 @Entity
 @Table(name = "ddd4j_stored_event",
-       uniqueConstraints = @UniqueConstraint(
-           name = "uk_aggregate_version",
-           columnNames = {"aggregate_type", "aggregate_id", "version"}))
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_aggregate_version",
+                columnNames = {"aggregate_type", "aggregate_id", "version"}))
 public class PanacheStoredEventEntity extends PanacheEntityBase {
 
-    /** 全局流位置：数据库自增主键，事件存储的追加顺序号。 */
+    /**
+     * 全局流位置：数据库自增主键，事件存储的追加顺序号。
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long position;
 
-    /** 事件 ID（UUID 字符串，36 字符）。 */
+    /**
+     * 事件 ID（UUID 字符串，36 字符）。
+     */
     @Column(name = "event_id", nullable = false, length = 36)
     public String eventId;
 
-    /** 聚合类型名（限定名，最长 128 字符）。 */
+    /**
+     * 聚合类型名（限定名，最长 128 字符）。
+     */
     @Column(name = "aggregate_type", nullable = false, length = 128)
     public String aggregateType;
 
-    /** 聚合 ID 字符串形式（最长 128 字符）。 */
+    /**
+     * 聚合 ID 字符串形式（最长 128 字符）。
+     */
     @Column(name = "aggregate_id", nullable = false, length = 128)
     public String aggregateId;
 
-    /** 聚合版本号（乐观并发控制维度，从 1 起）。 */
+    /**
+     * 聚合版本号（乐观并发控制维度，从 1 起）。
+     */
     @Column(name = "version", nullable = false)
     public Long version;
 
-    /** 事件类型名（限定名，最长 256 字符）。 */
+    /**
+     * 事件类型名（限定名，最长 256 字符）。
+     */
     @Column(name = "event_type", nullable = false, length = 256)
     public String eventType;
 
-    /** 序列化事件负载（JSON 文本）。 */
+    /**
+     * 序列化事件负载（JSON 文本）。
+     */
     @Lob
     @Column(name = "payload", nullable = false)
     public String payload;
 
-    /** 关联 ID（可选，36 字符）。 */
+    /**
+     * 关联 ID（可选，36 字符）。
+     */
     @Column(name = "correlation_id", length = 36)
     public String correlationId;
 
-    /** 因果 ID（可选，36 字符）。 */
+    /**
+     * 因果 ID（可选，36 字符）。
+     */
     @Column(name = "causation_id", length = 36)
     public String causationId;
 
-    /** 事件发生时间（带时区）。 */
+    /**
+     * 事件发生时间（带时区）。
+     */
     @Column(name = "created_at", nullable = false)
     public ZonedDateTime createdAt;
 

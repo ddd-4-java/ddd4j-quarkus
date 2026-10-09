@@ -97,7 +97,7 @@ public class QuarkusMQListenerRegistrar {
         Optional<MQClient> clientOpt = findActiveClient();
         if (clientOpt.isEmpty()) {
             log.warnf("No MQClient found for broker '%s', skipping initialization. " +
-                    "Did you add the corresponding ddd4j-quarkus-mq-<broker> dependency?",
+                            "Did you add the corresponding ddd4j-quarkus-mq-<broker> dependency?",
                     mqProperties.getBroker());
             return;
         }

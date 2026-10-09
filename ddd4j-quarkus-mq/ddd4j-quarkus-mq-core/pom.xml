@@ -21,7 +21,8 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
-        </dependency></dependencies>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

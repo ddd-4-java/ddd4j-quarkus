@@ -8,7 +8,8 @@
 
 ## 1. 背景
 
-`feature/4.0.x` 已完成 P5-A 本地消费者基线：已发布 ddd4j 快照的空缓存消费、Web 请求生命周期、License 真实安装验签，以及不修改上游源码的 CI 解析链路均有本地证据。
+`feature/4.0.x` 已完成 P5-A 本地消费者基线：已发布 ddd4j 快照的空缓存消费、Web 请求生命周期、License 真实安装验签，以及不修改上游源码的
+CI 解析链路均有本地证据。
 
 `feature/3.3.x` 是独立维护线，仍必须保持自己的平台约束：
 
@@ -78,7 +79,8 @@
 - parent `io.ddd4j:ddd4j-parent:2.0.x.20260630-SNAPSHOT`
 - 属性 `ddd4j.version=2.0.x.20260730-SNAPSHOT`
 
-Task 1 已按下列规则选择 `2.0.x.20260630-SNAPSHOT`，并统一 parent、属性与消费者；`20260730` 缺少 `io.ddd4j:ddd4j-dependencies:pom`。第一任务从全新 Maven 本地仓库验证以下制品的远端可消费性，Task 5 再次独立验证：
+Task 1 已按下列规则选择 `2.0.x.20260630-SNAPSHOT`，并统一 parent、属性与消费者；`20260730` 缺少
+`io.ddd4j:ddd4j-dependencies:pom`。第一任务从全新 Maven 本地仓库验证以下制品的远端可消费性，Task 5 再次独立验证：
 
 - `io.ddd4j:ddd4j-parent`
 - `io.ddd4j:ddd4j-dependencies`
@@ -94,9 +96,12 @@ Task 1 已按下列规则选择 `2.0.x.20260630-SNAPSHOT`，并统一 parent、�
 4. 选定版本必须统一写入 parent、`ddd4j.version`、BOM、dependencies 和远端消费者 fixture。
 5. 不允许依赖开发者现有 `~/.m2` 缓存得出结论。
 
-Task 5 修复授权补充：全量门禁发现 qrcode 消费的退役发布组 ZXing 为 Java 21 字节码。叶模块改用 ddd4j 2.0.x BOM 已管理的 `io.github.easy4j:zxing-extension`，保留无版本依赖，移除本仓对旧坐标的管理。该修复保持 Java 17、ddd4j 2.0.x 和 Quarkus 3.37.4 原有验收合约；不修改 ci.yml 或 QR 业务源码，修复后重新运行双 JDK 完整门禁。
+Task 5 修复授权补充：全量门禁发现 qrcode 消费的退役发布组 ZXing 为 Java 21 字节码。叶模块改用 ddd4j 2.0.x BOM 已管理的
+`io.github.easy4j:zxing-extension`，保留无版本依赖，移除本仓对旧坐标的管理。该修复保持 Java 17、ddd4j 2.0.x 和 Quarkus
+3.37.4 原有验收合约；不修改 ci.yml 或 QR 业务源码，修复后重新运行双 JDK 完整门禁。
 
-新增约束：自有第三方组件统一采用 `io.github.easy4j`；仓库已跟踪源码、POM、注释、规格和文档中的退役 groupId 必须为零引用。Jackson 版本由导入的 ddd4j BOM 管理，移除本地陈旧管理项；自包含 Jackson 2 序列化行为保持不变。
+新增约束：自有第三方组件统一采用 `io.github.easy4j`；仓库已跟踪源码、POM、注释、规格和文档中的退役 groupId 必须为零引用。Jackson
+版本由导入的 ddd4j BOM 管理，移除本地陈旧管理项；自包含 Jackson 2 序列化行为保持不变。
 
 ## 6. Web 生命周期契约
 
@@ -150,7 +155,8 @@ Quarkus test profile 必须在 CDI 创建 `LicenseVerify` 之前完成：
 
 ### 7.3 依赖治理
 
-`ddd4j-extension-license` 应由 3.3.x BOM 管理。只有空缓存 dependency tree 证明其发布 POM 仍缺少可解析的 TrueLicense 版本时，才保留叶模块的直接 `truelicense-core` 依赖，并在文档中记录原因。
+`ddd4j-extension-license` 应由 3.3.x BOM 管理。只有空缓存 dependency tree 证明其发布 POM 仍缺少可解析的 TrueLicense
+版本时，才保留叶模块的直接 `truelicense-core` 依赖，并在文档中记录原因。
 
 ## 8. CI 设计
 
@@ -179,7 +185,8 @@ Quarkus test profile 必须在 CDI 创建 `LicenseVerify` 之前完成：
 
 ### 8.3 Actions Snowflake worker-id 修复契约
 
-GitHub Actions run `34331450813` 的 Java 17/21 job 暴露了 IP 派生 workerId 超出 Snowflake `0..31` 的问题（runner IP 末字节为 115/171）。此前 `597a5b7` 的本地成功只代表当时主机环境，不能覆盖该失败。
+GitHub Actions run `34331450813` 的 Java 17/21 job 暴露了 IP 派生 workerId 超出 Snowflake `0..31` 的问题（runner IP 末字节为
+115/171）。此前 `597a5b7` 的本地成功只代表当时主机环境，不能覆盖该失败。
 
 - 新增可选配置 `ddd4j.quarkus.data.snowflake.worker-id`，沿用 MicroProfile `@ConfigProperty` 装配。
 - 显式配置仅接受 `0..31`，非法值立即抛出带配置键的 `IllegalArgumentException`，不得取模。
@@ -217,7 +224,8 @@ GitHub Actions run `34331450813` 的 Java 17/21 job 暴露了 IP 派生 workerId
 - CI 已改为消费发布制品的静态设计。
 - GitHub Actions hosted、push、deploy 是否实际执行。
 
-只有本规格第 9 节门禁全部通过，才能将状态更新为“feature/3.3.x P5-A 本地完成”。这不代表 `feature/4.0.x`、`master`、P5-B 至 P5-E 或生产发布验收发生变化。
+只有本规格第 9 节门禁全部通过，才能将状态更新为“feature/3.3.x P5-A 本地完成”。这不代表 `feature/4.0.x`、`master`、P5-B 至
+P5-E 或生产发布验收发生变化。
 
 ## 11. Git 与工作区约束
 
@@ -230,20 +238,24 @@ GitHub Actions run `34331450813` 的 Java 17/21 job 暴露了 IP 派生 workerId
 
 ## 12. 风险与控制
 
-| 风险 | 控制 |
-|---|---|
-| 2.0.x 快照版本不完整 | 第一门禁使用空缓存验证完整坐标集合 |
-| 机械回迁带入 Maven 4 | 对 modelVersion、modules 和 wrapper 做结构检查 |
-| Web 清理测试跨线程假阳性 | 使用同线程、清理后 response probe |
-| License 测试泄露密钥或并发互删 | 唯一目录、严格权限、失败及关闭后清理 |
-| CI 日志泄露 Maven 凭据 | 临时文件、原子替换、禁止解析和输出秘密 |
-| actionlint 只报告不阻断 | 显式 fail level 并做负向验证 |
-| 复制 4.0.x 验证结论 | 只从 3.3.x 最终 XML 和日志生成文档 |
-| master 被错误同步 | 本规格明确排除 master |
+| 风险                           | 控制                                           |
+|--------------------------------|------------------------------------------------|
+| 2.0.x 快照版本不完整           | 第一门禁使用空缓存验证完整坐标集合             |
+| 机械回迁带入 Maven 4           | 对 modelVersion、modules 和 wrapper 做结构检查 |
+| Web 清理测试跨线程假阳性       | 使用同线程、清理后 response probe              |
+| License 测试泄露密钥或并发互删 | 唯一目录、严格权限、失败及关闭后清理           |
+| CI 日志泄露 Maven 凭据         | 临时文件、原子替换、禁止解析和输出秘密         |
+| actionlint 只报告不阻断        | 显式 fail level 并做负向验证                   |
+| 复制 4.0.x 验证结论            | 只从 3.3.x 最终 XML 和日志生成文档             |
+| master 被错误同步              | 本规格明确排除 master                          |
 
 ## 13. 完成定义
 
-2026-09-09 普通独立克隆的已验证代码提交 `597a5b7` 已通过 Java 17/21 `clean verify -Denforcer.skip=true`：每个 JDK 均为 62/62 SUCCESS、53 suites / 186 tests / 0 failures / 0 errors / 11 skipped。远端消费者、Web/License 行为、actionlint、分支合约、退役 groupId 零引用及 diff/status 检查均通过，审查修正已纳入该提交。本规格标记为 `feature/3.3.x P5-A 本地完成`；日志、历史失败和逐项 skip 见 [能力证据](../../CAPABILITY-ALIGNMENT.md)。本状态不包含 GitHub-hosted Actions、Enforcer、push/deploy、Native、Dev Mode、云服务、P5-B–E、master 或生产验收。
+2026-09-09 普通独立克隆的已验证代码提交 `597a5b7` 已通过 Java 17/21 `clean verify -Denforcer.skip=true`：每个 JDK 均为
+62/62 SUCCESS、53 suites / 186 tests / 0 failures / 0 errors / 11 skipped。远端消费者、Web/License 行为、actionlint、分支合约、退役
+groupId 零引用及 diff/status 检查均通过，审查修正已纳入该提交。本规格标记为 `feature/3.3.x P5-A 本地完成`；日志、历史失败和逐项
+skip 见 [能力证据](../../CAPABILITY-ALIGNMENT.md)。本状态不包含 GitHub-hosted Actions、Enforcer、push/deploy、Native、Dev
+Mode、云服务、P5-B–E、master 或生产验收。
 
 本变更完成必须同时满足：
 

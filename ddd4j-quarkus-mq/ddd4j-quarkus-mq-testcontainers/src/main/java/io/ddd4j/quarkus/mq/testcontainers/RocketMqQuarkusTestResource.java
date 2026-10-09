@@ -65,18 +65,26 @@ public class RocketMqQuarkusTestResource extends AbstractTestContainerFixture {
     @Override
     public synchronized void stop() {
         RuntimeException failure = null;
-        try { super.stop(); } catch (RuntimeException exception) { failure = exception; }
-        finally { releasePortLease(failure); }
+        try {
+            super.stop();
+        } catch (RuntimeException exception) {
+            failure = exception;
+        } finally {
+            releasePortLease(failure);
+        }
         if (failure != null) throw failure;
     }
 
     private void releasePortLease(Throwable failure) {
         if (portLease == null) return;
-        try { portLease.close(); }
-        catch (IOException exception) {
+        try {
+            portLease.close();
+        } catch (IOException exception) {
             if (failure != null) failure.addSuppressed(exception);
             else throw new IllegalStateException("Unable to release the RocketMQ test port lease", exception);
-        } finally { portLease = null; }
+        } finally {
+            portLease = null;
+        }
     }
 
     @Override

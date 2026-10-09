@@ -4,7 +4,8 @@
 
 ## Why deprecate?
 
-Spring Security requires the Spring ecosystem (Spring IoC, Spring AOP, etc.). In a Quarkus environment, this creates unnecessary baggage:
+Spring Security requires the Spring ecosystem (Spring IoC, Spring AOP, etc.). In a Quarkus environment, this creates
+unnecessary baggage:
 
 - Quarkus uses Arc CDI (not Spring IoC)
 - Quarkus uses RESTEasy Reactive (not Spring MVC)

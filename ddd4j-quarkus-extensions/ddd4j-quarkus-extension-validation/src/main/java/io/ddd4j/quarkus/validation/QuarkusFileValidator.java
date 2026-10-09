@@ -22,7 +22,7 @@ public class QuarkusFileValidator {
      * 校验 Quarkus 上传文件。
      *
      * @param fileUpload 上传文件，可以为空
-     * @param policy 校验策略
+     * @param policy     校验策略
      * @return 校验结果
      */
     public FileValidationResult validate(FileUpload fileUpload, FileValidationPolicy policy) {

@@ -7,14 +7,21 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.Semaphore;
 
-/** 串行化占用 RocketMQ 固定宿主机端口的测试进程。 */
+/**
+ * 串行化占用 RocketMQ 固定宿主机端口的测试进程。
+ */
 final class RocketMqPortLease implements AutoCloseable {
     private static final Semaphore JVM_LEASE = new Semaphore(1, true);
     private static final Path LOCK_FILE = Path.of(System.getProperty("java.io.tmpdir"), "ddd4j-quarkus-rocketmq-10911.lock");
     private final FileChannel channel;
     private final FileLock lock;
     private boolean closed;
-    private RocketMqPortLease(FileChannel channel, FileLock lock) { this.channel = channel; this.lock = lock; }
+
+    private RocketMqPortLease(FileChannel channel, FileLock lock) {
+        this.channel = channel;
+        this.lock = lock;
+    }
+
     static RocketMqPortLease acquire() throws IOException, InterruptedException {
         JVM_LEASE.acquire();
         FileChannel channel = null;
@@ -32,11 +39,19 @@ final class RocketMqPortLease implements AutoCloseable {
             throw failure;
         }
     }
-    @Override public void close() throws IOException {
+
+    @Override
+    public void close() throws IOException {
         if (closed) return;
         closed = true;
-        try { lock.release(); } finally {
-            try { channel.close(); } finally { JVM_LEASE.release(); }
+        try {
+            lock.release();
+        } finally {
+            try {
+                channel.close();
+            } finally {
+                JVM_LEASE.release();
+            }
         }
     }
 }

@@ -10,14 +10,24 @@ package io.ddd4j.sample.quarkus.mq.rabbitmq.order.domain;
  */
 public enum OrderStatus {
 
-    /** 已创建（初始状态） */
+    /**
+     * 已创建（初始状态）
+     */
     CREATED,
-    /** 已支付 */
+    /**
+     * 已支付
+     */
     PAID,
-    /** 已发货 */
+    /**
+     * 已发货
+     */
     SHIPPED,
-    /** 已完成 */
+    /**
+     * 已完成
+     */
     COMPLETED,
-    /** 已取消 */
+    /**
+     * 已取消
+     */
     CANCELLED
 }

@@ -62,19 +62,25 @@ public class SampleSaTokenRuntime implements SaTokenContext {
         SubjectKit.setDataProvider(previousDataProvider);
     }
 
-    /** 在当前请求中显式设置上下文，不创建线程全局状态。 */
+    /**
+     * 在当前请求中显式设置上下文，不创建线程全局状态。
+     */
     @Override
     public void setContext(SaRequest request, SaResponse response, SaStorage storage) {
         currentRequest.getCurrent().put(CONTEXT_KEY, new SaTokenContextModelBox(request, response, storage));
     }
 
-    /** 清除当前请求中显式设置的上下文。 */
+    /**
+     * 清除当前请求中显式设置的上下文。
+     */
     @Override
     public void clearContext() {
         currentRequest.getCurrent().remove(CONTEXT_KEY);
     }
 
-    /** 读取显式上下文，或从当前真实 HTTP 请求构建上下文。 */
+    /**
+     * 读取显式上下文，或从当前真实 HTTP 请求构建上下文。
+     */
     @Override
     public SaTokenContextModelBox getModelBox() {
         RoutingContext context = currentRequest.getCurrent();
@@ -83,63 +89,105 @@ public class SampleSaTokenRuntime implements SaTokenContext {
                 : new SaTokenContextModelBox(new Request(context), new Response(context), new Storage(context));
     }
 
-    /** 返回当前 HTTP 请求适配器。 */
+    /**
+     * 返回当前 HTTP 请求适配器。
+     */
     @Override
     public SaRequest getRequest() {
         return getModelBox().getRequest();
     }
 
-    /** 返回当前 HTTP 响应适配器。 */
+    /**
+     * 返回当前 HTTP 响应适配器。
+     */
     @Override
     public SaResponse getResponse() {
         return getModelBox().getResponse();
     }
 
-    /** 返回仅属于当前请求的临时存储。 */
+    /**
+     * 返回仅属于当前请求的临时存储。
+     */
     @Override
     public SaStorage getStorage() {
         return getModelBox().getStorage();
     }
 
-    /** 只有真实 HTTP 请求激活时才允许读取会话。 */
+    /**
+     * 只有真实 HTTP 请求激活时才允许读取会话。
+     */
     @Override
     public boolean isValid() {
         return Objects.nonNull(currentRequest.getCurrent());
     }
 
-    /** Vert.x 请求到 Sa-Token 请求接口的适配。 */
+    /**
+     * Vert.x 请求到 Sa-Token 请求接口的适配。
+     */
     private record Request(RoutingContext context) implements SaRequest {
         @Override
-        public Object getSource() { return context.request(); }
+        public Object getSource() {
+            return context.request();
+        }
+
         @Override
-        public String getParam(String name) { return context.request().getParam(name); }
+        public String getParam(String name) {
+            return context.request().getParam(name);
+        }
+
         @Override
-        public Collection<String> getParamNames() { return context.request().params().names(); }
+        public Collection<String> getParamNames() {
+            return context.request().params().names();
+        }
+
         @Override
         public Map<String, String> getParamMap() {
             Map<String, String> params = new HashMap<>();
             context.request().params().forEach(entry -> params.put(entry.getKey(), entry.getValue()));
             return params;
         }
+
         @Override
-        public String getHeader(String name) { return context.request().getHeader(name); }
+        public String getHeader(String name) {
+            return context.request().getHeader(name);
+        }
+
         @Override
         public String getCookieValue(String name) {
             Cookie cookie = context.request().getCookie(name);
             return Objects.isNull(cookie) ? null : cookie.getValue();
         }
+
         @Override
-        public String getCookieFirstValue(String name) { return getCookieValue(name); }
+        public String getCookieFirstValue(String name) {
+            return getCookieValue(name);
+        }
+
         @Override
-        public String getCookieLastValue(String name) { return getCookieValue(name); }
+        public String getCookieLastValue(String name) {
+            return getCookieValue(name);
+        }
+
         @Override
-        public String getRequestPath() { return context.request().path(); }
+        public String getRequestPath() {
+            return context.request().path();
+        }
+
         @Override
-        public String getUrl() { return context.request().absoluteURI(); }
+        public String getUrl() {
+            return context.request().absoluteURI();
+        }
+
         @Override
-        public String getMethod() { return context.request().method().name(); }
+        public String getMethod() {
+            return context.request().method().name();
+        }
+
         @Override
-        public String getHost() { return context.request().getHeader("Host"); }
+        public String getHost() {
+            return context.request().getHeader("Host");
+        }
+
         @Override
         public Object forward(String path) {
             context.reroute(path);
@@ -147,43 +195,61 @@ public class SampleSaTokenRuntime implements SaTokenContext {
         }
     }
 
-    /** 将响应头与状态写入真实 Vert.x 响应。 */
+    /**
+     * 将响应头与状态写入真实 Vert.x 响应。
+     */
     private record Response(RoutingContext context) implements SaResponse {
         @Override
-        public Object getSource() { return context.response(); }
+        public Object getSource() {
+            return context.response();
+        }
+
         @Override
         public SaResponse setStatus(int status) {
             context.response().setStatusCode(status);
             return this;
         }
+
         @Override
         public SaResponse setHeader(String name, String value) {
             context.response().putHeader(name, value);
             return this;
         }
+
         @Override
         public SaResponse addHeader(String name, String value) {
             context.response().headers().add(name, value);
             return this;
         }
+
         @Override
         public Object redirect(String url) {
             return context.response().setStatusCode(302).putHeader("Location", url).end();
         }
     }
 
-    /** 使用独立键空间，避免与业务 RoutingContext 属性冲突。 */
+    /**
+     * 使用独立键空间，避免与业务 RoutingContext 属性冲突。
+     */
     private record Storage(RoutingContext context) implements SaStorage {
         private static final String PREFIX = "sample.sa-token.";
+
         @Override
-        public Object getSource() { return context; }
+        public Object getSource() {
+            return context;
+        }
+
         @Override
-        public Object get(String key) { return context.get(PREFIX + key); }
+        public Object get(String key) {
+            return context.get(PREFIX + key);
+        }
+
         @Override
         public SaStorage set(String key, Object value) {
             context.put(PREFIX + key, value);
             return this;
         }
+
         @Override
         public SaStorage delete(String key) {
             context.remove(PREFIX + key);

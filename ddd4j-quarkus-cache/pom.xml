@@ -10,7 +10,9 @@
         <relativePath>../ddd4j-quarkus-dependencies/pom.xml</relativePath>
     </parent>
     <artifactId>ddd4j-quarkus-cache</artifactId>
-    <description>ddd4j-quarkus 缓存层 CDI 桥接：通过 Quarkus BuildStep + Recorder 在 STATIC_INIT 阶段将配置回写到 CacheKit。</description>
+    <description>ddd4j-quarkus 缓存层 CDI 桥接：通过 Quarkus BuildStep + Recorder 在 STATIC_INIT 阶段将配置回写到
+        CacheKit。
+    </description>
 
     <dependencies>
         <dependency>

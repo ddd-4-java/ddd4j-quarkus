@@ -90,7 +90,7 @@ public class ApiResponse<T> {
     /**
      * 从核心统一响应 {@link R} 适配为轻量包装。
      *
-     * @param r 核心统一响应
+     * @param r   核心统一响应
      * @param <T> 数据类型
      * @return 轻量包装响应
      */

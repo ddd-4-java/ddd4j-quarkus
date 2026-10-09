@@ -47,7 +47,9 @@ public class IdGeneratorProducer {
      */
     public static final String ID_STRATEGY_CONFIG = "ddd4j.quarkus.data.id-strategy";
 
-    /** 显式节点编号；未配置时由策略从本机 IP 派生。 */
+    /**
+     * 显式节点编号；未配置时由策略从本机 IP 派生。
+     */
     @ConfigProperty(name = "ddd4j.quarkus.data.snowflake.worker-id")
     Optional<Long> snowflakeWorkerId = Optional.empty();
 

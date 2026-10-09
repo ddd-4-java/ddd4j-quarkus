@@ -34,7 +34,7 @@ public class AuthIsolationProbeResource {
     /**
      * 在读取当前认证主体后主动失败，并记录同一个 Vert.x 请求的结束回调。
      *
-     * @param requestId 测试请求标识
+     * @param requestId       测试请求标识
      * @param expectedLoginId 预期的当前登录标识
      */
     @GET

@@ -16,7 +16,7 @@
         ddd4j-quarkus 消息队列 testcontainers 共享 fixture：
         - AbstractTestContainerFixture（统一 owned start/stop，CI 默认禁止 reuse）
         - 13 个 broker 的专用 fixture（Kafka / RabbitMQ / RocketMQ / ActiveMQ / Pulsar / NATS /
-          MQTT / Redis-Stream / SQS / ONS / TDMQ / Disruptor / MQTT-Mica）
+        MQTT / Redis-Stream / SQS / ONS / TDMQ / Disruptor / MQTT-Mica）
         - QuarkusResourceLifecycleManager 集成（每个 fixture 自动注入容器连接信息到 application.properties）
         - JunitJupiterQuarkusTestContainers 注解 + Ddd4jQuarkusTestContainersExtension（Docker 守护优雅跳过）
         - AbstractMqQuarkusIntegrationTest（publish → broker → @MQEventListener round-trip 骨架）
@@ -26,7 +26,7 @@
         - rabbitmq:3.13-management-alpine
         - rocketmq:5.3.2 (apache/rocketmq, namesrv+broker 单容器双进程)
         - activemq-artemis:2.33.0-alpine (主仓 ddd4j-mq-activemq 客户端为 artemis-jakarta-client,
-          CORE 协议 61616；classic OpenWire 不兼容)
+        CORE 协议 61616；classic OpenWire 不兼容)
         - pulsar:3.2.0 (apachepulsar/pulsar, standalone)
         - nats:2.10.22
         - mqtt:2.0 (eclipse-mosquitto)
@@ -104,7 +104,8 @@
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <scope>test</scope>
-        </dependency></dependencies>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

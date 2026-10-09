@@ -97,9 +97,12 @@
                          与主仓 ddd4j-data-event-store-panache（3.0.x 线）同款修复。 -->
                     <classpathDependencyExcludes>
                         <classpathDependencyExclude>com.tngtech.archunit:archunit-junit5</classpathDependencyExclude>
-                        <classpathDependencyExclude>com.tngtech.archunit:archunit-junit5-engine</classpathDependencyExclude>
-                        <classpathDependencyExclude>com.tngtech.archunit:archunit-junit5-engine-api</classpathDependencyExclude>
-                        <classpathDependencyExclude>com.tngtech.archunit:archunit-junit5-api</classpathDependencyExclude>
+                        <classpathDependencyExclude>com.tngtech.archunit:archunit-junit5-engine
+                        </classpathDependencyExclude>
+                        <classpathDependencyExclude>com.tngtech.archunit:archunit-junit5-engine-api
+                        </classpathDependencyExclude>
+                        <classpathDependencyExclude>com.tngtech.archunit:archunit-junit5-api
+                        </classpathDependencyExclude>
                         <classpathDependencyExclude>com.tngtech.archunit:archunit</classpathDependencyExclude>
                     </classpathDependencyExcludes>
                 </configuration>
