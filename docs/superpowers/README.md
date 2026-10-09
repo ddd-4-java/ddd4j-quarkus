@@ -1,29 +1,29 @@
 # ddd4j-quarkus 超级规范（Superpowers）
 
-本目录是 ddd4j-quarkus 项目的**设计与实施规范体系**，遵循 superpowers 协作框架：
+本目录是 ddd4j-quarkus 项目的 **设计与实施规范体系**，遵循 superpowers 协作框架：
 
 - **spec** = 设计（Why / What）— 由架构师评审，回答"为何这么做、模块/接口长什么样"
 - **plan** = 实施步骤（How）— 由 AI 代理按 checkbox 逐步执行
 
 ## 与历史计划的关系
 
-- 本目录**取代** `.zcode/plans/plan-sess_5963fbf4-*.md`（旧 ZCode session plan，不在 git 控制内）
-- 总览 spec 的核心内容已**吸收**旧 plan 的"对齐 ddd4j-boot 框架集成"核心内容并标注来源
-- 旧 plan 的 10 周详细工作量估算**已过时**（实际按多智能体并行协作完成）
+- 本目录 **取代** `.zcode/plans/plan-sess_5963fbf4-*.md`（旧 ZCode session plan，不在 git 控制内）
+- 总览 spec 的核心内容已 **吸收**旧 plan 的"对齐 ddd4j-boot 框架集成"核心内容并标注来源
+- 旧 plan 的 10 周详细工作量估算 **已过时**（实际按多智能体并行协作完成）
 
 ## 索引
 
-| 类型 | 文件 | 说明 |
-|---|---|---|
-| 总览 spec | [specs/2026-08-05-quarkus-alignment-overview-design.md](specs/2026-08-05-quarkus-alignment-overview-design.md) | ddd4j-quarkus 整体设计、阶段路线图、验收标准、计划偏差 |
-| P0 spec | [specs/2026-08-05-p0-baseline-infrastructure-design.md](specs/2026-08-05-p0-baseline-infrastructure-design.md) | Cache / Web / MQ 三件套 + parent 链重构 |
-| P0 plan | [plans/2026-08-05-p0-baseline.md](plans/2026-08-05-p0-baseline.md) | P0 实施步骤（已完成 ✅） |
-| P1 spec | [specs/2026-08-06-p1-extensions-design.md](specs/2026-08-06-p1-extensions-design.md) | 9 个扩展 Producer 矩阵（含 dubbo/validation/qrcode 新增） |
-| P1 plan | [plans/2026-08-06-p1-extensions.md](plans/2026-08-06-p1-extensions.md) | P1 实施步骤（已完成 ✅） |
-| P2 spec | [specs/2026-08-07-p2-mq-testcontainers-design.md](specs/2026-08-07-p2-mq-testcontainers-design.md) | 14 broker testcontainers 设计 |
-| P2 plan | [plans/2026-08-07-p2-mq-testcontainers.md](plans/2026-08-07-p2-mq-testcontainers.md) | P2 实施步骤（已完成 ✅） |
-| P3 spec | [specs/2026-08-08-p3-auth-samples-ci-design.md](specs/2026-08-08-p3-auth-samples-ci-design.md) | Auth + samples + CI/CD |
-| P3 plan | [plans/2026-08-08-p3-auth-samples-ci.md](plans/2026-08-08-p3-auth-samples-ci.md) | P3 实施步骤（已完成 ✅） |
+| 类型      | 文件                                                                                                           | 说明                                                      |
+|-----------|----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| 总览 spec | [specs/2026-08-05-quarkus-alignment-overview-design.md](specs/2026-08-05-quarkus-alignment-overview-design.md) | ddd4j-quarkus 整体设计、阶段路线图、验收标准、计划偏差    |
+| P0 spec   | [specs/2026-08-05-p0-baseline-infrastructure-design.md](specs/2026-08-05-p0-baseline-infrastructure-design.md) | Cache / Web / MQ 三件套 + parent 链重构                   |
+| P0 plan   | [plans/2026-08-05-p0-baseline.md](plans/2026-08-05-p0-baseline.md)                                             | P0 实施步骤（已完成 ✅）                                  |
+| P1 spec   | [specs/2026-08-06-p1-extensions-design.md](specs/2026-08-06-p1-extensions-design.md)                           | 9 个扩展 Producer 矩阵（含 dubbo/validation/qrcode 新增） |
+| P1 plan   | [plans/2026-08-06-p1-extensions.md](plans/2026-08-06-p1-extensions.md)                                         | P1 实施步骤（已完成 ✅）                                  |
+| P2 spec   | [specs/2026-08-07-p2-mq-testcontainers-design.md](specs/2026-08-07-p2-mq-testcontainers-design.md)             | 14 broker testcontainers 设计                             |
+| P2 plan   | [plans/2026-08-07-p2-mq-testcontainers.md](plans/2026-08-07-p2-mq-testcontainers.md)                           | P2 实施步骤（已完成 ✅）                                  |
+| P3 spec   | [specs/2026-08-08-p3-auth-samples-ci-design.md](specs/2026-08-08-p3-auth-samples-ci-design.md)                 | Auth + samples + CI/CD                                    |
+| P3 plan   | [plans/2026-08-08-p3-auth-samples-ci.md](plans/2026-08-08-p3-auth-samples-ci.md)                               | P3 实施步骤（已完成 ✅）                                  |
 
 ## 规范骨架
 
@@ -80,13 +80,13 @@
 
 ## 状态字段（受控词表）
 
-| 状态 | 含义 |
-|---|---|
-| `待评审` | spec 草案，等待架构师评审 |
+| 状态         | 含义                      |
+|--------------|---------------------------|
+| `待评审`     | spec 草案，等待架构师评审 |
 | `设计已确认` | spec 已通过评审，等待实施 |
-| `实施已对齐` | 实际代码与 plan 步骤一致 |
-| `进行中` | 部分 Step 完成 |
-| `已搁置` | 暂不实施，登记原因 |
+| `实施已对齐` | 实际代码与 plan 步骤一致  |
+| `进行中`     | 部分 Step 完成            |
+| `已搁置`     | 暂不实施，登记原因        |
 
 ## 项目链接
 
