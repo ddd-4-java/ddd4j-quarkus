@@ -11,10 +11,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * {@link OrderClientDTO} 单元测试。
  *
- * <p>纯 JUnit 5：验证对外 API 契约 record 的构造、字段访问与值语义
+ * <p>纯 JUnit 5：验证对外 API 契约普通类的构造、字段访问与值语义
  * （不可变、equals/hashCode、Serializable）。</p>
  */
 class OrderClientDTOTest {
+
+    @Test
+    void shouldUseOrdinaryClassesOnAllVersionLines() {
+        assertThat(OrderClientDTO.class.isRecord()).isFalse();
+        assertThat(OrderClientDTO.class.getSuperclass()).isEqualTo(Object.class);
+        assertThat(OrderClientService.CreateOrderRequest.class.isRecord()).isFalse();
+    }
 
     @Test
     void shouldConstructAndExposeFields() {
@@ -42,7 +49,7 @@ class OrderClientDTOTest {
     }
 
     @Test
-    void recordShouldImplementValueSemantics() {
+    void ordinaryClassShouldImplementValueSemantics() {
         OrderClientDTO a = new OrderClientDTO(1L, "ORD-1", "buyer-1", "张三", "PAID", BigDecimal.TEN, null);
         OrderClientDTO b = new OrderClientDTO(1L, "ORD-1", "buyer-1", "张三", "PAID", BigDecimal.TEN, null);
         OrderClientDTO c = new OrderClientDTO(2L, "ORD-2", "buyer-2", "李四", "CREATED", BigDecimal.ONE, null);

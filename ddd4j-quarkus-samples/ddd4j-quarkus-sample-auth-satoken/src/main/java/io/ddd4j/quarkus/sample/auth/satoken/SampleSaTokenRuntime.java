@@ -1,5 +1,9 @@
 package io.ddd4j.quarkus.sample.auth.satoken;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import cn.dev33.satoken.SaManager;
 import cn.dev33.satoken.context.SaTokenContext;
 import cn.dev33.satoken.context.model.SaRequest;
@@ -124,7 +128,12 @@ public class SampleSaTokenRuntime implements SaTokenContext {
     /**
      * Vert.x 请求到 Sa-Token 请求接口的适配。
      */
-    private record Request(RoutingContext context) implements SaRequest {
+    private final static class Request implements SaRequest {
+
+        private static final long serialVersionUID = 0L;
+
+        private final RoutingContext context;
+
         @Override
         public Object getSource() {
             return context.request();
@@ -193,12 +202,51 @@ public class SampleSaTokenRuntime implements SaTokenContext {
             context.reroute(path);
             return null;
         }
+
+        @JsonCreator()
+        private Request(@JsonProperty("context") RoutingContext context) {
+            this.context = context;
+        }
+
+        @JsonProperty("context")
+        public RoutingContext context() {
+            return context;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (Objects.isNull(obj) || getClass() != obj.getClass()) {
+                return false;
+            }
+            Request other = (Request) obj;
+            return Objects.equals(this.context, other.context);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = 0;
+            result = 31 * result + Objects.hashCode(context);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Request[context=" + context + "]";
+        }
     }
 
     /**
      * 将响应头与状态写入真实 Vert.x 响应。
      */
-    private record Response(RoutingContext context) implements SaResponse {
+    private final static class Response implements SaResponse {
+
+        private static final long serialVersionUID = 0L;
+
+        private final RoutingContext context;
+
         @Override
         public Object getSource() {
             return context.response();
@@ -226,12 +274,51 @@ public class SampleSaTokenRuntime implements SaTokenContext {
         public Object redirect(String url) {
             return context.response().setStatusCode(302).putHeader("Location", url).end();
         }
+
+        @JsonCreator()
+        private Response(@JsonProperty("context") RoutingContext context) {
+            this.context = context;
+        }
+
+        @JsonProperty("context")
+        public RoutingContext context() {
+            return context;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (Objects.isNull(obj) || getClass() != obj.getClass()) {
+                return false;
+            }
+            Response other = (Response) obj;
+            return Objects.equals(this.context, other.context);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = 0;
+            result = 31 * result + Objects.hashCode(context);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Response[context=" + context + "]";
+        }
     }
 
     /**
      * 使用独立键空间，避免与业务 RoutingContext 属性冲突。
      */
-    private record Storage(RoutingContext context) implements SaStorage {
+    private final static class Storage implements SaStorage {
+
+        private static final long serialVersionUID = 0L;
+
+        private final RoutingContext context;
+
         private static final String PREFIX = "sample.sa-token.";
 
         @Override
@@ -254,6 +341,40 @@ public class SampleSaTokenRuntime implements SaTokenContext {
         public SaStorage delete(String key) {
             context.remove(PREFIX + key);
             return this;
+        }
+
+        @JsonCreator()
+        private Storage(@JsonProperty("context") RoutingContext context) {
+            this.context = context;
+        }
+
+        @JsonProperty("context")
+        public RoutingContext context() {
+            return context;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (Objects.isNull(obj) || getClass() != obj.getClass()) {
+                return false;
+            }
+            Storage other = (Storage) obj;
+            return Objects.equals(this.context, other.context);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = 0;
+            result = 31 * result + Objects.hashCode(context);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Storage[context=" + context + "]";
         }
     }
 }
