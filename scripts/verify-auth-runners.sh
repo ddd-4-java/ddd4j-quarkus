@@ -8,7 +8,10 @@ fi
 
 package_log=$1
 repo_root=$(cd "$(dirname "$0")/.." && pwd)
-[[ -f "$package_log" ]] || { echo "missing package log: $package_log" >&2; exit 1; }
+[[ -f "$package_log" ]] || {
+  echo "missing package log: $package_log" >&2
+  exit 1
+}
 
 duplicate_files=$(awk '
   /contain duplicate files:/ { collecting=1; next }
@@ -19,14 +22,17 @@ duplicate_files=$(awk '
 while IFS= read -r duplicate; do
   [[ -z "$duplicate" ]] && continue
   case "$duplicate" in
-    META-INF/versions/9/OSGI-INF/MANIFEST.MF|\
-    META-INF/versions/11/OSGI-INF/MANIFEST.MF|\
-    META-INF/Schubfach-LICENSE|\
-    META-INF/FastDoubleParser-LICENSE|\
+  META-INF/versions/9/OSGI-INF/MANIFEST.MF | \
+    META-INF/versions/11/OSGI-INF/MANIFEST.MF | \
+    META-INF/Schubfach-LICENSE | \
+    META-INF/FastDoubleParser-LICENSE | \
     META-INF/FastDoubleParser-ThirdParty-LICENSE) ;;
-    *) echo "unexpected duplicate uber-jar entry: $duplicate" >&2; exit 1 ;;
+  *)
+    echo "unexpected duplicate uber-jar entry: $duplicate" >&2
+    exit 1
+    ;;
   esac
-done <<< "$duplicate_files"
+done <<<"$duplicate_files"
 
 current_pid=
 current_log=
@@ -62,9 +68,15 @@ smoke() {
   local module="$repo_root/ddd4j-quarkus-samples/ddd4j-quarkus-sample-auth-$auth"
   local jar log status pid ready=false alice bob size
   jar=$(find "$module/target" -maxdepth 1 -name '*-runner.jar' -print -quit)
-  [[ -n "$jar" ]] || { echo "missing runner jar for $auth" >&2; exit 1; }
-  size=$(wc -c < "$jar" | tr -d ' ')
-  (( size <= budget )) || { echo "$auth runner size $size exceeds budget $budget" >&2; exit 1; }
+  [[ -n "$jar" ]] || {
+    echo "missing runner jar for $auth" >&2
+    exit 1
+  }
+  size=$(wc -c <"$jar" | tr -d ' ')
+  ((size <= budget)) || {
+    echo "$auth runner size $size exceeds budget $budget" >&2
+    exit 1
+  }
   log=$(mktemp "/tmp/ddd4j-quarkus-auth-$auth.XXXXXX.log")
   status=$(mktemp "/tmp/ddd4j-quarkus-auth-$auth.XXXXXX.status.json")
   current_log=$log
@@ -74,12 +86,21 @@ smoke() {
   current_pid=$pid
   local port=
   for _ in $(seq 1 120); do
-    kill -0 "$pid" 2>/dev/null || { tail -100 "$log" >&2; return 1; }
+    kill -0 "$pid" 2>/dev/null || {
+      tail -100 "$log" >&2
+      return 1
+    }
     port=$(sed -nE 's/.*Listening on: http:\/\/127\.0\.0\.1:([0-9]+).*/\1/p' "$log" | tail -1)
-    if [[ -n "$port" ]] && request "http://127.0.0.1:$port/auth/status" >"$status" 2>/dev/null; then ready=true; break; fi
+    if [[ -n "$port" ]] && request "http://127.0.0.1:$port/auth/status" >"$status" 2>/dev/null; then
+      ready=true
+      break
+    fi
     sleep 0.25
   done
-  $ready || { tail -100 "$log" >&2; return 1; }
+  $ready || {
+    tail -100 "$log" >&2
+    return 1
+  }
   jq -e '.login == false' "$status" >/dev/null
   alice=$(request -H 'Content-Type: text/plain' --data alice "http://127.0.0.1:$port/auth/login" | jq -er '.token')
   bob=$(request -H 'Content-Type: text/plain' --data bob "http://127.0.0.1:$port/auth/login" | jq -er '.token')

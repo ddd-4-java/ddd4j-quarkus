@@ -32,19 +32,29 @@ public class OrderCreatedEvent extends MQEvent {
 
     private static final long serialVersionUID = 1L;
 
-    /** MQ 业务主题（与 RabbitMQ Topic Exchange 的 routing key 一致） */
+    /**
+     * MQ 业务主题（与 RabbitMQ Topic Exchange 的 routing key 一致）
+     */
     public static final String TOPIC = "ORDER";
 
-    /** MQ 标签（业务侧理解为二级路由，小写形式） */
+    /**
+     * MQ 标签（业务侧理解为二级路由，小写形式）
+     */
     public static final String TAG = "created";
 
-    /** 订单 ID（与 MQEvent 的 source 字段对齐） */
+    /**
+     * 订单 ID（与 MQEvent 的 source 字段对齐）
+     */
     private final String orderId;
 
-    /** 订单编号（业务主键，用于消费者日志与下游业务） */
+    /**
+     * 订单编号（业务主键，用于消费者日志与下游业务）
+     */
     private final String orderNo;
 
-    /** 买家名称 */
+    /**
+     * 买家名称
+     */
     private final String buyerName;
 
     /**

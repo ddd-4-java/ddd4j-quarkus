@@ -15,7 +15,8 @@
         ddd4j 消息队列在 Quarkus 轨道的桥接聚合。
         参照 ddd4j-mq 多模块范式：
         - core（MQ 契约 + CDI 桥接）
-        - activemq / disruptor / kafka / mqtt / mqtt-mica / sqs / nats / ons / pulsar / rabbitmq / redis-stream / rocketmq / tdmq
+        - activemq / disruptor / kafka / mqtt / mqtt-mica / sqs / nats / ons / pulsar / rabbitmq / redis-stream /
+        rocketmq / tdmq
         对齐 ddd4j-boot-mq 的模块边界；底层优先复用 io.ddd4j:ddd4j-mq-* 纯 Java 能力，Quarkus 侧承载 CDI 与依赖编排。
         tdmq 当前复用 MQ core 作为 Quarkus 侧扩展入口，避免引入 Spring Boot 自动配置。
     </description>

@@ -21,19 +21,33 @@ import java.time.LocalDateTime;
  */
 public class OrderDTO {
 
-    /** 订单 ID（领域标识） */
+    /**
+     * 订单 ID（领域标识）
+     */
     private Long id;
-    /** 订单编号（业务主键） */
+    /**
+     * 订单编号（业务主键）
+     */
     private String orderNo;
-    /** 买家 ID */
+    /**
+     * 买家 ID
+     */
     private String buyerId;
-    /** 买家名称 */
+    /**
+     * 买家名称
+     */
     private String buyerName;
-    /** 订单状态 */
+    /**
+     * 订单状态
+     */
     private OrderStatus status;
-    /** 订单总金额 */
+    /**
+     * 订单总金额
+     */
     private BigDecimal totalAmount;
-    /** 创建时间 */
+    /**
+     * 创建时间
+     */
     private LocalDateTime createdTime;
 
     /**

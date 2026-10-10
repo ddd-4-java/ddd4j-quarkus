@@ -68,6 +68,7 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-orm-panache</artifactId>
             <optional>true</optional>
-        </dependency></dependencies>
+        </dependency>
+    </dependencies>
 
 </project>

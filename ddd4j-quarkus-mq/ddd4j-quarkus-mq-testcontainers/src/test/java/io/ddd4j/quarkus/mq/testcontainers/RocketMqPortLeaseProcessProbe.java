@@ -3,7 +3,9 @@ package io.ddd4j.quarkus.mq.testcontainers;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/** 子 JVM 探针，用于验证 RocketMQ 文件租约的真实跨进程行为。 */
+/**
+ * 子 JVM 探针，用于验证 RocketMQ 文件租约的真实跨进程行为。
+ */
 public final class RocketMqPortLeaseProcessProbe {
 
     private RocketMqPortLeaseProcessProbe() {

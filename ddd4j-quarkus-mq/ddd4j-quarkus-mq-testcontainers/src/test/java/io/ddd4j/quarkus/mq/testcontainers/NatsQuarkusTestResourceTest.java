@@ -15,7 +15,9 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/** 验证 NATS fixture 只在显式配置时创建业务 JetStream 拓扑。 */
+/**
+ * 验证 NATS fixture 只在显式配置时创建业务 JetStream 拓扑。
+ */
 @Testcontainers(disabledWithoutDocker = true)
 class NatsQuarkusTestResourceTest {
 

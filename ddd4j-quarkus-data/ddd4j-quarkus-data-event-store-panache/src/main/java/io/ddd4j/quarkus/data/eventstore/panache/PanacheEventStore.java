@@ -1,5 +1,9 @@
 package io.ddd4j.quarkus.data.eventstore.panache;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ddd4j.core.ddd.event.AggregateRootId;
 import io.ddd4j.core.ddd.event.DomainEvent;
@@ -135,7 +139,7 @@ public class PanacheEventStore implements EventStore {
      *
      * @param entity 持久化实体
      * @return 重建的持久化事件快照
-     * @throws NullPointerException entity 未持久化（position 为 null）
+     * @throws NullPointerException  entity 未持久化（position 为 null）
      * @throws IllegalStateException eventType 类不存在（事件类被重命名/删除后旧流不可读）
      */
     private StoredEvent toStoredEvent(PanacheStoredEventEntity entity) {
@@ -177,9 +181,15 @@ public class PanacheEventStore implements EventStore {
      * <p>三方法契约与 {@code StringEntityId} 一致：类型固定 {@code String}、
      * 原值与 {@code 类型:值} 形式（与主仓 {@code PanacheEventStore} 内同名适配器对齐）。
      */
-    private record StringAggregateRootId(String value) implements AggregateRootId {
+    private final static class StringAggregateRootId implements AggregateRootId {
 
-        /** 字符串聚合根标识的固定类型。 */
+        private static final long serialVersionUID = 0L;
+
+        private final String value;
+
+        /**
+         * 字符串聚合根标识的固定类型。
+         */
         private static final StringEntityType TYPE = new StringEntityType("String");
 
         @Override
@@ -196,6 +206,40 @@ public class PanacheEventStore implements EventStore {
         @Override
         public String asTypedString() {
             return TYPE.asString() + ":" + value;
+        }
+
+        @JsonCreator()
+        private StringAggregateRootId(@JsonProperty("value") String value) {
+            this.value = value;
+        }
+
+        @JsonProperty("value")
+        public String value() {
+            return value;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (Objects.isNull(obj) || getClass() != obj.getClass()) {
+                return false;
+            }
+            StringAggregateRootId other = (StringAggregateRootId) obj;
+            return Objects.equals(this.value, other.value);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = 0;
+            result = 31 * result + Objects.hashCode(value);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "StringAggregateRootId[value=" + value + "]";
         }
     }
 }

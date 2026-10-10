@@ -40,8 +40,8 @@ class Ddd4jQuarkusWebHealthCheckTest {
     @Test
     void shouldExposeReadyEndpoint() {
         given()
-            .when().get("/q/health/ready")
-            .then()
-            .statusCode(200);
+                .when().get("/q/health/ready")
+                .then()
+                .statusCode(200);
     }
 }

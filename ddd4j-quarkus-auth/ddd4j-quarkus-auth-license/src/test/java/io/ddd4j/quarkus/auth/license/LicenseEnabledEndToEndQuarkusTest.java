@@ -1,5 +1,9 @@
 package io.ddd4j.quarkus.auth.license;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import io.ddd4j.extension.license.LicenseVerify;
 import io.ddd4j.extension.license.creator.LicenseCreator;
 import io.ddd4j.extension.license.creator.LicenseCreatorParam;
@@ -216,11 +220,75 @@ class LicenseEnabledEndToEndQuarkusTest {
         }
     }
 
-    private record Fixture(Path directory, Path privateKeysStore, Path publicKeysStore, Path license) {
+    private final static class Fixture {
+
+        private static final long serialVersionUID = 0L;
+
+        private final Path directory;
+
+        private final Path privateKeysStore;
+
+        private final Path publicKeysStore;
+
+        private final Path license;
 
         private static Fixture at(Path directory) {
-            return new Fixture(directory, directory.resolve("privateKeys.keystore"),
-                    directory.resolve("publicCerts.keystore"), directory.resolve("license.lic"));
+            return new Fixture(directory, directory.resolve("privateKeys.keystore"), directory.resolve("publicCerts.keystore"), directory.resolve("license.lic"));
+        }
+
+        @JsonCreator()
+        private Fixture(@JsonProperty("directory") Path directory, @JsonProperty("privateKeysStore") Path privateKeysStore, @JsonProperty("publicKeysStore") Path publicKeysStore, @JsonProperty("license") Path license) {
+            this.directory = directory;
+            this.privateKeysStore = privateKeysStore;
+            this.publicKeysStore = publicKeysStore;
+            this.license = license;
+        }
+
+        @JsonProperty("directory")
+        public Path directory() {
+            return directory;
+        }
+
+        @JsonProperty("privateKeysStore")
+        public Path privateKeysStore() {
+            return privateKeysStore;
+        }
+
+        @JsonProperty("publicKeysStore")
+        public Path publicKeysStore() {
+            return publicKeysStore;
+        }
+
+        @JsonProperty("license")
+        public Path license() {
+            return license;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (Objects.isNull(obj) || getClass() != obj.getClass()) {
+                return false;
+            }
+            Fixture other = (Fixture) obj;
+            return Objects.equals(this.directory, other.directory) && Objects.equals(this.privateKeysStore, other.privateKeysStore) && Objects.equals(this.publicKeysStore, other.publicKeysStore) && Objects.equals(this.license, other.license);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = 0;
+            result = 31 * result + Objects.hashCode(directory);
+            result = 31 * result + Objects.hashCode(privateKeysStore);
+            result = 31 * result + Objects.hashCode(publicKeysStore);
+            result = 31 * result + Objects.hashCode(license);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Fixture[directory=" + directory + ", privateKeysStore=" + privateKeysStore + ", publicKeysStore=" + publicKeysStore + ", license=" + license + "]";
         }
     }
 

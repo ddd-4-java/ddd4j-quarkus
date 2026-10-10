@@ -8,12 +8,14 @@
 
 ## 1. 背景与问题
 
-14 个 broker 子模块（ActiveMQ/Kafka/RabbitMQ/Redis-Stream/RocketMQ/Pulsar/Nats/ONS/TDMQ/SQS/MQTT/MQTT-Mica/Disruptor）每个需要 testcontainers 容器支持集成测试，但各 broker 镜像版本、暴露端口、等待策略差异大，重复编写浪费维护成本。
+14 个 broker 子模块（ActiveMQ/Kafka/RabbitMQ/Redis-Stream/RocketMQ/Pulsar/Nats/ONS/TDMQ/SQS/MQTT/MQTT-Mica/Disruptor）每个需要
+testcontainers 容器支持集成测试，但各 broker 镜像版本、暴露端口、等待策略差异大，重复编写浪费维护成本。
 
 ## 2. 目标
 
 1. **共享 fixture 模块** `ddd4j-quarkus-mq-testcontainers`：提供 14 broker 容器生命周期管理 + 抽象基类
-2. **每个 broker 子模块至少 1 个集成测试**：`@QuarkusTest` + `@ExtendWith({ *QuarkusTestResource.class })` + 端到端 produce/consume 验证
+2. **每个 broker 子模块至少 1 个集成测试**：`@QuarkusTest` + `@ExtendWith({ *QuarkusTestResource.class })` + 端到端
+   produce/consume 验证
 3. **Docker reuse 启用**：`testcontainers.properties` 复用容器，CI 拉镜像一次复用
 4. **真实环境验证**：所有 broker 在 Docker daemon 可用时真实运行通过
 
@@ -64,21 +66,21 @@ class KafkaQuarkusIntegrationTest {
 
 ### 3.3 Broker 镜像版本与启动策略
 
-| Broker | 镜像 | 关键配置 |
-|---|---|---|
-| Kafka | confluentinc/cp-kafka:7.6.1 | KRaft 模式 |
-| RabbitMQ | rabbitmq:3.13-management-alpine | Wait.forListeningPorts(5672, 15672)（TLS 端口不监听，跳过） |
-| RocketMQ | apache/rocketmq:5.3.0 | withCommand("sh","mqnamesrv")（修复 exit 127：镜像 Cmd=dummy） |
-| ONS | （复用 RocketMQ） | 同上 |
-| Pulsar | apachepulsar/pulsar:3.2.0 | withCommand("bin/pulsar","standalone")（修复镜像 Cmd=/bin/bash） |
-| TDMQ | （复用 Pulsar） | 同上 |
-| ActiveMQ | apache/activemq-classic:5.18.3 | 默认端口 61616 |
-| NATS | nats:2.10-alpine | -m 8222 monitoring 端口（修复 8222 监控未监听超时） |
-| MQTT | eclipse-mosquitto:2.0 | 默认端口 1883 |
-| Redis Stream | redis:7.4-alpine | CONFIG SET notify-keyspace-events Ex |
-| SQS | localstack/localstack:3.4 | SERVICES=sqs |
-| Disruptor | （无容器） | 内存模式 |
-| MQTT-Mica | （复用 MQTT） | 同上 |
+| Broker       | 镜像                            | 关键配置                                                         |
+|--------------|---------------------------------|------------------------------------------------------------------|
+| Kafka        | confluentinc/cp-kafka:7.6.1     | KRaft 模式                                                       |
+| RabbitMQ     | rabbitmq:3.13-management-alpine | Wait.forListeningPorts(5672, 15672)（TLS 端口不监听，跳过）      |
+| RocketMQ     | apache/rocketmq:5.3.0           | withCommand("sh","mqnamesrv")（修复 exit 127：镜像 Cmd=dummy）   |
+| ONS          | （复用 RocketMQ）               | 同上                                                             |
+| Pulsar       | apachepulsar/pulsar:3.2.0       | withCommand("bin/pulsar","standalone")（修复镜像 Cmd=/bin/bash） |
+| TDMQ         | （复用 Pulsar）                 | 同上                                                             |
+| ActiveMQ     | apache/activemq-classic:5.18.3  | 默认端口 61616                                                   |
+| NATS         | nats:2.10-alpine                | -m 8222 monitoring 端口（修复 8222 监控未监听超时）              |
+| MQTT         | eclipse-mosquitto:2.0           | 默认端口 1883                                                    |
+| Redis Stream | redis:7.4-alpine                | CONFIG SET notify-keyspace-events Ex                             |
+| SQS          | localstack/localstack:3.4       | SERVICES=sqs                                                     |
+| Disruptor    | （无容器）                      | 内存模式                                                         |
+| MQTT-Mica    | （复用 MQTT）                   | 同上                                                             |
 
 ## 4. 核心抽象
 
@@ -109,7 +111,8 @@ public abstract class AbstractTestContainerFixture<C extends GenericContainer<?>
 
 ### 4.2 QuarkusTestResourceLifecycleManager 模式
 
-注意：本项目用 Quarkus 风格的 `QuarkusTestResourceLifecycleManager` 而非 javalin 风格的 `JunitJupiterQuarkusTestContainers` 注解。原因：Quarkus devservices 已绑定 `org.junit.rules.TestRule`（junit4），可直接复用。
+注意：本项目用 Quarkus 风格的 `QuarkusTestResourceLifecycleManager` 而非 javalin 风格的
+`JunitJupiterQuarkusTestContainers` 注解。原因：Quarkus devservices 已绑定 `org.junit.rules.TestRule`（junit4），可直接复用。
 
 ## 5. 关键文件
 
@@ -124,6 +127,7 @@ ddd4j-quarkus/ddd4j-quarkus-mq/
 ```
 
 测试 resources：
+
 ```
 ddd4j-quarkus/ddd4j-quarkus-mq/ddd4j-quarkus-mq-{broker}/src/test/resources/
 └── application.properties                                                     # ddd4j.mq.broker / bootstrap-servers / consumer.group-id
@@ -132,6 +136,7 @@ ddd4j-quarkus/ddd4j-quarkus-mq/ddd4j-quarkus-mq-{broker}/src/test/resources/
 ## 6. 测试策略
 
 每个 broker 测试类遵循：
+
 1. `@QuarkusTest` 启动应用
 2. `@ExtendWith({ *QuarkusTestResource.class })` 启动容器
 3. `application.properties` 读取容器提供的动态端口/地址
@@ -144,15 +149,15 @@ ddd4j-quarkus/ddd4j-quarkus-mq/ddd4j-quarkus-mq-{broker}/src/test/resources/
 
 ## 7. 风险与缓解
 
-| 风险 | 缓解 |
-|---|---|
-| RocketMQ/ONS 镜像 `Cmd=dummy` 占位符导致 exit 127 | `withCommand("sh","mqnamesrv")` 显式指定 |
-| Pulsar/TDMQ 镜像 `Cmd=/bin/bash` 立即退出 | `withCommand("bin/pulsar","standalone")` 显式指定 |
-| NATS 8222 monitoring 端口未监听超时 | 添加 `-m 8222` 参数 |
-| RabbitMQ TLS 端口超时（5671/15671） | `Wait.forListeningPorts(5672, 15672)` 显式列出 |
-| Testcontainers devservices 缺 junit4 `org.junit.rules.TestRule` | pom 添加 `junit:junit` test 依赖 |
-| Docker 镜像拉取慢（CI 冷启动） | 固定镜像版本 + 镜像缓存；不使用实验性 reuse |
-| 阿里云 snapshot 仓库 metadata 陷阱 | 主仓依赖本地 install + offline build |
+| 风险                                                            | 缓解                                              |
+|-----------------------------------------------------------------|---------------------------------------------------|
+| RocketMQ/ONS 镜像 `Cmd=dummy` 占位符导致 exit 127               | `withCommand("sh","mqnamesrv")` 显式指定          |
+| Pulsar/TDMQ 镜像 `Cmd=/bin/bash` 立即退出                       | `withCommand("bin/pulsar","standalone")` 显式指定 |
+| NATS 8222 monitoring 端口未监听超时                             | 添加 `-m 8222` 参数                               |
+| RabbitMQ TLS 端口超时（5671/15671）                             | `Wait.forListeningPorts(5672, 15672)` 显式列出    |
+| Testcontainers devservices 缺 junit4 `org.junit.rules.TestRule` | pom 添加 `junit:junit` test 依赖                  |
+| Docker 镜像拉取慢（CI 冷启动）                                  | 固定镜像版本 + 镜像缓存；不使用实验性 reuse       |
+| 阿里云 snapshot 仓库 metadata 陷阱                              | 主仓依赖本地 install + offline build              |
 
 ## 8. 验收标准
 

@@ -39,7 +39,7 @@ public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
      * 创建一个带随机后缀的 run-scoped stream fixture。
      *
      * @param streamNamePrefix stream 名称前缀
-     * @param subjects stream 覆盖的 subjects
+     * @param subjects         stream 覆盖的 subjects
      * @return stream 名称在并发测试运行间唯一的 fixture
      */
     public static NatsQuarkusTestResource withRunScopedStream(String streamNamePrefix, List<String> subjects) {
@@ -48,7 +48,9 @@ public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
                 prefix + UUID.randomUUID().toString().replace("-", ""), subjects);
     }
 
-    /** 启用 JetStream，但不创建任何业务 stream。 */
+    /**
+     * 启用 JetStream，但不创建任何业务 stream。
+     */
     public NatsQuarkusTestResource() {
         this.streamName = null;
         this.subjects = List.of();
@@ -58,7 +60,7 @@ public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
      * 启用 JetStream 并创建一个由当前 fixture 拥有的 stream。
      *
      * @param streamName stream 名称
-     * @param subjects stream 覆盖的 subjects
+     * @param subjects   stream 覆盖的 subjects
      */
     public NatsQuarkusTestResource(String streamName, List<String> subjects) {
         this.streamName = Objects.requireNonNull(streamName, "streamName");
@@ -118,7 +120,9 @@ public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
         }
     }
 
-    /** 仅供同包契约测试观测 run-scoped stream 名称。 */
+    /**
+     * 仅供同包契约测试观测 run-scoped stream 名称。
+     */
     String streamName() {
         return streamName;
     }

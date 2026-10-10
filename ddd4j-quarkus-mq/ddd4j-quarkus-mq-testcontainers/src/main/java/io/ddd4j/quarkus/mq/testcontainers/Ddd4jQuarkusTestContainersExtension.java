@@ -35,10 +35,14 @@ public class Ddd4jQuarkusTestContainersExtension implements ExecutionCondition {
 
     private static final String DISABLE_REASON = "Docker daemon not reachable";
 
-    /** JVM 级缓存：探测有副作用与耗时，一次即可。 */
+    /**
+     * JVM 级缓存：探测有副作用与耗时，一次即可。
+     */
     private static volatile Boolean dockerAvailable;
 
-    /** 探测失败时的根因（用于 disabled reason 排障）。 */
+    /**
+     * 探测失败时的根因（用于 disabled reason 排障）。
+     */
     private static volatile String failureMessage;
 
     @Override

@@ -1,5 +1,9 @@
 package io.ddd4j.quarkus.web;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import io.ddd4j.core.constant.ContextConstants;
 import io.ddd4j.core.context.ThreadContext;
 import io.ddd4j.web.core.context.WebContextScope;
@@ -54,6 +58,71 @@ public class Ddd4jQuarkusWebContractResource {
     /**
      * 暴露资源处理期间的线程与请求上下文，证明清理前各状态已实际绑定。
      */
-    public record ContractResponse(String tenantId, String requestId, String authorization, String serviceThread) {
+    public final static class ContractResponse {
+
+        private static final long serialVersionUID = 0L;
+
+        private final String tenantId;
+
+        private final String requestId;
+
+        private final String authorization;
+
+        private final String serviceThread;
+
+        @JsonCreator()
+        public ContractResponse(@JsonProperty("tenantId") String tenantId, @JsonProperty("requestId") String requestId, @JsonProperty("authorization") String authorization, @JsonProperty("serviceThread") String serviceThread) {
+            this.tenantId = tenantId;
+            this.requestId = requestId;
+            this.authorization = authorization;
+            this.serviceThread = serviceThread;
+        }
+
+        @JsonProperty("tenantId")
+        public String tenantId() {
+            return tenantId;
+        }
+
+        @JsonProperty("requestId")
+        public String requestId() {
+            return requestId;
+        }
+
+        @JsonProperty("authorization")
+        public String authorization() {
+            return authorization;
+        }
+
+        @JsonProperty("serviceThread")
+        public String serviceThread() {
+            return serviceThread;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (Objects.isNull(obj) || getClass() != obj.getClass()) {
+                return false;
+            }
+            ContractResponse other = (ContractResponse) obj;
+            return Objects.equals(this.tenantId, other.tenantId) && Objects.equals(this.requestId, other.requestId) && Objects.equals(this.authorization, other.authorization) && Objects.equals(this.serviceThread, other.serviceThread);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = 0;
+            result = 31 * result + Objects.hashCode(tenantId);
+            result = 31 * result + Objects.hashCode(requestId);
+            result = 31 * result + Objects.hashCode(authorization);
+            result = 31 * result + Objects.hashCode(serviceThread);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "ContractResponse[tenantId=" + tenantId + ", requestId=" + requestId + ", authorization=" + authorization + ", serviceThread=" + serviceThread + "]";
+        }
     }
 }

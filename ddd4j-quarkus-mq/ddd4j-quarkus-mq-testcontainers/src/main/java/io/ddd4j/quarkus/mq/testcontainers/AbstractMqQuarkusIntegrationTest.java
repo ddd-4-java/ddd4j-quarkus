@@ -39,7 +39,9 @@ import java.util.function.BooleanSupplier;
  */
 public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
 
-    /** 统一业务事件 topic/tag（对齐 sample 的 OrderCreatedEvent 模式）。 */
+    /**
+     * 统一业务事件 topic/tag（对齐 sample 的 OrderCreatedEvent 模式）。
+     */
     protected static final String TOPIC = "ORDER";
     /** 统一业务事件 tag（默认与 {@link #eventTag()} 保持一致）。 */
     protected static final String TAG = "CREATED";

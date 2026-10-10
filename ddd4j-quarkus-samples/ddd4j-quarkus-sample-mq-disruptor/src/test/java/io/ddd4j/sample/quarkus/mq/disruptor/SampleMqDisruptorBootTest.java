@@ -5,14 +5,18 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
+
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-/** 验证 HTTP 创建订单经真实 MQ 消费后产生相同订单的投影。 */
+/**
+ * 验证 HTTP 创建订单经真实 MQ 消费后产生相同订单的投影。
+ */
 @QuarkusTest
 class SampleMqDisruptorBootTest {
     @Inject
