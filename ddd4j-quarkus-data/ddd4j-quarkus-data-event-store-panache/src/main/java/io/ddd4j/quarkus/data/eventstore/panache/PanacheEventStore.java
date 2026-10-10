@@ -58,6 +58,28 @@ public class PanacheEventStore implements EventStore {
         this.serializer = Objects.requireNonNull(serializer, "serializer must not be null");
     }
 
+    AggregateRootId {
+
+        /** 字符串聚合根标识的固定类型。 */
+        private static final StringEntityType TYPE = new StringEntityType("String");
+
+        @Override
+        public EntityType getType () {
+            return TYPE;
+        }
+
+        @Override
+        @JsonValue
+        public String asString () {
+            return value;
+        }
+
+        @Override
+        public String asTypedString () {
+            return TYPE.asString() + ":" + value;
+        }
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -153,7 +175,7 @@ public class PanacheEventStore implements EventStore {
                 EventId.valueOf(entity.causationId));
     }
 
-    /**
+        /**
      * 按限定名还原事件类型。
      *
      * @param eventType 事件类型限定名
@@ -167,9 +189,9 @@ public class PanacheEventStore implements EventStore {
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("Unknown event type: " + eventType, e);
         }
-    }
+    } implements
 
-    /**
+/**
      * 字符串聚合根标识适配器：实体列 {@code aggregate_id} 只存字符串，读回侧需重建
      * {@link AggregateRootId} 接口实例（{@code StringEntityId} 仅实现
      * {@code EntityId}，不满足 {@link StoredEvent} 构造器约束）。
@@ -177,27 +199,5 @@ public class PanacheEventStore implements EventStore {
      * <p>三方法契约与 {@code StringEntityId} 一致：类型固定 {@code String}、
      * 原值与 {@code 类型:值} 形式（与主仓 {@code PanacheEventStore} 内同名适配器对齐）。
      */
-    private record StringAggregateRootId(String value) implements AggregateRootId {
-
-        /**
-         * 字符串聚合根标识的固定类型。
-         */
-        private static final StringEntityType TYPE = new StringEntityType("String");
-
-        @Override
-        public EntityType getType() {
-            return TYPE;
-        }
-
-        @Override
-        @JsonValue
-        public String asString() {
-            return value;
-        }
-
-        @Override
-        public String asTypedString() {
-            return TYPE.asString() + ":" + value;
-        }
-    }
+    private record StringAggregateRootId(String value)
 }

@@ -57,6 +57,33 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
     // ========================= 子类契约 =========================
 
     /**
+     * 读取 QuarkusTestResource 注入的 config 值。
+     */
+    protected static String config(String key) {
+        return ConfigProvider.getConfig().getValue(key, String.class);
+    }
+
+    /**
+     * 轮询直到条件满足或超时（不引入 awaitility 依赖；最终一次断言保证失败可读）。
+     */
+    public static void await(BooleanSupplier condition, Duration timeout) {
+        long deadline = System.nanoTime() + timeout.toNanos();
+        while (System.nanoTime() < deadline) {
+            if (condition.getAsBoolean()) {
+                return;
+            }
+            try {
+                Thread.sleep(100L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        Assertions.assertTrue(condition.getAsBoolean(),
+                () -> "condition not met within " + timeout);
+    }
+
+    /**
      * broker 专属 properties Bean（CDI 单例，{@code initProducer/initConsumer} 从中读取连接信息）。
      * 无专属配置的 broker（disruptor/tdmq）返回 {@code null} 跳过填充。
      */
@@ -100,6 +127,8 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
         return TAG;
     }
 
+    // ========================= 工具 =========================
+
     /**
      * 发布事件的 tag；返回 {@code null} 表示不带 tag（对齐 javalin Pulsar 先例——
      * pulsar producer 物理地址含 {@code :tag} 而 consumer 订阅地址不含，tag 必须为空才能对齐）。
@@ -113,35 +142,6 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
      */
     protected OrderCreatedEvent newOrderCreatedEvent() {
         return new OrderCreatedEvent("IT-" + System.nanoTime(), "buyer-it", "99.90");
-    }
-
-    // ========================= 工具 =========================
-
-    /**
-     * 读取 QuarkusTestResource 注入的 config 值。
-     */
-    protected static String config(String key) {
-        return ConfigProvider.getConfig().getValue(key, String.class);
-    }
-
-    /**
-     * 轮询直到条件满足或超时（不引入 awaitility 依赖；最终一次断言保证失败可读）。
-     */
-    public static void await(BooleanSupplier condition, Duration timeout) {
-        long deadline = System.nanoTime() + timeout.toNanos();
-        while (System.nanoTime() < deadline) {
-            if (condition.getAsBoolean()) {
-                return;
-            }
-            try {
-                Thread.sleep(100L);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
-        Assertions.assertTrue(condition.getAsBoolean(),
-                () -> "condition not met within " + timeout);
     }
 
     /**

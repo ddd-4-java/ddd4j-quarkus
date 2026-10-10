@@ -22,7 +22,7 @@ public record RuleChangedEvent(String ruleId, String ruleCode, Operation operati
         DISABLED
     }
 
-    public static RuleChangedEvent of(RuleDefinition rule, Operation operation) {
+    public static RuleChangedEvent of (RuleDefinition rule, Operation operation){
         return new RuleChangedEvent(rule.getId(), rule.getCode(), operation, LocalDateTime.now());
     }
 }

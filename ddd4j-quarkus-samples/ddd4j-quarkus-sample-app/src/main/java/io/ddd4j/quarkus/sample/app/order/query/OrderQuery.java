@@ -22,7 +22,7 @@ public record OrderQuery(String orderNo, String buyerId, OrderStatus status) {
      *
      * @return {@code true} 表示无条件过滤，返回全部订单
      */
-    public boolean isEmpty() {
+    public boolean isEmpty () {
         return orderNo == null && buyerId == null && status == null;
     }
 }

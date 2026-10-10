@@ -32,12 +32,6 @@ import java.util.Objects;
 public class SampleSaTokenRuntime implements SaTokenContext {
 
     private static final String CONTEXT_KEY = "sample.sa-token.context";
-
-    @Inject
-    CurrentVertxRequest currentRequest;
-
-    private SaTokenContext previousContext;
-    private SubjectDataProvider previousDataProvider;
     private final SubjectDataProvider sampleDataProvider = new SubjectDataProvider() {
         @Override
         public List<String> getRoleList(AuthPrincipal principal) {
@@ -49,6 +43,117 @@ public class SampleSaTokenRuntime implements SaTokenContext {
             return List.of("profile:read");
         }
     };
+    @Inject
+    CurrentVertxRequest currentRequest;
+    private SaTokenContext previousContext;
+    private SubjectDataProvider previousDataProvider;
+
+    SaRequest {
+        @Override
+        public Object getSource () {
+            return context.request();
+        }
+        @Override
+        public String getParam (String name){
+            return context.request().getParam(name);
+        }
+        @Override
+        public Collection<String> getParamNames () {
+            return context.request().params().names();
+        }
+        @Override
+        public Map<String, String> getParamMap () {
+            Map<String, String> params = new HashMap<>();
+            context.request().params().forEach(entry -> params.put(entry.getKey(), entry.getValue()));
+            return params;
+        }
+        @Override
+        public String getHeader (String name){
+            return context.request().getHeader(name);
+        }
+        @Override
+        public String getCookieValue (String name){
+            Cookie cookie = context.request().getCookie(name);
+            return Objects.isNull(cookie) ? null : cookie.getValue();
+        }
+        @Override
+        public String getCookieFirstValue (String name){
+            return getCookieValue(name);
+        }
+        @Override
+        public String getCookieLastValue (String name){
+            return getCookieValue(name);
+        }
+        @Override
+        public String getRequestPath () {
+            return context.request().path();
+        }
+        @Override
+        public String getUrl () {
+            return context.request().absoluteURI();
+        }
+        @Override
+        public String getMethod () {
+            return context.request().method().name();
+        }
+        @Override
+        public String getHost () {
+            return context.request().getHeader("Host");
+        }
+        @Override
+        public Object forward (String path){
+            context.reroute(path);
+            return null;
+        }
+    }
+
+    SaResponse {
+        @Override
+        public Object getSource () {
+            return context.response();
+        }
+        @Override
+        public SaResponse setStatus ( int status){
+            context.response().setStatusCode(status);
+            return this;
+        }
+        @Override
+        public SaResponse setHeader (String name, String value){
+            context.response().putHeader(name, value);
+            return this;
+        }
+        @Override
+        public SaResponse addHeader (String name, String value){
+            context.response().headers().add(name, value);
+            return this;
+        }
+        @Override
+        public Object redirect (String url){
+            return context.response().setStatusCode(302).putHeader("Location", url).end();
+        }
+    }
+
+    SaStorage {
+        private static final String PREFIX = "sample.sa-token.";
+        @Override
+        public Object getSource () {
+            return context;
+        }
+        @Override
+        public Object get (String key){
+            return context.get(PREFIX + key);
+        }
+        @Override
+        public SaStorage set (String key, Object value){
+            context.put(PREFIX + key, value);
+            return this;
+        }
+        @Override
+        public SaStorage delete (String key){
+            context.remove(PREFIX + key);
+            return this;
+        }
+    }
 
     void start(@Observes StartupEvent event) {
         previousContext = SaManager.getSaTokenContext();
@@ -97,13 +202,13 @@ public class SampleSaTokenRuntime implements SaTokenContext {
         return getModelBox().getRequest();
     }
 
-    /**
+        /**
      * 返回当前 HTTP 响应适配器。
      */
     @Override
     public SaResponse getResponse() {
         return getModelBox().getResponse();
-    }
+    } implements
 
     /**
      * 返回仅属于当前请求的临时存储。
@@ -113,147 +218,26 @@ public class SampleSaTokenRuntime implements SaTokenContext {
         return getModelBox().getStorage();
     }
 
-    /**
+        /**
      * 只有真实 HTTP 请求激活时才允许读取会话。
      */
     @Override
     public boolean isValid() {
         return Objects.nonNull(currentRequest.getCurrent());
-    }
+    } implements
 
-    /**
+/**
      * Vert.x 请求到 Sa-Token 请求接口的适配。
      */
-    private record Request(RoutingContext context) implements SaRequest {
-        @Override
-        public Object getSource() {
-            return context.request();
-        }
-
-        @Override
-        public String getParam(String name) {
-            return context.request().getParam(name);
-        }
-
-        @Override
-        public Collection<String> getParamNames() {
-            return context.request().params().names();
-        }
-
-        @Override
-        public Map<String, String> getParamMap() {
-            Map<String, String> params = new HashMap<>();
-            context.request().params().forEach(entry -> params.put(entry.getKey(), entry.getValue()));
-            return params;
-        }
-
-        @Override
-        public String getHeader(String name) {
-            return context.request().getHeader(name);
-        }
-
-        @Override
-        public String getCookieValue(String name) {
-            Cookie cookie = context.request().getCookie(name);
-            return Objects.isNull(cookie) ? null : cookie.getValue();
-        }
-
-        @Override
-        public String getCookieFirstValue(String name) {
-            return getCookieValue(name);
-        }
-
-        @Override
-        public String getCookieLastValue(String name) {
-            return getCookieValue(name);
-        }
-
-        @Override
-        public String getRequestPath() {
-            return context.request().path();
-        }
-
-        @Override
-        public String getUrl() {
-            return context.request().absoluteURI();
-        }
-
-        @Override
-        public String getMethod() {
-            return context.request().method().name();
-        }
-
-        @Override
-        public String getHost() {
-            return context.request().getHeader("Host");
-        }
-
-        @Override
-        public Object forward(String path) {
-            context.reroute(path);
-            return null;
-        }
-    }
+    private record Request(RoutingContext context)
 
     /**
      * 将响应头与状态写入真实 Vert.x 响应。
      */
-    private record Response(RoutingContext context) implements SaResponse {
-        @Override
-        public Object getSource() {
-            return context.response();
-        }
+    private record Response(RoutingContext context) implements
 
-        @Override
-        public SaResponse setStatus(int status) {
-            context.response().setStatusCode(status);
-            return this;
-        }
-
-        @Override
-        public SaResponse setHeader(String name, String value) {
-            context.response().putHeader(name, value);
-            return this;
-        }
-
-        @Override
-        public SaResponse addHeader(String name, String value) {
-            context.response().headers().add(name, value);
-            return this;
-        }
-
-        @Override
-        public Object redirect(String url) {
-            return context.response().setStatusCode(302).putHeader("Location", url).end();
-        }
-    }
-
-    /**
+/**
      * 使用独立键空间，避免与业务 RoutingContext 属性冲突。
      */
-    private record Storage(RoutingContext context) implements SaStorage {
-        private static final String PREFIX = "sample.sa-token.";
-
-        @Override
-        public Object getSource() {
-            return context;
-        }
-
-        @Override
-        public Object get(String key) {
-            return context.get(PREFIX + key);
-        }
-
-        @Override
-        public SaStorage set(String key, Object value) {
-            context.put(PREFIX + key, value);
-            return this;
-        }
-
-        @Override
-        public SaStorage delete(String key) {
-            context.remove(PREFIX + key);
-            return this;
-        }
-    }
+    private record Storage(RoutingContext context)
 }

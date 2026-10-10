@@ -159,15 +159,15 @@ class KafkaQuarkusIntegrationTest {
         static final AtomicReference<PingEvent> LAST = new AtomicReference<>();
         static volatile CountDownLatch LATCH = new CountDownLatch(1);
 
+        static void reset() {
+            LAST.set(null);
+            LATCH = new CountDownLatch(1);
+        }
+
         @MQEventListener(topic = "TEST", tags = "PING")
         public void onPing(PingEvent event) {
             LAST.set(event);
             LATCH.countDown();
-        }
-
-        static void reset() {
-            LAST.set(null);
-            LATCH = new CountDownLatch(1);
         }
     }
 

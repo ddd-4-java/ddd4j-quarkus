@@ -50,6 +50,23 @@ public enum OrderStatus {
     }
 
     /**
+     * 根据状态编码解析枚举。
+     *
+     * @param code 状态编码（数据库存储值）
+     * @return 对应的订单状态
+     * @throws IllegalArgumentException 未知的状态编码
+     */
+    public static OrderStatus fromCode(String code) {
+        Objects.requireNonNull(code, "code must not be null");
+        for (OrderStatus status : values()) {
+            if (status.code.equals(code)) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Unknown order status code: " + code);
+    }
+
+    /**
      * 获取状态编码。
      *
      * @return 状态编码
@@ -79,22 +96,5 @@ public enum OrderStatus {
             case PAID -> target == SHIPPED || target == CANCELLED;
             case SHIPPED, COMPLETED, CANCELLED -> false;
         };
-    }
-
-    /**
-     * 根据状态编码解析枚举。
-     *
-     * @param code 状态编码（数据库存储值）
-     * @return 对应的订单状态
-     * @throws IllegalArgumentException 未知的状态编码
-     */
-    public static OrderStatus fromCode(String code) {
-        Objects.requireNonNull(code, "code must not be null");
-        for (OrderStatus status : values()) {
-            if (status.code.equals(code)) {
-                return status;
-            }
-        }
-        throw new IllegalArgumentException("Unknown order status code: " + code);
     }
 }

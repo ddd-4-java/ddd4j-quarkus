@@ -41,6 +41,18 @@ public class JpaRepositoryRegistrar {
     Instance<Repository<?, ?>> repositories;
 
     /**
+     * 泛型捕获辅助：绕过 {@code Repository<?, ?>} 通配符与
+     * {@code RepositoryRegistry.register(Class<M>, Repository<M>)} 的类型推断不兼容问题。
+     */
+    @SuppressWarnings("unchecked")
+    private static void registerUnchecked(Repository<?, ?> repository) {
+        RepositoryRegistry.register(
+                (Class) repository.getClass(),
+                (Repository) repository
+        );
+    }
+
+    /**
      * 启动时注册所有 Repository Bean。
      *
      * @param event Quarkus 启动事件
@@ -57,17 +69,5 @@ public class JpaRepositoryRegistrar {
             }
         }
         LOG.infof("Total registered repositories: %d", count);
-    }
-
-    /**
-     * 泛型捕获辅助：绕过 {@code Repository<?, ?>} 通配符与
-     * {@code RepositoryRegistry.register(Class<M>, Repository<M>)} 的类型推断不兼容问题。
-     */
-    @SuppressWarnings("unchecked")
-    private static void registerUnchecked(Repository<?, ?> repository) {
-        RepositoryRegistry.register(
-                (Class) repository.getClass(),
-                (Repository) repository
-        );
     }
 }

@@ -21,6 +21,17 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  */
 class OfficialContainerAdapterTest {
 
+    /**
+     * 只替换 Docker API 边界，实际执行生产 exposedProperties；不向生产类添加测试接口。
+     */
+    private static Map<String, String> properties(AbstractTestContainerFixture fixture,
+                                                  GenericContainer<?> adapter) throws Exception {
+        Field container = fixture.getClass().getDeclaredField("container");
+        container.setAccessible(true);
+        container.set(fixture, adapter);
+        return fixture.exposedProperties();
+    }
+
     @Test
     void shouldExposeArtemisBrokerApiRatherThanReconstructingItsUrl() throws Exception {
         ArtemisContainer adapter = new ArtemisContainer("apache/activemq-artemis:2.33.0-alpine") {
@@ -154,16 +165,5 @@ class OfficialContainerAdapterTest {
 
         assertThat(properties(new SqsQuarkusTestResource(), adapter))
                 .containsEntry("ddd4j.mq.sqs.endpoint", "http://localstack-advertised:31005/sqs");
-    }
-
-    /**
-     * 只替换 Docker API 边界，实际执行生产 exposedProperties；不向生产类添加测试接口。
-     */
-    private static Map<String, String> properties(AbstractTestContainerFixture fixture,
-                                                  GenericContainer<?> adapter) throws Exception {
-        Field container = fixture.getClass().getDeclaredField("container");
-        container.setAccessible(true);
-        container.set(fixture, adapter);
-        return fixture.exposedProperties();
     }
 }

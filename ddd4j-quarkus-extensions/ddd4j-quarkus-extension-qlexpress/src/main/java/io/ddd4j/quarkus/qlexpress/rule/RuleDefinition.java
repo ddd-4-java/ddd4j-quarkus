@@ -42,6 +42,10 @@ public class RuleDefinition implements Serializable {
         this.updatedAt = updatedAt;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getId() {
         return id;
     }
@@ -120,10 +124,6 @@ public class RuleDefinition implements Serializable {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     /**

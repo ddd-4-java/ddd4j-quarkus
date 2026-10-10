@@ -24,25 +24,6 @@ import static org.awaitility.Awaitility.await;
 @QuarkusTest
 @QuarkusTestResource(SampleMqKafkaBootTest.BrokerResource.class)
 class SampleMqKafkaBootTest {
-    /**
-     * 仅适配共享 fixture 的生命周期与 broker 大小写，不复制容器启动。
-     */
-    public static class BrokerResource implements QuarkusTestResourceLifecycleManager {
-        private final KafkaQuarkusTestResource fixture = new KafkaQuarkusTestResource();
-
-        @Override
-        public Map<String, String> start() {
-            Map<String, String> config = new HashMap<>(fixture.start());
-            config.put("ddd4j.mq.broker", "kafka");
-            return config;
-        }
-
-        @Override
-        public void stop() {
-            fixture.stop();
-        }
-    }
-
     @Inject
     ConsumedOrderProjection projection;
 
@@ -71,5 +52,24 @@ class SampleMqKafkaBootTest {
             assertThat(event.getTopic()).isEqualTo("ORDER");
             assertThat(event.getTag()).isEqualTo("CREATED");
         });
+    }
+
+    /**
+     * 仅适配共享 fixture 的生命周期与 broker 大小写，不复制容器启动。
+     */
+    public static class BrokerResource implements QuarkusTestResourceLifecycleManager {
+        private final KafkaQuarkusTestResource fixture = new KafkaQuarkusTestResource();
+
+        @Override
+        public Map<String, String> start() {
+            Map<String, String> config = new HashMap<>(fixture.start());
+            config.put("ddd4j.mq.broker", "kafka");
+            return config;
+        }
+
+        @Override
+        public void stop() {
+            fixture.stop();
+        }
     }
 }

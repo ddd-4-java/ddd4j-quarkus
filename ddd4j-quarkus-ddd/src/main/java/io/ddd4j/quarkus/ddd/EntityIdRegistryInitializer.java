@@ -61,6 +61,22 @@ public class EntityIdRegistryInitializer {
     EntityIdConfig config;
 
     /**
+     * 判断工厂类名是否匹配任一白名单前缀。
+     *
+     * @param factoryClassName 待校验类名
+     * @param prefixes         白名单前缀列表（已确认非空）
+     * @return 任一前缀匹配即返回 {@code true}
+     */
+    private static boolean isAllowed(String factoryClassName, List<String> prefixes) {
+        for (String prefix : prefixes) {
+            if (factoryClassName.startsWith(prefix)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * 启动时注册自定义 EntityId 类型。
      *
      * @param event Quarkus 启动事件
@@ -95,22 +111,6 @@ public class EntityIdRegistryInitializer {
                 LOG.errorf(e, "Failed to register EntityId type '%s' with factory %s", typeName, factoryClassName);
             }
         }
-    }
-
-    /**
-     * 判断工厂类名是否匹配任一白名单前缀。
-     *
-     * @param factoryClassName 待校验类名
-     * @param prefixes         白名单前缀列表（已确认非空）
-     * @return 任一前缀匹配即返回 {@code true}
-     */
-    private static boolean isAllowed(String factoryClassName, List<String> prefixes) {
-        for (String prefix : prefixes) {
-            if (factoryClassName.startsWith(prefix)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

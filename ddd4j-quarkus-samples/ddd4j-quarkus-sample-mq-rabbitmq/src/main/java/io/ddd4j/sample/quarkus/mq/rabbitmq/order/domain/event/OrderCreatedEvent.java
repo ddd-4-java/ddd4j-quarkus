@@ -28,18 +28,15 @@ import java.util.Objects;
 @Getter
 public class OrderCreatedEvent extends MQEvent {
 
-    private static final long serialVersionUID = 1L;
-
     /**
      * MQ 业务主题（与 RabbitMQ Topic Exchange 的 routing key 一致）
      */
     public static final String TOPIC = "ORDER";
-
     /**
      * MQ 标签（业务侧理解为二级路由，小写形式）
      */
     public static final String TAG = "created";
-
+    private static final long serialVersionUID = 1L;
     /**
      * 订单 ID（与 MQEvent 的 source 字段对齐）
      */

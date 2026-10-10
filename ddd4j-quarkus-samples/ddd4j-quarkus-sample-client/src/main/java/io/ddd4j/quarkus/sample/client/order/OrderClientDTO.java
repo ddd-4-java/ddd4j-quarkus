@@ -6,6 +6,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+Serializable {
+
+    private static final long serialVersionUID = 1L;
+} implements
+
 /**
  * 订单客户端 DTO（对外 API 契约）。
  *
@@ -38,7 +43,4 @@ public record OrderClientDTO(
                 allowableValues = {"CREATED", "PAID", "SHIPPED", "COMPLETED", "CANCELLED"}) String status,
         @Schema(description = "订单总金额", example = "199.00") BigDecimal totalAmount,
         @Schema(description = "创建时间", example = "2026-08-04T10:00:00") LocalDateTime createdTime
-) implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-}
+)

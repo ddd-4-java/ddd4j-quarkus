@@ -28,6 +28,23 @@ class AuthJourneyTest {
     @Inject
     SampleShiroRuntime runtime;
 
+    private static String login(String userId) {
+        return given().contentType("text/plain").body(userId).post("/auth/login")
+                .then().statusCode(200).body("principal.loginId", equalTo(userId))
+                .extract().path("token");
+    }
+
+    private static void assertCurrentUser(String token, String userId) {
+        given().header("X-Session-Id", token).get("/auth/me")
+                .then().statusCode(200).body("authenticated", equalTo(true))
+                .body("loginId", equalTo(userId)).body("userId", equalTo(userId));
+    }
+
+    private static void logout(String token) {
+        given().header("X-Session-Id", token).post("/auth/logout")
+                .then().statusCode(200).body("success", equalTo(true));
+    }
+
     @Test
     void loginShouldRestoreOnlyItsOwnSessionAndLogoutShouldRevokeToken() {
         given().get("/auth/status").then().statusCode(200).body("login", equalTo(false));
@@ -85,23 +102,6 @@ class AuthJourneyTest {
             logout(aliceToken);
             logout(bobToken);
         }
-    }
-
-    private static String login(String userId) {
-        return given().contentType("text/plain").body(userId).post("/auth/login")
-                .then().statusCode(200).body("principal.loginId", equalTo(userId))
-                .extract().path("token");
-    }
-
-    private static void assertCurrentUser(String token, String userId) {
-        given().header("X-Session-Id", token).get("/auth/me")
-                .then().statusCode(200).body("authenticated", equalTo(true))
-                .body("loginId", equalTo(userId)).body("userId", equalTo(userId));
-    }
-
-    private static void logout(String token) {
-        given().header("X-Session-Id", token).post("/auth/logout")
-                .then().statusCode(200).body("success", equalTo(true));
     }
 
     private void assertExceptionalInvocationRestoresThreadState(String aliceToken) {

@@ -3,6 +3,20 @@ package io.ddd4j.quarkus.sample.app.order.command;
 import java.io.Serializable;
 import java.util.Objects;
 
+Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 紧凑构造器：参数校验，保证命令不可为非法状态。
+     */
+    public CreateOrderCommand {
+        Objects.requireNonNull(orderNo, "orderNo must not be null");
+        Objects.requireNonNull(buyerId, "buyerId must not be null");
+        Objects.requireNonNull(buyerName, "buyerName must not be null");
+    }
+} implements
+
 /**
  * 创建订单命令（应用层入参）。
  *
@@ -17,16 +31,4 @@ import java.util.Objects;
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  * @since 3.3.x
  */
-public record CreateOrderCommand(String orderNo, String buyerId, String buyerName) implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 紧凑构造器：参数校验，保证命令不可为非法状态。
-     */
-    public CreateOrderCommand {
-        Objects.requireNonNull(orderNo, "orderNo must not be null");
-        Objects.requireNonNull(buyerId, "buyerId must not be null");
-        Objects.requireNonNull(buyerName, "buyerName must not be null");
-    }
-}
+public record CreateOrderCommand(String orderNo, String buyerId, String buyerName)

@@ -50,18 +50,6 @@ public final class ExcelAttachment {
         this.charset = charset;
     }
 
-    public String getFilename() {
-        return filename;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public Charset getCharset() {
-        return charset;
-    }
-
     /**
      * 构造 xlsx 附件（UTF-8 编码文件名）。
      *
@@ -91,6 +79,18 @@ public final class ExcelAttachment {
      */
     public static ExcelAttachment csv(String filename, Charset charset) {
         return new ExcelAttachment(filename, CONTENT_TYPE_CSV, charset);
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public Charset getCharset() {
+        return charset;
     }
 
     /**

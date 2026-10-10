@@ -26,24 +26,10 @@ import java.util.UUID;
 public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
 
     private static final DockerImageName IMAGE = DockerImageName.parse("nats:2.10.22");
-
-    private GenericContainer<?> container;
     private final String streamName;
     private final List<String> subjects;
+    private GenericContainer<?> container;
     private String servers;
-
-    /**
-     * 创建一个带随机后缀的 run-scoped stream fixture。
-     *
-     * @param streamNamePrefix stream 名称前缀
-     * @param subjects         stream 覆盖的 subjects
-     * @return stream 名称在并发测试运行间唯一的 fixture
-     */
-    public static NatsQuarkusTestResource withRunScopedStream(String streamNamePrefix, List<String> subjects) {
-        String prefix = Objects.requireNonNull(streamNamePrefix, "streamNamePrefix");
-        return new NatsQuarkusTestResource(
-                prefix + UUID.randomUUID().toString().replace("-", ""), subjects);
-    }
 
     /**
      * 启用 JetStream，但不创建任何业务 stream。
@@ -65,6 +51,19 @@ public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
         if (this.subjects.isEmpty()) {
             throw new IllegalArgumentException("subjects 不能为空");
         }
+    }
+
+    /**
+     * 创建一个带随机后缀的 run-scoped stream fixture。
+     *
+     * @param streamNamePrefix stream 名称前缀
+     * @param subjects         stream 覆盖的 subjects
+     * @return stream 名称在并发测试运行间唯一的 fixture
+     */
+    public static NatsQuarkusTestResource withRunScopedStream(String streamNamePrefix, List<String> subjects) {
+        String prefix = Objects.requireNonNull(streamNamePrefix, "streamNamePrefix");
+        return new NatsQuarkusTestResource(
+                prefix + UUID.randomUUID().toString().replace("-", ""), subjects);
     }
 
     @Override
