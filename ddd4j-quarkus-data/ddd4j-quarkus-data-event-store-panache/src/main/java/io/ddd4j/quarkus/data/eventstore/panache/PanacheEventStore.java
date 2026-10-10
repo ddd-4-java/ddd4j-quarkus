@@ -1,5 +1,9 @@
 package io.ddd4j.quarkus.data.eventstore.panache;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ddd4j.core.ddd.event.AggregateRootId;
 import io.ddd4j.core.ddd.event.DomainEvent;
@@ -56,28 +60,6 @@ public class PanacheEventStore implements EventStore {
     @Inject
     public PanacheEventStore(EventPayloadSerializer serializer) {
         this.serializer = Objects.requireNonNull(serializer, "serializer must not be null");
-    }
-
-    AggregateRootId {
-
-        /** 字符串聚合根标识的固定类型。 */
-        private static final StringEntityType TYPE = new StringEntityType("String");
-
-        @Override
-        public EntityType getType () {
-            return TYPE;
-        }
-
-        @Override
-        @JsonValue
-        public String asString () {
-            return value;
-        }
-
-        @Override
-        public String asTypedString () {
-            return TYPE.asString() + ":" + value;
-        }
     }
 
     /**
@@ -175,7 +157,7 @@ public class PanacheEventStore implements EventStore {
                 EventId.valueOf(entity.causationId));
     }
 
-        /**
+    /**
      * 按限定名还原事件类型。
      *
      * @param eventType 事件类型限定名
@@ -189,9 +171,9 @@ public class PanacheEventStore implements EventStore {
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("Unknown event type: " + eventType, e);
         }
-    } implements
+    }
 
-/**
+    /**
      * 字符串聚合根标识适配器：实体列 {@code aggregate_id} 只存字符串，读回侧需重建
      * {@link AggregateRootId} 接口实例（{@code StringEntityId} 仅实现
      * {@code EntityId}，不满足 {@link StoredEvent} 构造器约束）。
@@ -199,5 +181,65 @@ public class PanacheEventStore implements EventStore {
      * <p>三方法契约与 {@code StringEntityId} 一致：类型固定 {@code String}、
      * 原值与 {@code 类型:值} 形式（与主仓 {@code PanacheEventStore} 内同名适配器对齐）。
      */
-    private record StringAggregateRootId(String value)
+    private final static class StringAggregateRootId implements AggregateRootId {
+
+        private static final long serialVersionUID = 0L;
+
+        private final String value;
+
+        /**
+         * 字符串聚合根标识的固定类型。
+         */
+        private static final StringEntityType TYPE = new StringEntityType("String");
+
+        @Override
+        public EntityType getType() {
+            return TYPE;
+        }
+
+        @Override
+        @JsonValue
+        public String asString() {
+            return value;
+        }
+
+        @Override
+        public String asTypedString() {
+            return TYPE.asString() + ":" + value;
+        }
+
+        @JsonCreator()
+        private StringAggregateRootId(@JsonProperty("value") String value) {
+            this.value = value;
+        }
+
+        @JsonProperty("value")
+        public String value() {
+            return value;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (Objects.isNull(obj) || getClass() != obj.getClass()) {
+                return false;
+            }
+            StringAggregateRootId other = (StringAggregateRootId) obj;
+            return Objects.equals(this.value, other.value);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = 0;
+            result = 31 * result + Objects.hashCode(value);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "StringAggregateRootId[value=" + value + "]";
+        }
+    }
 }

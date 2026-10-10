@@ -1,5 +1,9 @@
 package io.ddd4j.quarkus.auth.license;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import io.ddd4j.extension.license.LicenseVerify;
 import io.ddd4j.extension.license.creator.LicenseCreator;
 import io.ddd4j.extension.license.creator.LicenseCreatorParam;
@@ -167,7 +171,72 @@ class LicenseEnabledEndToEndQuarkusTest {
         assertOwnerOnlyPermissions(fixture.licensePath(), OWNER_ONLY_FILE_PERMISSIONS);
     }
 
-    private record LicenseFixture(Path directory, Path licensePath, Path publicKeysStorePath, Path privateKeysStorePath) {
+    private final static class LicenseFixture {
+
+        private static final long serialVersionUID = 0L;
+
+        private final Path directory;
+
+        private final Path licensePath;
+
+        private final Path publicKeysStorePath;
+
+        private final Path privateKeysStorePath;
+
+        @JsonCreator()
+        private LicenseFixture(@JsonProperty("directory") Path directory, @JsonProperty("licensePath") Path licensePath, @JsonProperty("publicKeysStorePath") Path publicKeysStorePath, @JsonProperty("privateKeysStorePath") Path privateKeysStorePath) {
+            this.directory = directory;
+            this.licensePath = licensePath;
+            this.publicKeysStorePath = publicKeysStorePath;
+            this.privateKeysStorePath = privateKeysStorePath;
+        }
+
+        @JsonProperty("directory")
+        public Path directory() {
+            return directory;
+        }
+
+        @JsonProperty("licensePath")
+        public Path licensePath() {
+            return licensePath;
+        }
+
+        @JsonProperty("publicKeysStorePath")
+        public Path publicKeysStorePath() {
+            return publicKeysStorePath;
+        }
+
+        @JsonProperty("privateKeysStorePath")
+        public Path privateKeysStorePath() {
+            return privateKeysStorePath;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (Objects.isNull(obj) || getClass() != obj.getClass()) {
+                return false;
+            }
+            LicenseFixture other = (LicenseFixture) obj;
+            return Objects.equals(this.directory, other.directory) && Objects.equals(this.licensePath, other.licensePath) && Objects.equals(this.publicKeysStorePath, other.publicKeysStorePath) && Objects.equals(this.privateKeysStorePath, other.privateKeysStorePath);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = 0;
+            result = 31 * result + Objects.hashCode(directory);
+            result = 31 * result + Objects.hashCode(licensePath);
+            result = 31 * result + Objects.hashCode(publicKeysStorePath);
+            result = 31 * result + Objects.hashCode(privateKeysStorePath);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "LicenseFixture[directory=" + directory + ", licensePath=" + licensePath + ", publicKeysStorePath=" + publicKeysStorePath + ", privateKeysStorePath=" + privateKeysStorePath + "]";
+        }
     }
 
     /**

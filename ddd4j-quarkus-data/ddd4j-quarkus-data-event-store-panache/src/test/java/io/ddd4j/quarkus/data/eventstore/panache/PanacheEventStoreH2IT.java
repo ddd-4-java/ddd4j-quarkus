@@ -1,5 +1,11 @@
 package io.ddd4j.quarkus.data.eventstore.panache;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+
+import java.util.Objects;
+
 import io.ddd4j.core.cqrs.eventstore.EventStore;
 import io.ddd4j.core.ddd.event.AggregateRootId;
 import io.ddd4j.core.ddd.event.DomainEvent;
@@ -47,26 +53,6 @@ class PanacheEventStoreH2IT {
 
     @Inject
     PanacheEventStoreH2ItCdiConfig itConfig;
-
-    AggregateRootId {
-
-        private static final EntityType TYPE = new StringEntityType("SampleAggregate");
-
-        @Override
-        public EntityType getType () {
-            return TYPE;
-        }
-
-        @Override
-        public String asString () {
-            return value;
-        }
-
-        @Override
-        public String asTypedString () {
-            return TYPE.asString() + ":" + value;
-        }
-    }
 
     @BeforeEach
     void cleanStream() {
@@ -163,12 +149,6 @@ class PanacheEventStoreH2IT {
     }
 
     /**
-     * IT 自有字符串聚合根标识（受测类内部 StringAggregateRootId 为 private，无法引用；
-     * 契约与 AggregateRootId 三方法一致）。
-     */
-    private record ItAggregateId(String value) implements
-
-    /**
      * IT 样本事件：带一个业务字段的 payload 载体，验证真实 Jackson 往返等值。
      */
     static final class OccurredEvent extends DomainEvent<StringEntityId> {
@@ -190,6 +170,68 @@ class PanacheEventStoreH2IT {
 
         public void setFact(String fact) {
             this.fact = fact;
+        }
+    }
+
+    /**
+     * IT 自有字符串聚合根标识（受测类内部 StringAggregateRootId 为 private，无法引用；
+     * 契约与 AggregateRootId 三方法一致）。
+     */
+    private final static class ItAggregateId implements AggregateRootId {
+
+        private static final long serialVersionUID = 0L;
+
+        private final String value;
+
+        private static final EntityType TYPE = new StringEntityType("SampleAggregate");
+
+        @Override
+        public EntityType getType() {
+            return TYPE;
+        }
+
+        @Override
+        public String asString() {
+            return value;
+        }
+
+        @Override
+        public String asTypedString() {
+            return TYPE.asString() + ":" + value;
+        }
+
+        @JsonCreator()
+        private ItAggregateId(@JsonProperty("value") String value) {
+            this.value = value;
+        }
+
+        @JsonProperty("value")
+        public String value() {
+            return value;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (Objects.isNull(obj) || getClass() != obj.getClass()) {
+                return false;
+            }
+            ItAggregateId other = (ItAggregateId) obj;
+            return Objects.equals(this.value, other.value);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = 0;
+            result = 31 * result + Objects.hashCode(value);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "ItAggregateId[value=" + value + "]";
         }
     }
 }
