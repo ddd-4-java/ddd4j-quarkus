@@ -67,7 +67,7 @@
 ## 全局约定
 ## 实施阶段总览
 ## Stage 1 — <标题>
-- [ ] **Step 1.1: <动词>**（文件/操作/验证/提交四元组）
+- [ ] **Step 1.1: <动词>**（文件/操作/验证/提交四元组）【规范条目·非工作项】
 ## Stage N — ...
 ## Self-Review / 完成校验
 ```
@@ -114,7 +114,7 @@
 
 - [x] 删除 `ddd4j-quarkus-extension-pf4j`（空壳）— 已完成（2026-08-16，随 data-panache 缺陷修复一并提交）
 - [x] 修复 data-panache 缺陷（TenantAwareEntity strategy 类名 / 空 filters HQL / IdGeneratorProducer CDI 通配符违规）— 已完成（2026-08-16，新增 2 个 CDI 装配测试）
-- [ ] 新增 `ddd4j-quarkus-auth-testcontainers` 共享 fixture + 4 个 auth 子模块集成测试
-- [ ] 补齐 `ddd4j-quarkus-data-jpa` main src（当前仅 test）
-- [ ] 补齐 `ddd4j-quarkus-data-external` WeatherQuarkusAdapter + QuarkusExternalCdiProducer
-- [ ] 完整化 `sample-auth-*` / `sample-mq-*`
+- [ ] 新增 `ddd4j-quarkus-auth-testcontainers` 共享 fixture + 4 个 auth 子模块集成测试【待办】
+- [x] 补齐 `ddd4j-quarkus-data-jpa` main src（当前仅 test）（证据: ddd4j-quarkus-data-jpa/src/main/java/io/ddd4j/quarkus/data/jpa/JpaRepositoryRegistrar.java 存在且有编译产物）
+- [ ] 补齐 `ddd4j-quarkus-data-external` WeatherQuarkusAdapter + QuarkusExternalCdiProducer【待办】
+- [x] 完整化 `sample-auth-*` / `sample-mq-*`（证据: 2026-09-10-p3-auth-samples-completion.md Task 2-4 已全部完成，AuthJourneyTest 与 SampleMq*BootTest 覆盖，Security sample 已按计划移出 reactor）

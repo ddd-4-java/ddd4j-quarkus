@@ -152,7 +152,7 @@ API because `Thread.threadId()` is unavailable on the branch baseline.
 - [x] 4.0.x: Java21/Maven4 full `clean verify`.
 - [x] Aggregate XML counts/skips and update P3/P5-B0 docs.
 - [x] Mark sample backlog complete only from these results.
-- [ ] Push both branches and require target-head GitHub Actions success.
+- [ ] Push both branches and require target-head GitHub Actions success.【外部阻塞: 需推送双分支远端并等待 GitHub Actions 成功（缺 NVD_API_KEY 与分支保护）】
 
 Task 5 local evidence: 3.3.x `91ceb9b` passed 61/61 modules under Java 17 and
 Java 21, each with 61 suites / 224 tests / 0 failures / 0 errors / 3 skips.
@@ -169,5 +169,5 @@ remain open.
 
 ### Task 6: Return to P5-B0 publication
 
-- [ ] Resume P5-B0 deploy Tasks 6–8 only after Task 5 succeeds.
-- [ ] Publish every maintained branch serially and run clean-cache consumers.
+- [ ] Resume P5-B0 deploy Tasks 6–8 only after Task 5 succeeds.【外部阻塞: 依赖 Task 5 推送与 Actions 成功后方可恢复部署】
+- [ ] Publish every maintained branch serially and run clean-cache consumers.【外部阻塞: 需按序发布各维护分支并执行 clean-cache 消费者验证（需远端仓库）】

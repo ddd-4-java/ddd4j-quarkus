@@ -1,0 +1,116 @@
+Testcontainers 测试治理证据 — ddd4j-quarkus
+日期: 2026-10-09
+分支: feature/3.3.x（实际 checkout；任务书标注为 feature/4.0.x —— 未授权切分支，差异见"风险"）
+执行约束: 未运行 mvn/gradle（红线禁止）；全部结论来自 grep/find/javap/curl(Docker Hub API)/Read 静态核验。
+
+================================================================================
+1. 版本与坐标口径（已裁定，不改）
+================================================================================
+testcontainers-bom.version = 2.0.5（ddd4j-quarkus-dependencies/pom.xml L56，BOM import L122-125）
+坐标代际 = 2.x 命名：org.testcontainers:testcontainers / testcontainers-junit-jupiter /
+testcontainers-kafka / testcontainers-activemq / testcontainers-localstack / testcontainers-mysql /
+testcontainers-pulsar / testcontainers-postgresql / testcontainers-rabbitmq（deps pom L308-350 逐个
+pin 到 ${testcontainers-bom.version}）。
+红线：2.x 与 1.x（junit-jupiter/kafka/... 无前缀命名）两代坐标禁止混用 —— 本仓 0 处 1.x 坐标。
+关键 API 核验（javap testcontainers-postgresql-2.0.5.jar）:
+  org.testcontainers.postgresql.PostgreSQLContainer 是非泛型类（无 <*> 类型参数），
+  构造器 (String)/(DockerImageName)；@Testcontainers(disabledWithoutDocker=true) 在 2.x 仍存在。
+
+================================================================================
+2. 镜像盘点表（钉版后 / 钉版前 / 出处 URL / 存在性核验）
+================================================================================
+出处 URL 约定: https://testcontainers.com/modules/<module>/ 为第一方模块页；
+模块页 404 的（rocketmq）用 https://hub.docker.com/r/<org>/<image> 核对。
+存在性核验: Docker Hub API /v2/repositories/<ns>/<image>/tags/<tag> → HTTP 200（本轮全部复测）。
+
+编号 镜像（钉版后）                        钉版前                      出处 URL                                            HTTP
+---- -------------------------------------- --------------------------- -------------------------------------------------- ----
+ 1   apache/activemq-artemis:2.33.0-alpine （先期已钉版）               https://testcontainers.com/modules/artemis/         200 (apache org)
+ 2   confluentinc/cp-kafka:7.7.2           （先期已钉版）               https://testcontainers.com/modules/kafka/           200
+ 3   eclipse-mosquitto:2.0.22              （先期已钉版，原 2.0 浮动）   https://testcontainers.com/modules/mosquitto/       200
+ 4   nats:2.10.22                          （先期已钉版，原 2 浮动）     https://testcontainers.com/modules/nats/            200
+ 5   redis:7.4.11-alpine                   （先期已钉版，原 7.4 浮动）   https://testcontainers.com/modules/redis/           200
+ 6   rabbitmq:3.13.7-management-alpine     （先期已钉版，原 3.13 浮动）  https://testcontainers.com/modules/rabbitmq/        200
+ 7   apache/rocketmq:5.3.2                 （先期已钉版）               https://hub.docker.com/r/apache/rocketmq            200（modules 无 rocketmq 页）
+ 8   apachepulsar/pulsar:3.2.0             （先期已钉版）               https://testcontainers.com/modules/pulsar/          200
+ 9   localstack/localstack:3.8.0           （先期已钉版）               https://testcontainers.com/modules/localstack/      200
+10   postgres:16.15-alpine（本轮新增引用）  —（新增冒烟测试）            https://testcontainers.com/modules/postgresql/      200
+11   rabbitmq:3.13-management-alpine → rabbitmq:3.13.7-management-alpine（本轮：官方容器
+     适配测试的测试替身，浮动别名 → 钉版，与主 fixture 一致）            https://testcontainers.com/modules/rabbitmq/        200
+代码中 :latest 残留: grep -rn ":latest" --include=*.java/*.xml/*.yml/*.md 全仓 = 0 命中。
+每个镜像引用处均带 `// 测试镜像来源: ...` 注释（14 个 java 文件：12 个 mq-testcontainers fixture/
+resource + OfficialContainerAdapterTest + 新增冒烟测试）。mq-testcontainers/pom.xml description 的
+镜像清单同步修正（rabbitmq 3.13.7 / mqtt 2.0.22 / redis 7.4.11）并指引读者看 fixture 注释。
+
+================================================================================
+3. 官方容器（第一方模块）使用情况
+================================================================================
+使用第一方官方容器类的 fixture（6 个，均在 mq-testcontainers）:
+  ActiveMqQuarkusTestResource  → org.testcontainers.activemq.ArtemisContainer
+  KafkaQuarkusTestResource     → org.testcontainers.kafka.ConfluentKafkaContainer
+  PulsarQuarkusTestResource    → org.testcontainers.pulsar.PulsarContainer
+  TdmqQuarkusTestResource      → org.testcontainers.pulsar.PulsarContainer（先期批次由
+                                 GenericContainer 替换为官方类，源码注释在位）
+  RabbitMqQuarkusTestResource  → org.testcontainers.rabbitmq.RabbitMQContainer
+  SqsQuarkusTestResource       → org.testcontainers.localstack.LocalStackContainer
+保留 GenericContainer 的 fixture（6 个，均无第一方 org.testcontainers 工件，fixture 内注释说明）:
+  RocketMq(FixedHostPortGenericContainer，端口固定租约)/Ons（rocketmq）/RedisStream(redis)/
+  Nats(nats)/Mqtt+MicaMqtt(mosquitto)。
+测试替身: OfficialContainerAdapterTest 中匿名子类仅覆写方法、不启动容器，镜像常量仍钉版并加出处注释。
+
+================================================================================
+4. 测试收编核验（surefire/failsafe —— *Test/*IT 是否真被执行）
+================================================================================
+- *QuarkusIntegrationTest.java: 14 个（13 个具体测试类 + 1 个抽象基类
+  AbstractMqQuarkusIntegrationTest 位于 src/main，不参与收集）。
+  surefire 默认 includes **/*Test.java → 13 个具体类全部被收集，无静默排除。
+- *IT.java 全仓仅 1 个: ddd4j-quarkus-data-event-store-panache/.../PanacheEventStoreH2IT.java（H2 内存库，
+  不依赖 Docker）。surefire 默认不含 *IT → 该模块 pom 显式 <include>**/*IT.java</include>
+  （panache pom L86-90，含"否则整个 surefire 轨崩溃、零测试执行"的历史注释）→ 已收集。
+- failsafe: 根 pom/dependencies 仅有插件配置（JBoss LogManager systemPropertyVariables），
+  无 <executions> 绑定 → 默认构建 0 个 failsafe 执行；除上述 H2 IT 外无其他 *IT.java，故不存在
+  "命名 *IT 却永不执行"的测试。
+- Docker 不可达优雅跳过（本轮补齐 1 处）:
+  13 个具体 *QuarkusIntegrationTest 中 12 个容器 IT 全部带
+  @JunitJupiterQuarkusTestContainers（其内 ExecutionCondition 先探测 docker info，JVM 级缓存，
+  容器启动前评估 → 不可达即跳过而非失败）；本轮补齐的唯一漏网 =
+  KafkaQuarkusIntegrationTest（此前仅 @QuarkusTest + @QuarkusTestResource，Docker 缺失时会硬失败）。
+  DisruptorQuarkusIntegrationTest 为纯内存 disruptor、无容器，不需要注解。
+  另有 data-jpa 新增冒烟测试用 @Testcontainers(disabledWithoutDocker=true)（2.x 存在，javap 核验）。
+
+================================================================================
+5. 新增测试（1 个）
+================================================================================
+ddd4j-quarkus-data/ddd4j-quarkus-data-jpa/src/test/java/io/ddd4j/quarkus/data/jpa/PostgresJdbcContainerSmokeTest.java
+- @Testcontainers(disabledWithoutDocker=true)；static PostgreSQLContainer（2.x 非泛型类，刻意不写 <*>）
+  postgres:16.15-alpine，库/用户/密码 ddd4j_test/test/test。
+- jdbcRoundTripAgainstContainer: DriverManager 连接 → CREATE TABLE + INSERT + SELECT 回读断言。
+- 依赖补齐（该模块 pom，均 scope=test，版本由 ddd4j-quarkus-dependencies 管理）:
+  org.testcontainers:testcontainers-postgresql / testcontainers-junit-jupiter / io.quarkus:quarkus-jdbc-postgresql。
+- 动机: data-jpa 是明显可测集成点（JDBC 数据源），此前无任何容器测试；deps BOM 里
+  testcontainers-postgresql 声明全仓 0 使用。
+- 收集路径: 类名以 *Test 结尾 → surefire 默认收集（无需 failsafe/profile）。
+
+================================================================================
+6. 改动清单（本次 Testcontainers 治理范围）
+================================================================================
+  KafkaQuarkusIntegrationTest.java                      + import @JunitJupiterQuarkusTestContainers（12/12 容器 IT 收口）
+  OfficialContainerAdapterTest.java                     测试替身镜像 3.13 → 3.13.7-management-alpine + 出处注释
+  ddd4j-quarkus-mq/ddd4j-quarkus-mq-testcontainers/pom.xml  description 镜像清单修正 + 注释指引
+  ddd4j-quarkus-data/ddd4j-quarkus-data-jpa/pom.xml     +3 test 依赖（postgresql/junit-jupiter/jdbc 驱动）
+  PostgresJdbcContainerSmokeTest.java                   新增冒烟测试
+  docs/verification/testcontainers-evidence-20261009.txt 本文件
+（12 个 mq fixture 的钉版与出处注释为先期同批次完成，本轮复核确认全部在位、无 :latest。）
+
+================================================================================
+7. 风险 / 未尽事项
+================================================================================
+- 分支口径: 任务书写 feature/4.0.x，实际 checkout feature/3.3.x；未授权切分支，按实际分支执行。
+- testcontainers-mysql（2.x 坐标）在 ddd4j-quarkus-dependencies 声明但全仓仍 0 使用
+  （本轮补的是 postgresql 消费点）；保留声明待后续 MySQL 集成测试消费，或另行裁剪。
+- 历史规格/验证文档保留未改（带日期的记录，非现行状态文档，内含旧 tag 记载）:
+  docs/P5-B0-LOCAL-VERIFICATION.md、
+  docs/superpowers/specs/2026-08-07-p2-mq-testcontainers-design.md。
+- 本仓存在先期遗留的红线证据文件与 javadoc 门禁改动（约 50+ modified），全部保留未动。
+- 未运行 mvn：编译/测试执行结果未验证；静态等价性依据 = javap 字节码核验 + surefire/failsafe
+  默认与自定义 includes 逐一比对 + Docker Hub API 200 存在性核验。

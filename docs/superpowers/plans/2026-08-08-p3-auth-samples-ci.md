@@ -164,4 +164,4 @@ Stage 6 — 全量验证 + 提交
   - 取消原因：Sa-Token、Shiro、Security、License 没有共同容器依赖；以各后端真实 Quarkus runtime fixture 替代。
 - [x] 完整化 sample-auth-* / sample-mq-*
   - 证据：见 [P3 auth/sample completion plan](2026-09-10-p3-auth-samples-completion.md) Task 2–4。
-- [ ] 删除 ddd4j-quarkus-extension-pf4j（空壳）
+- [x] 删除 ddd4j-quarkus-extension-pf4j（空壳）（证据: ddd4j-quarkus-extension-pf4j 模块已不存在）
