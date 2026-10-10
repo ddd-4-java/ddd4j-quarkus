@@ -56,6 +56,25 @@
             <artifactId>quarkus-junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- PostgreSQL 官方容器冒烟测试（PostgresJdbcContainerSmokeTest）：
+             testcontainers-postgresql / testcontainers-junit-jupiter 版本由
+             ddd4j-quarkus-dependencies（testcontainers-bom 2.0.5）统一管理；
+             quarkus-jdbc-postgresql 提供 org.postgresql 驱动（quarkus-bom 管理）。 -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

@@ -33,6 +33,11 @@ public class JwtSubjectTestResource {
     @Inject
     SubjectProvider subjectProvider;
 
+    /**
+     * 查询当前请求解析出的认证主体信息（静态门面与注入 provider 解析结果一致性验证入口）。
+     *
+     * @return 当前认证主体信息的 JSON 字符串
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("admin")

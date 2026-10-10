@@ -25,10 +25,18 @@ public class QuarkusTestResourceLifecycleManagerWrapper<F extends AbstractTestCo
 
     private final F fixture;
 
+    /**
+     * 以给定 fixture 构造包装器。
+     *
+     * @param fixture 容器 fixture 实例
+     */
     public QuarkusTestResourceLifecycleManagerWrapper(F fixture) {
         this.fixture = fixture;
     }
 
+    /**
+     * 反射无参构造：供 {@code @QuarkusTestResource} 注解实例化，内部经 {@link #createFixture()} 创建 fixture。
+     */
     public QuarkusTestResourceLifecycleManagerWrapper() {
         // 反射构造，用于 QuarkusTestResource 注解
         this.fixture = createFixture();
@@ -53,6 +61,11 @@ public class QuarkusTestResourceLifecycleManagerWrapper<F extends AbstractTestCo
         fixture.stop();
     }
 
+    /**
+     * 返回当前 fixture 实例。
+     *
+     * @return 容器 fixture 实例
+     */
     public F fixture() {
         return fixture;
     }

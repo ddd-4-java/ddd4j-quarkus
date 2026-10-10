@@ -10,13 +10,17 @@ import java.util.Map;
 /**
  * Redis (Stream 模式) testcontainers fixture for Quarkus tests.
  *
- * <p>镜像：{@code redis:7.4-alpine}。通过 {@code CONFIG SET} 启用
+ * <p>镜像：{@code redis:7.4.11-alpine}。通过 {@code CONFIG SET} 启用
  * {@code notify-keyspace-events}，保证 Redis Stream XADD 事件能被消费者捕获。
  * 暴露属性：{@code ddd4j.mq.redis-stream.host/port}。
  */
 public class RedisStreamQuarkusTestResource extends AbstractTestContainerFixture {
 
-    private static final DockerImageName IMAGE = DockerImageName.parse("redis:7.4-alpine");
+    // 测试镜像来源: https://testcontainers.com/modules/redis/
+    // 钉版 7.4.11-alpine（原浮动标签 7.4-alpine；7.4 线最高补丁即 7.4.11，经 Docker Hub
+    // tags API 核对）。该模块 Java 侧仅有社区实现（com.redis:testcontainers-redis），
+    // 非 org.testcontainers 第一方模块，故按治理口径保留 GenericContainer。
+    private static final DockerImageName IMAGE = DockerImageName.parse("redis:7.4.11-alpine");
 
     private GenericContainer<?> container;
 

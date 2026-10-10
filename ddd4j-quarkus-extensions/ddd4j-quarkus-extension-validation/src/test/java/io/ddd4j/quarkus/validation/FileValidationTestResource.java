@@ -14,6 +14,12 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 @Path("/validation/files")
 public class FileValidationTestResource {
 
+    /**
+     * 接收带自定义文件约束校验的上传请求。
+     *
+     * @param fileUpload 经 {@code @ValidFileUpload} 校验的上传文件
+     * @return 仅回显文件名的成功响应
+     */
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response upload(@RestForm("file") @ValidFileUpload FileUpload fileUpload) {

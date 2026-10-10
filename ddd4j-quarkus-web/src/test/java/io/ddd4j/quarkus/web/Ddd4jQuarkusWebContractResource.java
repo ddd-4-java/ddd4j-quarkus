@@ -22,6 +22,11 @@ import java.util.Objects;
 @ApplicationScoped
 public class Ddd4jQuarkusWebContractResource {
 
+    /**
+     * 读取当前线程上下文中的租户、请求标识、授权头与线程名，用于 web 上下文贯通性契约验证。
+     *
+     * @return 上下文快照响应
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public ContractResponse contract() {

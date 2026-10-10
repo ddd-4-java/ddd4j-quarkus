@@ -49,14 +49,27 @@ public class TestMQClient implements MQClient {
         return true;
     }
 
+    /**
+     * 清空已记录的 {@code init} 调用快照，供用例间隔离复用。
+     */
     public synchronized void reset() {
         initCalls.clear();
     }
 
+    /**
+     * 返回已记录的 {@code init} 调用快照（不可变副本）。
+     *
+     * @return init 调用入参快照列表
+     */
     public synchronized List<InitCall> initCalls() {
         return List.copyOf(initCalls);
     }
 
+    /**
+     * 返回已记录的 {@code init} 调用次数。
+     *
+     * @return 调用次数
+     */
     public synchronized int initCount() {
         return initCalls.size();
     }

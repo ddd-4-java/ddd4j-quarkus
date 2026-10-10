@@ -59,26 +59,55 @@ class ExcelQuarkusTest {
         private String orderNo;
         private String buyerName;
 
+        /**
+         * 无参构造，供 EasyExcel/JSON 反射实例化使用。
+         */
         public OrderRow() {
         }
 
+        /**
+         * 以订单编号与买家名称构造导出行。
+         *
+         * @param orderNo  订单编号
+         * @param buyerName  买家名称
+         */
         public OrderRow(String orderNo, String buyerName) {
             this.orderNo = orderNo;
             this.buyerName = buyerName;
         }
 
+        /**
+         * 获取订单编号。
+         *
+         * @return 订单编号
+         */
         public String getOrderNo() {
             return orderNo;
         }
 
+        /**
+         * 设置订单编号。
+         *
+         * @param orderNo 订单编号
+         */
         public void setOrderNo(String orderNo) {
             this.orderNo = orderNo;
         }
 
+        /**
+         * 获取买家名称。
+         *
+         * @return 买家名称
+         */
         public String getBuyerName() {
             return buyerName;
         }
 
+        /**
+         * 设置买家名称。
+         *
+         * @param buyerName 买家名称
+         */
         public void setBuyerName(String buyerName) {
             this.buyerName = buyerName;
         }

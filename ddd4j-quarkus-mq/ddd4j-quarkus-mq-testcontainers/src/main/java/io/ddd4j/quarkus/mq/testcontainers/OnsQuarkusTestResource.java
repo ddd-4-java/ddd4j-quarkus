@@ -20,6 +20,9 @@ import java.util.Map;
  */
 public class OnsQuarkusTestResource extends AbstractTestContainerFixture {
 
+    // 测试镜像来源: https://hub.docker.com/r/apache/rocketmq
+    // （testcontainers.com/modules/rocketmq/ 模块页 HTTP 404，故改用 Docker Hub 仓库页核对并注明差异）
+    // 已钉版 5.3.2（本任务前即为固定标签；testcontainers 无 RocketMQ 第一方模块，保持 GenericContainer）
     private static final DockerImageName IMAGE = DockerImageName.parse("apache/rocketmq:5.3.2");
     private static final int NAMESRV_PORT = 9876;
 

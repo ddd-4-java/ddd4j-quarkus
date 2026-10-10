@@ -11,6 +11,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class TestMqListener {
 
+    /**
+     * 测试用监听方法：仅供监听器扫描注册，不会被真正消费。
+     *
+     * @param event 测试事件
+     */
     @MQEventListener(topic = "TEST", tags = "A")
     public void onTestEvent(MQEvent event) {
         // 测试用监听方法，不会被真正消费

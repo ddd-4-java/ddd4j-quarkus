@@ -158,10 +158,20 @@ class PanacheEventStoreH2IT {
             this.fact = fact;
         }
 
+        /**
+         * 获取事件事实描述。
+         *
+         * @return 事实描述字符串
+         */
         public String getFact() {
             return fact;
         }
 
+        /**
+         * 设置事件事实描述。
+         *
+         * @param fact 事实描述
+         */
         public void setFact(String fact) {
             this.fact = fact;
         }

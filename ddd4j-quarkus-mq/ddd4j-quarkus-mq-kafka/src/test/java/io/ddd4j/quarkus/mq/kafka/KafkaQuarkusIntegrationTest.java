@@ -7,6 +7,7 @@ import io.ddd4j.mq.event.MQEvent;
 import io.ddd4j.mq.event.MQEventSerialization;
 import io.ddd4j.mq.kafka.KafkaMQProperties;
 import io.ddd4j.mq.listener.MQListener;
+import io.ddd4j.quarkus.mq.testcontainers.JunitJupiterQuarkusTestContainers;
 import io.ddd4j.quarkus.mq.testcontainers.KafkaQuarkusTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
@@ -52,6 +53,9 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @QuarkusTest
 @QuarkusTestResource(KafkaQuarkusIntegrationTest.KafkaTestResource.class)
+// Docker daemon 不可达时优雅跳过（ExecutionCondition 在 QuarkusTestExtension#beforeAll 之前求值，
+// 容器不会启动），与其余 11 个容器 IT 保持一致
+@JunitJupiterQuarkusTestContainers
 class KafkaQuarkusIntegrationTest {
 
     @Inject
@@ -134,16 +138,29 @@ class KafkaQuarkusIntegrationTest {
 
         private String message;
 
+        /**
+         * 构造端到端测试事件：设置 topic=TEST、tag=PING 与默认消息。
+         */
         public PingEvent() {
             setTopic("TEST");
             setTag("PING");
             this.message = "hello-ddd4j";
         }
 
+        /**
+         * 获取消息内容。
+         *
+         * @return 消息内容
+         */
         public String getMessage() {
             return message;
         }
 
+        /**
+         * 设置消息内容。
+         *
+         * @param message 消息内容
+         */
         public void setMessage(String message) {
             this.message = message;
         }
@@ -159,6 +176,11 @@ class KafkaQuarkusIntegrationTest {
         static final AtomicReference<PingEvent> LAST = new AtomicReference<>();
         static volatile CountDownLatch LATCH = new CountDownLatch(1);
 
+        /**
+         * 接收 {@link PingEvent}：记录最后一次事件并释放等待中的栅栏。
+         *
+         * @param event Ping 事件
+         */
         @MQEventListener(topic = "TEST", tags = "PING")
         public void onPing(PingEvent event) {
             LAST.set(event);

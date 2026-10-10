@@ -2,6 +2,7 @@ package io.ddd4j.quarkus.mq.testcontainers;
 
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.pulsar.PulsarContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
@@ -19,18 +20,20 @@ import java.util.Map;
  */
 public class TdmqQuarkusTestResource extends AbstractTestContainerFixture {
 
+    // 测试镜像来源: https://testcontainers.com/modules/pulsar/
+    // 已钉版 3.2.0（本任务前即为固定标签）；本任务改用官方第一方容器 PulsarContainer
+    // 替代 GenericContainer（PulsarContainer 内部即以 standalone 启动并探活 broker，
+    // 与原 withCommand("bin/pulsar","standalone") + health 探测等价）
     private static final DockerImageName IMAGE = DockerImageName.parse("apachepulsar/pulsar:3.2.0");
     private static final int BROKER_PORT = 6650;
 
-    private GenericContainer<?> container;
+    private PulsarContainer container;
 
     @Override
     protected GenericContainer<?> container() {
-        container = new GenericContainer<>(IMAGE)
-                .withExposedPorts(BROKER_PORT, 8080)
-                // 镜像 Cmd 为 /bin/bash（无入口命令，容器会立即退出），
-                // 需显式指定 standalone 模式启动（WorkingDir 为 /pulsar）
-                .withCommand("bin/pulsar", "standalone");
+        // 官方第一方容器：PulsarContainer 内部以 standalone 模式启动并探活 broker，
+        // 取代原 GenericContainer + withCommand("bin/pulsar","standalone") 手工拼装
+        container = new PulsarContainer(IMAGE);
         return container;
     }
 

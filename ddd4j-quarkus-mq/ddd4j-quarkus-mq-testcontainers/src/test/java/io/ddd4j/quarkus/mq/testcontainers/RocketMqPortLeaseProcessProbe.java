@@ -9,6 +9,12 @@ public final class RocketMqPortLeaseProcessProbe {
     private RocketMqPortLeaseProcessProbe() {
     }
 
+    /**
+     * 探针入口：按模式尝试获取 RocketMQ 端口文件租约，并把尝试/获得结果写入指定标记文件。
+     *
+     * @param args [模式, 尝试标记文件, 获得标记文件, 持有时长毫秒]
+     * @throws Exception 文件读写或租约操作异常
+     */
     public static void main(String[] args) throws Exception {
         String mode = args[0];
         Path attemptedFile = Path.of(args[1]);

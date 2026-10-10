@@ -14,6 +14,8 @@ import java.util.Map;
  */
 public class KafkaQuarkusTestResource extends AbstractTestContainerFixture {
 
+    // 测试镜像来源: https://testcontainers.com/modules/kafka/
+    // 已钉版 7.7.2（本任务前即为固定标签；官方第一方容器 ConfluentKafkaContainer）
     private static final DockerImageName IMAGE = DockerImageName.parse("confluentinc/cp-kafka:7.7.2");
     private ConfluentKafkaContainer container;
 

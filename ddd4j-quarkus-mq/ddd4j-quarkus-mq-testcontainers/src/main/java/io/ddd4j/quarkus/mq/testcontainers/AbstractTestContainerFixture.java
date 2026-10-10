@@ -27,17 +27,23 @@ public abstract class AbstractTestContainerFixture {
 
     /**
      * 子类必须返回具体的容器实例。
+     *
+     * @return 未启动的容器实例，由本基类统一持有生命周期
      */
     protected abstract GenericContainer<?> container();
 
     /**
      * 子类必须返回容器启动后注入到 application.properties 的配置项。
      * 例如 Kafka fixture 返回 {@code {"ddd4j.mq.kafka.bootstrap-servers", "PLAINTEXT://..."}}。
+     *
+     * @return 配置键到配置值的映射，供 Quarkus 测试配置注入
      */
     protected abstract Map<String, String> exposedProperties();
 
     /**
      * 子类可选提供等待策略（默认 {@link WaitStrategy} 由 container 自身决定）。
+     *
+     * @return 自定义等待策略；返回 {@code null} 表示沿用容器默认策略
      */
     protected WaitStrategy waitStrategy() {
         return null;
@@ -45,12 +51,16 @@ public abstract class AbstractTestContainerFixture {
 
     /**
      * 容器镜像名。
+     *
+     * @return 固定版本的镜像名（含标签），用于日志与镜像来源核对
      */
     protected abstract DockerImageName dockerImageName();
 
     /**
      * 启动容器并返回注入到 application.properties 的配置项。
      * 等价于 Quarkus 的 {@code QuarkusTestResourceLifecycleManager#start}，但保持在 main scope。
+     *
+     * @return 配置键到配置值的映射；重复调用时返回同一批配置（幂等）
      */
     public synchronized Map<String, String> start() {
         if (Objects.nonNull(runningProperties)) {
@@ -95,6 +105,10 @@ public abstract class AbstractTestContainerFixture {
 
     /**
      * 实用方法：把容器第一个映射端口转为字符串。
+     *
+     * @param container    已启动的容器
+     * @param internalPort 容器内部监听端口
+     * @return 映射到宿主机的端口字符串；未映射时返回 {@code null}
      */
     protected String firstMappedPort(GenericContainer<?> container, int internalPort) {
         Integer mapped = container.getMappedPort(internalPort);
@@ -103,6 +117,10 @@ public abstract class AbstractTestContainerFixture {
 
     /**
      * 实用方法：把容器 host:port 组合为字符串。
+     *
+     * @param container    已启动的容器
+     * @param internalPort 容器内部监听端口
+     * @return {@code host:port} 形式的连接地址片段
      */
     protected String hostPort(GenericContainer<?> container, int internalPort) {
         return container.getHost() + ":" + firstMappedPort(container, internalPort);

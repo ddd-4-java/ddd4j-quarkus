@@ -21,16 +21,17 @@
         - JunitJupiterQuarkusTestContainers 注解 + Ddd4jQuarkusTestContainersExtension（Docker 守护优雅跳过）
         - AbstractMqQuarkusIntegrationTest（publish → broker → @MQEventListener round-trip 骨架）
 
-        镜像版本统一固定为（与 ddd4j-boot 镜像清单一致）：
+        镜像版本统一固定为（与 ddd4j-boot 镜像清单一致；出处见各 fixture 的
+        `// 测试镜像来源: https://testcontainers.com/modules/{module}/` 注释）：
         - kafka:7.7.2 (confluentinc/cp-kafka, KRaft 模式)
-        - rabbitmq:3.13-management-alpine
+        - rabbitmq:3.13.7-management-alpine
         - rocketmq:5.3.2 (apache/rocketmq, namesrv+broker 单容器双进程)
         - activemq-artemis:2.33.0-alpine (主仓 ddd4j-mq-activemq 客户端为 artemis-jakarta-client,
           CORE 协议 61616；classic OpenWire 不兼容)
         - pulsar:3.2.0 (apachepulsar/pulsar, standalone)
         - nats:2.10.22
-        - mqtt:2.0 (eclipse-mosquitto)
-        - redis:7.4-alpine (启用 notify-keyspace-events)
+        - mqtt:2.0.22 (eclipse-mosquitto)
+        - redis:7.4.11-alpine (启用 notify-keyspace-events)
         - localstack:3.8.0 (SQS)
         - disruptor: 无容器，本地内存
     </description>

@@ -18,6 +18,8 @@ import java.util.Map;
  */
 public class SqsQuarkusTestResource extends AbstractTestContainerFixture {
 
+    // 测试镜像来源: https://testcontainers.com/modules/localstack/
+    // 已钉版 3.8.0（本任务前即为固定标签；官方第一方容器 LocalStackContainer）
     private static final DockerImageName IMAGE = DockerImageName.parse("localstack/localstack:3.8.0");
     private LocalStackContainer container;
 

@@ -11,7 +11,7 @@ import java.util.Map;
  * Mica-MQTT testcontainers fixture for Quarkus tests.
  *
  * <p>mica-mqtt 是 MQTT 客户端（AIO），需要连接外部 MQTT Broker，因此复用
- * {@code eclipse-mosquitto:2.0} 镜像（默认监听 1883，允许匿名连接）。
+ * {@code eclipse-mosquitto:2.0.22} 镜像（默认监听 1883，允许匿名连接）。
  * 暴露属性：{@code ddd4j.mq.mqtt-mica.broker-url}（{@code tcp://host:1883}）。
  *
  * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
@@ -19,7 +19,10 @@ import java.util.Map;
  */
 public class MicaMqttQuarkusTestResource extends AbstractTestContainerFixture {
 
-    private static final DockerImageName IMAGE = DockerImageName.parse("eclipse-mosquitto:2.0");
+    // 测试镜像来源: https://testcontainers.com/modules/mosquitto/
+    // 钉版 2.0.22（原浮动标签 2.0；该模块为社区实现且无 Java 支持，故保留 GenericContainer；
+    // 2.0.22 与浮动标签 2.0 同 digest，均经 Docker Hub tags API 核对）
+    private static final DockerImageName IMAGE = DockerImageName.parse("eclipse-mosquitto:2.0.22");
     private static final int MQTT_PORT = 1883;
 
     private GenericContainer<?> container;

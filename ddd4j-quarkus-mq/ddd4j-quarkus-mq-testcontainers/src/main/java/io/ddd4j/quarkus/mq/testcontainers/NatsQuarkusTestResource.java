@@ -25,6 +25,9 @@ import java.util.UUID;
  */
 public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
 
+    // 测试镜像来源: https://testcontainers.com/modules/nats/
+    // 已钉版 2.10.22（本任务前即为固定标签；该模块为社区实现 io.github.amadeusitgroup，非官方第一方，
+    // 故保留 GenericContainer）
     private static final DockerImageName IMAGE = DockerImageName.parse("nats:2.10.22");
 
     private GenericContainer<?> container;

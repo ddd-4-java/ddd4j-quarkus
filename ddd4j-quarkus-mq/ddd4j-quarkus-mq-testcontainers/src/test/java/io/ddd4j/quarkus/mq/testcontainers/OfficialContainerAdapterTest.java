@@ -92,7 +92,8 @@ class OfficialContainerAdapterTest {
 
     @Test
     void shouldExposeRabbitMqAmqpAndAdminApis() throws Exception {
-        RabbitMQContainer adapter = new RabbitMQContainer("rabbitmq:3.13-management-alpine") {
+        // 测试镜像来源: https://testcontainers.com/modules/rabbitmq/ （钉版：原浮动别名 3.13 → 3.13.7，与主 fixture 一致；匿名子类仅覆写方法，不启动容器）
+        RabbitMQContainer adapter = new RabbitMQContainer("rabbitmq:3.13.7-management-alpine") {
             @Override
             public String getHost() {
                 return "rabbit-host";

@@ -130,15 +130,31 @@ class DisruptorQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<D
 
         private volatile OrderCreatedEvent received;
 
+        /**
+         * 接收订单创建事件并暂存，供断言使用。
+         *
+         * @param event 订单创建事件
+         */
         @MQEventListener(topic = "ORDER", tags = "*", namespace = "it", group = "ddd4j-it")
         public void onOrderCreated(OrderCreatedEvent event) {
             this.received = event;
         }
 
+        /**
+         * 获取最近收到的事件。
+         *
+         * @return 最近收到的事件；尚未收到时为 {@code null}
+         */
         public OrderCreatedEvent getReceived() {
             return received;
         }
 
+        /**
+         * 判断最近收到的事件订单标识是否与给定值一致。
+         *
+         * @param orderId 订单标识
+         * @return 一致时为 {@code true}
+         */
         public boolean matches(String orderId) {
             OrderCreatedEvent event = received;
             return event != null && orderId.equals(event.getOrderId());
