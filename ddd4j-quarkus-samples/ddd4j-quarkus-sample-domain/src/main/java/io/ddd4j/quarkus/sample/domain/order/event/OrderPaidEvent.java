@@ -40,10 +40,18 @@ public class OrderPaidEvent extends DomainEvent<StringEntityId> {
         this.orderNo = orderNo;
     }
 
+    /**
+     * 获取订单标识。
+     * @return 订单标识
+     */
     public Long getOrderId() {
         return orderId;
     }
 
+    /**
+     * 获取订单编号。
+     * @return 订单编号
+     */
     public String getOrderNo() {
         return orderNo;
     }

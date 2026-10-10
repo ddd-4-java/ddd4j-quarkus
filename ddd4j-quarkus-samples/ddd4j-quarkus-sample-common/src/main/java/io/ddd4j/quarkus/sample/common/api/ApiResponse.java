@@ -34,9 +34,18 @@ public class ApiResponse<T> {
      */
     private T data;
 
+    /**
+     * 构造 ApiResponse 实例。
+     */
     public ApiResponse() {
     }
 
+    /**
+     * 构造 ApiResponse 实例。
+     * @param code  编码
+     * @param message  消息
+     * @param data  数据
+     */
     public ApiResponse(Serializable code, String message, T data) {
         this.code = code;
         this.message = message;
@@ -99,26 +108,50 @@ public class ApiResponse<T> {
         return new ApiResponse<>(r.getCode(), r.getMsg(), r.getData());
     }
 
+    /**
+     * 获取编码。
+     * @return 编码
+     */
     public Serializable getCode() {
         return code;
     }
 
+    /**
+     * 设置编码。
+     * @param code  编码
+     */
     public void setCode(Serializable code) {
         this.code = code;
     }
 
+    /**
+     * 获取消息。
+     * @return 消息
+     */
     public String getMessage() {
         return message;
     }
 
+    /**
+     * 设置消息。
+     * @param message  消息
+     */
     public void setMessage(String message) {
         this.message = message;
     }
 
+    /**
+     * 获取数据。
+     * @return 数据
+     */
     public T getData() {
         return data;
     }
 
+    /**
+     * 设置数据。
+     * @param data  数据
+     */
     public void setData(T data) {
         this.data = data;
     }

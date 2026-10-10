@@ -25,6 +25,11 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class DisruptorMQCdiProducer {
 
+    /**
+     * 产出 {@link DisruptorMQProperties} 默认 Bean。
+     *
+     * @return {@link DisruptorMQProperties} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean
@@ -32,6 +37,12 @@ public class DisruptorMQCdiProducer {
         return new DisruptorMQProperties();
     }
 
+    /**
+     * 依据 {@code DisruptorMQProperties} 构建并产出 {@link DisruptorMQClient} 默认 Bean。
+     *
+     * @param properties MQ 客户端配置
+     * @return {@link DisruptorMQClient} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean

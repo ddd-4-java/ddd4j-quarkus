@@ -25,6 +25,11 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class KafkaMQCdiProducer {
 
+    /**
+     * 产出 {@link KafkaMQProperties} 默认 Bean。
+     *
+     * @return {@link KafkaMQProperties} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean
@@ -32,6 +37,12 @@ public class KafkaMQCdiProducer {
         return new KafkaMQProperties();
     }
 
+    /**
+     * 依据 {@code KafkaMQProperties} 构建并产出 {@link KafkaMQClient} 默认 Bean。
+     *
+     * @param properties MQ 客户端配置
+     * @return {@link KafkaMQClient} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean

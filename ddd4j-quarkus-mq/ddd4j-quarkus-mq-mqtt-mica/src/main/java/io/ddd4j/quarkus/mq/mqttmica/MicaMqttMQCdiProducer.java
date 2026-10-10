@@ -25,6 +25,11 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class MicaMqttMQCdiProducer {
 
+    /**
+     * 产出 {@link MicaMqttProperties} 默认 Bean。
+     *
+     * @return {@link MicaMqttProperties} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean
@@ -32,6 +37,12 @@ public class MicaMqttMQCdiProducer {
         return new MicaMqttProperties();
     }
 
+    /**
+     * 依据 {@code MicaMqttProperties} 构建并产出 {@link MicaMqttMQClient} 默认 Bean。
+     *
+     * @param properties MQ 客户端配置
+     * @return {@link MicaMqttMQClient} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean

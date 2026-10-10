@@ -23,6 +23,11 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class RocketMQCdiProducer {
 
+    /**
+     * 产出 {@link RocketMQProperties} 默认 Bean。
+     *
+     * @return {@link RocketMQProperties} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean
@@ -30,6 +35,12 @@ public class RocketMQCdiProducer {
         return new RocketMQProperties();
     }
 
+    /**
+     * 依据 {@code RocketMQProperties} 构建并产出 {@link RocketMQClient} 默认 Bean。
+     *
+     * @param properties MQ 客户端配置
+     * @return {@link RocketMQClient} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean

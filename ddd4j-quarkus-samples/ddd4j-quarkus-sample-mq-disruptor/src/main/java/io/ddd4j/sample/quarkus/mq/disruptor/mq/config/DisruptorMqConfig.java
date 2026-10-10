@@ -27,6 +27,10 @@ public class DisruptorMqConfig {
         client.close();
     }
 
+    /**
+     * DisruptorMQ配置项。
+     * @return DisruptorMQ配置项
+     */
     @Produces
     @Typed(DisruptorMQProperties.class)
     @Singleton

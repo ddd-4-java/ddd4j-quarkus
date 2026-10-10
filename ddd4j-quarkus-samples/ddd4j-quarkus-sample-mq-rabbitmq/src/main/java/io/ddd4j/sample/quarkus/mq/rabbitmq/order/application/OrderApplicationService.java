@@ -34,6 +34,10 @@ public class OrderApplicationService {
 
     private final InMemoryOrderRepository orderRepository;
 
+    /**
+     * 构造 OrderApplicationService 实例。
+     * @param orderRepository  订单仓储
+     */
     @Inject
     public OrderApplicationService(InMemoryOrderRepository orderRepository) {
         this.orderRepository = Objects.requireNonNull(orderRepository, "orderRepository must not be null");

@@ -43,6 +43,10 @@ public class Ddd4jLicenseQuarkusConfig {
     @ConfigProperty(name = "license.public-keys-store-path")
     Optional<String> publicKeysStorePath;
 
+    /**
+     * 许可证Verify。
+     * @return 许可证Verify
+     */
     @Produces
     @Singleton
     public LicenseVerify licenseVerify() {

@@ -23,6 +23,13 @@ public class OrderCreatedEvent extends MQEvent {
     private final String orderNo;
     private final String buyerName;
 
+    /**
+     * 构造 OrderCreatedEvent 实例。
+     * @param orderId  订单标识
+     * @param orderNo  订单编号
+     * @param buyerName  买家名称
+     */
+
     @JsonCreator
     public OrderCreatedEvent(@JsonProperty("orderId") String orderId,
                              @JsonProperty("orderNo") String orderNo,

@@ -14,6 +14,10 @@ import jakarta.enterprise.inject.Produces;
  */
 public class Ddd4jDataScopeCdiProducer {
 
+    /**
+     * 数据作用域Provider。
+     * @return 数据作用域Provider
+     */
     @Produces
     @ApplicationScoped
     public DataScopeProvider dataScopeProvider() {

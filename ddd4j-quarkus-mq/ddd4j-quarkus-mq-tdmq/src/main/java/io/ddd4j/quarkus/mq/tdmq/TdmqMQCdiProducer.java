@@ -25,6 +25,11 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class TdmqMQCdiProducer {
 
+    /**
+     * 产出 {@link TdmqProperties} 默认 Bean。
+     *
+     * @return {@link TdmqProperties} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean
@@ -32,6 +37,12 @@ public class TdmqMQCdiProducer {
         return new TdmqProperties();
     }
 
+    /**
+     * 依据 {@code TdmqProperties} 构建并产出 {@link TdmqMQClient} 默认 Bean。
+     *
+     * @param properties MQ 客户端配置
+     * @return {@link TdmqMQClient} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean

@@ -21,6 +21,16 @@
     <name>ddd4j-quarkus</name>
     <description>Ddd4j Projects For Quarkus (no Spring Boot)</description>
 
+    <!--
+        组织元数据：必须在本根 pom 显式覆盖，禁止依赖 m2 中旧版父 pom 的继承值——
+        maven-javadoc-plugin 默认 <bottom> 会以 organization.name/url 模板化生成页脚，
+        继承旧元数据将把旧品牌标识带进 javadoc 交付物（红线）。
+    -->
+    <organization>
+        <name>redacted-legacy-family</name>
+        <url>https://wiki.redacted-legacy-family.com</url>
+    </organization>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <revision>3.3.x.20260630-SNAPSHOT</revision>
@@ -182,14 +192,27 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <failOnError>true</failOnError>
-                    <failOnWarnings>false</failOnWarnings>
+                    <!-- Javadoc 零告警门禁：任何 doclint 告警都使构建失败 -->
+                    <failOnWarnings>true</failOnWarnings>
+                    <!-- 显式开启 JDK doclint 全量检查 -->
+                    <doclint>all</doclint>
+                    <!-- 提升告警上限，防止告警数量被截断导致门禁假绿 -->
+                    <additionalOptions>
+                        <additionalOption>-Xmaxwarns</additionalOption>
+                        <additionalOption>999</additionalOption>
+                    </additionalOptions>
                 </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
                         <configuration>
                             <failOnError>true</failOnError>
-                            <failOnWarnings>false</failOnWarnings>
+                            <failOnWarnings>true</failOnWarnings>
+                            <doclint>all</doclint>
+                            <additionalOptions>
+                                <additionalOption>-Xmaxwarns</additionalOption>
+                                <additionalOption>999</additionalOption>
+                            </additionalOptions>
                         </configuration>
                     </execution>
                 </executions>

@@ -15,6 +15,10 @@ import jakarta.enterprise.inject.Produces;
  */
 public class Ddd4jLogsCdiProducer {
 
+    /**
+     * API操作日志Provider。
+     * @return API操作日志Provider
+     */
     @Produces
     @ApplicationScoped
     public ApiOperationLogProvider apiOperationLogProvider() {

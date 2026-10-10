@@ -22,6 +22,12 @@ public record RuleChangedEvent(String ruleId, String ruleCode, Operation operati
         DISABLED
     }
 
+    /**
+     * 执行 of 操作。
+     * @param rule  规则
+     * @param operation  操作
+     * @return 方法返回结果
+     */
     public static RuleChangedEvent of(RuleDefinition rule, Operation operation) {
         return new RuleChangedEvent(rule.getId(), rule.getCode(), operation, LocalDateTime.now());
     }

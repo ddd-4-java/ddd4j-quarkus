@@ -50,14 +50,26 @@ public final class ExcelAttachment {
         this.charset = charset;
     }
 
+    /**
+     * 获取 getFilename。
+     * @return 获取Filename字符串内容
+     */
     public String getFilename() {
         return filename;
     }
 
+    /**
+     * 获取内容类型。
+     * @return 内容类型
+     */
     public String getContentType() {
         return contentType;
     }
 
+    /**
+     * 获取 getCharset。
+     * @return 获取Charset
+     */
     public Charset getCharset() {
         return charset;
     }

@@ -25,6 +25,11 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class SqsMQCdiProducer {
 
+    /**
+     * 产出 {@link SqsProperties} 默认 Bean。
+     *
+     * @return {@link SqsProperties} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean
@@ -32,6 +37,12 @@ public class SqsMQCdiProducer {
         return new SqsProperties();
     }
 
+    /**
+     * 依据 {@code SqsProperties} 构建并产出 {@link SqsMQClient} 默认 Bean。
+     *
+     * @param properties MQ 客户端配置
+     * @return {@link SqsMQClient} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean

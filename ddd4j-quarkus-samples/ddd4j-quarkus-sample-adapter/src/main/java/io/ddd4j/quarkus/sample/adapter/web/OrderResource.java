@@ -63,6 +63,10 @@ public class OrderResource extends TenantAwareResource implements OrderClientSer
 
     private final OrderApplicationService orderApplicationService;
 
+    /**
+     * 构造 OrderResource 实例。
+     * @param orderApplicationService  订单应用服务
+     */
     @Inject
     public OrderResource(OrderApplicationService orderApplicationService) {
         this.orderApplicationService = Objects.requireNonNull(orderApplicationService, "orderApplicationService must not be null");

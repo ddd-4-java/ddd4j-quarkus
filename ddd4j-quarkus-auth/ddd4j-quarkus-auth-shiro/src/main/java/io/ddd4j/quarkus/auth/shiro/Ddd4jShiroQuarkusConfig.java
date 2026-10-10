@@ -29,6 +29,10 @@ import java.util.Map;
 @ApplicationScoped
 public class Ddd4jShiroQuarkusConfig {
 
+    /**
+     * 主题Provider。
+     * @return 主题Provider
+     */
     @Produces
     @Singleton
     public SubjectProvider subjectProvider() {

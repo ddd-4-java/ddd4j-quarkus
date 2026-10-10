@@ -36,58 +36,128 @@ public class OrderDTO {
     /** 创建时间 */
     private LocalDateTime createdTime;
 
+    /**
+     * 获取订单 ID（领域标识）。
+     *
+     * @return 订单 ID
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     * 设置订单 ID（领域标识）。
+     *
+     * @param id 订单 ID
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * 获取订单编号（业务主键）。
+     *
+     * @return 订单编号
+     */
     public String getOrderNo() {
         return orderNo;
     }
 
+    /**
+     * 设置订单编号（业务主键）。
+     *
+     * @param orderNo 订单编号
+     */
     public void setOrderNo(String orderNo) {
         this.orderNo = orderNo;
     }
 
+    /**
+     * 获取买家 ID。
+     *
+     * @return 买家 ID
+     */
     public String getBuyerId() {
         return buyerId;
     }
 
+    /**
+     * 设置买家 ID。
+     *
+     * @param buyerId 买家 ID
+     */
     public void setBuyerId(String buyerId) {
         this.buyerId = buyerId;
     }
 
+    /**
+     * 获取买家名称。
+     *
+     * @return 买家名称
+     */
     public String getBuyerName() {
         return buyerName;
     }
 
+    /**
+     * 设置买家名称。
+     *
+     * @param buyerName 买家名称
+     */
     public void setBuyerName(String buyerName) {
         this.buyerName = buyerName;
     }
 
+    /**
+     * 获取订单状态。
+     *
+     * @return 订单状态
+     */
     public OrderStatus getStatus() {
         return status;
     }
 
+    /**
+     * 设置订单状态。
+     *
+     * @param status 订单状态
+     */
     public void setStatus(OrderStatus status) {
         this.status = status;
     }
 
+    /**
+     * 获取订单总金额。
+     *
+     * @return 订单总金额
+     */
     public BigDecimal getTotalAmount() {
         return totalAmount;
     }
 
+    /**
+     * 设置订单总金额。
+     *
+     * @param totalAmount 订单总金额
+     */
     public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
     }
 
+    /**
+     * 获取创建时间。
+     *
+     * @return 创建时间
+     */
     public LocalDateTime getCreatedTime() {
         return createdTime;
     }
 
+    /**
+     * 设置创建时间。
+     *
+     * @param createdTime 创建时间
+     */
     public void setCreatedTime(LocalDateTime createdTime) {
         this.createdTime = createdTime;
     }

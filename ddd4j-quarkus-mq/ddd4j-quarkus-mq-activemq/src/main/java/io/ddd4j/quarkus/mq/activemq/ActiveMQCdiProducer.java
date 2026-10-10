@@ -25,6 +25,11 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class ActiveMQCdiProducer {
 
+    /**
+     * 产出 {@link ActiveMQProperties} 默认 Bean。
+     *
+     * @return {@link ActiveMQProperties} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean
@@ -32,6 +37,12 @@ public class ActiveMQCdiProducer {
         return new ActiveMQProperties();
     }
 
+    /**
+     * 依据 {@code ActiveMQProperties} 构建并产出 {@link ActiveMQClient} 默认 Bean。
+     *
+     * @param properties MQ 客户端配置
+     * @return {@link ActiveMQClient} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean

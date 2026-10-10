@@ -31,6 +31,9 @@ public class SnowflakeIdGenerator implements IdentifierGenerator {
     private volatile long lastTimestamp = -1L;
     private volatile long sequence = 0L;
 
+    /**
+     * 构造 SnowflakeIdGenerator 实例。
+     */
     public SnowflakeIdGenerator() {
         this.nodeId = createNodeId();
     }

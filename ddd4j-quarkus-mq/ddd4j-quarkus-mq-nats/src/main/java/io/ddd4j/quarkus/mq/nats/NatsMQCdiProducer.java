@@ -25,6 +25,11 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class NatsMQCdiProducer {
 
+    /**
+     * 产出 {@link NatsProperties} 默认 Bean。
+     *
+     * @return {@link NatsProperties} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean
@@ -32,6 +37,12 @@ public class NatsMQCdiProducer {
         return new NatsProperties();
     }
 
+    /**
+     * 依据 {@code NatsProperties} 构建并产出 {@link NatsMQClient} 默认 Bean。
+     *
+     * @param properties MQ 客户端配置
+     * @return {@link NatsMQClient} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean

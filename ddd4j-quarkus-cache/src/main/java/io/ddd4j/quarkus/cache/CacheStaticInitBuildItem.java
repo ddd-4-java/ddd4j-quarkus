@@ -23,6 +23,10 @@ public final class CacheStaticInitBuildItem extends SimpleBuildItem {
         this.defaultType = defaultType;
     }
 
+    /**
+     * 默认类型。
+     * @return 默认类型
+     */
     public CacheKit.LocalCacheType defaultType() {
         return defaultType;
     }

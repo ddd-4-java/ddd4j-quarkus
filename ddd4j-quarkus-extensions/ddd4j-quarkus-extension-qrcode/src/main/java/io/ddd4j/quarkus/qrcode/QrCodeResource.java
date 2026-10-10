@@ -40,6 +40,11 @@ public class QrCodeResource {
     @Inject
     QrCodeConfig config;
 
+    /**
+     * 渲染。
+     * @param input  输入
+     * @return 渲染
+     */
     @POST
     @Path("/render")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -57,6 +62,12 @@ public class QrCodeResource {
         return Response.ok(output.getBytes(), MediaType.APPLICATION_OCTET_STREAM).build();
     }
 
+    /**
+     * 执行 decode 操作。
+     * @param file  文件
+     * @return 方法返回结果
+     * @throws IOException  发生输入输出异常时抛出
+     */
     @POST
     @Path("/decode")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -72,6 +83,9 @@ public class QrCodeResource {
                 .build());
     }
 
+    /**
+     * RenderRequest 类。
+     */
     @Data
     public static class RenderRequest {
 

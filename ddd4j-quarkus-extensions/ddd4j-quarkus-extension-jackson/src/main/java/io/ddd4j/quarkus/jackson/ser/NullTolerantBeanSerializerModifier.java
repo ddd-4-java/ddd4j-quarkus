@@ -41,6 +41,15 @@ public class NullTolerantBeanSerializerModifier extends BeanSerializerModifier {
     private final boolean nullBoolean;
     private final boolean nullJsonObject;
 
+    /**
+     * 构造 NullTolerantBeanSerializerModifier 实例。
+     * @param nullArray  空值数组
+     * @param nullNumber  空值Number
+     * @param nullString  空值String
+     * @param nullDate  空值日期
+     * @param nullBoolean  空值Boolean
+     * @param nullJsonObject  空值JSONObject
+     */
     public NullTolerantBeanSerializerModifier(boolean nullArray, boolean nullNumber, boolean nullString,
                                               boolean nullDate, boolean nullBoolean, boolean nullJsonObject) {
         this.nullArray = nullArray;

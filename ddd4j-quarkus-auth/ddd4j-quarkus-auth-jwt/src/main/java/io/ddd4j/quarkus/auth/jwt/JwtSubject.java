@@ -56,6 +56,11 @@ public class JwtSubject implements Subject {
      */
     private volatile AuthPrincipal principal;
 
+    /**
+     * 构造 JwtSubject 实例。
+     * @param jwt  参数
+     * @param headers  参数
+     */
     public JwtSubject(JsonWebToken jwt, HeaderContext headers) {
         this.jwt = jwt;
         this.headers = headers;

@@ -16,6 +16,11 @@ import java.util.List;
 @ApplicationScoped
 public class QuarkusFileValidationProducer {
 
+    /**
+     * 文件校验服务。
+     * @param providers  参数
+     * @return 文件校验服务
+     */
     @Produces
     @Singleton
     public FileValidationService fileValidationService(Instance<FileContentCheckProvider> providers) {
