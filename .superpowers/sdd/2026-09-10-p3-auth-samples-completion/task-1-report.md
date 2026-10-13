@@ -38,7 +38,7 @@ Sa-Token、Shiro、Security、License 也没有共同的容器依赖。认证行
 
 ```text
 git rev-parse --show-toplevel
-  /Users/wandl/workspaces/workspace-ddd4j/workspace-ddd4j-boot/ddd4j-quarkus
+  /Users/ddd4j/workspaces/workspace-ddd4j/workspace-ddd4j-boot/ddd4j-quarkus
 
 rg --files . | rg 'ddd4j.*auth.*testcontainers|auth-testcontainers'
   no module path matched
