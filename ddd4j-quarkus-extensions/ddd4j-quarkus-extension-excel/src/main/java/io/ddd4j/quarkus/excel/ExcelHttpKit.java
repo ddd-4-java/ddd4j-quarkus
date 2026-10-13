@@ -88,31 +88,6 @@ public class ExcelHttpKit {
     }
 
     /**
-     * 一行下载：导出 → 字节 → Response（实例方法，便于注入 Bean 后调用）。
-     *
-     * @param filename 文件名
-     * @param head     表头类
-     * @param data     数据
-     * @return 携带附件头的响应
-     */
-    public Response write(String filename, Class<?> head, List<?> data) {
-        return download(filename, ExcelKit.export(head, data));
-    }
-
-    /**
-     * 直接写字节到 Response（实例方法）。
-     *
-     * @param filename 文件名
-     * @param bytes    xlsx 字节
-     * @return 携带附件头的响应
-     */
-    public Response write(String filename, byte[] bytes) {
-        return download(filename, bytes);
-    }
-
-    // ───────────────────── 上传 ─────────────────────
-
-    /**
      * 解析输入流为导入结果（默认 ErrorCollectingReadListener）。
      *
      * @param in   输入流（调用方负责关闭）
@@ -145,30 +120,7 @@ public class ExcelHttpKit {
         }
     }
 
-    /**
-     * 实例方法上传（带 {@link ExcelConfig#maxUploadMB()} 大小与扩展名校验）。
-     *
-     * @param in       输入流
-     * @param filename 原始文件名（用于扩展名校验）
-     * @param size     文件大小（字节）
-     * @param head     表头类
-     * @param <T>      数据类型
-     * @return 导入结果
-     */
-    public <T> ImportResult<T> read(InputStream in, String filename, long size, Class<T> head) {
-        validate(filename, size);
-        return upload(in, head);
-    }
-
-    /**
-     * 校验上传文件大小与扩展名（使用 {@link ExcelConfig#maxUploadMB()} 配置上限）。
-     *
-     * @param filename 原始文件名
-     * @param size     文件大小（字节）
-     */
-    public void validate(String filename, long size) {
-        validate(filename, size, maxUploadMB(), List.of(".xlsx", ".xls"));
-    }
+    // ───────────────────── 上传 ─────────────────────
 
     /**
      * 校验上传文件大小与扩展名。
@@ -196,6 +148,54 @@ public class ExcelHttpKit {
         if (!ok) {
             throw new BizRuntimeException(400, "excel.upload.invalid.extension", filename);
         }
+    }
+
+    /**
+     * 一行下载：导出 → 字节 → Response（实例方法，便于注入 Bean 后调用）。
+     *
+     * @param filename 文件名
+     * @param head     表头类
+     * @param data     数据
+     * @return 携带附件头的响应
+     */
+    public Response write(String filename, Class<?> head, List<?> data) {
+        return download(filename, ExcelKit.export(head, data));
+    }
+
+    /**
+     * 直接写字节到 Response（实例方法）。
+     *
+     * @param filename 文件名
+     * @param bytes    xlsx 字节
+     * @return 携带附件头的响应
+     */
+    public Response write(String filename, byte[] bytes) {
+        return download(filename, bytes);
+    }
+
+    /**
+     * 实例方法上传（带 {@link ExcelConfig#maxUploadMB()} 大小与扩展名校验）。
+     *
+     * @param in       输入流
+     * @param filename 原始文件名（用于扩展名校验）
+     * @param size     文件大小（字节）
+     * @param head     表头类
+     * @param <T>      数据类型
+     * @return 导入结果
+     */
+    public <T> ImportResult<T> read(InputStream in, String filename, long size, Class<T> head) {
+        validate(filename, size);
+        return upload(in, head);
+    }
+
+    /**
+     * 校验上传文件大小与扩展名（使用 {@link ExcelConfig#maxUploadMB()} 配置上限）。
+     *
+     * @param filename 原始文件名
+     * @param size     文件大小（字节）
+     */
+    public void validate(String filename, long size) {
+        validate(filename, size, maxUploadMB(), List.of(".xlsx", ".xls"));
     }
 
     private int maxUploadMB() {

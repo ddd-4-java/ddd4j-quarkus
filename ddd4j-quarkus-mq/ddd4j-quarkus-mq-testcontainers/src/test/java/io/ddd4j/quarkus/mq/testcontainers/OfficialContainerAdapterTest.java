@@ -16,8 +16,21 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-/** 验证专用容器 API 返回值真正进入 Quarkus 配置，禁止用通用 host/port 重建端点。 */
+/**
+ * 验证专用容器 API 返回值真正进入 Quarkus 配置，禁止用通用 host/port 重建端点。
+ */
 class OfficialContainerAdapterTest {
+
+    /**
+     * 只替换 Docker API 边界，实际执行生产 exposedProperties；不向生产类添加测试接口。
+     */
+    private static Map<String, String> properties(AbstractTestContainerFixture fixture,
+                                                  GenericContainer<?> adapter) throws Exception {
+        Field container = fixture.getClass().getDeclaredField("container");
+        container.setAccessible(true);
+        container.set(fixture, adapter);
+        return fixture.exposedProperties();
+    }
 
     @Test
     void shouldExposeArtemisBrokerApiRatherThanReconstructingItsUrl() throws Exception {
@@ -152,14 +165,5 @@ class OfficialContainerAdapterTest {
 
         assertThat(properties(new SqsQuarkusTestResource(), adapter))
                 .containsEntry("ddd4j.mq.sqs.endpoint", "http://localstack-advertised:31005/sqs");
-    }
-
-    /** 只替换 Docker API 边界，实际执行生产 exposedProperties；不向生产类添加测试接口。 */
-    private static Map<String, String> properties(AbstractTestContainerFixture fixture,
-                                                   GenericContainer<?> adapter) throws Exception {
-        Field container = fixture.getClass().getDeclaredField("container");
-        container.setAccessible(true);
-        container.set(fixture, adapter);
-        return fixture.exposedProperties();
     }
 }

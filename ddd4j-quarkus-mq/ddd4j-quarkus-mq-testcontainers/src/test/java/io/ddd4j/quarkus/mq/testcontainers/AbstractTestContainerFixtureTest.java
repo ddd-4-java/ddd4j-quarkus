@@ -29,11 +29,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-/** 验证共享夹具的所有权、失败回收和专用容器适配契约。 */
+/**
+ * 验证共享夹具的所有权、失败回收和专用容器适配契约。
+ */
 class AbstractTestContainerFixtureTest {
 
     @TempDir
     Path tempDirectory;
+
+    private static void awaitMarker(Path marker) throws Exception {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        while (!Files.exists(marker) && System.nanoTime() < deadline) Thread.onSpinWait();
+        assertThat(marker).exists();
+    }
+
+    private static void terminate(Process process) throws Exception {
+        if (process == null || !process.isAlive()) return;
+        process.destroyForcibly();
+        if (!process.waitFor(5, TimeUnit.SECONDS)) {
+            throw new IllegalStateException("Unable to terminate lease probe process " + process.pid());
+        }
+    }
+
+    /**
+     * 2.0.5 未公开组合等待配置 getter；只读实际配置，避免等待三分钟或启动额外 Docker 进程。
+     */
+    private static Object strategyField(Object strategy, Class<?> declaringClass, String name) throws Exception {
+        Field field = declaringClass.getDeclaredField(name);
+        field.setAccessible(true);
+        return field.get(strategy);
+    }
 
     @Test
     void shouldStartAndStopOwnedContainerExactlyOnce() {
@@ -156,7 +181,7 @@ class AbstractTestContainerFixtureTest {
 
     @Test
     void shouldWaitForBrokerReadinessBeyondOpenPorts() {
-        for (AbstractTestContainerFixture fixture : new AbstractTestContainerFixture[] {
+        for (AbstractTestContainerFixture fixture : new AbstractTestContainerFixture[]{
                 new NatsQuarkusTestResource(), new MqttQuarkusTestResource(),
                 new MicaMqttQuarkusTestResource(), new RedisStreamQuarkusTestResource(),
                 new OnsQuarkusTestResource()}) {
@@ -297,28 +322,9 @@ class AbstractTestContainerFixtureTest {
                 .redirectErrorStream(true).start();
     }
 
-    private static void awaitMarker(Path marker) throws Exception {
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
-        while (!Files.exists(marker) && System.nanoTime() < deadline) Thread.onSpinWait();
-        assertThat(marker).exists();
-    }
-
-    private static void terminate(Process process) throws Exception {
-        if (process == null || !process.isAlive()) return;
-        process.destroyForcibly();
-        if (!process.waitFor(5, TimeUnit.SECONDS)) {
-            throw new IllegalStateException("Unable to terminate lease probe process " + process.pid());
-        }
-    }
-
-    /** 2.0.5 未公开组合等待配置 getter；只读实际配置，避免等待三分钟或启动额外 Docker 进程。 */
-    private static Object strategyField(Object strategy, Class<?> declaringClass, String name) throws Exception {
-        Field field = declaringClass.getDeclaredField(name);
-        field.setAccessible(true);
-        return field.get(strategy);
-    }
-
-    /** 使用真实生命周期代码，仅替换 Docker 进程边界。 */
+    /**
+     * 使用真实生命周期代码，仅替换 Docker 进程边界。
+     */
     private static final class TestFixture extends AbstractTestContainerFixture {
         private final RecordingContainer container;
         private boolean failProperties;
@@ -346,15 +352,17 @@ class AbstractTestContainerFixtureTest {
         }
     }
 
-    /** 无 Docker 的容器边界记录器，保留明确的启动和停止失败。 */
+    /**
+     * 无 Docker 的容器边界记录器，保留明确的启动和停止失败。
+     */
     private static final class RecordingContainer extends GenericContainer<RecordingContainer> {
+        private final RuntimeException startFailure = new IllegalStateException("start failed");
+        private final RuntimeException stopFailure = new IllegalStateException("stop failed");
         private int starts;
         private int stops;
         private int reuseRequests;
         private boolean failStart;
         private boolean failStop;
-        private final RuntimeException startFailure = new IllegalStateException("start failed");
-        private final RuntimeException stopFailure = new IllegalStateException("stop failed");
 
         private RecordingContainer() {
             super(DockerImageName.parse("test/fake:1"));

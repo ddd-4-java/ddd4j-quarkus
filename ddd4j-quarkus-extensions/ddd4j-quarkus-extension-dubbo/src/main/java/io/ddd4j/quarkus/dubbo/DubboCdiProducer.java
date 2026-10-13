@@ -12,6 +12,8 @@ import org.apache.dubbo.config.RegistryConfig;
  * ddd4j-quarkus Dubbo CDI 装配（对应 boot 的 {@code DubboAutoConfiguration}）。
  *
  * <p>boot 版通过 {@code @AutoConfiguration + @ConditionalOnClass(EnableDubbo) +
+ *
+ * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  * @ConditionalOnProperty(ddd4j.dubbo.enabled)} 激活，并依赖 Spring 的 {@code @EnableDubbo}
  * 注解扫描；Quarkus 无 Spring 等价物，本类扮演自动配置角色：
  * <ul>
@@ -23,8 +25,6 @@ import org.apache.dubbo.config.RegistryConfig;
  *       {@link ProtocolConfig}，均为 Dubbo 核心 API、无 Spring 依赖），业务侧注入后交给
  *       自建 Dubbo 服务/引用装配</li>
  * </ul>
- *
- * @author <a href="https://github.com/partme-ai">PartMe.AI</a>
  * @since 3.3.x
  */
 @ApplicationScoped

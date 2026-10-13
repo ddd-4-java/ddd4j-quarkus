@@ -8,7 +8,9 @@
 
 ## 1. 背景与问题
 
-历史实现中，9 个扩展模块大量空壳（pom 仅有依赖），业务项目继承时无 CDI Bean 可注入。Spring 轨 ddd4j-boot 通过 `@AutoConfiguration` + `@EnableConfigurationProperties` 实现，Quarkus 轨需要转换为 `@BuildStep` + `@ConfigMapping` + `@Produces` 原生范式。
+历史实现中，9 个扩展模块大量空壳（pom 仅有依赖），业务项目继承时无 CDI Bean 可注入。Spring 轨 ddd4j-boot 通过
+`@AutoConfiguration` + `@EnableConfigurationProperties` 实现，Quarkus 轨需要转换为 `@BuildStep` + `@ConfigMapping` +
+`@Produces` 原生范式。
 
 ## 2. 目标
 
@@ -32,19 +34,20 @@ Spring 轨                                              Quarkus 轨
 
 ### 3.2 扩展清单
 
-| 扩展 | Producer 类 | ConfigMapping | 测试类 |
-|---|---|---|---|
-| qlexpress | `QLExpressCdiProducer` | `QLExpressConfig` | `QLExpressQuarkusTest` |
-| akka | `AkkaCdiProducer` + `AkkaCdiActorProducer` | `AkkaConfig` | `AkkaQuarkusTest` |
-| cola | `ColaCdiProducer` | `ColaConfig` | `ColaQuarkusTest` |
-| excel | `Ddd4jExcelCdiProducer` | `ExcelConfig` | `ExcelQuarkusTest` |
-| jackson | `JacksonConfig` + `DefaultJacksonObjectMapperCustomizer` | `JacksonConfig` | `JacksonQuarkusTest` |
-| monitor | `Ddd4jMonitorCdiProducer` | `MonitorConfig` | `MonitorQuarkusTest` |
-| dubbo | `DubboCdiProducer` | `DubboConfig` + `MonitorConfig` | `DubboQuarkusTest` |
-| qrcode | `QrCodeProducer` | `QrCodeConfig` | `QrCodeQuarkusTest` |
-| validation | `QuarkusFileValidationProducer` | `FileValidationConfig` | `FileValidationQuarkusTest` |
+| 扩展       | Producer 类                                              | ConfigMapping                   | 测试类                      |
+|------------|----------------------------------------------------------|---------------------------------|-----------------------------|
+| qlexpress  | `QLExpressCdiProducer`                                   | `QLExpressConfig`               | `QLExpressQuarkusTest`      |
+| akka       | `AkkaCdiProducer` + `AkkaCdiActorProducer`               | `AkkaConfig`                    | `AkkaQuarkusTest`           |
+| cola       | `ColaCdiProducer`                                        | `ColaConfig`                    | `ColaQuarkusTest`           |
+| excel      | `Ddd4jExcelCdiProducer`                                  | `ExcelConfig`                   | `ExcelQuarkusTest`          |
+| jackson    | `JacksonConfig` + `DefaultJacksonObjectMapperCustomizer` | `JacksonConfig`                 | `JacksonQuarkusTest`        |
+| monitor    | `Ddd4jMonitorCdiProducer`                                | `MonitorConfig`                 | `MonitorQuarkusTest`        |
+| dubbo      | `DubboCdiProducer`                                       | `DubboConfig` + `MonitorConfig` | `DubboQuarkusTest`          |
+| qrcode     | `QrCodeProducer`                                         | `QrCodeConfig`                  | `QrCodeQuarkusTest`         |
+| validation | `QuarkusFileValidationProducer`                          | `FileValidationConfig`          | `FileValidationQuarkusTest` |
 
-**计划外新增**：dubbo（旧 plan 未列，对齐 ddd4j-boot 3 文件）；validation（计划未列，业务侧需求）；qrcode（计划未列，对齐 ddd4j-boot）。
+**计划外新增**：dubbo（旧 plan 未列，对齐 ddd4j-boot 3 文件）；validation（计划未列，业务侧需求）；qrcode（计划未列，对齐
+ddd4j-boot）。
 
 **已删除**：`ddd4j-quarkus-extension-pf4j`（旧 plan W7 要求删除；曾保留空壳，已于 2026-08-16 移除目录、聚合 pom 与 BOM 条目）。
 
@@ -103,23 +106,23 @@ ddd4j-quarkus/ddd4j-quarkus-extensions/
 
 ## 6. 测试策略
 
-| 测试类型 | 验证目标 | 测试方法 |
-|---|---|---|
-| `@QuarkusTest` startup | Quarkus 启动 + CDI 注入 + ConfigMapping 解析 | `@Inject` 注入 Producer 暴露的 Bean |
-| ConfigMapping 校验 | 默认值 + 自定义值覆盖 | `@QuarkusTestResource` 或 `application.properties` |
-| 条件装配 | `@IfBuildProperty` 生效 | 通过 `@ConfigOverride` 切换属性 |
-| 异常映射 | `ExceptionMapper` 转换正确 | REST 调用 + 断言响应 |
+| 测试类型               | 验证目标                                     | 测试方法                                           |
+|------------------------|----------------------------------------------|----------------------------------------------------|
+| `@QuarkusTest` startup | Quarkus 启动 + CDI 注入 + ConfigMapping 解析 | `@Inject` 注入 Producer 暴露的 Bean                |
+| ConfigMapping 校验     | 默认值 + 自定义值覆盖                        | `@QuarkusTestResource` 或 `application.properties` |
+| 条件装配               | `@IfBuildProperty` 生效                      | 通过 `@ConfigOverride` 切换属性                    |
+| 异常映射               | `ExceptionMapper` 转换正确                   | REST 调用 + 断言响应                               |
 
 ## 7. 风险与缓解
 
-| 风险 | 缓解 |
-|---|---|
-| cola/dubbo `ExceptionMapper` 编译失败（jakarta.ws.rs-api 缺失） | 框架模块显式声明 `jakarta.ws.rs-api` 依赖（库模块自包含） |
-| SmallRye Config `@WithDefault("")` 空字符串触发 SRCFG00040 | 改为 `Optional<String>` |
-| ConfigMapping 注册时序问题（ObjectMapper STATIC_INIT 早于 mapping 注册 → SRCFG00027） | jackson customizer 改用 MicroProfile `ConfigProvider` 直接读 |
-| dubbo `@WithDefault("")` → SRCFG00040 | 改为 `Optional<String>` + `ifPresent/orElse("")` |
-| smallrye-jwt 4.6.x 键名变更（`key-location` → `sign.key.location` 点分隔） | 文档化键名约定 |
-| quarkus-bom 3.37 + hibernate 7.4 ABI 兼容 | 主仓 ddd4j-data-jpa 仅用 jakarta.persistence 稳定 API，运行时验证通过 |
+| 风险                                                                                  | 缓解                                                                  |
+|---------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| cola/dubbo `ExceptionMapper` 编译失败（jakarta.ws.rs-api 缺失）                       | 框架模块显式声明 `jakarta.ws.rs-api` 依赖（库模块自包含）             |
+| SmallRye Config `@WithDefault("")` 空字符串触发 SRCFG00040                            | 改为 `Optional<String>`                                               |
+| ConfigMapping 注册时序问题（ObjectMapper STATIC_INIT 早于 mapping 注册 → SRCFG00027） | jackson customizer 改用 MicroProfile `ConfigProvider` 直接读          |
+| dubbo `@WithDefault("")` → SRCFG00040                                                 | 改为 `Optional<String>` + `ifPresent/orElse("")`                      |
+| smallrye-jwt 4.6.x 键名变更（`key-location` → `sign.key.location` 点分隔）            | 文档化键名约定                                                        |
+| quarkus-bom 3.37 + hibernate 7.4 ABI 兼容                                             | 主仓 ddd4j-data-jpa 仅用 jakarta.persistence 稳定 API，运行时验证通过 |
 
 ## 8. 验收标准
 

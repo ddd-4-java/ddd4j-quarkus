@@ -42,5 +42,6 @@
         <dependency>
             <groupId>io.ddd4j</groupId>
             <artifactId>ddd4j-kit</artifactId>
-        </dependency></dependencies>
+        </dependency>
+    </dependencies>
 </project>

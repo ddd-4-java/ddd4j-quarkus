@@ -3,7 +3,9 @@ package io.ddd4j.quarkus.qrcode;
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
 
-/** Quarkus QR code service and HTTP limits. */
+/**
+ * Quarkus QR code service and HTTP limits.
+ */
 @ConfigMapping(prefix = "ddd4j.qrcode")
 public interface QrCodeConfig {
 

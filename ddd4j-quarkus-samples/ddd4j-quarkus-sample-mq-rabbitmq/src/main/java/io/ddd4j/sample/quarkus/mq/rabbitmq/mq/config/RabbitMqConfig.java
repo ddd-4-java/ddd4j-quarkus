@@ -31,12 +31,8 @@ import java.util.concurrent.TimeoutException;
 public class RabbitMqConfig {
 
     /**
-     * 无参构造函数。
+     * 显式保留客户端供启动注册器发现；原生连接由 CDI disposer 回收。
      */
-    public RabbitMqConfig() {
-    }
-
-    /** 显式保留客户端供启动注册器发现；原生连接由 CDI disposer 回收。 */
     void shutdown(@Observes ShutdownEvent event, RabbitMQClient client) throws Exception {
         client.close();
     }

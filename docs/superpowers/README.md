@@ -1,31 +1,31 @@
 # ddd4j-quarkus 超级规范（Superpowers）
 
-本目录是 ddd4j-quarkus 项目的**设计与实施规范体系**，遵循 superpowers 协作框架：
+本目录是 ddd4j-quarkus 项目的 **设计与实施规范体系**，遵循 superpowers 协作框架：
 
 - **spec** = 设计（Why / What）— 由架构师评审，回答"为何这么做、模块/接口长什么样"
 - **plan** = 实施步骤（How）— 由 AI 代理按 checkbox 逐步执行
 
 ## 与历史计划的关系
 
-- 本目录**取代** `.zcode/plans/plan-sess_5963fbf4-*.md`（旧 ZCode session plan，不在 git 控制内）
-- 总览 spec 的核心内容已**吸收**旧 plan 的"对齐 ddd4j-boot 框架集成"核心内容并标注来源
-- 旧 plan 的 10 周详细工作量估算**已过时**（实际按多智能体并行协作完成）
+- 本目录 **取代** `.zcode/plans/plan-sess_5963fbf4-*.md`（旧 ZCode session plan，不在 git 控制内）
+- 总览 spec 的核心内容已 **吸收**旧 plan 的"对齐 ddd4j-boot 框架集成"核心内容并标注来源
+- 旧 plan 的 10 周详细工作量估算 **已过时**（实际按多智能体并行协作完成）
 
 ## 索引
 
-| 类型 | 文件 | 说明 |
-|---|---|---|
-| 总览 spec | [specs/2026-08-05-quarkus-alignment-overview-design.md](specs/2026-08-05-quarkus-alignment-overview-design.md) | ddd4j-quarkus 整体设计、阶段路线图、验收标准、计划偏差 |
-| P0 spec | [specs/2026-08-05-p0-baseline-infrastructure-design.md](specs/2026-08-05-p0-baseline-infrastructure-design.md) | Cache / Web / MQ 三件套 + parent 链重构 |
-| P0 plan | [plans/2026-08-05-p0-baseline.md](plans/2026-08-05-p0-baseline.md) | P0 实施步骤（已完成 ✅） |
-| P1 spec | [specs/2026-08-06-p1-extensions-design.md](specs/2026-08-06-p1-extensions-design.md) | 9 个扩展 Producer 矩阵（含 dubbo/validation/qrcode 新增） |
-| P1 plan | [plans/2026-08-06-p1-extensions.md](plans/2026-08-06-p1-extensions.md) | P1 实施步骤（已完成 ✅） |
-| P2 spec | [specs/2026-08-07-p2-mq-testcontainers-design.md](specs/2026-08-07-p2-mq-testcontainers-design.md) | 14 broker testcontainers 设计 |
-| P2 plan | [plans/2026-08-07-p2-mq-testcontainers.md](plans/2026-08-07-p2-mq-testcontainers.md) | P2 实施步骤（已完成 ✅） |
-| P3 spec | [specs/2026-08-08-p3-auth-samples-ci-design.md](specs/2026-08-08-p3-auth-samples-ci-design.md) | Auth + samples + CI/CD |
-| P3 plan | [plans/2026-08-08-p3-auth-samples-ci.md](plans/2026-08-08-p3-auth-samples-ci.md) | P3 实施步骤（已完成 ✅） |
-| P5 spec | [specs/2026-09-08-quarkus-production-extension-convergence-design.md](specs/2026-09-08-quarkus-production-extension-convergence-design.md) | 生产级扩展平台收敛的唯一规格事实源；P5-A 至 P5-E 分阶段验收 |
-| P5-A plan | [plans/2026-09-08-p5a-stable-publish-consumer-baseline.md](plans/2026-09-08-p5a-stable-publish-consumer-baseline.md) | 已发布依赖、Web/License 消费契约、CI 与本地门禁的实施及证据 |
+| 类型      | 文件                                                                                                                                       | 说明                                                        |
+|-----------|--------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------|
+| 总览 spec | [specs/2026-08-05-quarkus-alignment-overview-design.md](specs/2026-08-05-quarkus-alignment-overview-design.md)                             | ddd4j-quarkus 整体设计、阶段路线图、验收标准、计划偏差      |
+| P0 spec   | [specs/2026-08-05-p0-baseline-infrastructure-design.md](specs/2026-08-05-p0-baseline-infrastructure-design.md)                             | Cache / Web / MQ 三件套 + parent 链重构                     |
+| P0 plan   | [plans/2026-08-05-p0-baseline.md](plans/2026-08-05-p0-baseline.md)                                                                         | P0 实施步骤（已完成 ✅）                                    |
+| P1 spec   | [specs/2026-08-06-p1-extensions-design.md](specs/2026-08-06-p1-extensions-design.md)                                                       | 9 个扩展 Producer 矩阵（含 dubbo/validation/qrcode 新增）   |
+| P1 plan   | [plans/2026-08-06-p1-extensions.md](plans/2026-08-06-p1-extensions.md)                                                                     | P1 实施步骤（已完成 ✅）                                    |
+| P2 spec   | [specs/2026-08-07-p2-mq-testcontainers-design.md](specs/2026-08-07-p2-mq-testcontainers-design.md)                                         | 14 broker testcontainers 设计                               |
+| P2 plan   | [plans/2026-08-07-p2-mq-testcontainers.md](plans/2026-08-07-p2-mq-testcontainers.md)                                                       | P2 实施步骤（已完成 ✅）                                    |
+| P3 spec   | [specs/2026-08-08-p3-auth-samples-ci-design.md](specs/2026-08-08-p3-auth-samples-ci-design.md)                                             | Auth + samples + CI/CD                                      |
+| P3 plan   | [plans/2026-08-08-p3-auth-samples-ci.md](plans/2026-08-08-p3-auth-samples-ci.md)                                                           | P3 实施步骤（已完成 ✅）                                    |
+| P5 spec   | [specs/2026-09-08-quarkus-production-extension-convergence-design.md](specs/2026-09-08-quarkus-production-extension-convergence-design.md) | 生产级扩展平台收敛的唯一规格事实源；P5-A 至 P5-E 分阶段验收 |
+| P5-A plan | [plans/2026-09-08-p5a-stable-publish-consumer-baseline.md](plans/2026-09-08-p5a-stable-publish-consumer-baseline.md)                       | 已发布依赖、Web/License 消费契约、CI 与本地门禁的实施及证据 |
 
 P0–P3 的完成标记保留其历史计划含义，不证明 runtime/deployment/IT 产品化、Native、
 双分支或云服务已验收。当前能力状态以 P5 规格和 [能力矩阵](../CAPABILITY-ALIGNMENT.md) 为准。
@@ -85,13 +85,13 @@ P0–P3 的完成标记保留其历史计划含义，不证明 runtime/deploymen
 
 ## 状态字段（受控词表）
 
-| 状态 | 含义 |
-|---|---|
-| `待评审` | spec 草案，等待架构师评审 |
+| 状态         | 含义                      |
+|--------------|---------------------------|
+| `待评审`     | spec 草案，等待架构师评审 |
 | `设计已确认` | spec 已通过评审，等待实施 |
-| `实施已对齐` | 实际代码与 plan 步骤一致 |
-| `进行中` | 部分 Step 完成 |
-| `已搁置` | 暂不实施，登记原因 |
+| `实施已对齐` | 实际代码与 plan 步骤一致  |
+| `进行中`     | 部分 Step 完成            |
+| `已搁置`     | 暂不实施，登记原因        |
 
 ## 项目链接
 
@@ -104,25 +104,31 @@ P0–P3 的完成标记保留其历史计划含义，不证明 runtime/deploymen
 
 ## 分支与版本线
 
-| 分支 | ddd4j 底座 | 构建工具 | 说明 |
-|---|---|---|---|
-| `feature/3.3.x` | `ddd4j 2.0.x`（Maven 3 / POM 4.0.0） | Maven 3.9+ | Java 17 维护线；P5-A 未修改或验证，历史 288 测试不作为本次证据 |
+| 分支            | ddd4j 底座                                                | 构建工具               | 说明                                                                                                                                                                                                      |
+|-----------------|-----------------------------------------------------------|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `feature/3.3.x` | `ddd4j 2.0.x`（Maven 3 / POM 4.0.0）                      | Maven 3.9+             | Java 17 维护线；P5-A 未修改或验证，历史 288 测试不作为本次证据                                                                                                                                            |
 | `feature/4.0.x` | `ddd4j 3.0.x`（POM 4.1.0，使用 `./mvnw` Maven 4 wrapper） | `./mvnw`（4.0.0-rc-6） | **当前分支**：Java 21、Quarkus 3.38.2、Testcontainers 2.0.5。Quarkus 3.38.2 及 2026-09-07 main `999-SNAPSHOT` 均无法加载含 `<subprojects>` 的工作区，当前保留 `<modules>`，等待 quarkusio/quarkus#52190。 |
 
 ## 当前快照
 
 - **阶段状态**：P5-A 本地完成，P5-B–E 待实施；3.3.x 未在本轮修改/验证，Maven 4 `<subprojects>` 仍为上游阻塞。
-- **4.0.x 新鲜验证（2026-09-09）**：`./mvnw -B clean verify -Denforcer.skip=true`，62/62 reactor 模块成功；最终 47 Surefire suites、141 tests、0 failures、0 errors、3 skipped；0 Failsafe suites。Enforcer 未验收。
-- **远端消费与关键行为**：新空仓 `/tmp/ddd4j-p5a-final.xcqRbQ` 的 Wagon `dependency:go-offline` 成功；Web 4 tests 验证传播与同线程响应后清理，License 3 tests 验证安装/验签及夹具隔离。
-- **跳过与云服务边界**：MQTT-Mica（macOS arm64）、ONS（商业协议无镜像）、Security（模块废弃）各 1 个 skip；TDMQ 往返使用测试内存 fallback，不代表腾讯云服务验收。
-- **CI**：已配置实际 actionlint、已发布 ddd4j 空仓解析和阻塞性 13 broker matrix；settings 以 0600 原子替换，已移除 ddd4j 源码安装和改写。
+- **4.0.x 新鲜验证（2026-09-09）**：`./mvnw -B clean verify -Denforcer.skip=true`，62/62 reactor 模块成功；最终 47 Surefire
+  suites、141 tests、0 failures、0 errors、3 skipped；0 Failsafe suites。Enforcer 未验收。
+- **远端消费与关键行为**：新空仓 `/tmp/ddd4j-p5a-final.xcqRbQ` 的 Wagon `dependency:go-offline` 成功；Web 4 tests
+  验证传播与同线程响应后清理，License 3 tests 验证安装/验签及夹具隔离。
+- **跳过与云服务边界**：MQTT-Mica（macOS arm64）、ONS（商业协议无镜像）、Security（模块废弃）各 1 个 skip；TDMQ 往返使用测试内存
+  fallback，不代表腾讯云服务验收。
+- **CI**：已配置实际 actionlint、已发布 ddd4j 空仓解析和阻塞性 13 broker matrix；settings 以 0600 原子替换，已移除 ddd4j
+  源码安装和改写。
 - **远端与生产证据**：本轮未 push/deploy，未运行 GitHub Actions；历史 cloud-das 消费记录不作为本次生产验收。
-- **证据明细**：[P5-A 门禁、skip 类与剩余警告](specs/2026-09-08-quarkus-production-extension-convergence-design.md#9-p5-a-本地完成证据2026-09-09)。
+-
+**证据明细**：[P5-A 门禁、skip 类与剩余警告](specs/2026-09-08-quarkus-production-extension-convergence-design.md#9-p5-a-本地完成证据2026-09-09)。
 
 ## 已登记的待办（不在 P0-P3 范围）
 
 - [x] 删除 `ddd4j-quarkus-extension-pf4j`（空壳）— 已完成（2026-08-16，随 data-panache 缺陷修复一并提交）
-- [x] 修复 data-panache 缺陷（TenantAwareEntity strategy 类名 / 空 filters HQL / IdGeneratorProducer CDI 通配符违规）— 已完成（2026-08-16，新增 2 个 CDI 装配测试）
+- [x] 修复 data-panache 缺陷（TenantAwareEntity strategy 类名 / 空 filters HQL / IdGeneratorProducer CDI 通配符违规）—
+  已完成（2026-08-16，新增 2 个 CDI 装配测试）
 - [ ] 新增 `ddd4j-quarkus-auth-testcontainers` 共享 fixture + 4 个 auth 子模块集成测试
 - [ ] 补齐 `ddd4j-quarkus-data-jpa` main src（当前仅 test）
 - [ ] 补齐 `ddd4j-quarkus-data-external` WeatherQuarkusAdapter + QuarkusExternalCdiProducer

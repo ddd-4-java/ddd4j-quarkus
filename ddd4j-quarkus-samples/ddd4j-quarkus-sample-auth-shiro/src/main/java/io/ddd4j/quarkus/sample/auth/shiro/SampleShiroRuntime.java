@@ -33,7 +33,7 @@ public class SampleShiroRuntime {
      * 用请求携带的原生 Session ID 恢复主体，并在方法结束时恢复线程上下文。
      *
      * @param invocation 当前资源方法调用
-     * @param sessionId X-Session-Id 请求头中的 Shiro Session ID
+     * @param sessionId  X-Session-Id 请求头中的 Shiro Session ID
      * @return 资源方法结果
      * @throws Exception 资源方法抛出的异常
      */
@@ -52,7 +52,9 @@ public class SampleShiroRuntime {
         securityManager.destroy();
     }
 
-    /** 固定演示账号；使用 Shiro 自身的凭证匹配、角色和权限查询。 */
+    /**
+     * 固定演示账号；使用 Shiro 自身的凭证匹配、角色和权限查询。
+     */
     private static final class SampleRealm extends SimpleAccountRealm {
         private SampleRealm() {
             // 示例沿用 userId 请求体；空凭证只用于固定演示账号，不代表生产认证。

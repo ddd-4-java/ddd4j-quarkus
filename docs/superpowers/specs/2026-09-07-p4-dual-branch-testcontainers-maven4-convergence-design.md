@@ -12,12 +12,15 @@
 ddd4j-quarkus 已完成 P0-P3 编码，但当前验证证据与源码状态不再完全一致：
 
 - feature/3.3.x 对齐 ddd4j feature/2.0.x，Java 17、Maven 3、Quarkus BOM 3.37.4。
-- feature/4.0.x 对齐 ddd4j feature/3.0.x，Java 21、Maven 4、Quarkus 3.38.2。2026-09-07 已按用户授权验证 Quarkus main `999-SNAPSHOT`，但 nightly 仍不能解析 Maven 4 `subprojects`，因此当前可执行基线保留 3.38.2 + `modules`。
-- 变更前两条线均使用 Testcontainers 1.20.4 和自定义 GenericContainer fixture；feature/4.0.x 已完成 2.0.5 迁移，feature/3.3.x 待移植。
+- feature/4.0.x 对齐 ddd4j feature/3.0.x，Java 21、Maven 4、Quarkus 3.38.2。2026-09-07 已按用户授权验证 Quarkus main
+  `999-SNAPSHOT`，但 nightly 仍不能解析 Maven 4 `subprojects`，因此当前可执行基线保留 3.38.2 + `modules`。
+- 变更前两条线均使用 Testcontainers 1.20.4 和自定义 GenericContainer fixture；feature/4.0.x 已完成 2.0.5 迁移，feature/3.3.x
+  待移植。
 - RocketMQ、Pulsar 的整个 round-trip 测试类被 Disabled，不能作为真实集成验证。
 - ONS、MQTT-Mica 存在按环境或商业协议有意禁用的 round-trip。
 - 旧 P2 文档仍声称全部 broker 真实运行通过，需要按新的验证结果纠正。
-- feature/4.0.x 已采用 modelVersion 4.1.0；六个聚合 POM 暂时保留 Maven 4 兼容的 modules/module，等待 Quarkus WorkspaceLoader 支持 subprojects。
+- feature/4.0.x 已采用 modelVersion 4.1.0；六个聚合 POM 暂时保留 Maven 4 兼容的 modules/module，等待 Quarkus
+  WorkspaceLoader 支持 subprojects。
 - GitHub Actions 必须通过 ddd-4-java 组织级 MAVEN_SETTINGS_XML 注入 Maven settings。
 
 ## 2. 目标
@@ -27,7 +30,8 @@ ddd4j-quarkus 已完成 P0-P3 编码，但当前验证证据与源码状态不�
 3. 无官方专用 Java 模块的 broker 继续使用边界清晰的 GenericContainer。
 4. 恢复 RocketMQ、Pulsar 的真实 publish-consume round-trip，并消除仅靠 Disabled 获得绿灯的情况。
 5. 明确公开镜像验证、商业协议验证和平台限制验证三类证据。
-6. feature/4.0.x 最终全部 Maven 4 聚合 POM 使用 subprojects/subproject；在 quarkusio/quarkus#52190 完成前，该目标暂停且不作为本轮 Testcontainers 交付的完成门禁。
+6. feature/4.0.x 最终全部 Maven 4 聚合 POM 使用 subprojects/subproject；在 quarkusio/quarkus#52190 完成前，该目标暂停且不作为本轮
+   Testcontainers 交付的完成门禁。
 7. 双分支分别使用正确的 ddd4j、Quarkus、JDK、Maven 与 CI 安装链；4.0.x 的 nightly 必须通过官方每日 snapshot 安装流程获得。
 8. 更新 P2、能力矩阵与 README，使文档只陈述本轮实际验证过的结论。
 
@@ -44,10 +48,10 @@ ddd4j-quarkus 已完成 P0-P3 编码，但当前验证证据与源码状态不�
 
 ## 4. 双分支基线
 
-| ddd4j-quarkus 分支 | ddd4j 分支 | ddd4j-quarkus 版本 | Quarkus BOM | Java | Maven 模型 | 聚合标签 |
-|---|---|---|---|---|---|---|
-| feature/3.3.x | feature/2.0.x | 3.3.x.20260630-SNAPSHOT | 3.37.4 | 17 | 4.0.0 | modules/module |
-| feature/4.0.x | feature/3.0.x | 4.0.x.20260630-SNAPSHOT | 3.38.2 | 21 | 4.1.0 | modules/module（subprojects 等待 #52190） |
+| ddd4j-quarkus 分支 | ddd4j 分支    | ddd4j-quarkus 版本      | Quarkus BOM | Java | Maven 模型 | 聚合标签                                  |
+|--------------------|---------------|-------------------------|-------------|------|------------|-------------------------------------------|
+| feature/3.3.x      | feature/2.0.x | 3.3.x.20260630-SNAPSHOT | 3.37.4      | 17   | 4.0.0      | modules/module                            |
+| feature/4.0.x      | feature/3.0.x | 4.0.x.20260630-SNAPSHOT | 3.38.2      | 21   | 4.1.0      | modules/module（subprojects 等待 #52190） |
 
 两个分支的测试 Harness 结构保持一致；只允许版本线、JDK、Maven 模型和底座兼容代码产生必要差异。
 
@@ -72,7 +76,8 @@ flowchart LR
     RP --> RT
 ```
 
-共享 Harness 只负责容器生命周期、动态连接属性、就绪探测和清理。Broker 模块负责使用真实 ddd4j MQClient/MQEventPublisher/MQEventListener 完成往返验证。
+共享 Harness 只负责容器生命周期、动态连接属性、就绪探测和清理。Broker 模块负责使用真实 ddd4j
+MQClient/MQEventPublisher/MQEventListener 完成往返验证。
 
 ## 6. Testcontainers 2.0.5 迁移
 
@@ -82,30 +87,32 @@ flowchart LR
 - 使用 Testcontainers 2.x 的 testcontainers-* artifactId。
 - 移除仅为 Testcontainers 1.x 类型层次或 JUnit 4 支持而存在的依赖。
 - 保留 Quarkus 自身确实需要的测试依赖，但不得用历史注释代替 dependency:tree 证据。
-- 共享 fixture 是独立测试工具 JAR，其 src/main 直接引用 Container API，因此 Testcontainers 依赖在该工具模块内部使用 compile scope；各 broker/业务模块仅以 test scope 消费共享 fixture，不让 Testcontainers 进入业务运行时依赖。
+- 共享 fixture 是独立测试工具 JAR，其 src/main 直接引用 Container API，因此 Testcontainers 依赖在该工具模块内部使用
+  compile scope；各 broker/业务模块仅以 test scope 消费共享 fixture，不让 Testcontainers 进入业务运行时依赖。
 
 ### 6.2 Container 映射
 
-| Broker | Container 类型 | 镜像 |
-|---|---|---|
-| ActiveMQ Artemis | ArtemisContainer | apache/activemq-artemis:2.33.0-alpine |
-| Kafka | ConfluentKafkaContainer | confluentinc/cp-kafka:7.7.2 |
-| RabbitMQ | RabbitMQContainer | rabbitmq:3.13-management-alpine |
-| Pulsar | PulsarContainer | apachepulsar/pulsar:3.2.0 |
-| SQS | LocalStackContainer | localstack/localstack:3.8.0 |
-| RocketMQ | GenericContainer，namesrv + broker 显式编排 | apache/rocketmq:5.3.2 |
-| NATS | GenericContainer | nats:2.10.22 |
-| MQTT / MQTT-Mica | GenericContainer | eclipse-mosquitto:2.0 |
-| Redis Stream | GenericContainer | redis:7.4-alpine |
-| ONS | 复用 RocketMQ fixture，仅验证公开协议兼容层 | apache/rocketmq:5.3.2 |
-| TDMQ | 复用 PulsarContainer fixture，仅验证公开协议兼容层 | apachepulsar/pulsar:3.2.0 |
-| Disruptor | 无容器 | 不适用 |
+| Broker           | Container 类型                                     | 镜像                                  |
+|------------------|----------------------------------------------------|---------------------------------------|
+| ActiveMQ Artemis | ArtemisContainer                                   | apache/activemq-artemis:2.33.0-alpine |
+| Kafka            | ConfluentKafkaContainer                            | confluentinc/cp-kafka:7.7.2           |
+| RabbitMQ         | RabbitMQContainer                                  | rabbitmq:3.13-management-alpine       |
+| Pulsar           | PulsarContainer                                    | apachepulsar/pulsar:3.2.0             |
+| SQS              | LocalStackContainer                                | localstack/localstack:3.8.0           |
+| RocketMQ         | GenericContainer，namesrv + broker 显式编排        | apache/rocketmq:5.3.2                 |
+| NATS             | GenericContainer                                   | nats:2.10.22                          |
+| MQTT / MQTT-Mica | GenericContainer                                   | eclipse-mosquitto:2.0                 |
+| Redis Stream     | GenericContainer                                   | redis:7.4-alpine                      |
+| ONS              | 复用 RocketMQ fixture，仅验证公开协议兼容层        | apache/rocketmq:5.3.2                 |
+| TDMQ             | 复用 PulsarContainer fixture，仅验证公开协议兼容层 | apachepulsar/pulsar:3.2.0             |
+| Disruptor        | 无容器                                             | 不适用                                |
 
-官方专用 Container 的连接地址必须使用其公开 API，例如 Kafka bootstrap servers、Pulsar broker URL、LocalStack endpoint；不得重新拼接其内部端口规则。
+官方专用 Container 的连接地址必须使用其公开 API，例如 Kafka bootstrap servers、Pulsar broker URL、LocalStack
+endpoint；不得重新拼接其内部端口规则。
 
 ### 6.3 生命周期与复用
 
-- 删除 AbstractTestContainerFixture 中无条件 withReuse(true)。
+- 删除 AbstractTestContainerFixture 中无条件 withReuse (true)。
 - CI 不启用 testcontainers.reuse.enable。
 - 本地复用只能由开发者显式配置，不能影响测试语义或 stop 行为。
 - 每个测试执行拥有可确定清理的容器；失败时保留日志和 Surefire/Failsafe 报告，不保留随机生成的仓库内运行目录。
@@ -134,12 +141,12 @@ flowchart LR
 
 ## 8. 验证证据分类
 
-| 类型 | 可声称内容 | 不可声称内容 |
-|---|---|---|
-| 公开镜像 round-trip | 本地/CI 使用公开镜像完成真实发布消费 | 云厂商托管服务已兼容 |
+| 类型                  | 可声称内容                             | 不可声称内容                        |
+|-----------------------|----------------------------------------|-------------------------------------|
+| 公开镜像 round-trip   | 本地/CI 使用公开镜像完成真实发布消费   | 云厂商托管服务已兼容                |
 | 商业协议静态/注入测试 | ONS/TDMQ 适配 Bean、配置和序列化可装配 | 使用真实 AccessKey 的云服务验证通过 |
-| 平台限制测试 | macOS arm64 已知限制被准确记录 | Linux CI 或其他架构必然通过 |
-| Disabled 测试 | 明确列入未验证项 | 计入通过数或完成率 |
+| 平台限制测试          | macOS arm64 已知限制被准确记录         | Linux CI 或其他架构必然通过         |
+| Disabled 测试         | 明确列入未验证项                       | 计入通过数或完成率                  |
 
 完成报告必须分别统计 passed、failed、skipped/disabled；不能用 BUILD SUCCESS 隐藏被跳过的 broker。
 
@@ -154,12 +161,14 @@ feature/4.0.x 最终应在以下六个 POM 使用 subprojects/subproject：
 - ddd4j-quarkus-mq/pom.xml
 - ddd4j-quarkus-samples/pom.xml
 
-Maven 4 原生 reactor 可使用 subprojects 完成 validate，但 Quarkus 3.38.2 和 2026-09-07 的 main `999-SNAPSHOT` 都无法为含 subprojects 的工作区创建测试 application model。当前采用以下门禁：
+Maven 4 原生 reactor 可使用 subprojects 完成 validate，但 Quarkus 3.38.2 和 2026-09-07 的 main `999-SNAPSHOT` 都无法为含
+subprojects 的工作区创建测试 application model。当前采用以下门禁：
 
 1. 当前分支保留 Maven 4 modelVersion 4.1.0 + modules，保证真实 QuarkusTest 可执行。
 2. #52190 完成后再切 subprojects，并重新验证根 reactor 与所有 QuarkusTest。
 
-本轮已记录 nightly release `maven-repo-main-2026-09-07` 的失败证据。modules 是当前临时可执行基线，不得把它描述为 subprojects 已完成。
+本轮已记录 nightly release `maven-repo-main-2026-09-07` 的失败证据。modules 是当前临时可执行基线，不得把它描述为
+subprojects 已完成。
 
 feature/3.3.x 保持 modelVersion 4.0.0 和 modules/module。
 
@@ -183,7 +192,8 @@ flowchart TD
 ```
 
 - feature/3.3.x：checkout ddd4j feature/2.0.x，Java 17，Quarkus 3.37.4。
-- feature/4.0.x：checkout ddd4j feature/3.0.x，使用 Java 21、Quarkus 3.38.2 与 Maven 4 wrapper。nightly 仅保留为已执行的前瞻探针，不进入当前构建。
+- feature/4.0.x：checkout ddd4j feature/3.0.x，使用 Java 21、Quarkus 3.38.2 与 Maven 4 wrapper。nightly
+  仅保留为已执行的前瞻探针，不进入当前构建。
 - Maven settings 仅从 secrets.MAVEN_SETTINGS_XML 写入临时 settings 文件；日志不得输出内容。
 - Broker matrix 不设置 continue-on-error。
 - 每个 broker 上传测试报告；RocketMQ/Pulsar 必须进入阻塞性 matrix。
@@ -204,22 +214,23 @@ flowchart TD
 
 ## 12. 风险与缓解
 
-| 风险 | 缓解 |
-|---|---|
-| Testcontainers 2.x 包名和 artifactId 发生破坏性变化 | 先迁移共享 Harness，再逐 broker 编译和运行 |
-| Quarkus BOM 与 Testcontainers 2.0.5 传递依赖冲突 | dependency:tree + 单 broker QuarkusTest 验证，不只看 compile |
-| LocalStack 新版本需要授权 token | 固定已验证镜像；不隐式升级镜像；无 token 时明确失败原因 |
-| RocketMQ broker route 晚于端口监听 | 增加 route 探测并输出容器日志 |
-| Pulsar standalone 首次启动较慢 | 使用官方 PulsarContainer readiness 和有界超时 |
-| Quarkus main nightly 漂移或缺失 | 记录 GitHub snapshot release/commit，使用 `-nsu`，不把 nightly 作为生产基线 |
-| Maven 4 subprojects 仍被 nightly WorkspaceLoader 拒绝 | reactor 与叶模块测试双门禁，记录上游阻塞而不降级标准 |
-| 双分支漂移 | 先在 4.0.x 完成验证，再按结构化差异移植到 3.3.x，最后运行一致性 diff |
-| 本地已有未跟踪 MQTT 运行目录 | 不删除、不覆盖，不纳入提交 |
+| 风险                                                  | 缓解                                                                        |
+|-------------------------------------------------------|-----------------------------------------------------------------------------|
+| Testcontainers 2.x 包名和 artifactId 发生破坏性变化   | 先迁移共享 Harness，再逐 broker 编译和运行                                  |
+| Quarkus BOM 与 Testcontainers 2.0.5 传递依赖冲突      | dependency:tree + 单 broker QuarkusTest 验证，不只看 compile                |
+| LocalStack 新版本需要授权 token                       | 固定已验证镜像；不隐式升级镜像；无 token 时明确失败原因                     |
+| RocketMQ broker route 晚于端口监听                    | 增加 route 探测并输出容器日志                                               |
+| Pulsar standalone 首次启动较慢                        | 使用官方 PulsarContainer readiness 和有界超时                               |
+| Quarkus main nightly 漂移或缺失                       | 记录 GitHub snapshot release/commit，使用 `-nsu`，不把 nightly 作为生产基线 |
+| Maven 4 subprojects 仍被 nightly WorkspaceLoader 拒绝 | reactor 与叶模块测试双门禁，记录上游阻塞而不降级标准                        |
+| 双分支漂移                                            | 先在 4.0.x 完成验证，再按结构化差异移植到 3.3.x，最后运行一致性 diff        |
+| 本地已有未跟踪 MQTT 运行目录                          | 不删除、不覆盖，不纳入提交                                                  |
 
 ## 13. 验收标准
 
 - [ ] feature/3.3.x 的 revision 为 3.3.x.20260630-SNAPSHOT、Quarkus BOM 为 3.37.4。
-- [x] feature/4.0.x 的 revision 为 4.0.x.20260630-SNAPSHOT、Quarkus BOM 为 3.38.2；已记录 nightly release `maven-repo-main-2026-09-07` 的 subprojects 阻塞。
+- [x] feature/4.0.x 的 revision 为 4.0.x.20260630-SNAPSHOT、Quarkus BOM 为 3.38.2；已记录 nightly release
+  `maven-repo-main-2026-09-07` 的 subprojects 阻塞。
 - [ ] 两条分支 Testcontainers BOM 均为 2.0.5。
 - [x] feature/4.0.x 的五类官方模块使用对应 Testcontainers 2.0.5 Container；feature/3.3.x 待移植。
 - [ ] feature/4.0.x 六个聚合 POM 使用 subprojects/subproject（暂停，等待 quarkusio/quarkus#52190）。

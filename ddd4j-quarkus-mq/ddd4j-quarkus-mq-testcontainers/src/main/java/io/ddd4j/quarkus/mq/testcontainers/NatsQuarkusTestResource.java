@@ -26,25 +26,14 @@ import java.util.UUID;
 public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
 
     private static final DockerImageName IMAGE = DockerImageName.parse("nats:2.10.22");
-
-    private GenericContainer<?> container;
     private final String streamName;
     private final List<String> subjects;
+    private GenericContainer<?> container;
     private String servers;
 
     /**
-     * 创建一个带随机后缀的 run-scoped stream fixture。
-     * @param streamNamePrefix stream 名称前缀
-     * @param subjects stream 覆盖的 subjects
-     * @return stream 名称在并发测试运行间唯一的 fixture
+     * 启用 JetStream，但不创建任何业务 stream。
      */
-    public static NatsQuarkusTestResource withRunScopedStream(String streamNamePrefix, List<String> subjects) {
-        String prefix = Objects.requireNonNull(streamNamePrefix, "streamNamePrefix");
-        return new NatsQuarkusTestResource(
-                prefix + UUID.randomUUID().toString().replace("-", ""), subjects);
-    }
-
-    /** 启用 JetStream，但不创建任何业务 stream。 */
     public NatsQuarkusTestResource() {
         this.streamName = null;
         this.subjects = List.of();
@@ -52,8 +41,9 @@ public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
 
     /**
      * 启用 JetStream 并创建一个由当前 fixture 拥有的 stream。
+     *
      * @param streamName stream 名称
-     * @param subjects stream 覆盖的 subjects
+     * @param subjects   stream 覆盖的 subjects
      */
     public NatsQuarkusTestResource(String streamName, List<String> subjects) {
         this.streamName = Objects.requireNonNull(streamName, "streamName");
@@ -61,6 +51,19 @@ public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
         if (this.subjects.isEmpty()) {
             throw new IllegalArgumentException("subjects 不能为空");
         }
+    }
+
+    /**
+     * 创建一个带随机后缀的 run-scoped stream fixture。
+     *
+     * @param streamNamePrefix stream 名称前缀
+     * @param subjects         stream 覆盖的 subjects
+     * @return stream 名称在并发测试运行间唯一的 fixture
+     */
+    public static NatsQuarkusTestResource withRunScopedStream(String streamNamePrefix, List<String> subjects) {
+        String prefix = Objects.requireNonNull(streamNamePrefix, "streamNamePrefix");
+        return new NatsQuarkusTestResource(
+                prefix + UUID.randomUUID().toString().replace("-", ""), subjects);
     }
 
     @Override
@@ -113,7 +116,9 @@ public class NatsQuarkusTestResource extends AbstractTestContainerFixture {
         }
     }
 
-    /** 仅供同包契约测试观测 run-scoped stream 名称。 */
+    /**
+     * 仅供同包契约测试观测 run-scoped stream 名称。
+     */
     String streamName() {
         return streamName;
     }

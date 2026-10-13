@@ -42,7 +42,8 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
             <scope>provided</scope>
-        </dependency></dependencies>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

@@ -10,7 +10,9 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-auth-license</artifactId>
-    <description>ddd4j-quarkus License 授权校验整合，底层复用 io.ddd4j:ddd4j-extension-license 纯 Java 实现，本层提供 Quarkus CDI 装配。</description>
+    <description>ddd4j-quarkus License 授权校验整合，底层复用 io.ddd4j:ddd4j-extension-license 纯 Java 实现，本层提供
+        Quarkus CDI 装配。
+    </description>
 
     <dependencies>
         <dependency>

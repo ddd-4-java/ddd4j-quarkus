@@ -120,14 +120,14 @@ public interface MonitorConfig {
          *
          * @return access_token，未配置时为空
          */
-                Optional<String> token();
+        Optional<String> token();
 
         /**
          * 钉钉机器人加签密钥。
          *
          * @return 加签密钥，未配置时为空
          */
-                Optional<String> secret();
+        Optional<String> secret();
     }
 
     /**
@@ -148,7 +148,7 @@ public interface MonitorConfig {
          *
          * @return webhook key，未配置时为空
          */
-                Optional<String> key();
+        Optional<String> key();
     }
 
     /**
@@ -169,14 +169,14 @@ public interface MonitorConfig {
          *
          * @return webhook 地址，未配置时为空
          */
-                Optional<String> webhookUrl();
+        Optional<String> webhookUrl();
 
         /**
          * 加签密钥（"不勾选签名校验"时留空）。
          *
          * @return 加签密钥，未配置时为空
          */
-                Optional<String> secret();
+        Optional<String> secret();
     }
 
     /**
@@ -189,20 +189,20 @@ public interface MonitorConfig {
          *
          * @return 项目名称，未配置时为空
          */
-                Optional<String> project();
+        Optional<String> project();
 
         /**
          * 当前环境。
          *
          * @return 环境标识，未配置时为空
          */
-                Optional<String> env();
+        Optional<String> env();
 
         /**
          * 应用名称。
          *
          * @return 应用名称，未配置时为空
          */
-                Optional<String> name();
+        Optional<String> name();
     }
 }

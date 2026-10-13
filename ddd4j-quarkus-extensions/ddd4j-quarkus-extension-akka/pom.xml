@@ -10,7 +10,9 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-extension-akka</artifactId>
-    <description>ddd4j-quarkus Akka 扩展适配：ActorSystem/Extension CDI 装配，直接基于 Akka 原生 API（自包含，不依赖上游 ddd4j-extension-akka——其已在主仓 3.0.x 迁至 ddd4j-boot）。</description>
+    <description>ddd4j-quarkus Akka 扩展适配：ActorSystem/Extension CDI 装配，直接基于 Akka 原生 API（自包含，不依赖上游
+        ddd4j-extension-akka——其已在主仓 3.0.x 迁至 ddd4j-boot）。
+    </description>
 
     <dependencies>
         <!-- ddd4j-extension-akka（2.0.x 上游）已在主仓 3.0.x 迁至 ddd4j-boot（Spring 轨）；

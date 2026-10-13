@@ -9,7 +9,9 @@ import jakarta.ws.rs.ext.Provider;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** Maps QR engine errors to the same HTTP contract used by the other adapters. */
+/**
+ * Maps QR engine errors to the same HTTP contract used by the other adapters.
+ */
 @Provider
 public class QrCodeExceptionMapper implements ExceptionMapper<QrCodeException> {
 

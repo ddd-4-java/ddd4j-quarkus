@@ -10,7 +10,10 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-extension-jackson</artifactId>
-    <description>ddd4j-quarkus Jackson 扩展适配：对齐 boot 模块结构，null 容错序列化采用自包含的 NullTolerantBeanSerializerModifier；easy4j Jackson 扩展坐标由 ddd4j 3.0.x BOM 管理，通过 Quarkus ObjectMapperCustomizer 定制 ObjectMapper。</description>
+    <description>ddd4j-quarkus Jackson 扩展适配：对齐 boot 模块结构，null 容错序列化采用自包含的
+        NullTolerantBeanSerializerModifier；easy4j Jackson 扩展坐标由 ddd4j 3.0.x BOM 管理，通过 Quarkus
+        ObjectMapperCustomizer 定制 ObjectMapper。
+    </description>
 
     <dependencies>
         <!-- ddd4j 3.0.x BOM 统一管理 easy4j Jackson 扩展版本；叶子模块不得重复钉版。 -->

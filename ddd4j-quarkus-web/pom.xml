@@ -10,7 +10,9 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-web</artifactId>
-    <description>ddd4j-quarkus Web 集成层：复用主仓 RESTEasy Reactive 过滤器、异常映射与资源基类，并提供 SmallRye readiness 健康检查。</description>
+    <description>ddd4j-quarkus Web 集成层：复用主仓 RESTEasy Reactive 过滤器、异常映射与资源基类，并提供 SmallRye readiness
+        健康检查。
+    </description>
 
     <dependencies>
         <!-- 主仓 ddd4j-web-quarkus（RESTEasy Reactive 过滤器链/异常映射/TenantAwareResource 等通用 Web 能力） -->

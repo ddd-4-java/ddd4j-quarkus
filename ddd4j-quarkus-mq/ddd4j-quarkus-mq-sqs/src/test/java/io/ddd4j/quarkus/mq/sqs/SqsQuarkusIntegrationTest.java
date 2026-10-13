@@ -52,7 +52,9 @@ class SqsQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<SqsProp
     @Inject
     SqsProperties sqsProperties;
 
-    /** adaptListener 阶段建好的 LocalStack 队列 URL，发布侧复用。 */
+    /**
+     * adaptListener 阶段建好的 LocalStack 队列 URL，发布侧复用。
+     */
     private volatile String queueUrl;
 
     @Override

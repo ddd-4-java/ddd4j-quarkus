@@ -1,13 +1,17 @@
 # P3 — Auth / Samples / CI/CD 实施计划
 
-> 历史计划状态（2026-09-10）：原始 Producer、分层 sample、CI 基线已完成；旧提议的 `ddd4j-quarkus-auth-testcontainers` 已取消并由直接 Quarkus runtime 集成替代，不计为完成项。`sample-auth-*` / `sample-mq-*` 的行为闭环已由 [P3 auth/sample completion plan](2026-09-10-p3-auth-samples-completion.md) Tasks 2–5 的本地门禁关闭。当前证据 HEAD 为 3.3.x `91ceb9b`、4.0.x `fce0e1e`；最新 HEAD 的 push/Actions、发布及空缓存消费仍是独立开放门禁，不宣称生产就绪。
+> 历史计划状态（2026-09-10）：原始 Producer、分层 sample、CI 基线已完成；旧提议的 `ddd4j-quarkus-auth-testcontainers` 已取消并由直接
+> Quarkus runtime 集成替代，不计为完成项。`sample-auth-*` / `sample-mq-*`
+> 的行为闭环已由 [P3 auth/sample completion plan](2026-09-10-p3-auth-samples-completion.md) Tasks 2–5 的本地门禁关闭。当前证据
+> HEAD 为 3.3.x `91ceb9b`、4.0.x `fce0e1e`；最新 HEAD 的 push/Actions、发布及空缓存消费仍是独立开放门禁，不宣称生产就绪。
 
-> **For agentic workers:** REQUIRED SUB-KILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-KILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
+> executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 完成 5 个 auth 子模块 Producer 化、7 个 sample 分层完整化、CI 三阶段工作流、CONTRIBUTING.md
-**Architecture:** auth-* 模块 Producer/ConfigMapping；samples 按 ddd4j-boot 风格 domain/app/infrastructure/adapter 四层；CI lint + JDK 矩阵 + testcontainers integration
-**Tech Stack:** Quarkus 3.38.2 + GitHub Actions + JDK 21 + Docker
-**Related Design Doc:** [../specs/2026-08-08-p3-auth-samples-ci-design.md](../specs/2026-08-08-p3-auth-samples-ci-design.md)
+**Goal:** 完成 5 个 auth 子模块 Producer 化、7 个 sample 分层完整化、CI 三阶段工作流、CONTRIBUTING.md **Architecture:**
+auth-* 模块 Producer/ConfigMapping；samples 按 ddd4j-boot 风格 domain/app/infrastructure/adapter 四层；CI lint + JDK
+矩阵 + testcontainers integration **Tech Stack:** Quarkus 3.38.2 + GitHub Actions + JDK 21 + Docker **Related Design
+Doc:** [../specs/2026-08-08-p3-auth-samples-ci-design.md](../specs/2026-08-08-p3-auth-samples-ci-design.md)
 
 ## 全局约定
 
@@ -29,123 +33,125 @@ Stage 6 — 全量验证 + 提交
 ## Stage 1 — auth-jwt 完善
 
 - [x] **Step 1.1: JwtConfig + Ddd4jJwtQuarkusConfig**
-  - 文件: `ddd4j-quarkus-auth/ddd4j-quarkus-auth-jwt/src/main/java/io/ddd4j/quarkus/auth/jwt/{JwtConfig,Ddd4jJwtQuarkusConfig}.java`
-  - 操作: ConfigMapping 接口（mp.jwt 公共前缀）
-  - 验证: 编译通过
+    - 文件:
+      `ddd4j-quarkus-auth/ddd4j-quarkus-auth-jwt/src/main/java/io/ddd4j/quarkus/auth/jwt/{JwtConfig,Ddd4jJwtQuarkusConfig}.java`
+    - 操作: ConfigMapping 接口（mp.jwt 公共前缀）
+    - 验证: 编译通过
 
 - [x] **Step 1.2: JwtSubjectProvider + JwtSubject**
-  - 文件: 同上目录
-  - 操作: `Supplier<Subject>` 实现 + smallrye-jwt 4.6.x 适配
-  - 验证: 启动正常
+    - 文件: 同上目录
+    - 操作: `Supplier<Subject>` 实现 + smallrye-jwt 4.6.x 适配
+    - 验证: 启动正常
 
 - [x] **Step 1.3: JwtSubjectProviderQuarkusTest + JwtSubjectTest**
-  - 文件: `src/test/java/io/ddd4j/quarkus/auth/jwt/*.java`
-  - 操作: 2 个测试类（QuarkusTest 启动 + 纯 JUnit）
-  - 验证: 12 个测试方法通过
+    - 文件: `src/test/java/io/ddd4j/quarkus/auth/jwt/*.java`
+    - 操作: 2 个测试类（QuarkusTest 启动 + 纯 JUnit）
+    - 验证: 12 个测试方法通过
 
 - [x] **Step 1.4: smallrye-jwt 键名修正**
-  - 文件: CONTRIBUTING.md / application.properties 模板
-  - 操作: `key-location` → `smallrye.jwt.sign.key.location`（点分隔，4.6.x 规范）
-  - 验证: 文档化
+    - 文件: CONTRIBUTING.md / application.properties 模板
+    - 操作: `key-location` → `smallrye.jwt.sign.key.location`（点分隔，4.6.x 规范）
+    - 验证: 文档化
 
 - [x] **Step 1.5: IllegalProductException 处理**
-  - 文件: `JwtSubjectProvider.java`
-  - 操作: provider 主动触碰 `getPrincipal()` 并捕获（client proxy 惰性创建）
-  - 验证: 启动正常
+    - 文件: `JwtSubjectProvider.java`
+    - 操作: provider 主动触碰 `getPrincipal()` 并捕获（client proxy 惰性创建）
+    - 验证: 启动正常
 
 ## Stage 2 — auth-{satoken,shiro,security,license} Producer 化
 
 - [x] **Step 2.1: auth-satoken Ddd4jSaTokenQuarkusConfig**
-  - 文件: `ddd4j-quarkus-auth-jwt/src/main/java/io/ddd4j/quarkus/auth/satoken/*.java`
-  - 操作: Producer 暴露 SaToken 集成
-  - 验证: 编译通过
+    - 文件: `ddd4j-quarkus-auth-jwt/src/main/java/io/ddd4j/quarkus/auth/satoken/*.java`
+    - 操作: Producer 暴露 SaToken 集成
+    - 验证: 编译通过
 
 - [x] **Step 2.2: auth-shiro Ddd4jShiroQuarkusConfig**
-  - 文件: `ddd4j-quarkus-auth-shiro/src/main/java/io/ddd4j/quarkus/auth/shiro/*.java`
-  - 操作: Shiro CDI 适配 + 异常映射
-  - 验证: 编译通过
+    - 文件: `ddd4j-quarkus-auth-shiro/src/main/java/io/ddd4j/quarkus/auth/shiro/*.java`
+    - 操作: Shiro CDI 适配 + 异常映射
+    - 验证: 编译通过
 
 - [x] **Step 2.3: auth-security Ddd4jSecurityQuarkusConfig（producer logic inlined）**
-  - 文件: `ddd4j-quarkus-auth-security/src/main/java/io/ddd4j/quarkus/auth/security/*.java`
-  - 操作: Security CDI 适配 + 异常映射
-  - 验证: 编译通过
+    - 文件: `ddd4j-quarkus-auth-security/src/main/java/io/ddd4j/quarkus/auth/security/*.java`
+    - 操作: Security CDI 适配 + 异常映射
+    - 验证: 编译通过
 
 - [x] **Step 2.4: auth-license Ddd4jLicenseQuarkusConfig + truelicense-core 显式声明**
-  - 文件: `ddd4j-quarkus-auth/ddd4j-quarkus-auth-license/pom.xml` + src/main
-  - 操作: 显式声明 truelicense-core（主仓发布 POM 无效传递依赖恢复）
-  - 验证: 编译通过
+    - 文件: `ddd4j-quarkus-auth/ddd4j-quarkus-auth-license/pom.xml` + src/main
+    - 操作: 显式声明 truelicense-core（主仓发布 POM 无效传递依赖恢复）
+    - 验证: 编译通过
 
 ## Stage 3 — samples 完整化
 
 - [x] **Step 3.1: sample-layered LayeredOrderApplication**
-  - 文件: `ddd4j-quarkus-samples/ddd4j-quarkus-sample-layered/src/main/java/io/ddd4j/quarkus/sample/layered/*.java`
-  - 操作: 端到端分层示例（domain + app + infra + adapter + client + common）
-  - 验证: LayeredOrderApplicationTest 通过
+    - 文件: `ddd4j-quarkus-samples/ddd4j-quarkus-sample-layered/src/main/java/io/ddd4j/quarkus/sample/layered/*.java`
+    - 操作: 端到端分层示例（domain + app + infra + adapter + client + common）
+    - 验证: LayeredOrderApplicationTest 通过
 
 - [x] **Step 3.2: sample-domain 9 实体**
-  - 文件: `ddd4j-quarkus-samples/ddd4j-quarkus-sample-domain/src/main/java/io/ddd4j/quarkus/sample/domain/*.java`
-  - 操作: 9 个领域实体（纯 POJO，无 Quarkus 依赖）
-  - 验证: 12 个测试通过
+    - 文件: `ddd4j-quarkus-samples/ddd4j-quarkus-sample-domain/src/main/java/io/ddd4j/quarkus/sample/domain/*.java`
+    - 操作: 9 个领域实体（纯 POJO，无 Quarkus 依赖）
+    - 验证: 12 个测试通过
 
 - [x] **Step 3.3: sample-app Order Application Service**
-  - 文件: `sample-app/src/main/java/io/ddd4j/quarkus/sample/app/order/service/OrderApplicationService.java`
-  - 操作: Application Service + command/dto/mapper/query
-  - 验证: 8 个测试通过
+    - 文件: `sample-app/src/main/java/io/ddd4j/quarkus/sample/app/order/service/OrderApplicationService.java`
+    - 操作: Application Service + command/dto/mapper/query
+    - 验证: 8 个测试通过
 
 - [x] **Step 3.4: sample-infrastructure Repository 实现**
-  - 文件: `sample-infrastructure/src/main/java/io/ddd4j/quarkus/sample/infrastructure/order/persistence/entity/OrderEntity.java`
-  - 操作: Repository + Entity + OrderEntityTest（5 测试）
-  - 验证: 编译通过
+    - 文件:
+      `sample-infrastructure/src/main/java/io/ddd4j/quarkus/sample/infrastructure/order/persistence/entity/OrderEntity.java`
+    - 操作: Repository + Entity + OrderEntityTest（5 测试）
+    - 验证: 编译通过
 
 - [x] **Step 3.5: sample-adapter Resource**
-  - 文件: `sample-adapter/src/main/java/io/ddd4j/quarkus/sample/adapter/web/OrderResource.java`
-  - 操作: JAX-RS Resource + DTO（依赖 web）
-  - 验证: OrderResourceQuarkusTest 5 测试通过
+    - 文件: `sample-adapter/src/main/java/io/ddd4j/quarkus/sample/adapter/web/OrderResource.java`
+    - 操作: JAX-RS Resource + DTO（依赖 web）
+    - 验证: OrderResourceQuarkusTest 5 测试通过
 
 - [x] **Step 3.6: sample-client OrderClientDTO + sample-common ApiResponse**
-  - 文件: 同上目录
-  - 操作: client + common 模块
-  - 验证: 5 + 8 测试通过
+    - 文件: 同上目录
+    - 操作: client + common 模块
+    - 验证: 5 + 8 测试通过
 
 - [x] **Step 3.7: sample-cqrs-person QuarkusPersonResourceTest**
-  - 文件: `sample-cqrs-person/src/test/java/...`
-  - 操作: 1 个测试类
-  - 验证: 1 测试通过
+    - 文件: `sample-cqrs-person/src/test/java/...`
+    - 操作: 1 个测试类
+    - 验证: 1 测试通过
 
 ## Stage 4 — CI 工作流
 
 - [x] **Step 4.1: .github/workflows/ci.yml workflow-lint job**
-  - 文件: `.github/workflows/ci.yml`
-  - 操作: `workflow-lint` job（ubuntu-latest + actions/checkout + setup-java 21）
-  - 验证: workflow 文件 YAML 合法
+    - 文件: `.github/workflows/ci.yml`
+    - 操作: `workflow-lint` job（ubuntu-latest + actions/checkout + setup-java 21）
+    - 验证: workflow 文件 YAML 合法
 
 - [x] **Step 4.2: build job JDK 21 矩阵**
-  - 文件: 同上
-  - 操作: `build` job + matrix: `{ jdk: [21] }` + `./mvnw -B verify`
-  - 验证: CI 通过
+    - 文件: 同上
+    - 操作: `build` job + matrix: `{ jdk: [21] }` + `./mvnw -B verify`
+    - 验证: CI 通过
 
 - [x] **Step 4.3: infrastructure-integration job**
-  - 文件: 同上
-  - 操作: `infrastructure-integration` job + docker setup + `./mvnw -B verify -Pintegration -pl 14 broker modules -am`
-  - 验证: CI 通过
+    - 文件: 同上
+    - 操作: `infrastructure-integration` job + docker setup + `./mvnw -B verify -Pintegration -pl 14 broker modules -am`
+    - 验证: CI 通过
 
 - [x] **Step 4.4: secrets 注入 MAVEN_USERNAME/MAVEN_PASSWORD**
-  - 文件: 同上
-  - 操作: credentials injection step → `~/.m2/settings.xml`（阿里云私有仓库）
-  - 验证: 401 解决
+    - 文件: 同上
+    - 操作: credentials injection step → `~/.m2/settings.xml`（阿里云私有仓库）
+    - 验证: 401 解决
 
 ## Stage 5 — CONTRIBUTING.md
 
 - [x] **Step 5.1: CONTRIBUTING.md 编写**
-  - 文件: `CONTRIBUTING.md`
-  - 内容: 仓库结构表 + 开发环境（JDK 21 + Maven 3.9 + Docker）+ 构建测试命令 + 提交规范 + CI 三阶段说明
-  - 验证: 文档完整
+    - 文件: `CONTRIBUTING.md`
+    - 内容: 仓库结构表 + 开发环境（JDK 21 + Maven 3.9 + Docker）+ 构建测试命令 + 提交规范 + CI 三阶段说明
+    - 验证: 文档完整
 
 ## Stage 6 — 全量验证
 
 - [x] **Step 6.1: mvn -Pintegration verify**
-  - 验证: 318 个测试 0 失败
-  - 提交: `feat(samples+ci): complete layered samples with @QuarkusTest coverage and CI/CD`（commit f47413a）
+    - 验证: 318 个测试 0 失败
+    - 提交: `feat(samples+ci): complete layered samples with @QuarkusTest coverage and CI/CD`（commit f47413a）
 
 ## Self-Review / 完成校验
 
@@ -158,18 +164,22 @@ Stage 6 — 全量验证 + 提交
 
 ## 计划偏差记录
 
-| 项 | 旧 plan 描述 | 实际落地 | 偏差原因 |
-|---|---|---|---|
-| auth-testcontainers 新增 | 计划新增共享 fixture | 已取消（不计为完成） | ddd4j-boot 与两条 Quarkus 分支均无该模块；四个 auth 后端没有共同容器依赖，改由各模块/样例直接 Quarkus runtime 验证 |
-| sample-rich-model 完整化 | 计划 4 层完整 | 仅骨架 | 业务项目未触发 |
-| sample-mq-* 完整化 | 计划完整化 + 集成测试 | 已完成 | 两分支 Disruptor/Kafka/RabbitMQ sample 均验证 HTTP 创建、真实发布、listener 消费和可观察投影；证据见后续 P3 completion plan |
+| 项                       | 旧 plan 描述          | 实际落地             | 偏差原因                                                                                                                    |
+|--------------------------|-----------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| auth-testcontainers 新增 | 计划新增共享 fixture  | 已取消（不计为完成） | ddd4j-boot 与两条 Quarkus 分支均无该模块；四个 auth 后端没有共同容器依赖，改由各模块/样例直接 Quarkus runtime 验证          |
+| sample-rich-model 完整化 | 计划 4 层完整         | 仅骨架               | 业务项目未触发                                                                                                              |
+| sample-mq-* 完整化       | 计划完整化 + 集成测试 | 已完成               | 两分支 Disruptor/Kafka/RabbitMQ sample 均验证 HTTP 创建、真实发布、listener 消费和可观察投影；证据见后续 P3 completion plan |
 
 ## 后续待办（非本次范围）
 
 - [取消] 新增 `ddd4j-quarkus-auth-testcontainers` 模块 + 4 个 auth 子模块集成测试
-  - 取消原因：两条维护分支及 ddd4j-boot 均不存在该模块；Sa-Token、Shiro、Security、License 没有共同容器依赖。替代路径是各后端/样例使用真实 Quarkus runtime fixture；License/JWT 保留现有直接 runtime fixture。
+    - 取消原因：两条维护分支及 ddd4j-boot 均不存在该模块；Sa-Token、Shiro、Security、License 没有共同容器依赖。替代路径是各后端/样例使用真实
+      Quarkus runtime fixture；License/JWT 保留现有直接 runtime fixture。
 - [x] 完整化 sample-auth-* / sample-mq-*
-  - 完成证据：两分支 Sa-Token/Shiro 验证 login/status/me/role/permission/logout、双会话与异常清理；废弃 Security sample 已删除。
-  - 完成证据：两分支 Disruptor/Kafka/RabbitMQ 验证创建订单到 listener 投影的真实闭环。详见 [P3 auth/sample completion plan](2026-09-10-p3-auth-samples-completion.md)；push/Actions 与发布不属于本历史 backlog 的完成定义。
+    - 完成证据：两分支 Sa-Token/Shiro 验证 login/status/me/role/permission/logout、双会话与异常清理；废弃 Security sample
+      已删除。
+    - 完成证据：两分支 Disruptor/Kafka/RabbitMQ 验证创建订单到 listener
+      投影的真实闭环。详见 [P3 auth/sample completion plan](2026-09-10-p3-auth-samples-completion.md)；push/Actions
+      与发布不属于本历史 backlog 的完成定义。
 - [x] 删除 ddd4j-quarkus-extension-pf4j（空壳）
-  - 证据：`3f63a93` 删除模块、聚合条目与 BOM 条目；两条维护分支的树均已不存在该模块。
+    - 证据：`3f63a93` 删除模块、聚合条目与 BOM 条目；两条维护分支的树均已不存在该模块。

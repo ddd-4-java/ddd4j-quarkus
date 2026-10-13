@@ -22,12 +22,8 @@ import jakarta.inject.Singleton;
 public class DisruptorMqConfig {
 
     /**
-     * 无参构造函数。
+     * 显式注入并在应用退出时释放 broker 客户端，由框架注册器负责启动。
      */
-    public DisruptorMqConfig() {
-    }
-
-    /** 显式注入并在应用退出时释放 broker 客户端，由框架注册器负责启动。 */
     void shutdown(@Observes ShutdownEvent event,
                   DisruptorMQClient client) throws Exception {
         client.close();

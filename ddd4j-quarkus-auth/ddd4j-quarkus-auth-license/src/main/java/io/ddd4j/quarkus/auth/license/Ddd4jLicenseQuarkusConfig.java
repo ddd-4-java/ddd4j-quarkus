@@ -26,28 +26,17 @@ import java.util.Optional;
 @IfBuildProperty(name = "license.enabled", stringValue = "true")
 public class Ddd4jLicenseQuarkusConfig {
 
-    /**
-     * 无参构造函数。
-     */
-    public Ddd4jLicenseQuarkusConfig() {
-    }
-
-    private LicenseVerify created;
-
     @ConfigProperty(name = "license.subject")
     Optional<String> subject;
-
     @ConfigProperty(name = "license.public-alias")
     Optional<String> publicAlias;
-
     @ConfigProperty(name = "license.store-pass")
     Optional<String> storePass;
-
     @ConfigProperty(name = "license.license-path")
     Optional<String> licensePath;
-
     @ConfigProperty(name = "license.public-keys-store-path")
     Optional<String> publicKeysStorePath;
+    private LicenseVerify created;
 
     /**
      * 许可证Verify。

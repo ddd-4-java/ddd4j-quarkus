@@ -51,30 +51,6 @@ public final class ExcelAttachment {
     }
 
     /**
-     * 获取 getFilename。
-     * @return 获取Filename字符串内容
-     */
-    public String getFilename() {
-        return filename;
-    }
-
-    /**
-     * 获取内容类型。
-     * @return 内容类型
-     */
-    public String getContentType() {
-        return contentType;
-    }
-
-    /**
-     * 获取 getCharset。
-     * @return 获取Charset
-     */
-    public Charset getCharset() {
-        return charset;
-    }
-
-    /**
      * 构造 xlsx 附件（UTF-8 编码文件名）。
      *
      * @param filename 文件名（含扩展名）
@@ -103,6 +79,30 @@ public final class ExcelAttachment {
      */
     public static ExcelAttachment csv(String filename, Charset charset) {
         return new ExcelAttachment(filename, CONTENT_TYPE_CSV, charset);
+    }
+
+    /**
+     * 获取 getFilename。
+     * @return 获取Filename字符串内容
+     */
+    public String getFilename() {
+        return filename;
+    }
+
+    /**
+     * 获取内容类型。
+     * @return 内容类型
+     */
+    public String getContentType() {
+        return contentType;
+    }
+
+    /**
+     * 获取 getCharset。
+     * @return 获取Charset
+     */
+    public Charset getCharset() {
+        return charset;
     }
 
     /**

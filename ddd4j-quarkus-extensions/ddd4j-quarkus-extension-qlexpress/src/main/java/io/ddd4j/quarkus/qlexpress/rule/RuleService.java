@@ -45,6 +45,12 @@ public class RuleService {
         this.eventPublisher = Objects.requireNonNull(eventPublisher, "eventPublisher 不能为空");
     }
 
+    private static void requireText(String value, String field) {
+        if (!StrKit.hasText(value)) {
+            throw new IllegalArgumentException(field + " 不能为空");
+        }
+    }
+
     /**
      * 创建规则。
      *
@@ -232,11 +238,5 @@ public class RuleService {
 
     private void publish(RuleDefinition rule, RuleChangedEvent.Operation operation) {
         eventPublisher.fire(RuleChangedEvent.of(rule, operation));
-    }
-
-    private static void requireText(String value, String field) {
-        if (!StrKit.hasText(value)) {
-            throw new IllegalArgumentException(field + " 不能为空");
-        }
     }
 }

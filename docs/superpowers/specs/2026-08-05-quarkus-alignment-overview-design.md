@@ -5,16 +5,18 @@
 - 状态: 设计已确认 / 实施已对齐
 - 范围: ddd4j-quarkus 整体
 - 涉及模块: ddd4j-quarkus-{bom,dependencies,parent,ddd,cache,web,data,mq,auth,extensions,samples}
-- 来源: 本文档核心内容吸收自 `.zcode/plans/plan-sess_5963fbf4-6b1b-4107-b46d-531bc7c75443.md`（旧 ZCode session plan，已被本规范体系取代）
+- 来源: 本文档核心内容吸收自 `.zcode/plans/plan-sess_5963fbf4-6b1b-4107-b46d-531bc7c75443.md`（旧 ZCode session
+  plan，已被本规范体系取代）
 
 ## 1. 背景与定位
 
-Quarkus 轨道的 ddd4j 平台，与 `ddd4j-boot`（Spring Boot 轨道）对称，**不继承 Spring Boot**。
+Quarkus 轨道的 ddd4j 平台，与 `ddd4j-boot`（Spring Boot 轨道）对称， **不继承 Spring Boot**。
 
-本仓定位为 Quarkus 的**深度适配聚合层**：
+本仓定位为 Quarkus 的 **深度适配聚合层**：
 
 - `io.ddd4j:ddd4j-runtime-quarkus` 负责主仓中的通用 Quarkus 运行时绑定底座
-- `ddd4j-quarkus-ddd/...` 保留 Quarkus 轨道的聚合入口、依赖编排与深度整合语义，核心运行时已收敛到 `io.ddd4j:ddd4j-runtime-quarkus`
+- `ddd4j-quarkus-ddd/...` 保留 Quarkus 轨道的聚合入口、依赖编排与深度整合语义，核心运行时已收敛到
+  `io.ddd4j:ddd4j-runtime-quarkus`
 - 不再按"逐步删空模块"的方式演进，而是对齐 `ddd4j-boot` 的整体结构
 
 ## 2. 目标与非目标
@@ -57,14 +59,14 @@ ddd4j-quarkus/
 
 ### 3.2 版本基线
 
-| 维度 | 版本 |
-|---|---|
-| `quarkus-bom` | **3.38.2**（主仓 quarkus-bom 由本仓 dependencies BOM 显式覆盖） |
-| `ddd4j.version` | **3.0.x.20260730-SNAPSHOT** |
-| `ddd4j-quarkus.revision` | **4.0.x.20260630-SNAPSHOT**（当前分支 feature/4.0.x） |
-| `testcontainers-bom` | **1.20.4** |
-| JDK | **21（编译基线 + CI）** |
-| Maven | **3.9+（仓库自带 ./mvnw Maven 4 wrapper）** |
+| 维度                     | 版本                                                            |
+|--------------------------|-----------------------------------------------------------------|
+| `quarkus-bom`            | **3.38.2**（主仓 quarkus-bom 由本仓 dependencies BOM 显式覆盖） |
+| `ddd4j.version`          | **3.0.x.20260730-SNAPSHOT**                                     |
+| `ddd4j-quarkus.revision` | **4.0.x.20260630-SNAPSHOT**（当前分支 feature/4.0.x）           |
+| `testcontainers-bom`     | **1.20.4**                                                      |
+| JDK                      | **21（编译基线 + CI）**                                         |
+| Maven                    | **3.9+（仓库自带 ./mvnw Maven 4 wrapper）**                     |
 
 ### 3.3 Parent 链重构
 
@@ -77,7 +79,8 @@ ddd4j-parent  (io.ddd4j:ddd4j-parent:3.0.x.20260630-SNAPSHOT)
             └── 框架聚合 pom（mq/extensions/auth/data/cache/ddd/web）
 ```
 
-**关键决策**：parent 不默认提供业务选型依赖（openapi/health/jwt/fault-tolerance/panache/narayana/mysql/quartz/easyexcel），改按域 profiles 显式激活：
+**关键决策**：parent 不默认提供业务选型依赖（openapi/health/jwt/fault-tolerance/panache/narayana/mysql/quartz/easyexcel），改按域
+profiles 显式激活：
 
 - `-Pddd4j-web`（API 文档 + JWT + 容错 + 健康检查）
 - `-Pddd4j-data`（Panache ORM + 事务 + MySQL 驱动）
@@ -85,40 +88,41 @@ ddd4j-parent  (io.ddd4j:ddd4j-parent:3.0.x.20260630-SNAPSHOT)
 - `-Pddd4j-excel`（EasyExcel）
 - `-Pddd4j-full` = 上述全部 + ddd4j-runtime-quarkus/cache/data-panache/ddd
 
-**原因**：parent 不应替下游项目确定技术选型。框架模块（mq/extensions/auth/data/cache/ddd/web）继承 dependencies 而非 parent，自声明编译依赖（库模块必须自包含）。
+**原因**：parent 不应替下游项目确定技术选型。框架模块（mq/extensions/auth/data/cache/ddd/web）继承 dependencies 而非
+parent，自声明编译依赖（库模块必须自包含）。
 
 ## 4. 阶段路线图
 
-| 阶段 | 日期 | 模块范围 | 状态 | Spec |
-|---|---|---|---|---|
-| **P0** 基线基础设施 | 2026-08-05 | cache / web / mq-core / parent 重构 | ✅ 完成 | [p0-baseline-infrastructure](./2026-08-05-p0-baseline-infrastructure-design.md) |
-| **P1** 扩展 Producer 矩阵 | 2026-08-06 | akka/cola/excel/jackson/monitor/qlexpress/dubbo/qrcode/validation | ✅ 完成 | [p1-extensions](./2026-08-06-p1-extensions-design.md) |
-| **P2** MQ testcontainers | 2026-08-07 | ddd4j-quarkus-mq-testcontainers + 14 broker | ✅ 完成 | [p2-mq-testcontainers](./2026-08-07-p2-mq-testcontainers-design.md) |
-| **P3** Auth + Samples + CI/CD | 2026-08-08 | auth Producer / samples 完整化 / .github/workflows | ✅ 完成 | [p3-auth-samples-ci](./2026-08-08-p3-auth-samples-ci-design.md) |
+| 阶段                          | 日期       | 模块范围                                                          | 状态    | Spec                                                                            |
+|-------------------------------|------------|-------------------------------------------------------------------|---------|---------------------------------------------------------------------------------|
+| **P0** 基线基础设施           | 2026-08-05 | cache / web / mq-core / parent 重构                               | ✅ 完成 | [p0-baseline-infrastructure](./2026-08-05-p0-baseline-infrastructure-design.md) |
+| **P1** 扩展 Producer 矩阵     | 2026-08-06 | akka/cola/excel/jackson/monitor/qlexpress/dubbo/qrcode/validation | ✅ 完成 | [p1-extensions](./2026-08-06-p1-extensions-design.md)                           |
+| **P2** MQ testcontainers      | 2026-08-07 | ddd4j-quarkus-mq-testcontainers + 14 broker                       | ✅ 完成 | [p2-mq-testcontainers](./2026-08-07-p2-mq-testcontainers-design.md)             |
+| **P3** Auth + Samples + CI/CD | 2026-08-08 | auth Producer / samples 完整化 / .github/workflows                | ✅ 完成 | [p3-auth-samples-ci](./2026-08-08-p3-auth-samples-ci-design.md)                 |
 
 ## 5. 关键复用原则（不重写）
 
-| 来源 | 目标 | 差异 |
-|---|---|---|
-| `io.ddd4j:ddd4j-core`（所有接口） | 全部模块 | 仅包名 `io.ddd4j.core` 保持不变 |
-| `io.ddd4j:ddd4j-cache`（CacheKit + 7 个实现） | cache / 数据 | 不变 |
-| `io.ddd4j:ddd4j-web-core` | web / samples | 不变 |
-| `io.ddd4j:ddd4j-web-quarkus`（7 文件） | `ddd4j-quarkus-web` | 包名 `io.ddd4j.web.quarkus` → `io.ddd4j.quarkus.web` |
-| `io.ddd4j:ddd4j-auth-{satoken,shiro,security}` | auth-* | 不变 |
-| `io.ddd4j:ddd4j-mq-core`（MQClient / MQEvent / MQProperties 等 11 个 SPI） | mq-core | 不变 |
-| `io.ddd4j:ddd4j-mq-{13 brokers}` | mq-{broker} | 不变 |
-| `io.ddd4j:ddd4j-data-jpa`（`JpaAggregateRepository` 抽象） | `ddd4j-quarkus-data-jpa` | 包名调整 |
+| 来源                                                                       | 目标                     | 差异                                                 |
+|----------------------------------------------------------------------------|--------------------------|------------------------------------------------------|
+| `io.ddd4j:ddd4j-core`（所有接口）                                          | 全部模块                 | 仅包名 `io.ddd4j.core` 保持不变                      |
+| `io.ddd4j:ddd4j-cache`（CacheKit + 7 个实现）                              | cache / 数据             | 不变                                                 |
+| `io.ddd4j:ddd4j-web-core`                                                  | web / samples            | 不变                                                 |
+| `io.ddd4j:ddd4j-web-quarkus`（7 文件）                                     | `ddd4j-quarkus-web`      | 包名 `io.ddd4j.web.quarkus` → `io.ddd4j.quarkus.web` |
+| `io.ddd4j:ddd4j-auth-{satoken,shiro,security}`                             | auth-*                   | 不变                                                 |
+| `io.ddd4j:ddd4j-mq-core`（MQClient / MQEvent / MQProperties 等 11 个 SPI） | mq-core                  | 不变                                                 |
+| `io.ddd4j:ddd4j-mq-{13 brokers}`                                           | mq-{broker}              | 不变                                                 |
+| `io.ddd4j:ddd4j-data-jpa`（`JpaAggregateRepository` 抽象）                 | `ddd4j-quarkus-data-jpa` | 包名调整                                             |
 
 **转换模式**：
 
-| 来源（Spring） | 目标（Quarkus） | 转换 |
-|---|---|---|
-| `Ddd4jCacheAutoConfiguration` (`@Configuration`) | `Ddd4jCacheBuildItemProducer` (`@BuildStep`) | `@ConfigurationProperties` → `@ConfigMapping`；`setter` → `@Recorder` + `RuntimeValue` |
-| `Ddd4jWebMvcAutoConfiguration` | `Ddd4jWebBuildItemProducer` | 同上 |
-| `SaTokenEnhanceAutoConfiguration` (`InitializingBean`) | `Ddd4jSaTokenQuarkusConfig` (`@Observes StartupEvent`) | lifecycle 钩子转换 |
-| `MybatisExceptionHandler` (`@ControllerAdvice`) | `MybatisExceptionMapper` (`@Provider`) | Spring 拦截 → JAX-RS ExceptionMapper |
-| `*MQEventPublisher` (`@Bean`) | `*MQEventPublisher` (`@Produces @Singleton`) | `@Bean` → `@Produces` |
-| `*ConsumerEndpointRegistrar` (`RabbitListenerEndpointRegistry`) | Quarkus 自定义 Registrar（`QuarkusMQListenerRegistrar`） | 反射扫描注解方法 |
+| 来源（Spring）                                                  | 目标（Quarkus）                                          | 转换                                                                                   |
+|-----------------------------------------------------------------|----------------------------------------------------------|----------------------------------------------------------------------------------------|
+| `Ddd4jCacheAutoConfiguration` (`@Configuration`)                | `Ddd4jCacheBuildItemProducer` (`@BuildStep`)             | `@ConfigurationProperties` → `@ConfigMapping`；`setter` → `@Recorder` + `RuntimeValue` |
+| `Ddd4jWebMvcAutoConfiguration`                                  | `Ddd4jWebBuildItemProducer`                              | 同上                                                                                   |
+| `SaTokenEnhanceAutoConfiguration` (`InitializingBean`)          | `Ddd4jSaTokenQuarkusConfig` (`@Observes StartupEvent`)   | lifecycle 钩子转换                                                                     |
+| `MybatisExceptionHandler` (`@ControllerAdvice`)                 | `MybatisExceptionMapper` (`@Provider`)                   | Spring 拦截 → JAX-RS ExceptionMapper                                                   |
+| `*MQEventPublisher` (`@Bean`)                                   | `*MQEventPublisher` (`@Produces @Singleton`)             | `@Bean` → `@Produces`                                                                  |
+| `*ConsumerEndpointRegistrar` (`RabbitListenerEndpointRegistry`) | Quarkus 自定义 Registrar（`QuarkusMQListenerRegistrar`） | 反射扫描注解方法                                                                       |
 
 ## 6. 验收标准
 
@@ -132,25 +136,25 @@ ddd4j-parent  (io.ddd4j:ddd4j-parent:3.0.x.20260630-SNAPSHOT)
 
 ## 7. 风险与缓解（已记录）
 
-| 风险 | 影响 | 缓解 |
-|---|---|---|
-| Quarkus 编译时增强（BuildStep）开销大，14 broker 编译慢 | CI 耗时 | 拆分为 `quarkus-mq-{core,broker}` 两层；broker 模块用 `@BuildStep` 缓存 |
-| Quarkus 没有 servlet 容器，shiro/satoken-web 部分能力受限 | shiro 集成受阻 | 用 `ContainerRequestFilter` 替代 servlet filter；shiro 走 Vert.x Route 适配 |
-| Hibernate 6.6 vs Quarkus 3.38 需 7.4 | 升级复杂 | 在 `ddd4j-quarkus-dependencies` 统一升级 Hibernate 到 7.4.1.Final（仅引用 jakarta.persistence 稳定 API） |
-| Testcontainers Docker 镜像在 CI 拉取慢 | CI 超时 | 固定镜像版本 + CI 镜像缓存；禁止实验性 reuse |
-| ddd4j-quarkus 与 ddd4j-boot 在 application.properties 命名差异 | 用户困惑 | 在 README 明确"Quarkus 风格 vs Spring 风格"对照表 |
-| 框架模块隐式继承 parent 默认依赖（被全家桶污染） | 不必要依赖污染 | parent 链重构 + 按域 profiles；框架模块继承 dependencies 而非 parent，自声明依赖 |
+| 风险                                                           | 影响           | 缓解                                                                                                     |
+|----------------------------------------------------------------|----------------|----------------------------------------------------------------------------------------------------------|
+| Quarkus 编译时增强（BuildStep）开销大，14 broker 编译慢        | CI 耗时        | 拆分为 `quarkus-mq-{core,broker}` 两层；broker 模块用 `@BuildStep` 缓存                                  |
+| Quarkus 没有 servlet 容器，shiro/satoken-web 部分能力受限      | shiro 集成受阻 | 用 `ContainerRequestFilter` 替代 servlet filter；shiro 走 Vert.x Route 适配                              |
+| Hibernate 6.6 vs Quarkus 3.38 需 7.4                           | 升级复杂       | 在 `ddd4j-quarkus-dependencies` 统一升级 Hibernate 到 7.4.1.Final（仅引用 jakarta.persistence 稳定 API） |
+| Testcontainers Docker 镜像在 CI 拉取慢                         | CI 超时        | 固定镜像版本 + CI 镜像缓存；禁止实验性 reuse                                                             |
+| ddd4j-quarkus 与 ddd4j-boot 在 application.properties 命名差异 | 用户困惑       | 在 README 明确"Quarkus 风格 vs Spring 风格"对照表                                                        |
+| 框架模块隐式继承 parent 默认依赖（被全家桶污染）               | 不必要依赖污染 | parent 链重构 + 按域 profiles；框架模块继承 dependencies 而非 parent，自声明依赖                         |
 
 ## 8. 计划偏差记录（实施过程中发现 vs 原始 plan）
 
-| 项 | 旧 plan 描述 | 实际落地 | 偏差原因 |
-|---|---|---|---|
-| `ddd4j-quarkus-data-jpa` | 补 JpaAggregateRepository/JpaCdiProducer/JpaRepositoryBuildItem | 仅 test（`JpaCdiProducerTest`），main src 留空 | 数据访问抽象统一由主仓 `io.ddd4j:ddd4j-data-jpa` 提供，Quarkus 模块仅适配测试 |
-| `ddd4j-quarkus-data-external` | IpRegion + Weather + Producer | 仅 IpRegion（无 Weather/Producer） | 同上，外置模块由主仓提供 |
-| `ddd4j-quarkus-extension-pf4j` | 删除（改用 Quarkus Plugin） | 已删除（2026-08-16） | 按计划清理空壳 |
-| `ddd4j-quarkus-auth-testcontainers` | 新增 | 未落地 | 4 个 auth 子模块当前只有 Producer，无 testcontainers 集成测试 |
-| 版本基线 | quarkus-bom 3.36.3 | quarkus-bom 3.38.2 | 升级对齐 3.38.x 系（hibernate 7.4.1 + agroal 3.2） |
-| 工期 | 10 周 1 人全职 | 实际多智能体并行约 4 个工作日 | 多智能体协作效率显著高于单人估算 |
+| 项                                  | 旧 plan 描述                                                    | 实际落地                                       | 偏差原因                                                                      |
+|-------------------------------------|-----------------------------------------------------------------|------------------------------------------------|-------------------------------------------------------------------------------|
+| `ddd4j-quarkus-data-jpa`            | 补 JpaAggregateRepository/JpaCdiProducer/JpaRepositoryBuildItem | 仅 test（`JpaCdiProducerTest`），main src 留空 | 数据访问抽象统一由主仓 `io.ddd4j:ddd4j-data-jpa` 提供，Quarkus 模块仅适配测试 |
+| `ddd4j-quarkus-data-external`       | IpRegion + Weather + Producer                                   | 仅 IpRegion（无 Weather/Producer）             | 同上，外置模块由主仓提供                                                      |
+| `ddd4j-quarkus-extension-pf4j`      | 删除（改用 Quarkus Plugin）                                     | 已删除（2026-08-16）                           | 按计划清理空壳                                                                |
+| `ddd4j-quarkus-auth-testcontainers` | 新增                                                            | 未落地                                         | 4 个 auth 子模块当前只有 Producer，无 testcontainers 集成测试                 |
+| 版本基线                            | quarkus-bom 3.36.3                                              | quarkus-bom 3.38.2                             | 升级对齐 3.38.x 系（hibernate 7.4.1 + agroal 3.2）                            |
+| 工期                                | 10 周 1 人全职                                                  | 实际多智能体并行约 4 个工作日                  | 多智能体协作效率显著高于单人估算                                              |
 
 ## 9. 相关文档
 

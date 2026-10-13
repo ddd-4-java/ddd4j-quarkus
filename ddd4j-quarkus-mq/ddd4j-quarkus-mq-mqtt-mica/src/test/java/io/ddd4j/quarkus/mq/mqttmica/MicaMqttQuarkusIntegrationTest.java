@@ -40,6 +40,15 @@ class MicaMqttQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<Mi
     @Inject
     MicaMqttProperties micaMqttProperties;
 
+    static boolean isMacArm64() {
+        return isMacArm64(System.getProperty("os.name", ""), System.getProperty("os.arch", ""));
+    }
+
+    static boolean isMacArm64(String osName, String osArch) {
+        return "Mac OS X".equalsIgnoreCase(osName)
+                && ("aarch64".equalsIgnoreCase(osArch) || "arm64".equalsIgnoreCase(osArch));
+    }
+
     @Override
     protected MicaMqttProperties mqPropertiesExtension() {
         return micaMqttProperties;
@@ -83,15 +92,6 @@ class MicaMqttQuarkusIntegrationTest extends AbstractMqQuarkusIntegrationTest<Mi
     @DisabledIf("isMacArm64")
     void shouldPublishAndConsumeOrderCreatedEventEndToEnd() throws Exception {
         runOrderCreatedRoundTrip();
-    }
-
-    static boolean isMacArm64() {
-        return isMacArm64(System.getProperty("os.name", ""), System.getProperty("os.arch", ""));
-    }
-
-    static boolean isMacArm64(String osName, String osArch) {
-        return "Mac OS X".equalsIgnoreCase(osName)
-                && ("aarch64".equalsIgnoreCase(osArch) || "arm64".equalsIgnoreCase(osArch));
     }
 
     /**

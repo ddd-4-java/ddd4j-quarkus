@@ -16,7 +16,8 @@ Producer/ConfigMapping，待由各自真实 runtime 集成补齐行为覆盖。
 
 ### 1.2 Samples 骨架未完整化
 
-14 个 sample 子模块中，`layered`、`adapter`、`app`、`domain`、`client`、`common`、`infrastructure` 7 个为骨架（pom + 占位类），需要补齐 domain/app/infrastructure/adapter 四层实现。
+14 个 sample 子模块中，`layered`、`adapter`、`app`、`domain`、`client`、`common`、`infrastructure` 7 个为骨架（pom + 占位类），需要补齐
+domain/app/infrastructure/adapter 四层实现。
 
 ### 1.3 CI 工作流缺失
 
@@ -85,6 +86,7 @@ ddd4j-quarkus-sample-api/                          # 🟡 占位（1 类）
 ```
 
 **关键配置**：
+
 - 测试坐标：`io.quarkus:quarkus-junit`（Quarkus 3.31+ 官方）
 - JUnit 4：`junit:junit` test 依赖（devservices 引用 `org.junit.rules.TestRule`）
 - Secrets 注入：`MAVEN_USERNAME/MAVEN_PASSWORD` secrets → `~/.m2/settings.xml`（阿里云私有仓库）
@@ -137,24 +139,24 @@ ddd4j-quarkus/
 
 ## 6. 测试策略
 
-| 模块 | 测试类型 | 测试目标 |
-|---|---|---|
-| auth-jwt | `@QuarkusTest` + `@InjectMock` | 启动 + Provider 注入 + JWT 解析 |
+| 模块                                  | 测试类型                                              | 测试目标                                                                                 |
+|---------------------------------------|-------------------------------------------------------|------------------------------------------------------------------------------------------|
+| auth-jwt                              | `@QuarkusTest` + `@InjectMock`                        | 启动 + Provider 注入 + JWT 解析                                                          |
 | auth-{satoken,shiro,security,license} | 直接 runtime fixture（按后端选择文件/内存等真实依赖） | License/JWT 已有直接 runtime fixture；其余行为在样例完成计划中补齐，不新增共同 auth 容器 |
-| sample-layered | `@QuarkusTest` | 分层架构端到端验证 |
-| sample-app | JUnit `@Test` | Application Service 单元测试 |
-| sample-domain | JUnit `@Test` | 实体行为测试 |
+| sample-layered                        | `@QuarkusTest`                                        | 分层架构端到端验证                                                                       |
+| sample-app                            | JUnit `@Test`                                         | Application Service 单元测试                                                             |
+| sample-domain                         | JUnit `@Test`                                         | 实体行为测试                                                                             |
 
 ## 7. 风险与缓解
 
-| 风险 | 缓解 |
-|---|---|
-| 4 个 auth 子模块没有共同 testcontainers 集成测试 | 取消 `ddd4j-quarkus-auth-testcontainers`；按后端在各模块/样例使用直接 Quarkus runtime 验证 |
+| 风险                                                                   | 缓解                                                                                                                     |
+|------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| 4 个 auth 子模块没有共同 testcontainers 集成测试                       | 取消 `ddd4j-quarkus-auth-testcontainers`；按后端在各模块/样例使用直接 Quarkus runtime 验证                               |
 | samples/auth-{satoken,security,shiro} 仅有 AuthResource、无 `src/test` | 保持 sample backlog 开放；Security sample 删除，Sa-Token/Shiro 补齐 login/status/me/role/permission/logout HTTP 生命周期 |
-| samples/mq-{disruptor,kafka,rabbitmq} 仅有启动/Bean 注入测试 | 保持 sample backlog 开放；后续补齐 HTTP 创建订单、实际发布、真实 listener 消费和可观察投影的端到端断言 |
-| ddd4j-extension-pf4j 空壳未删除 | 登记为 P4 待办 |
-| GitHub Actions secrets 不能用于 `if:` 条件 | 通过 env 传递 |
-| 阿里云私有仓库需 credentials | ci.yml 注入 `MAVEN_USERNAME/MAVEN_PASSWORD` secrets |
+| samples/mq-{disruptor,kafka,rabbitmq} 仅有启动/Bean 注入测试           | 保持 sample backlog 开放；后续补齐 HTTP 创建订单、实际发布、真实 listener 消费和可观察投影的端到端断言                   |
+| ddd4j-extension-pf4j 空壳未删除                                        | 登记为 P4 待办                                                                                                           |
+| GitHub Actions secrets 不能用于 `if:` 条件                             | 通过 env 传递                                                                                                            |
+| 阿里云私有仓库需 credentials                                           | ci.yml 注入 `MAVEN_USERNAME/MAVEN_PASSWORD` secrets                                                                      |
 
 ## 8. 验收标准
 
@@ -168,4 +170,5 @@ ddd4j-quarkus/
 
 - 总览 spec: [`./2026-08-05-quarkus-alignment-overview-design.md`](./2026-08-05-quarkus-alignment-overview-design.md)
 - 实施计划: [`../plans/2026-08-08-p3-auth-samples-ci.md`](../plans/2026-08-08-p3-auth-samples-ci.md)
-- auth/sample backlog 完成计划: [`../plans/2026-09-10-p3-auth-samples-completion.md`](../plans/2026-09-10-p3-auth-samples-completion.md)
+- auth/sample backlog 完成计划: [
+  `../plans/2026-09-10-p3-auth-samples-completion.md`](../plans/2026-09-10-p3-auth-samples-completion.md)

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 
 
-
 /**
  * {@code null} 属性写为固定 JSON 字面量（如 {@code []} / {@code ""} / {@code 0} / {@code {}}）的
  * {@link BeanPropertyWriter} 装饰器。

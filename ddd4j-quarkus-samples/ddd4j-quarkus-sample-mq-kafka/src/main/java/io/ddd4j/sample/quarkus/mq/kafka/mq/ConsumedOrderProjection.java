@@ -2,11 +2,14 @@ package io.ddd4j.sample.quarkus.mq.kafka.mq;
 
 import io.ddd4j.sample.quarkus.mq.kafka.order.domain.OrderCreatedEvent;
 import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** 订单消费投影：保存真实 MQ listener 收到的订单，演示异步读模型。 */
+/**
+ * 订单消费投影：保存真实 MQ listener 收到的订单，演示异步读模型。
+ */
 @ApplicationScoped
 public class ConsumedOrderProjection {
 
@@ -34,7 +37,9 @@ public class ConsumedOrderProjection {
         return Optional.ofNullable(orders.get(orderId));
     }
 
-    /** 清空演示投影，供重新演示与测试隔离使用。 */
+    /**
+     * 清空演示投影，供重新演示与测试隔离使用。
+     */
     public void clear() {
         orders.clear();
     }

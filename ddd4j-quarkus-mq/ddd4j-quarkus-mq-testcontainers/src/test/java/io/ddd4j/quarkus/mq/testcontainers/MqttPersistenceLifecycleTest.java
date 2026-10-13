@@ -13,7 +13,9 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-/** 使用真实 MQTT 生命周期，仅替换 Docker 进程边界，验证全局目录属性的恢复。 */
+/**
+ * 使用真实 MQTT 生命周期，仅替换 Docker 进程边界，验证全局目录属性的恢复。
+ */
 @ResourceLock("java.lang.System.properties")
 class MqttPersistenceLifecycleTest {
     @TempDir

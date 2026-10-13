@@ -11,7 +11,9 @@
     </parent>
 
     <artifactId>ddd4j-quarkus-sample-mq-rabbitmq</artifactId>
-    <description>ddd4j-quarkus RabbitMQ MQ 示例：业务发布 DomainEvent → RabbitMQ 投递（AMQP Topic Exchange） → @MQEventListener 消费</description>
+    <description>ddd4j-quarkus RabbitMQ MQ 示例：业务发布 DomainEvent → RabbitMQ 投递（AMQP Topic Exchange） →
+        @MQEventListener 消费
+    </description>
 
     <dependencies>
         <dependency>

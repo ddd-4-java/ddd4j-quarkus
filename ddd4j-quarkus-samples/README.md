@@ -1,13 +1,14 @@
 # ddd4j-quarkus 示例工程
 
-本目录放 Quarkus 运行时关注的示例：CDI、JAX-RS、Panache/Quarkus 数据适配和 Quarkus 原生构建约束。通用领域模型优先复用 `io.ddd4j:ddd4j-sample-*`。
+本目录放 Quarkus 运行时关注的示例：CDI、JAX-RS、Panache/Quarkus 数据适配和 Quarkus 原生构建约束。通用领域模型优先复用
+`io.ddd4j:ddd4j-sample-*`。
 
 ## 重点示例
 
-| 示例 | 方向 | 说明 |
-|---|---|---|
+| 示例                           | 方向     | 说明                                                           |
+|--------------------------------|----------|----------------------------------------------------------------|
 | `ddd4j-quarkus-sample-layered` | 分层骨架 | 对齐 Boot 分层样例的 Quarkus 骨架，后续可替换为 Panache 持久化 |
-| `ddd4j-quarkus-sample-auth-*` | Auth | Sa-Token 与 Shiro 两种鉴权实现的 HTTP 会话示例 |
+| `ddd4j-quarkus-sample-auth-*`  | Auth     | Sa-Token 与 Shiro 两种鉴权实现的 HTTP 会话示例                 |
 
 > TODO: 普通充血模型（rich-model）与 CQRS/ES（cqrs-person）示例已下线，待重新设计后回归。
 
@@ -21,10 +22,10 @@
 
 认证示例使用真实 Quarkus HTTP 服务和后端会话，通过 `SubjectKit` 登录、查询身份、授权与注销：
 
-| 示例 | 令牌传递 | 授权数据 |
-|---|---|---|
-| `ddd4j-quarkus-sample-auth-satoken` | 请求头 `satoken: <token>` | `SubjectDataProvider` 提供 `user` 角色、`profile:read` 权限 |
-| `ddd4j-quarkus-sample-auth-shiro` | 请求头 `X-Session-Id: <token>`，token 为 Shiro 原生 Session ID | Shiro Realm 提供 `user` 角色、`profile:read` 权限 |
+| 示例                                | 令牌传递                                                       | 授权数据                                                    |
+|-------------------------------------|----------------------------------------------------------------|-------------------------------------------------------------|
+| `ddd4j-quarkus-sample-auth-satoken` | 请求头 `satoken: <token>`                                      | `SubjectDataProvider` 提供 `user` 角色、`profile:read` 权限 |
+| `ddd4j-quarkus-sample-auth-shiro`   | 请求头 `X-Session-Id: <token>`，token 为 Shiro 原生 Session ID | Shiro Realm 提供 `user` 角色、`profile:read` 权限           |
 
 两例的 `POST /auth/login` 均接收 `text/plain` 的 userId，如 `alice`。
 Sa-Token 演示已完成上游身份校验后的会话创建；Shiro 使用固定演示账号

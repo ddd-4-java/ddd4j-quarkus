@@ -71,6 +71,15 @@ public class RuleDefinition implements Serializable {
     }
 
     /**
+     * 创建规则定义构建器。
+     *
+     * @return 新建的构建器实例
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * 获取规则唯一标识。
      *
      * @return 规则唯一标识
@@ -248,15 +257,6 @@ public class RuleDefinition implements Serializable {
      */
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    /**
-     * 创建规则定义构建器。
-     *
-     * @return 新建的构建器实例
-     */
-    public static Builder builder() {
-        return new Builder();
     }
 
     /**

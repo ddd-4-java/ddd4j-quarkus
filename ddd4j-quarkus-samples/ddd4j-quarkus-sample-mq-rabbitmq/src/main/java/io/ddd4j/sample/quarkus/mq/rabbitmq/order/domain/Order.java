@@ -81,30 +81,47 @@ public class Order {
      * 获取标识。
      * @return 标识
      */
-    public String getId() { return id; }
+    public String getId() {
+        return id;
+    }
+
     /**
      * 获取订单编号。
      * @return 订单编号
      */
-    public String getOrderNo() { return orderNo; }
+    public String getOrderNo() {
+        return orderNo;
+    }
+
     /**
      * 获取买家标识。
      * @return 买家标识
      */
-    public String getBuyerId() { return buyerId; }
+    public String getBuyerId() {
+        return buyerId;
+    }
+
     /**
      * 获取买家名称。
      * @return 买家名称
      */
-    public String getBuyerName() { return buyerName; }
+    public String getBuyerName() {
+        return buyerName;
+    }
+
     /**
      * 获取状态。
      * @return 状态
      */
-    public OrderStatus getStatus() { return status; }
+    public OrderStatus getStatus() {
+        return status;
+    }
+
     /**
      * 获取总数金额。
      * @return 总数金额
      */
-    public BigDecimal getTotalAmount() { return totalAmount; }
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
 }

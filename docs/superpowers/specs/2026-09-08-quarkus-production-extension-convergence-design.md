@@ -9,9 +9,11 @@
 
 ## 1. 背景
 
-`ddd4j` 主仓已经承担 DDD、CQRS、Repository、EventStore、Context、SPI 生命周期、框架中立 Web/MQ/Auth/Data 契约及通用 Quarkus runtime。`ddd4j-quarkus` 不应复制这些业务语义，而应成为可被业务项目稳定消费的 Quarkus 集成产品层。
+`ddd4j` 主仓已经承担 DDD、CQRS、Repository、EventStore、Context、SPI 生命周期、框架中立 Web/MQ/Auth/Data 契约及通用 Quarkus
+runtime。`ddd4j-quarkus` 不应复制这些业务语义，而应成为可被业务项目稳定消费的 Quarkus 集成产品层。
 
-当前仓库已经具备 BOM、Dependencies、Parent、Data、MQ、Auth、Web、Extensions 和 Samples 等模块骨架，MQ/Testcontainers 及 Panache EventStore 也有真实行为测试。但源码审计发现，下列结论仍不能成立：
+当前仓库已经具备 BOM、Dependencies、Parent、Data、MQ、Auth、Web、Extensions 和 Samples 等模块骨架，MQ/Testcontainers 及 Panache
+EventStore 也有真实行为测试。但源码审计发现，下列结论仍不能成立：
 
 1. 不能把带 CDI Bean 的普通 JAR 等同于生产级 Quarkus Extension。
 2. 不能把模块存在、编译成功或当前 reactor 中的 `@QuarkusTest` 成功等同于外部消费者可发现、可覆盖、可用于 Native Image。
@@ -68,13 +70,13 @@ flowchart LR
 
 ### 2.1 所有权边界
 
-| 层 | 拥有内容 | 不拥有内容 |
-|---|---|---|
-| `ddd4j` | 领域模型、SPI、Context、Repository/EventStore/MQ/Auth/Web 通用语义、通用 Quarkus runtime | ddd4j-quarkus 的 BOM、Parent、扩展描述符和消费方矩阵 |
-| `ddd4j-boot` | Spring Boot 自动装配及其能力契约参考 | Quarkus 实现形态 |
-| `ddd4j-quarkus` runtime | 最小运行时代码、ConfigMapping、Recorder、CDI Bean、HealthCheck | BuildStep、Jandex 扫描器、deployment 依赖 |
-| `ddd4j-quarkus` deployment | BuildStep、构建期索引、反射/资源注册、capability 冲突校验 | 业务运行时 API |
-| integration tests | 发布消费者、Dev Mode、Native、broker、组合冲突验证 | 生产实现 |
+| 层                         | 拥有内容                                                                                 | 不拥有内容                                           |
+|----------------------------|------------------------------------------------------------------------------------------|------------------------------------------------------|
+| `ddd4j`                    | 领域模型、SPI、Context、Repository/EventStore/MQ/Auth/Web 通用语义、通用 Quarkus runtime | ddd4j-quarkus 的 BOM、Parent、扩展描述符和消费方矩阵 |
+| `ddd4j-boot`               | Spring Boot 自动装配及其能力契约参考                                                     | Quarkus 实现形态                                     |
+| `ddd4j-quarkus` runtime    | 最小运行时代码、ConfigMapping、Recorder、CDI Bean、HealthCheck                           | BuildStep、Jandex 扫描器、deployment 依赖            |
+| `ddd4j-quarkus` deployment | BuildStep、构建期索引、反射/资源注册、capability 冲突校验                                | 业务运行时 API                                       |
+| integration tests          | 发布消费者、Dev Mode、Native、broker、组合冲突验证                                       | 生产实现                                             |
 
 `ddd4j-boot` 是语义参考，不是逐类复制模板。对齐标准是：激活条件、默认值、业务覆盖、生命周期、失败语义和外部可观察行为一致。
 
@@ -84,16 +86,19 @@ flowchart LR
 
 ### P5-A：稳定 4.0.x 发布与消费基线
 
-目标：让 `feature/4.0.x` 在不依赖开发机历史缓存、不修改 ddd4j 检出的前提下，使用已发布的 ddd4j `3.0.x.20260630-SNAPSHOT` 完成 JVM 构建、关键消费契约和 GitHub Actions。
+目标：让 `feature/4.0.x` 在不依赖开发机历史缓存、不修改 ddd4j 检出的前提下，使用已发布的 ddd4j `3.0.x.20260630-SNAPSHOT` 完成
+JVM 构建、关键消费契约和 GitHub Actions。
 
 范围：
 
 - 审查并纳入当前未提交的版本、BOM、Web consumer 和 License E2E 候选改动。
-- 统一 `revision=4.0.x.20260630-SNAPSHOT`、`ddd4j.version=3.0.x.20260630-SNAPSHOT`、Quarkus `3.38.2`、Java 21、Maven Model 4.1.0。
+- 统一 `revision=4.0.x.20260630-SNAPSHOT`、`ddd4j.version=3.0.x.20260630-SNAPSHOT`、Quarkus `3.38.2`、Java 21、Maven Model
+  4.1.0。
 - BOM/Dependencies 管理 `ddd4j-runtime-quarkus`、`ddd4j-web-quarkus`、`ddd4j-extension-license`，叶模块不重复写版本。
 - Web consumer 测试必须证明主仓 Filter 被外部依赖发现，并完成 tenant/request-id 闭环。
 - License 测试必须在 Quarkus Bean 创建前准备真实证书，验证签发、安装和验签。
-- CI 不再用 `sed` 删除 ddd4j 聚合模块。正常 PR gate 直接消费已发布 snapshot；源码兼容验证作为独立手动或定时 job，并且不得修改检出源码。
+- CI 不再用 `sed` 删除 ddd4j 聚合模块。正常 PR gate 直接消费已发布 snapshot；源码兼容验证作为独立手动或定时
+  job，并且不得修改检出源码。
 - `MAVEN_SETTINGS_XML` 缺失时 fail-fast；凭据和 settings 内容不得输出。
 - Maven 4 对阿里云发布/拉取使用已验证的 Wagon transport，避免首次 metadata 404 被错误解释为致命 RFC 9457 payload。
 
@@ -116,7 +121,8 @@ flowchart LR
 
 1. 当前工作区候选修改逐文件审查，无用户修改被覆盖。
 2. 新鲜临时 Maven 仓库可解析所有 ddd4j `3.0.x.20260630-SNAPSHOT` 必需 POM/JAR。
-3. `ddd4j-quarkus-web` consumer test 的 RED 原因是主仓 Filter 未发现或上下文未传播，GREEN 时同时断言 tenant 与非空 request-id。
+3. `ddd4j-quarkus-web` consumer test 的 RED 原因是主仓 Filter 未发现或上下文未传播，GREEN 时同时断言 tenant 与非空
+   request-id。
 4. License E2E 验证 `isInstallSuccess()` 和 `verify()`。
 5. `./mvnw -B clean verify -Denforcer.skip=true` 完成，并分别统计 tests/failures/errors/skipped。
 6. `actionlint` 通过；CI 不包含修改 ddd4j checkout 的 `sed`。
@@ -144,8 +150,10 @@ flowchart LR
 
 - Repository 以聚合根类型为 key 注册，禁止使用 Repository 实现类作为 model type。
 - 测试覆盖 `register(Order.class, repository)` 到 `repository(Order.class)` 的闭环及 shutdown 清理。
-- data-external 提供 ExternalProperties、RegionCache、IpRegion、Pconline/Baidu/Nested、Weather、GlobalSequence 的 Quarkus 等价装配和覆盖语义。
-- data-logs 实际暴露日志 provider/interceptor；若 Quarkus 不支持现有 AspectJ 激活方式，则明确采用 CDI interceptor 或删除虚假模块声明。
+- data-external 提供 ExternalProperties、RegionCache、IpRegion、Pconline/Baidu/Nested、Weather、GlobalSequence 的 Quarkus
+  等价装配和覆盖语义。
+- data-logs 实际暴露日志 provider/interceptor；若 Quarkus 不支持现有 AspectJ 激活方式，则明确采用 CDI interceptor
+  或删除虚假模块声明。
 - datascope 使用可覆盖的默认 Bean，并测试默认、disabled、custom override。
 - Panache EventStore 与主仓确定唯一实现所有权，不保留两套可漂移语义。
 
@@ -170,7 +178,8 @@ flowchart LR
 必须满足：
 
 - `feature/3.3.x`：ddd4j 2.0.x、Quarkus 3.37.4、Java 17、Maven Model 4.0.0、`modules/module`、Testcontainers 2.0.5。
-- `feature/4.0.x`：ddd4j 3.0.x、Quarkus 3.38.2、Java 21、Maven Model 4.1.0；`subprojects/subproject` 等待 Quarkus WorkspaceLoader 上游修复。
+- `feature/4.0.x`：ddd4j 3.0.x、Quarkus 3.38.2、Java 21、Maven Model 4.1.0；`subprojects/subproject` 等待 Quarkus
+  WorkspaceLoader 上游修复。
 - 修复 Java 17 分支的 zxing artifact 字节码线，禁止用 Java 21 构件冒充 2.0.x。
 - 两分支分别执行 JVM、consumer、broker、Dev Mode、Native 关键路径。
 - publication 必须从新鲜仓库回拉验证，不以 deploy exit code单独作为完成证据。
@@ -187,7 +196,8 @@ flowchart LR
 - `ddd4j-quarkus-dependencies/pom.xml`
 - `ddd4j-quarkus-web/pom.xml`
 - `ddd4j-quarkus-auth/ddd4j-quarkus-auth-license/pom.xml`
-- `ddd4j-quarkus-auth/ddd4j-quarkus-auth-license/src/test/java/io/ddd4j/quarkus/auth/license/LicenseEnabledEndToEndQuarkusTest.java`
+-
+`ddd4j-quarkus-auth/ddd4j-quarkus-auth-license/src/test/java/io/ddd4j/quarkus/auth/license/LicenseEnabledEndToEndQuarkusTest.java`
 - `ddd4j-quarkus-web/src/test/java/io/ddd4j/quarkus/web/Ddd4jQuarkusWebConsumerTest.java`
 - `ddd4j-quarkus-web/src/test/java/io/ddd4j/quarkus/web/Ddd4jQuarkusWebContractResource.java`
 
@@ -204,16 +214,16 @@ flowchart LR
 
 P5-A 的唯一有效版本矩阵：
 
-| 项目 | 值 |
-|---|---|
-| ddd4j-quarkus revision | `4.0.x.20260630-SNAPSHOT` |
-| ddd4j | `3.0.x.20260630-SNAPSHOT` |
-| Quarkus BOM/plugin | `3.38.2` |
-| Testcontainers | `2.0.5` |
-| Java | 21 |
-| Maven | 4.0.0-rc-6 |
-| Model | 4.1.0 |
-| 聚合 | 临时 `modules/module`，等待 Quarkus 上游修复 |
+| 项目                   | 值                                           |
+|------------------------|----------------------------------------------|
+| ddd4j-quarkus revision | `4.0.x.20260630-SNAPSHOT`                    |
+| ddd4j                  | `3.0.x.20260630-SNAPSHOT`                    |
+| Quarkus BOM/plugin     | `3.38.2`                                     |
+| Testcontainers         | `2.0.5`                                      |
+| Java                   | 21                                           |
+| Maven                  | 4.0.0-rc-6                                   |
+| Model                  | 4.1.0                                        |
+| 聚合                   | 临时 `modules/module`，等待 Quarkus 上游修复 |
 
 依赖解析分三层验证：
 
@@ -319,15 +329,15 @@ flowchart TD
 
 ## 7. 风险与回滚
 
-| 风险 | 控制方式 |
-|---|---|
-| 当前脏文件与实施重叠 | 逐文件最小补丁；提交前列出精确文件 |
-| runtime/deployment 拆分破坏坐标 | runtime artifactId 保持消费者坐标；新增 `-deployment` artifact |
-| 多 Auth Bean 导致 CDI 歧义 | deployment capability 冲突校验 + 独立组合测试 |
-| MQ fail-fast 影响现有 optional 用户 | 新增显式 required 配置，默认保持兼容，readiness 反映降级 |
-| 主仓/Quarkus EventStore 双实现漂移 | 先确定唯一所有权，再删除重复；行为契约先锁定 |
-| Maven 4/Quarkus WorkspaceLoader 阻塞 | 保持 Model 4.1.0 + modules 临时基线，不虚报 subprojects 完成 |
-| 发布产物依赖缺失 | 空 repo 消费门禁早于 deploy，并在 deploy 后重复验证 |
+| 风险                                 | 控制方式                                                       |
+|--------------------------------------|----------------------------------------------------------------|
+| 当前脏文件与实施重叠                 | 逐文件最小补丁；提交前列出精确文件                             |
+| runtime/deployment 拆分破坏坐标      | runtime artifactId 保持消费者坐标；新增 `-deployment` artifact |
+| 多 Auth Bean 导致 CDI 歧义           | deployment capability 冲突校验 + 独立组合测试                  |
+| MQ fail-fast 影响现有 optional 用户  | 新增显式 required 配置，默认保持兼容，readiness 反映降级       |
+| 主仓/Quarkus EventStore 双实现漂移   | 先确定唯一所有权，再删除重复；行为契约先锁定                   |
+| Maven 4/Quarkus WorkspaceLoader 阻塞 | 保持 Model 4.1.0 + modules 临时基线，不虚报 subprojects 完成   |
+| 发布产物依赖缺失                     | 空 repo 消费门禁早于 deploy，并在 deploy 后重复验证            |
 
 任何阶段失败均回滚到上一阶段已验证提交；不通过跳过测试、扩大 Disabled 或依赖本地缓存获得绿灯。
 
@@ -351,17 +361,17 @@ flowchart TD
 ddd4j `3.0.x.20260630-SNAPSHOT`、Quarkus `3.38.2`、Testcontainers `2.0.5`、
 Java `21.0.12.1`、Maven `4.0.0-rc-6`、Model `4.1.0` + `modules/module`。
 
-| 门禁 | 实际命令或检查 | 观察结果 |
-|---|---|---|
-| 新空仓远端消费 | `./mvnw -B -U -f .github/maven/ddd4j-remote-consumer/pom.xml -Dmaven.repo.local=/tmp/ddd4j-p5a-final.xcqRbQ -Dmaven.resolver.transport=wagon dependency:go-offline` | exit 0，BUILD SUCCESS，1:39；目录由本轮 mktemp 新建 |
-| Web | `./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-web -am test` | exit 0，4 tests，0 failures/errors/skips，8.307 秒 |
-| License | `./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-auth/ddd4j-quarkus-auth-license -am test` | exit 0，3 tests，0 failures/errors/skips，8.147 秒 |
-| 完整 JVM reactor | `./mvnw -B clean verify -Denforcer.skip=true` | exit 0，62/62 模块 SUCCESS，9:57；02:09:38 +08:00 完成 |
-| XML 汇总 | 遍历 `**/target/{surefire,failsafe}-reports/TEST-*.xml` 并累加 suite 属性 | 47 suites、141 tests、0 failures、0 errors、3 skipped；全部 Surefire，0 Failsafe suites |
-| Workflow | `actionlint .github/workflows/ci.yml` | exit 0 |
-| 过期配置/源码改写 | 扫描指定 POM 与 `.github` 的过期 snapshot、旧 action、`sed -i`、lint 占位 | 无命中 |
-| Maven 聚合 | 指定 6 个 POM 的文本扫描及 XML 解析 | 文本仅命中根 POM:47 的说明注释；实际 subprojects/subproject 元素为 0 |
-| 文档格式 | `git diff --check` | exit 0 |
+| 门禁              | 实际命令或检查                                                                                                                                                      | 观察结果                                                                                |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
+| 新空仓远端消费    | `./mvnw -B -U -f .github/maven/ddd4j-remote-consumer/pom.xml -Dmaven.repo.local=/tmp/ddd4j-p5a-final.xcqRbQ -Dmaven.resolver.transport=wagon dependency:go-offline` | exit 0，BUILD SUCCESS，1:39；目录由本轮 mktemp 新建                                     |
+| Web               | `./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-web -am test`                                                                                                     | exit 0，4 tests，0 failures/errors/skips，8.307 秒                                      |
+| License           | `./mvnw -B -Denforcer.skip=true -pl ddd4j-quarkus-auth/ddd4j-quarkus-auth-license -am test`                                                                         | exit 0，3 tests，0 failures/errors/skips，8.147 秒                                      |
+| 完整 JVM reactor  | `./mvnw -B clean verify -Denforcer.skip=true`                                                                                                                       | exit 0，62/62 模块 SUCCESS，9:57；02:09:38 +08:00 完成                                  |
+| XML 汇总          | 遍历 `**/target/{surefire,failsafe}-reports/TEST-*.xml` 并累加 suite 属性                                                                                           | 47 suites、141 tests、0 failures、0 errors、3 skipped；全部 Surefire，0 Failsafe suites |
+| Workflow          | `actionlint .github/workflows/ci.yml`                                                                                                                               | exit 0                                                                                  |
+| 过期配置/源码改写 | 扫描指定 POM 与 `.github` 的过期 snapshot、旧 action、`sed -i`、lint 占位                                                                                           | 无命中                                                                                  |
+| Maven 聚合        | 指定 6 个 POM 的文本扫描及 XML 解析                                                                                                                                 | 文本仅命中根 POM:47 的说明注释；实际 subprojects/subproject 元素为 0                    |
+| 文档格式          | `git diff --check`                                                                                                                                                  | exit 0                                                                                  |
 
 新仓含 runtime-quarkus、web-quarkus、extension-license 的 POM/JAR 时间戳
 `3.0.x.20260630-20260908.152610-5`，dependencies BOM 为
@@ -374,11 +384,11 @@ Authorization 已清理。License 在 CDI 创建前完成真实签发，断言 `
 
 三项 skip 均保留在 141 tests 内：
 
-| 测试类（包均以 `io.ddd4j.quarkus.` 开头） | 方法 | XML 原因 |
-|---|---|---|
-| `mq.mqttmica.MicaMqttQuarkusIntegrationTest` | `shouldPublishAndConsumeOrderCreatedEventEndToEnd` | mica-mqtt AIO 在 macOS arm64 的已知缺陷，对齐 javalin Ddd4jMicaMqttMqIT 先例；CI linux 可移除 |
-| `mq.ons.OnsQuarkusIntegrationTest` | `shouldPublishAndConsumeOrderCreatedEventEndToEnd` | ONS 商业协议无 Testcontainers 镜像，对齐 javalin Ddd4jOnsMqIT 先例 |
-| `auth.security.SecurityQuarkusConfigTest` | `subjectProviderExposedAsCdiBeanAndRegisteredInSubjectKit` | Module is deprecated since 4.1.0; see docs/MIGRATION-auth-security-to-satoken.md |
+| 测试类（包均以 `io.ddd4j.quarkus.` 开头）    | 方法                                                       | XML 原因                                                                                      |
+|----------------------------------------------|------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `mq.mqttmica.MicaMqttQuarkusIntegrationTest` | `shouldPublishAndConsumeOrderCreatedEventEndToEnd`         | mica-mqtt AIO 在 macOS arm64 的已知缺陷，对齐 javalin Ddd4jMicaMqttMqIT 先例；CI linux 可移除 |
+| `mq.ons.OnsQuarkusIntegrationTest`           | `shouldPublishAndConsumeOrderCreatedEventEndToEnd`         | ONS 商业协议无 Testcontainers 镜像，对齐 javalin Ddd4jOnsMqIT 先例                            |
+| `auth.security.SecurityQuarkusConfigTest`    | `subjectProviderExposedAsCdiBeanAndRegisteredInSubjectKit` | Module is deprecated since 4.1.0; see docs/MIGRATION-auth-security-to-satoken.md              |
 
 TDMQ 的测试内存 fallback 不属于 skip，但不能计为腾讯云服务验收。
 本轮仍观察到上游 effective-model 警告、release 仓 metadata 的缓存 RFC9457 transfer 警告、

@@ -41,20 +41,15 @@ public class Ddd4jQuarkusTestContainersExtension implements ExecutionCondition {
 
     private static final String DISABLE_REASON = "Docker daemon not reachable";
 
-    /** JVM 级缓存：探测有副作用与耗时，一次即可。 */
+    /**
+     * JVM 级缓存：探测有副作用与耗时，一次即可。
+     */
     private static volatile Boolean dockerAvailable;
 
-    /** 探测失败时的根因（用于 disabled reason 排障）。 */
+    /**
+     * 探测失败时的根因（用于 disabled reason 排障）。
+     */
     private static volatile String failureMessage;
-
-    @Override
-    public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-        if (dockerAvailable()) {
-            return ConditionEvaluationResult.enabled("Docker daemon reachable");
-        }
-        return ConditionEvaluationResult.disabled(DISABLE_REASON
-                + (failureMessage == null ? "" : ": " + failureMessage));
-    }
 
     /**
      * 探测 Docker daemon 是否可达（{@code docker info} 语义），结果按 JVM 缓存。
@@ -107,5 +102,14 @@ public class Ddd4jQuarkusTestContainersExtension implements ExecutionCondition {
                 process.destroy();
             }
         }
+    }
+
+    @Override
+    public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
+        if (dockerAvailable()) {
+            return ConditionEvaluationResult.enabled("Docker daemon reachable");
+        }
+        return ConditionEvaluationResult.disabled(DISABLE_REASON
+                + (failureMessage == null ? "" : ": " + failureMessage));
     }
 }
