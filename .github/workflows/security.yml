@@ -29,7 +29,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Verify workflow structure without secrets
         run: ruby scripts/verify-security-workflow.rb
       - uses: reviewdog/action-actionlint@0226391db11971cf3c42df3c907fd647e8dc1673 # v1
@@ -55,7 +55,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Verify trusted workflow structure
         run: ruby scripts/verify-security-workflow.rb
       - name: Run privileged aggregate security scan
@@ -85,7 +85,7 @@ jobs:
             java: '21'
             suffix: scheduled-4.0.x
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Require protected maintenance branch
         env:
           GH_TOKEN: ${{ github.token }}
@@ -93,7 +93,7 @@ jobs:
         run: |
           encoded_branch="${TARGET_BRANCH//\//%2F}"
           test "$(gh api "repos/$GITHUB_REPOSITORY/branches/$encoded_branch" --jq .protected)" = true
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ matrix.branch }}
       - name: Verify trusted workflow structure
