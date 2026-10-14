@@ -79,4 +79,4 @@ secret 缺失时 CI **直接失败**（fail-fast）并输出修复指引，不�
 </parent>
 ```
 
-宝港湾 Quarkus 服务：`bmgw-quarkus-parent` → `ddd4j-quarkus-parent`。
+旧组件库 Quarkus 服务：`legacy-quarkus-parent` → `ddd4j-quarkus-parent`。

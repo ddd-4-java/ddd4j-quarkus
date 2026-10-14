@@ -606,7 +606,7 @@ git commit -m "docs: record feature 3.3.x P5-A evidence"
 - [x] **Step 9: Prepare the authorization checkpoint**
 
 Report every local commit, exact status, remote resolution, both JDK reactor results, XML totals/skips, warnings and
-review findings. Do not push GitHub/Codeup or run Maven deploy until separately authorized.
+review findings. Do not push GitHub/内网平台 or run Maven deploy until separately authorized.
 
 ---
 

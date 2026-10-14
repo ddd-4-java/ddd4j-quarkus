@@ -248,8 +248,8 @@ stream，不再依赖 core NATS fallback；TDMQ 未注入 BrokerPublisher/Broker
 JetStream 持久化、TDMQ 云服务或所有 broker 生产能力验收。
 
 GitHub-hosted Actions 尚未推送并实际执行验证。Enforcer（本阶段显式 skip）、Native、Dev Mode、deploy、云服务、P5-B–E、master
-和生产验收均不在本次完成声明内。GitHub/Codeup push 与 Maven deploy 需要分别授权，未执行。独立克隆的 `origin` 是本机源仓库，不能将其
-tracking 状态解释为 GitHub/Codeup 同步证据。
+和生产验收均不在本次完成声明内。GitHub/内网平台 push 与 Maven deploy 需要分别授权，未执行。独立克隆的 `origin` 是本机源仓库，不能将其
+tracking 状态解释为 GitHub/内网平台 同步证据。
 
 本次原始日志和 XML 归档目录为 `/tmp/ddd4j-p5a-33-clone-task5.cECCPQ`。这是本机临时证据，未作为公开 CI artifact 发布；日志
 `remote-consumer.log`、`focused-web.log`、`focused-license.log` 与各自 XML 可用于复核。`focused-license/xml` 包含此前 Web
