@@ -18,6 +18,12 @@
     }
   },
   "fixed_properties": {},
-  "fixed_dependencies": {},
+  "fixed_dependencies": {
+    "io.github.easy4j:easyexcel": "5.0.1",
+    "io.github.easy4j:easyexcel-parent": "5.0.1",
+    "io.github.easy4j:easyexcel-core": "5.0.1",
+    "io.github.easy4j:easyexcel-support": "5.0.1",
+    "io.github.easy4j:easyexcel-markdown": "5.0.1"
+  },
   "cvss_threshold": 7
 }

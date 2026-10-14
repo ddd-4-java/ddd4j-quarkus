@@ -198,7 +198,7 @@
             <id>ddd4j-excel</id>
             <dependencies>
                 <dependency>
-                    <groupId>com.alibaba</groupId>
+                    <groupId>io.github.easy4j</groupId>
                     <artifactId>easyexcel</artifactId>
                 </dependency>
             </dependencies>
@@ -262,7 +262,7 @@
                 </dependency>
                 <!-- 业务通用 -->
                 <dependency>
-                    <groupId>com.alibaba</groupId>
+                    <groupId>io.github.easy4j</groupId>
                     <artifactId>easyexcel</artifactId>
                 </dependency>
                 <!-- ddd4j 模块 -->
