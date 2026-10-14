@@ -165,6 +165,7 @@ CLAUDE.md
 ### Development tools ###
 .fastRequest
 *.json
+!/.github/dependency-policy.json
 !cloud-agents-server/agents/maternal-recovery.json
 qodana.yaml
 

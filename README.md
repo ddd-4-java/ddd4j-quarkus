@@ -94,6 +94,12 @@ secret 缺失时 CI **直接失败**（fail-fast）并输出修复指引，不�
 两个 Maven job 都从新空仓解析已发布 ddd4j。CI 已移除 ddd4j 源码安装和源码改写步骤，
 workflow-lint 实际调用 actionlint。这里描述的是已提交的 CI 设计，远端运行结果需另行验证。
 
+## 每周依赖维护
+
+每周全分支依赖维护（固定版本、排除配置与启用步骤）见
+[依赖维护说明](docs/DEPENDENCY-MAINTENANCE.md)。默认每周一北京时间 10:17 检查，
+通过更新 PR 追踪最新稳定版本；需合入默认分支并配置 `RENOVATE_TOKEN` 后启用。
+
 ## 业务项目 parent
 
 ```xml
