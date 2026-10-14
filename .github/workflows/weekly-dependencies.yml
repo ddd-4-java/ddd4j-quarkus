@@ -1,0 +1,209 @@
+name: Weekly dependency maintenance
+
+on:
+  schedule:
+    # 每周一北京时间 10:17；GitHub 从默认分支触发并枚举全部分支。
+    - cron: '17 2 * * 1'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: '检查、临时升级、测试和扫描，但不创建 PR'
+        type: boolean
+        default: true
+  push:
+    paths:
+      - '.github/workflows/weekly-dependencies.yml'
+      - '.github/dependency-policy.json'
+      - 'scripts/dependencies/**'
+  pull_request:
+    paths:
+      - '.github/workflows/weekly-dependencies.yml'
+      - '.github/dependency-policy.json'
+      - 'scripts/dependencies/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: weekly-dependencies-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python3 -m unittest discover -s scripts/dependencies/tests -v
+      - name: Validate branch policy
+        env:
+          TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          python3 - <<'PY'
+          import importlib.util, json, os
+          spec = importlib.util.spec_from_file_location('checker', 'scripts/dependencies/check_dependencies.py')
+          checker = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(checker)
+          checker.resolve_policy(json.load(open('.github/dependency-policy.json')), os.environ['TARGET_BRANCH'])
+          PY
+
+  branches:
+    needs: validate
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      matrix: ${{ steps.discover.outputs.matrix }}
+    steps:
+      - name: Paginate all repository branches and capture immutable SHA
+        id: discover
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branches = await github.paginate(github.rest.repos.listBranches, {
+              ...context.repo, per_page: 100
+            });
+            const targets = branches.filter(b => !b.name.startsWith('automation/dependencies/'));
+            if (!targets.length || targets.length > 256) {
+              throw new Error(`Expected 1..256 target branches, received ${targets.length}`);
+            }
+            const include = targets.map((b, id) => ({branch: b.name, sha: b.commit.sha, id}));
+            core.setOutput('matrix', JSON.stringify({include}));
+            await core.summary.addHeading('Dependency branch coverage')
+              .addTable([['Branch', 'SHA'], ...include.map(b => [b.branch, b.sha])]).write();
+
+  check:
+    needs: branches
+    name: Dependencies (${{ matrix.branch }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write
+      pull-requests: write
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.branches.outputs.matrix) }}
+    env:
+      TARGET_BRANCH: ${{ matrix.branch }}
+      TARGET_SHA: ${{ matrix.sha }}
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+      MAVEN_SETTINGS_XML: ${{ secrets.MAVEN_SETTINGS_XML }}
+    steps:
+      - name: Checkout validated controller
+        uses: actions/checkout@v4
+        with:
+          path: controller
+          persist-credentials: false
+      - name: Checkout branch at discovered SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.sha }}
+          path: project
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Read target toolchain
+        id: runtime
+        run: |
+          python3 controller/scripts/dependencies/check_dependencies.py --root project --runtime >> "$GITHUB_OUTPUT"
+          key=$(printf '%s' "$TARGET_BRANCH" | sha256sum | cut -c1-16)
+          echo "branch_key=$key" >> "$GITHUB_OUTPUT"
+      - name: Install branch build JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ steps.runtime.outputs.java }}
+          overwrite-settings: false
+      - name: Preserve branch build JDK
+        run: echo "BUILD_JAVA_HOME=$JAVA_HOME" >> "$GITHUB_ENV"
+      - name: Install scanner JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          overwrite-settings: false
+      - name: Install fallback Maven with checksum verification
+        env:
+          MAVEN_VERSION: ${{ steps.runtime.outputs.maven }}
+        run: |
+          set -euo pipefail
+          package="apache-maven-${MAVEN_VERSION}-bin.tar.gz"
+          base="https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/${MAVEN_VERSION}"
+          curl --fail --silent --show-error --retry 3 "$base/$package" -o "$RUNNER_TEMP/$package"
+          checksum=$(curl --fail --silent --show-error --retry 3 "$base/$package.sha512")
+          echo "$checksum  $RUNNER_TEMP/$package" | sha512sum --check
+          tar -xzf "$RUNNER_TEMP/$package" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/apache-maven-${MAVEN_VERSION}/bin" >> "$GITHUB_PATH"
+      - name: Configure branch Maven repositories
+        run: |
+          python3 - <<'PY'
+          import importlib.util, os
+          from pathlib import Path
+          spec = importlib.util.spec_from_file_location('checker', 'controller/scripts/dependencies/check_dependencies.py')
+          checker = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(checker)
+          checker.configure_settings(os.environ.get('MAVEN_SETTINGS_XML', ''), Path.home() / '.m2/settings.xml')
+          PY
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/dependency-check
+          key: dependency-check-13-${{ matrix.id }}-${{ github.run_id }}
+          restore-keys: dependency-check-13-${{ matrix.id }}-
+      - name: Scan baseline, apply branch policy, build and scan candidate
+        id: check
+        run: |
+          python3 controller/scripts/dependencies/check_dependencies.py \
+            --root project --policy project/.github/dependency-policy.json \
+            --branch "$TARGET_BRANCH" --reports "$RUNNER_TEMP/dependency-reports"
+      - name: Create upgrade PR only after candidate checks pass
+        if: ${{ !cancelled() && !inputs.dry_run && steps.check.outputs.pr_ready == 'true' }}
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.DEPENDENCY_UPDATE_TOKEN || secrets.RENOVATE_TOKEN || github.token }}
+          path: project
+          base: ${{ matrix.branch }}
+          branch: automation/dependencies/${{ steps.runtime.outputs.branch_key }}
+          add-paths: |
+            pom.xml
+            **/pom.xml
+          commit-message: 'chore(deps): apply weekly branch dependency policy'
+          title: 'chore(deps): weekly dependency updates for ${{ matrix.branch }}'
+          body: |
+            使用目标分支的 dependency-policy.json：固定版本优先，排除项保留，其余更新到最新稳定版本。
+            候选 Maven install（启用单元测试）和非空 OWASP 扫描报告通过；不自动合并。
+            原依赖漏洞或构建错误仍保留失败状态。Enforcer 兼容性门禁未计入本次验证。
+            报告：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      - name: Record branch SHA and outcome
+        if: always()
+        env:
+          CHECK_STATUS: ${{ job.status }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/dependency-reports"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = Path(os.environ['RUNNER_TEMP']) / 'dependency-reports'
+          data = {key: os.environ.get(key, '') for key in ('TARGET_BRANCH', 'TARGET_SHA', 'CHECK_STATUS')}
+          (report / 'branch.json').write_text(json.dumps(data, indent=2))
+          result = report / 'result.json'
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
+              out.write('```json\n' + json.dumps(data, indent=2) + '\n```\n')
+              out.write('```json\n' + (result.read_text() if result.exists() else '{"status":"setup-failed"}') + '\n```\n')
+          PY
+      - name: Upload evidence even after failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependencies-${{ matrix.id }}-${{ matrix.sha }}
+          path: |
+            ${{ runner.temp }}/dependency-reports/
+            project/**/target/surefire-reports/
+          if-no-files-found: error
+          retention-days: 30
