@@ -26,18 +26,30 @@ public abstract class AbstractTestContainerFixture {
     private Map<String, String> runningProperties;
 
     /**
+     * 无参构造函数，供子类继承实例化。
+     */
+    protected AbstractTestContainerFixture() {
+    }
+
+    /**
      * 子类必须返回具体的容器实例。
+     *
+     * @return 待启停的容器实例
      */
     protected abstract GenericContainer<?> container();
 
     /**
      * 子类必须返回容器启动后注入到 application.properties 的配置项。
      * 例如 Kafka fixture 返回 {@code {"ddd4j.mq.kafka.bootstrap-servers", "PLAINTEXT://..."}}。
+     *
+     * @return 注入到 config 的键值对
      */
     protected abstract Map<String, String> exposedProperties();
 
     /**
      * 子类可选提供等待策略（默认 {@link WaitStrategy} 由 container 自身决定）。
+     *
+     * @return 等待策略，返回 {@code null} 表示由容器自身决定
      */
     protected WaitStrategy waitStrategy() {
         return null;
@@ -45,12 +57,16 @@ public abstract class AbstractTestContainerFixture {
 
     /**
      * 容器镜像名。
+     *
+     * @return 容器镜像名
      */
     protected abstract DockerImageName dockerImageName();
 
     /**
      * 启动容器并返回注入到 application.properties 的配置项。
      * 等价于 Quarkus 的 {@code QuarkusTestResourceLifecycleManager#start}，但保持在 main scope。
+     *
+     * @return 注入到 config 的键值对
      */
     public synchronized Map<String, String> start() {
         if (Objects.nonNull(runningProperties)) {
@@ -95,6 +111,10 @@ public abstract class AbstractTestContainerFixture {
 
     /**
      * 实用方法：把容器第一个映射端口转为字符串。
+     *
+     * @param container    目标容器
+     * @param internalPort 容器内端口
+     * @return 映射宿主机端口字符串，未映射时返回 {@code null}
      */
     protected String firstMappedPort(GenericContainer<?> container, int internalPort) {
         Integer mapped = container.getMappedPort(internalPort);
@@ -103,6 +123,10 @@ public abstract class AbstractTestContainerFixture {
 
     /**
      * 实用方法：把容器 host:port 组合为字符串。
+     *
+     * @param container    目标容器
+     * @param internalPort 容器内端口
+     * @return {@code host:port} 形式的连接地址
      */
     protected String hostPort(GenericContainer<?> container, int internalPort) {
         return container.getHost() + ":" + firstMappedPort(container, internalPort);

@@ -39,6 +39,11 @@ public class OrderApplicationService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
 
+    /**
+     * 构造 OrderApplicationService 实例。
+     * @param orderRepository  订单仓储
+     * @param orderMapper  订单映射器
+     */
     @Inject
     public OrderApplicationService(OrderRepository orderRepository, OrderMapper orderMapper) {
         this.orderRepository = Objects.requireNonNull(orderRepository, "orderRepository must not be null");

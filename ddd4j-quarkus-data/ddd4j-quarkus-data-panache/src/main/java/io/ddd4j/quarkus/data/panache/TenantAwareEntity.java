@@ -47,6 +47,12 @@ import java.util.Map;
 @IdClass(TenantAwareId.class)
 public abstract class TenantAwareEntity extends TenantAwareEntityBase {
 
+    /**
+     * 无参构造函数。
+     */
+    public TenantAwareEntity() {
+    }
+
     private static final Logger logger = Logger.getLogger(TenantAwareEntity.class);
 
     /**

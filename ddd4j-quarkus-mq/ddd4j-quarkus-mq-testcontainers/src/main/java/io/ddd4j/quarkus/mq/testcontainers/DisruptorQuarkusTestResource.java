@@ -16,6 +16,12 @@ import java.util.Map;
  */
 public class DisruptorQuarkusTestResource extends AbstractTestContainerFixture {
 
+    /**
+     * 无参构造函数。
+     */
+    public DisruptorQuarkusTestResource() {
+    }
+
     @Override
     protected GenericContainer<?> container() {
         return null;

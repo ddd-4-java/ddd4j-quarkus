@@ -27,10 +27,22 @@ public class SnowflakeIdGenerator implements IdentifierGenerator {
 
     private static final SnowflakeIdGenerator INSTANCE = new SnowflakeIdGenerator();
 
+    /**
+     * 节点标识。
+     */
     private final int nodeId;
+    /**
+     * lastTimestamp 字段。
+     */
     private volatile long lastTimestamp = -1L;
+    /**
+     * sequence 字段。
+     */
     private volatile long sequence = 0L;
 
+    /**
+     * 构造 SnowflakeIdGenerator 实例。
+     */
     public SnowflakeIdGenerator() {
         this.nodeId = createNodeId();
     }

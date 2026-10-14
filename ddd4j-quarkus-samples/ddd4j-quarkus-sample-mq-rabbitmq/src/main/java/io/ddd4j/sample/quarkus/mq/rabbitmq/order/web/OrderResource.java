@@ -44,6 +44,10 @@ public class OrderResource {
 
     private final OrderApplicationService applicationService;
 
+    /**
+     * 构造 OrderResource 实例。
+     * @param applicationService  应用服务
+     */
     @Inject
     public OrderResource(OrderApplicationService applicationService) {
         this.applicationService = Objects.requireNonNull(applicationService, "applicationService must not be null");
@@ -261,6 +265,7 @@ public class OrderResource {
 
     /**
      * 错误响应 DTO。
+     * @param message  消息
      */
     public final static class ErrorResponse {
 
@@ -308,7 +313,19 @@ public class OrderResource {
      */
     @SuppressWarnings("unused")
     public static final class MqConstants {
+
+        /**
+         * 无参构造函数。
+         */
+        public MqConstants() {
+        }
+        /**
+         * 主题。
+         */
         public static final String TOPIC = OrderCreatedEvent.TOPIC;
+        /**
+         * 标签。
+         */
         public static final String TAG = OrderCreatedEvent.TAG;
     }
 }

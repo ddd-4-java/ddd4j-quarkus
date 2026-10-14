@@ -15,6 +15,10 @@ public final class QuarkusFileUploadAdapter implements ValidatableFile {
 
     private final FileUpload fileUpload;
 
+    /**
+     * 构造 QuarkusFileUploadAdapter 实例。
+     * @param fileUpload  文件上传
+     */
     public QuarkusFileUploadAdapter(FileUpload fileUpload) {
         this.fileUpload = Objects.requireNonNull(fileUpload, "fileUpload must not be null");
     }

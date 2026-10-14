@@ -35,6 +35,13 @@ import jakarta.inject.Singleton;
 public class Ddd4jSecurityQuarkusConfig {
 
     /**
+     * 无参构造函数。
+     */
+    public Ddd4jSecurityQuarkusConfig() {
+    }
+
+    /**
+     * @return 主题Provider
      * @deprecated use {@code ddd4j-quarkus-auth-satoken} module
      */
     @Deprecated(since = "4.1.0", forRemoval = true)

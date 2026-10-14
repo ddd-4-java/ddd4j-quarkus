@@ -27,6 +27,12 @@ import org.eclipse.microprofile.config.ConfigProvider;
 public class Ddd4jMQCdiProducer {
 
     /**
+     * 无参构造函数，供 CDI 容器实例化本生产者 Bean。
+     */
+    public Ddd4jMQCdiProducer() {
+    }
+
+    /**
      * 从 MicroProfile Config 构建 MQ 配置。
      *
      * <p>读取的关键配置项（与 ddd4j-mq-core 的 {@link MQProperties} 字段对齐）：

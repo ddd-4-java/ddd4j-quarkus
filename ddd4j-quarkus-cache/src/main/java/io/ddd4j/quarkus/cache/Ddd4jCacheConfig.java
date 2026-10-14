@@ -26,6 +26,7 @@ public interface Ddd4jCacheConfig {
      *
      * <p>Valid values map to {@link CacheKit.LocalCacheType}:
      * {@code CAFFEINE} (default), {@code GUAVA}, {@code HUTOOL}.
+     * @return 默认类型字符串内容
      */
     @WithName("default-type")
     @WithDefault("CAFFEINE")

@@ -29,6 +29,16 @@ import java.util.Map;
 @ApplicationScoped
 public class Ddd4jShiroQuarkusConfig {
 
+    /**
+     * 无参构造函数。
+     */
+    public Ddd4jShiroQuarkusConfig() {
+    }
+
+    /**
+     * 主题Provider。
+     * @return 主题Provider
+     */
     @Produces
     @Singleton
     public SubjectProvider subjectProvider() {
@@ -43,6 +53,12 @@ public class Ddd4jShiroQuarkusConfig {
     @Provider
     @Singleton
     public static class ShiroAuthenticationExceptionMapper implements ExceptionMapper<AuthenticationException> {
+
+        /**
+         * 无参构造函数。
+         */
+        public ShiroAuthenticationExceptionMapper() {
+        }
         @Override
         public Response toResponse(AuthenticationException ex) {
             return Response.status(Response.Status.UNAUTHORIZED)
@@ -57,6 +73,12 @@ public class Ddd4jShiroQuarkusConfig {
     @Provider
     @Singleton
     public static class ShiroAuthorizationExceptionMapper implements ExceptionMapper<AuthorizationException> {
+
+        /**
+         * 无参构造函数。
+         */
+        public ShiroAuthorizationExceptionMapper() {
+        }
         @Override
         public Response toResponse(AuthorizationException ex) {
             return Response.status(Response.Status.FORBIDDEN)

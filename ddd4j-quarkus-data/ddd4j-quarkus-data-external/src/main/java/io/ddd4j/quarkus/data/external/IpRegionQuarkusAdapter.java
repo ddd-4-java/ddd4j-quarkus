@@ -22,7 +22,14 @@ import jakarta.enterprise.inject.Produces;
 public class IpRegionQuarkusAdapter {
 
     /**
+     * 无参构造函数。
+     */
+    public IpRegionQuarkusAdapter() {
+    }
+
+    /**
      * 暴露兜底 IP 归属地查询 Template（never returns null）。
+     * @return ip区域模板
      */
     @Produces
     @ApplicationScoped

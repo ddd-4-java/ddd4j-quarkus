@@ -25,6 +25,12 @@ import org.jboss.logging.Logger;
 @Provider
 public class OrderExceptionMapper implements ExceptionMapper<IllegalArgumentException> {
 
+    /**
+     * 无参构造函数。
+     */
+    public OrderExceptionMapper() {
+    }
+
     private static final Logger log = Logger.getLogger(OrderExceptionMapper.class);
 
     @Override

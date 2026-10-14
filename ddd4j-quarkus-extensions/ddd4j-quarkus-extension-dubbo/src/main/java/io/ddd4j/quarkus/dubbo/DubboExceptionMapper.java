@@ -32,6 +32,12 @@ import org.slf4j.LoggerFactory;
 @Provider
 public class DubboExceptionMapper implements ExceptionMapper<RpcException> {
 
+    /**
+     * 无参构造函数。
+     */
+    public DubboExceptionMapper() {
+    }
+
     private static final Logger log = LoggerFactory.getLogger(DubboExceptionMapper.class);
 
     @Override

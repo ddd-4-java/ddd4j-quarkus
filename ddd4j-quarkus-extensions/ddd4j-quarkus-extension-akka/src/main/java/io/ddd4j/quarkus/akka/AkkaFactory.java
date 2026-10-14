@@ -14,6 +14,9 @@ import java.util.Objects;
  */
 public class AkkaFactory {
 
+    /**
+     * 构造 AkkaFactory 实例。
+     */
     public AkkaFactory() {
     }
 

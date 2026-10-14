@@ -56,6 +56,11 @@ public class JwtSubject implements Subject {
      */
     private volatile AuthPrincipal principal;
 
+    /**
+     * 构造 JwtSubject 实例。
+     * @param jwt  参数
+     * @param headers  参数
+     */
     public JwtSubject(JsonWebToken jwt, HeaderContext headers) {
         this.jwt = jwt;
         this.headers = headers;
@@ -359,11 +364,14 @@ public class JwtSubject implements Subject {
     public interface HeaderContext {
         /**
          * 按头名取值。
+         * @param name  名称
+         * @return 获取字符串内容
          */
         String get(String name);
 
         /**
          * 租户 ID（兼容 site/tenant-id/tenant_id/tenantId 多种头名）。
+         * @return 租户标识
          */
         default String getTenantId() {
             String[] candidates = {"site", "tenant-id", "tenant_id", "tenantId"};

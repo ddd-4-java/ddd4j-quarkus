@@ -43,21 +43,34 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
      * 统一业务事件 topic/tag（对齐 sample 的 OrderCreatedEvent 模式）。
      */
     protected static final String TOPIC = "ORDER";
+    /** 统一业务事件 tag。 */
     protected static final String TAG = "CREATED";
 
+    /** MQ 客户端（测试内手动 {@code init} 并发布事件）。 */
     @Inject
     protected MQClient mqClient;
 
+    /** 共享 MQ 配置单例（fixture 注入连接信息的写入目标）。 */
     @Inject
     protected MQProperties mqProperties;
 
+    /** 事件序列化器（init 时随监听器一起注册）。 */
     @Inject
     protected MQEventSerialization serialization;
+
+    /**
+     * 无参构造函数，供子类继承实例化。
+     */
+    protected AbstractMqQuarkusIntegrationTest() {
+    }
 
     // ========================= 子类契约 =========================
 
     /**
      * 读取 QuarkusTestResource 注入的 config 值。
+     *
+     * @param key config 键
+     * @return config 值
      */
     protected static String config(String key) {
         return ConfigProvider.getConfig().getValue(key, String.class);
@@ -65,6 +78,9 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
 
     /**
      * 轮询直到条件满足或超时（不引入 awaitility 依赖；最终一次断言保证失败可读）。
+     *
+     * @param condition 轮询条件
+     * @param timeout   最长等待时长
      */
     public static void await(BooleanSupplier condition, Duration timeout) {
         long deadline = System.nanoTime() + timeout.toNanos();
@@ -86,34 +102,50 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
     /**
      * broker 专属 properties Bean（CDI 单例，{@code initProducer/initConsumer} 从中读取连接信息）。
      * 无专属配置的 broker（disruptor/tdmq）返回 {@code null} 跳过填充。
+     *
+     * @return broker 专属 properties，或 {@code null} 表示无需填充
      */
     protected abstract P mqPropertiesExtension();
 
     /**
      * 把 fixture 注入 Quarkus config 的容器连接信息写入专属 properties
      * （config 键来自各 fixture 的 exposedProperties）。
+     *
+     * @param properties 待填充连接信息的 broker 专属 properties
      */
     protected abstract void applyContainerProperties(P properties);
 
     /**
      * init 之前的 broker 准备钩子（在连接信息填充之后、init 之前调用）。
+     *
+     * @throws Exception 准备失败时抛出
      */
     protected void preInit() throws Exception {
     }
 
     /**
      * init 之前改写监听器钩子（如 SQS 把 topic 改写为 queue URL），默认不动。
+     *
+     * @param listener 待改写的监听器定义
+     * @throws Exception 改写失败时抛出
      */
     protected void adaptListener(MQListener listener) throws Exception {
     }
 
     /**
      * consumer 注册完成后的稳定等待（订阅异步生效，避免 publish 早于 subscribe）。
+     *
+     * @return 等待毫秒数
      */
     protected long settleMillis() {
         return 3_000L;
     }
 
+    /**
+     * round-trip 断言整体超时时长。
+     *
+     * @return 超时时长
+     */
     protected Duration awaitTimeout() {
         return Duration.ofSeconds(30);
     }
@@ -122,6 +154,8 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
      * 监听器订阅 tag 表达式（注解仅作占位，init 前由模板写入 MQListener）。
      * 默认与事件 tag 一致；Pulsar 等无 broker 端 tag 过滤且 producer/consumer 物理
      * 地址不对称的 broker 覆写为 {@code "*"}。
+     *
+     * @return tag 表达式
      */
     protected String listenerTags() {
         return TAG;
@@ -132,6 +166,8 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
     /**
      * 发布事件的 tag；返回 {@code null} 表示不带 tag（对齐 javalin Pulsar 先例——
      * pulsar producer 物理地址含 {@code :tag} 而 consumer 订阅地址不含，tag 必须为空才能对齐）。
+     *
+     * @return tag，或 {@code null} 表示不带 tag
      */
     protected String eventTag() {
         return TAG;
@@ -139,6 +175,8 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
 
     /**
      * round-trip 事件工厂；SQS 等需要覆盖 topic（queue URL）的 broker 覆写本方法。
+     *
+     * @return 待发布的订单创建事件
      */
     protected OrderCreatedEvent newOrderCreatedEvent() {
         return new OrderCreatedEvent("IT-" + System.nanoTime(), "buyer-it", "99.90");
@@ -148,6 +186,10 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
      * 从共享 {@link OrderCreatedListener} 构建 {@link MQListener} 定义
      * （与 QuarkusMQListenerRegistrar 的扫描结果等价）。注解值无法按子类参数化，
      * tags 由 {@link #listenerTags()} 在运行时写入（对齐 javalin 骨架做法）。
+     *
+     * @param bean 共享监听器实例
+     * @return 构建完成的监听器定义
+     * @throws Exception 反射解析监听方法失败时抛出
      */
     protected final MQListener listenerDefinition(OrderCreatedListener bean) throws Exception {
         Method method = OrderCreatedListener.class.getDeclaredMethod("onOrderCreated", OrderCreatedEvent.class);
@@ -156,6 +198,9 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
         return listener;
     }
 
+    /**
+     * 按 {@link #settleMillis()} 睡眠等待订阅稳定（被中断时恢复中断标记并结束等待）。
+     */
     protected final void settle() {
         try {
             Thread.sleep(settleMillis());
@@ -169,6 +214,8 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
     /**
      * 完整 round-trip：填充连接信息 → 改写监听器 → preInit → 归一化 broker + init →
      * settle → publish 业务事件 → await 监听器 → 断言 orderId/buyerId/amount 一致。
+     *
+     * @throws Exception 初始化、发布或断言过程失败时抛出
      */
     protected final void runOrderCreatedRoundTrip() throws Exception {
         OrderCreatedListener bean = new OrderCreatedListener();
@@ -212,17 +259,31 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
      */
     public static class OrderCreatedEvent extends MQEvent {
 
+        /** 序列化版本号。 */
         private static final long serialVersionUID = 1L;
 
+        /** 订单唯一标识。 */
         private String orderId;
+        /** 下单用户标识。 */
         private String buyerId;
+        /** 订单金额。 */
         private java.math.BigDecimal amount;
 
+        /**
+         * 无参构造函数（默认 topic/tag），供反序列化与手工赋值使用。
+         */
         public OrderCreatedEvent() {
             setTopic(TOPIC);
             setTag(TAG);
         }
 
+        /**
+         * 全参构造函数。
+         *
+         * @param orderId 订单唯一标识
+         * @param buyerId 下单用户标识
+         * @param amount  订单金额（十进制字符串）
+         */
         public OrderCreatedEvent(String orderId, String buyerId, String amount) {
             this();
             this.orderId = orderId;
@@ -230,26 +291,56 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
             this.amount = new java.math.BigDecimal(amount);
         }
 
+        /**
+         * 获取订单唯一标识。
+         *
+         * @return 订单唯一标识
+         */
         public String getOrderId() {
             return orderId;
         }
 
+        /**
+         * 设置订单唯一标识。
+         *
+         * @param orderId 订单唯一标识
+         */
         public void setOrderId(String orderId) {
             this.orderId = orderId;
         }
 
+        /**
+         * 获取下单用户标识。
+         *
+         * @return 下单用户标识
+         */
         public String getBuyerId() {
             return buyerId;
         }
 
+        /**
+         * 设置下单用户标识。
+         *
+         * @param buyerId 下单用户标识
+         */
         public void setBuyerId(String buyerId) {
             this.buyerId = buyerId;
         }
 
+        /**
+         * 获取订单金额。
+         *
+         * @return 订单金额
+         */
         public java.math.BigDecimal getAmount() {
             return amount;
         }
 
+        /**
+         * 设置订单金额。
+         *
+         * @param amount 订单金额
+         */
         public void setAmount(java.math.BigDecimal amount) {
             this.amount = amount;
         }
@@ -261,21 +352,42 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
      */
     public static class OrderCreatedListener {
 
+        /** 单次事件 latch（收到首个事件即放行）。 */
         private final CountDownLatch latch = new CountDownLatch(1);
+        /** 最近一次收到的事件。 */
         private volatile OrderCreatedEvent received;
 
+        /**
+         * 无参构造函数，初始化 latch 与空事件状态。
+         */
+        public OrderCreatedListener() {
+        }
+
+        /**
+         * 监听订单创建事件：记录事件并放行 latch。
+         *
+         * @param event 收到的订单创建事件
+         */
         @MQEventListener(topic = TOPIC, tags = TAG, group = "ddd4j-it")
         public void onOrderCreated(OrderCreatedEvent event) {
             this.received = event;
             latch.countDown();
         }
 
+        /**
+         * 获取最近一次收到的事件。
+         *
+         * @return 事件，未收到时为 {@code null}
+         */
         public OrderCreatedEvent getReceived() {
             return received;
         }
 
         /**
          * 是否已收到指定 orderId 的事件（过滤复用容器中残留的陈旧消息）。
+         *
+         * @param orderId 期望的订单标识
+         * @return 已收到匹配事件时返回 true
          */
         public boolean matches(String orderId) {
             OrderCreatedEvent event = received;
@@ -284,6 +396,10 @@ public abstract class AbstractMqQuarkusIntegrationTest<P extends MQProperties> {
 
         /**
          * 阻塞等待首个事件（供不用 {@link #await} 的子类使用）。
+         *
+         * @param timeoutMillis 最长等待毫秒数
+         * @return 超时前收到事件返回 true
+         * @throws InterruptedException 等待被中断时抛出
          */
         public boolean awaitEvent(long timeoutMillis) throws InterruptedException {
             return latch.await(timeoutMillis, java.util.concurrent.TimeUnit.MILLISECONDS);

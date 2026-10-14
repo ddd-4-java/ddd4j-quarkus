@@ -12,6 +12,12 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
  */
 public class FileUploadConstraintValidator implements ConstraintValidator<ValidFileUpload, FileUpload> {
 
+    /**
+     * 无参构造函数。
+     */
+    public FileUploadConstraintValidator() {
+    }
+
     @Inject
     QuarkusFileValidator fileValidator;
 

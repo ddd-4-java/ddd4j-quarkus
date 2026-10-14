@@ -23,6 +23,12 @@ import java.io.Serializable;
  */
 public class UuidIdStrategy implements IdGenerationStrategy<String> {
 
+    /**
+     * 无参构造函数。
+     */
+    public UuidIdStrategy() {
+    }
+
     @Override
     public String generate() {
         return IdKit.simpleUUID();

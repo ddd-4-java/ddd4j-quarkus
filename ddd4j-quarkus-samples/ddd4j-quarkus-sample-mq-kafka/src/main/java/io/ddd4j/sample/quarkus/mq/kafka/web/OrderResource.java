@@ -28,6 +28,10 @@ public class OrderResource {
 
     private final OrderApplicationService applicationService;
 
+    /**
+     * 构造 OrderResource 实例。
+     * @param applicationService  应用服务
+     */
     @Inject
     public OrderResource(OrderApplicationService applicationService) {
         this.applicationService = Objects.requireNonNull(applicationService, "applicationService must not be null");
@@ -35,6 +39,8 @@ public class OrderResource {
 
     /**
      * 创建订单（触发 OrderCreatedEvent → Kafka → @MQEventListener）。
+     * @param request  请求
+     * @return 创建
      */
     @POST
     public Response create(CreateOrderRequest request) {
@@ -42,6 +48,12 @@ public class OrderResource {
         return Response.ok(order).build();
     }
 
+    /**
+     * CreateOrderRequest 记录类。
+     * @param buyerId  买家标识
+     * @param buyerName  买家名称
+     * @param orderNo  订单编号
+     */
     public final static class CreateOrderRequest {
 
         private static final long serialVersionUID = 0L;

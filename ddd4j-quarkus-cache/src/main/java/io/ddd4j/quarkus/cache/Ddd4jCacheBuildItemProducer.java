@@ -29,7 +29,14 @@ import io.quarkus.deployment.annotations.Record;
 public class Ddd4jCacheBuildItemProducer {
 
     /**
+     * 无参构造函数。
+     */
+    public Ddd4jCacheBuildItemProducer() {
+    }
+
+    /**
      * Expose {@link Ddd4jCacheConfig} as an application-scoped CDI bean.
+     * @return expose缓存配置
      */
     @BuildStep
     public AdditionalBeanBuildItem exposeCacheConfig() {
@@ -43,6 +50,9 @@ public class Ddd4jCacheBuildItemProducer {
      * Resolve the build-time {@code ddd4j.cache.default-type} string into a
      * {@link CacheKit.LocalCacheType} and replay it via the {@link CacheRecorder}
      * during static initialization.
+     * @param config  配置
+     * @param recorder  参数
+     * @return configure缓存默认类型
      */
     @BuildStep
     @Record(ExecutionTime.STATIC_INIT)

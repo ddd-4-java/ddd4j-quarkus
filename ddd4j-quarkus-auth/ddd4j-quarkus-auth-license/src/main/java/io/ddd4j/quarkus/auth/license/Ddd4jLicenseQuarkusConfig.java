@@ -38,6 +38,10 @@ public class Ddd4jLicenseQuarkusConfig {
     Optional<String> publicKeysStorePath;
     private LicenseVerify created;
 
+    /**
+     * 许可证Verify。
+     * @return 许可证Verify
+     */
     @Produces
     @Singleton
     public LicenseVerify licenseVerify() {

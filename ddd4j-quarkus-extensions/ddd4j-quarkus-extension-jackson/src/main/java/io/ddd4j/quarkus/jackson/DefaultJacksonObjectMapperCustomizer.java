@@ -52,6 +52,12 @@ import java.time.format.DateTimeFormatter;
 @IfBuildProperty(name = "ddd4j.jackson.enabled", stringValue = "true", enableIfMissing = true)
 public class DefaultJacksonObjectMapperCustomizer implements ObjectMapperCustomizer {
 
+    /**
+     * 无参构造函数。
+     */
+    public DefaultJacksonObjectMapperCustomizer() {
+    }
+
     @Override
     public void customize(ObjectMapper objectMapper) {
         var config = ConfigProvider.getConfig();

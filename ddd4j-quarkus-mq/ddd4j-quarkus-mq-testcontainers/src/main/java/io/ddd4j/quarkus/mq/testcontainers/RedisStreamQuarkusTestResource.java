@@ -16,6 +16,12 @@ import java.util.Map;
  */
 public class RedisStreamQuarkusTestResource extends AbstractTestContainerFixture {
 
+    /**
+     * 无参构造函数。
+     */
+    public RedisStreamQuarkusTestResource() {
+    }
+
     private static final DockerImageName IMAGE = DockerImageName.parse("redis:7.4-alpine");
 
     private GenericContainer<?> container;

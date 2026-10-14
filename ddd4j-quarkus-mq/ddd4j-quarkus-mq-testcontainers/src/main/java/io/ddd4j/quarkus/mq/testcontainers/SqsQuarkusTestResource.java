@@ -18,6 +18,12 @@ import java.util.Map;
  */
 public class SqsQuarkusTestResource extends AbstractTestContainerFixture {
 
+    /**
+     * 无参构造函数。
+     */
+    public SqsQuarkusTestResource() {
+    }
+
     private static final DockerImageName IMAGE = DockerImageName.parse("localstack/localstack:3.8.0");
     private LocalStackContainer container;
 

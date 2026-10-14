@@ -26,6 +26,8 @@ public class KafkaMqConfig {
 
     /**
      * 创建 broker 专用属性；MQ 通用属性继续由框架提供。
+     * @param config  配置
+     * @return 方法返回结果
      */
     @Produces
     @Singleton

@@ -16,12 +16,14 @@ public interface AkkaConfig {
 
     /**
      * Actor system 名称。
+     * @return 名称字符串内容
      */
     @WithDefault("ddd4j-akka-system")
     String name();
 
     /**
      * 是否启用 Akka 集成。
+     * @return 是否启用
      */
     @WithDefault("true")
     boolean enabled();

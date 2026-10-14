@@ -20,6 +20,12 @@ import org.eclipse.microprofile.health.Readiness;
 @ApplicationScoped
 public class Ddd4jQuarkusWebHealthCheck implements HealthCheck {
 
+    /**
+     * 无参构造函数。
+     */
+    public Ddd4jQuarkusWebHealthCheck() {
+    }
+
     private static final String NAME = "ddd4j-quarkus-web";
 
     @Override

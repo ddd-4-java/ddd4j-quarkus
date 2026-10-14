@@ -27,7 +27,15 @@ import java.util.Objects;
 public class AuthResource {
 
     /**
+     * 无参构造函数。
+     */
+    public AuthResource() {
+    }
+
+    /**
      * 登录：SubjectKit.login(AuthRequest)
+     * @param userId  用户标识
+     * @return 方法返回结果
      */
     @POST
     @Path("/login")
@@ -49,6 +57,7 @@ public class AuthResource {
 
     /**
      * 登出：SubjectKit.logout()
+     * @return 方法返回结果
      */
     @POST
     @Path("/logout")
@@ -59,6 +68,7 @@ public class AuthResource {
 
     /**
      * 当前用户：SubjectKit.getPrincipal()
+     * @return 方法返回结果
      */
     @GET
     @Path("/me")
@@ -77,6 +87,8 @@ public class AuthResource {
 
     /**
      * 权限校验：SubjectKit.hasPermission()
+     * @param permission  权限
+     * @return 检查权限映射
      */
     @GET
     @Path("/check/permission")
@@ -87,6 +99,8 @@ public class AuthResource {
 
     /**
      * 角色校验：SubjectKit.hasRole()
+     * @param role  角色
+     * @return 检查角色映射
      */
     @GET
     @Path("/check/role")
@@ -97,6 +111,7 @@ public class AuthResource {
 
     /**
      * 登录状态：SubjectKit.isLogin()
+     * @return 状态映射
      */
     @GET
     @Path("/status")

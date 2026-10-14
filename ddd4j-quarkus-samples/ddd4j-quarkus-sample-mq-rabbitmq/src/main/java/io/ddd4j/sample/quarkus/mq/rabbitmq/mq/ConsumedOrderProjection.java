@@ -12,10 +12,17 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @ApplicationScoped
 public class ConsumedOrderProjection {
+
+    /**
+     * 无参构造函数。
+     */
+    public ConsumedOrderProjection() {
+    }
     private final Map<String, OrderCreatedEvent> orders = new ConcurrentHashMap<>();
 
     /**
      * 由 MQ listener 记录已消费的订单事件。
+     * @param event  事件
      */
     public void record(OrderCreatedEvent event) {
         orders.put(event.getOrderId(), event);
@@ -23,6 +30,8 @@ public class ConsumedOrderProjection {
 
     /**
      * 按订单 ID 查询消费结果。
+     * @param orderId  订单标识
+     * @return 方法返回结果
      */
     public Optional<OrderCreatedEvent> find(String orderId) {
         return Optional.ofNullable(orders.get(orderId));

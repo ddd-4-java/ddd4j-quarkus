@@ -21,10 +21,25 @@ public class OrderCreatedEvent extends MQEvent {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 订单标识。
+     */
     private final String orderId;
+    /**
+     * 订单编号。
+     */
     private final String orderNo;
+    /**
+     * 买家名称。
+     */
     private final String buyerName;
 
+    /**
+     * 构造 OrderCreatedEvent 实例。
+     * @param orderId  订单标识
+     * @param orderNo  订单编号
+     * @param buyerName  买家名称
+     */
     public OrderCreatedEvent(String orderId, String orderNo, String buyerName) {
         this.orderId = Objects.requireNonNull(orderId, "orderId");
         this.orderNo = Objects.requireNonNull(orderNo, "orderNo");

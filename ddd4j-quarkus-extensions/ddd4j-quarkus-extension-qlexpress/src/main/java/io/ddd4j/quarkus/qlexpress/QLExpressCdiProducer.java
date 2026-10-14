@@ -43,6 +43,12 @@ import java.util.Objects;
 public class QLExpressCdiProducer {
 
     /**
+     * 无参构造函数。
+     */
+    public QLExpressCdiProducer() {
+    }
+
+    /**
      * 规则缓存默认过期时间（秒），本地缓存兜底值。
      */
     private static final long DEFAULT_RULES_CACHE_EXPIRE_SECONDS = 3600L;

@@ -20,6 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @ApplicationScoped
 public class InMemoryOrderRepository {
 
+    /**
+     * 无参构造函数。
+     */
+    public InMemoryOrderRepository() {
+    }
+
     private final Map<String, Order> storage = new ConcurrentHashMap<>();
 
     /**

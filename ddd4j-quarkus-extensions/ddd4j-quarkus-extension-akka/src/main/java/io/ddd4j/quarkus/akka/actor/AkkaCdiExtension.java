@@ -17,8 +17,14 @@ import akka.actor.Props;
  */
 public class AkkaCdiExtension extends AbstractExtensionId<AkkaCdiExtension.AkkaCdiExt> {
 
+    /**
+     * AKKA_CDI_EXTENSION_PROVIDER 字段。
+     */
     public static final AkkaCdiExtension AKKA_CDI_EXTENSION_PROVIDER = new AkkaCdiExtension();
 
+    /**
+     * 构造 AkkaCdiExtension 实例。
+     */
     public AkkaCdiExtension() {
     }
 
@@ -33,6 +39,9 @@ public class AkkaCdiExtension extends AbstractExtensionId<AkkaCdiExtension.AkkaC
      */
     public static class AkkaCdiExt implements Extension {
 
+        /**
+         * 构造 AkkaCdiExt 实例。
+         */
         public AkkaCdiExt() {
         }
 

@@ -81,14 +81,26 @@ public final class ExcelAttachment {
         return new ExcelAttachment(filename, CONTENT_TYPE_CSV, charset);
     }
 
+    /**
+     * 获取 getFilename。
+     * @return 获取Filename字符串内容
+     */
     public String getFilename() {
         return filename;
     }
 
+    /**
+     * 获取内容类型。
+     * @return 内容类型
+     */
     public String getContentType() {
         return contentType;
     }
 
+    /**
+     * 获取 getCharset。
+     * @return 获取Charset
+     */
     public Charset getCharset() {
         return charset;
     }

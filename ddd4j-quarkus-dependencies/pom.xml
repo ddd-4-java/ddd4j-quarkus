@@ -491,14 +491,27 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <failOnError>true</failOnError>
-                    <failOnWarnings>false</failOnWarnings>
+                    <!-- Javadoc 零告警门禁：任何 doclint 告警都使构建失败 -->
+                    <failOnWarnings>true</failOnWarnings>
+                    <!-- 显式开启 JDK doclint 全量检查 -->
+                    <doclint>all</doclint>
+                    <!-- 提升告警上限，防止告警数量被截断导致门禁假绿 -->
+                    <additionalOptions>
+                        <additionalOption>-Xmaxwarns</additionalOption>
+                        <additionalOption>999</additionalOption>
+                    </additionalOptions>
                 </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
                         <configuration>
                             <failOnError>true</failOnError>
-                            <failOnWarnings>false</failOnWarnings>
+                            <failOnWarnings>true</failOnWarnings>
+                            <doclint>all</doclint>
+                            <additionalOptions>
+                                <additionalOption>-Xmaxwarns</additionalOption>
+                                <additionalOption>999</additionalOption>
+                            </additionalOptions>
                         </configuration>
                     </execution>
                 </executions>

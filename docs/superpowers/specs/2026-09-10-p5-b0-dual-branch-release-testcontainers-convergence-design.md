@@ -176,7 +176,7 @@ JUnit 5 集成使用：
 ### 8.3 共同门禁
 
 - actionlint 成功。
-- 已退役的前序扩展 group 坐标零引用；`git grep -n -E 'io[.]github[.]hiwepy'` 必须返回 1，扩展统一使用 `io.github.easy4j`。
+- 已退役的前序扩展 group 坐标零引用；`git grep -n -E 'io[.]github[.]redacted-legacy-family'` 必须返回 1，扩展统一使用 `io.github.easy4j`。
 - Surefire/Failsafe XML 汇总 failures/errors 为 0。
 - 每个 skip 逐项解释。
 - 本地、GitHub、Codeup 分支 SHA 一致。
@@ -188,7 +188,7 @@ JUnit 5 集成使用：
 对每个待验证分支执行以下门禁；命中已退役 group 即失败。这里的正则写法避免在受管源码中保留已禁止的连续坐标字面量：
 
 ```bash
-if git grep -n -E 'io[.]github[.]hiwepy'; then
+if git grep -n -E 'io[.]github[.]redacted-legacy-family'; then
   echo "retired extension group remains in tracked source" >&2
   exit 1
 fi

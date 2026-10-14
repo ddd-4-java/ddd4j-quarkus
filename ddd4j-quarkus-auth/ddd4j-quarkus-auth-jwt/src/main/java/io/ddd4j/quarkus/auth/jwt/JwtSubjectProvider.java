@@ -23,6 +23,12 @@ import org.jboss.logging.Logger;
  */
 public class JwtSubjectProvider implements SubjectProvider {
 
+    /**
+     * 无参构造函数。
+     */
+    public JwtSubjectProvider() {
+    }
+
     private static final Logger logger = Logger.getLogger(JwtSubjectProvider.class);
 
     @Override

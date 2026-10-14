@@ -32,6 +32,12 @@ import org.apache.dubbo.config.RegistryConfig;
 public class DubboCdiProducer {
 
     /**
+     * 无参构造函数。
+     */
+    public DubboCdiProducer() {
+    }
+
+    /**
      * Dubbo 应用配置（{@code ddd4j.dubbo.application.name}）。
      *
      * @param config Quarkus 配置映射

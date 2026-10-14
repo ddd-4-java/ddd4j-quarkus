@@ -55,6 +55,12 @@ import java.util.function.Function;
 @RegisterForReflection(methods = true)
 public class EntityIdRegistryInitializer {
 
+    /**
+     * 无参构造函数。
+     */
+    public EntityIdRegistryInitializer() {
+    }
+
     private static final Logger LOG = Logger.getLogger(EntityIdRegistryInitializer.class);
 
     @Inject

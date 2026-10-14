@@ -20,6 +20,12 @@ import java.util.Map;
  */
 public class OnsQuarkusTestResource extends AbstractTestContainerFixture {
 
+    /**
+     * 无参构造函数。
+     */
+    public OnsQuarkusTestResource() {
+    }
+
     private static final DockerImageName IMAGE = DockerImageName.parse("apache/rocketmq:5.3.2");
     private static final int NAMESRV_PORT = 9876;
 

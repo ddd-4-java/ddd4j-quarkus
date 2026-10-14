@@ -110,4 +110,3 @@ workflow-lint 实际调用 actionlint。这里描述的是已提交的 CI 设计
 </parent>
 ```
 
-宝港湾 Quarkus 服务：`bmgw-quarkus-parent` → `ddd4j-quarkus-parent`。

@@ -25,6 +25,17 @@ import jakarta.inject.Singleton;
 @ApplicationScoped
 public class OnsMQCdiProducer {
 
+    /**
+     * 无参构造函数，供 CDI 容器实例化本生产者 Bean。
+     */
+    public OnsMQCdiProducer() {
+    }
+
+    /**
+     * 产出 {@link OnsProperties} 默认 Bean。
+     *
+     * @return {@link OnsProperties} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean
@@ -32,6 +43,12 @@ public class OnsMQCdiProducer {
         return new OnsProperties();
     }
 
+    /**
+     * 依据 {@code OnsProperties} 构建并产出 {@link OnsMQClient} 默认 Bean。
+     *
+     * @param properties MQ 客户端配置
+     * @return {@link OnsMQClient} 实例
+     */
     @Produces
     @Singleton
     @DefaultBean

@@ -25,6 +25,12 @@ import jakarta.inject.Singleton;
 public class Ddd4jExcelCdiProducer {
 
     /**
+     * 无参构造函数。
+     */
+    public Ddd4jExcelCdiProducer() {
+    }
+
+    /**
      * Web Excel 工具单例（业务侧直接注入使用）。
      *
      * @param config Excel 配置（上传校验等参数）

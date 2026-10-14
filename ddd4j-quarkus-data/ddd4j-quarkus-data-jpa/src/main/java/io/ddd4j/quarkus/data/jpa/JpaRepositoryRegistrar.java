@@ -35,6 +35,12 @@ import org.jboss.logging.Logger;
 @ApplicationScoped
 public class JpaRepositoryRegistrar {
 
+    /**
+     * 无参构造函数。
+     */
+    public JpaRepositoryRegistrar() {
+    }
+
     private static final Logger LOG = Logger.getLogger(JpaRepositoryRegistrar.class);
 
     @Inject

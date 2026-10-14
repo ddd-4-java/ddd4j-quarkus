@@ -9,16 +9,16 @@
 
 ### 1.1 现有证据（均已实测核实）
 
-| 证据                                             | 命中                                                                                                                                                                                          |
-|--------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ddd4j-quarkus samples 是否使用 Mongo             | 无（grep 零结果）                                                                                                                                                                             |
-| ddd4j-quarkus samples 是否使用 R2DBC             | 无（grep 零结果）                                                                                                                                                                             |
-| ddd4j-quarkus docs 是否提及 Mongo                | 无                                                                                                                                                                                            |
-| ddd4j-quarkus 是否声明 Mongo / R2DBC 运行时依赖  | 无（`ddd4j-quarkus-dependencies` 与 `ddd4j-quarkus-bom` 均零命中）                                                                                                                            |
-| ddd4j 主仓 ADR 是否规划 Mongo EventStore         | 无（`docs/adr/0005-event-store-spi.md` 列了 JPA／Panache／JDBI／R2DBC 四套实现，未列 Mongo）                                                                                                  |
-| 业务项目 bmgw-quarkus-parent 等的真实 Mongo 需求 | 未发现明确文档证据                                                                                                                                                                            |
-| ddd4j-javalin 是否有 Mongo 集成                  | 未发现（全仓 grep 零命中；主仓唯一 mongo 代码级引用是 `ddd4j-kit` `IdKit` 中关于 MongoDB ObjectId 的 javadoc 注释）                                                                           |
-| 主仓依赖 BOM 是否具备 Mongo 基础设施             | 是（`ddd4j-dependencies` 已声明 `mongo-java-driver 3.12.14`、`mongodb-driver-bom 5.6.1`，以及 flowable/flyway/log4j/pac4j/shedlock 等第三方 mongo 集成——但均为第三方桥接，非 ddd4j 自有模块） |
+| 证据 | 命中 |
+|---|---|
+| ddd4j-quarkus samples 是否使用 Mongo | 无（grep 零结果）|
+| ddd4j-quarkus samples 是否使用 R2DBC | 无（grep 零结果）|
+| ddd4j-quarkus docs 是否提及 Mongo | 无 |
+| ddd4j-quarkus 是否声明 Mongo / R2DBC 运行时依赖 | 无（`ddd4j-quarkus-dependencies` 与 `ddd4j-quarkus-bom` 均零命中）|
+| ddd4j 主仓 ADR 是否规划 Mongo EventStore | 无（`docs/adr/0005-event-store-spi.md` 列了 JPA／Panache／JDBI／R2DBC 四套实现，未列 Mongo）|
+| 业务项目 ddd4j-quarkus-parent 等的真实 Mongo 需求 | 未发现明确文档证据 |
+| ddd4j-javalin 是否有 Mongo 集成 | 未发现（全仓 grep 零命中；主仓唯一 mongo 代码级引用是 `ddd4j-kit` `IdKit` 中关于 MongoDB ObjectId 的 javadoc 注释）|
+| 主仓依赖 BOM 是否具备 Mongo 基础设施 | 是（`ddd4j-dependencies` 已声明 `mongo-java-driver 3.12.14`、`mongodb-driver-bom 5.6.1`，以及 flowable/flyway/log4j/pac4j/shedlock 等第三方 mongo 集成——但均为第三方桥接，非 ddd4j 自有模块）|
 
 ### 1.2 推断
 

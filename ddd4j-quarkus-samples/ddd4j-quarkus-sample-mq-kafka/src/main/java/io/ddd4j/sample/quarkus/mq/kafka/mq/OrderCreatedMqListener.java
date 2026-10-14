@@ -20,6 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 @Unremovable
 public class OrderCreatedMqListener {
 
+    /**
+     * 无参构造函数。
+     */
+    public OrderCreatedMqListener() {
+    }
+
     @Inject
     ConsumedOrderProjection projection;
 

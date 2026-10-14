@@ -27,6 +27,12 @@ import org.jboss.logging.Logger;
 @ApplicationScoped
 public class OrderInfrastructureConfig {
 
+    /**
+     * 无参构造函数。
+     */
+    public OrderInfrastructureConfig() {
+    }
+
     private static final Logger log = Logger.getLogger(OrderInfrastructureConfig.class);
 
     /**

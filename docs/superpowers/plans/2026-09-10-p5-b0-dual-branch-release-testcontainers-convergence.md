@@ -22,9 +22,8 @@ Actions、阿里云 Maven。
   4.1.0 + `<modules>`。
 - 不引入活动 `<subprojects>`/`<subproject>`。
 - 两分支 Testcontainers effective version 必须为 `2.0.5`。
-- ActiveMQ、Kafka、LocalStack、Pulsar、RabbitMQ 使用 Testcontainers 2.x Java 专用模块/类；没有合适 Java 官方模块的 broker
-  使用受控 `GenericContainer`。
-- 已退役的前序扩展 group 坐标零引用；用 `git grep -E 'io[.]github[.]hiwepy'` 执行门禁，扩展统一使用 `io.github.easy4j`。
+- ActiveMQ、Kafka、LocalStack、Pulsar、RabbitMQ 使用 Testcontainers 2.x Java 专用模块/类；没有合适 Java 官方模块的 broker 使用受控 `GenericContainer`。
+- 已退役的前序扩展 group 坐标零引用；用 `git grep -E 'io[.]github[.]redacted-legacy-family'` 执行门禁，扩展统一使用 `io.github.easy4j`。
 - 任何 skip 必须记录类、方法、原因和恢复条件。
 - 不把 ONS/TDMQ fallback 或本地模拟称为云服务验收。
 - 不把 Maven upload、BUILD SUCCESS、Actions 或 consumer 中任意单项独立称为发布完成。
@@ -223,7 +222,7 @@ its cross-branch review and focused real-container tests passed.
 set -euo pipefail
 : "${MAVEN4:?set MAVEN4 to the Maven 4.0.0-rc-6 executable}"
 
-retired_group_regex='io[.]github[.]hiwepy'
+retired_group_regex='io[.]github[.]redacted-legacy-family'
 set +e
 git grep -n -E "$retired_group_regex"
 retired_group_status=$?

@@ -35,6 +35,12 @@ import org.jboss.logging.Logger;
 @ApplicationScoped
 public class Ddd4jJwtQuarkusConfig {
 
+    /**
+     * 无参构造函数。
+     */
+    public Ddd4jJwtQuarkusConfig() {
+    }
+
     private static final Logger logger = Logger.getLogger(Ddd4jJwtQuarkusConfig.class);
 
     /**
@@ -42,6 +48,7 @@ public class Ddd4jJwtQuarkusConfig {
      *
      * <p>使用 {@code @ApplicationScoped} 保证只注册一次到 {@link SubjectKit}，
      * 内部通过 {@link io.quarkus.arc.Arc} 容器按需获取当前请求的 {@link JwtSubject}。
+     * @return 主题Provider
      */
     @Produces
     @Singleton
@@ -57,6 +64,9 @@ public class Ddd4jJwtQuarkusConfig {
      *
      * <p>JWT Bean（{@link JsonWebToken}）由 SmallRye JWT 在请求入口注入（公开端点时为空）；
      * HTTP Header 从 Vert.x {@link HttpServerRequest} 解析。
+     * @param jwt  参数
+     * @param requestInstance  请求实例
+     * @return JWT主题
      */
     @Produces
     @RequestScoped

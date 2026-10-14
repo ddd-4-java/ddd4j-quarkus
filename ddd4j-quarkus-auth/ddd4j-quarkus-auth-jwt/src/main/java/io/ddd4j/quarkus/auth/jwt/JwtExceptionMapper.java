@@ -18,6 +18,12 @@ import jakarta.ws.rs.ext.Provider;
 @Provider
 public class JwtExceptionMapper implements ExceptionMapper<Exception> {
 
+    /**
+     * 无参构造函数。
+     */
+    public JwtExceptionMapper() {
+    }
+
     @Override
     public Response toResponse(Exception exception) {
         // SmallRye JWT 抛出的异常类型较多（ParseException/JsonException/JWTDecodeException 等），

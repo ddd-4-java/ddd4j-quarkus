@@ -18,6 +18,17 @@ import jakarta.inject.Singleton;
 @IfBuildProperty(name = "ddd4j.qrcode.enabled", stringValue = "true", enableIfMissing = true)
 public class QrCodeProducer {
 
+    /**
+     * 无参构造函数。
+     */
+    public QrCodeProducer() {
+    }
+
+    /**
+     * 二维码编码服务。
+     * @param config  配置
+     * @return 二维码编码服务
+     */
     @Produces
     @Singleton
     public QrCodeService qrCodeService(QrCodeConfig config) {
@@ -26,18 +37,31 @@ public class QrCodeProducer {
         return new DefaultQrCodeService(config.concurrency(), config.maxBatchSize());
     }
 
+    /**
+     * 二维码编码模板注册表。
+     * @return 二维码编码模板注册表
+     */
     @Produces
     @Singleton
     public QrCodeTemplateRegistry qrCodeTemplateRegistry() {
         return new InMemoryQrCodeTemplateRegistry();
     }
 
+    /**
+     * 二维码编码模板Binder。
+     * @return 二维码编码模板Binder
+     */
     @Produces
     @Singleton
     public QrCodeTemplateBinder qrCodeTemplateBinder() {
         return new QrCodeTemplateBinder();
     }
 
+    /**
+     * 关闭。
+     * @param service  服务
+     * @throws Exception  操作失败时抛出
+     */
     public void close(@Disposes QrCodeService service) throws Exception {
         if (service instanceof AutoCloseable) {
             ((AutoCloseable) service).close();
