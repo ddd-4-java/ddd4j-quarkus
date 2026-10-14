@@ -1,0 +1,23 @@
+{
+  "exclude": [
+    "io.ddd4j*:*"
+  ],
+  "exclude_properties": [
+    "ddd4j*.version"
+  ],
+  "branches": {
+    "feature/3.3.x": {
+      "fixed_properties": {
+        "quarkus-bom.version": "3.37.4"
+      }
+    },
+    "feature/4.0.x": {
+      "fixed_properties": {
+        "quarkus-bom.version": "3.38.2"
+      }
+    }
+  },
+  "fixed_properties": {},
+  "fixed_dependencies": {},
+  "cvss_threshold": 7
+}
