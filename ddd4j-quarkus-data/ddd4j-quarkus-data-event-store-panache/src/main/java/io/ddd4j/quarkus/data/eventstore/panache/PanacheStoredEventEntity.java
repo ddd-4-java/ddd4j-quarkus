@@ -51,6 +51,10 @@ import java.util.List;
                 columnNames = {"aggregate_type", "aggregate_id", "version"}))
 public class PanacheStoredEventEntity extends PanacheEntityBase {
 
+    /** 创建供 JPA 持久化加载的空事件实体。 */
+    public PanacheStoredEventEntity() {
+    }
+
     /**
      * 全局流位置：数据库自增主键，事件存储的追加顺序号。
      */
